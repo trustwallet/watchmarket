@@ -1,4 +1,5 @@
 # Watchmarket
+Is under development. Was migrated from [Blockatlas](https://github.com/trustwallet/blockatlas)
 ### What is “Watchmarket”?
 Watchmarket is an aggregation and caching service for blockchain market information. 
 The main features of it are:
