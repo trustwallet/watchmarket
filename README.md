@@ -9,6 +9,14 @@ The main features of it are:
 
 This project consists of 2 main parts: Watchmarket observer and REST API 
 
-Observer - service that periodically fetch latest data from external api (like coinmarketcap), parse it to the common data structure, set the parsed data to the cache (Redis)
+Observer - service that periodically fetch latest data from **data providers** (like coinmarketcap), parse it to the common data structure, set the parsed data to the cache (Redis)
 
 REST API - allows to get cached data through REST HTTP API
+
+### More details
+
+Current data providers: Coinmarketcap, BinanceDex, Compound, Fixer, Coingecko
+
+Data that is parsed through several data providers have a customizable priority
+
+
