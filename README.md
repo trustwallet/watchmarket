@@ -1,10 +1,14 @@
-# WatchMarket
-### What is “WatchMarket”?
-WatchMarket is an aggregation and caching service for blockchain market information. 
+# Watchmarket
+### What is “Watchmarket”?
+Watchmarket is an aggregation and caching service for blockchain market information. 
 The main features of it are:
 1. **Aggregation**: it standardizes information from different blockchain data providers e.g. Coinmarketcap into a unified format
 2. **Caching**: it acts as a caching layer for this information mainly catering to the goal of cost savings as API calls to data providers are expensive
 
+### Architecture
 
+This project consists of 2 main parts: Watchmarket observer and REST API 
 
+Observer - service that periodically fetch latest data from external api (like coinmarketcap), parse it to the common data structure, set the parsed data to the cache (Redis)
 
+REST API - allows to get cached data through REST HTTP API
