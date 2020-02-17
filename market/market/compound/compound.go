@@ -1,8 +1,8 @@
 package compound
 
 import (
+	"github.com/trustwallet/blockatlas/coin"
 	"github.com/trustwallet/blockatlas/pkg/blockatlas"
-	"github.com/trustwallet/watchmarket/coin"
 	c "github.com/trustwallet/watchmarket/market/clients/compound"
 	"github.com/trustwallet/watchmarket/market/market"
 	"time"

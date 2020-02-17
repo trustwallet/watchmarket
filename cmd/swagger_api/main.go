@@ -5,10 +5,10 @@ import (
 	"github.com/spf13/viper"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"github.com/swaggo/gin-swagger/swaggerFiles"
+	"github.com/trustwallet/blockatlas/pkg/ginutils"
 	"github.com/trustwallet/watchmarket/api"
 	_ "github.com/trustwallet/watchmarket/docs"
 	"github.com/trustwallet/watchmarket/internal"
-	"github.com/trustwallet/watchmarket/pkg/ginutils"
 )
 
 const (

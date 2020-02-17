@@ -3,11 +3,11 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
+	"github.com/trustwallet/blockatlas/pkg/ginutils"
+	"github.com/trustwallet/blockatlas/pkg/logger"
 	"github.com/trustwallet/watchmarket/api"
 	_ "github.com/trustwallet/watchmarket/docs"
 	"github.com/trustwallet/watchmarket/internal"
-	"github.com/trustwallet/blockatlas/pkg/ginutils"
-	"github.com/trustwallet/blockatlas/pkg/logger"
 	"github.com/trustwallet/watchmarket/storage"
 )
 

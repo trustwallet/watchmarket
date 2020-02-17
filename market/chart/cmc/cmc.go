@@ -1,10 +1,10 @@
 package cmc
 
 import (
-	"github.com/trustwallet/blockatlas/market/chart"
-	"github.com/trustwallet/blockatlas/market/clients/cmc"
 	"github.com/trustwallet/blockatlas/pkg/blockatlas"
 	"github.com/trustwallet/blockatlas/pkg/errors"
+	"github.com/trustwallet/watchmarket/market/chart"
+	"github.com/trustwallet/watchmarket/market/clients/cmc"
 	"time"
 )
 

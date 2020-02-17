@@ -3,11 +3,11 @@ package api
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
+	"github.com/trustwallet/blockatlas/coin"
 	"github.com/trustwallet/blockatlas/pkg/blockatlas"
 	"github.com/trustwallet/blockatlas/pkg/ginutils"
 	"github.com/trustwallet/blockatlas/pkg/ginutils/gincache"
 	"github.com/trustwallet/blockatlas/pkg/logger"
-	"github.com/trustwallet/watchmarket/coin"
 	"github.com/trustwallet/watchmarket/market"
 	"github.com/trustwallet/watchmarket/services/assets"
 	"github.com/trustwallet/watchmarket/storage"

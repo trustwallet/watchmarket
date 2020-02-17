@@ -1,9 +1,9 @@
 package dex
 
 import (
+	"github.com/trustwallet/blockatlas/coin"
 	"github.com/trustwallet/blockatlas/pkg/blockatlas"
 	"github.com/trustwallet/blockatlas/pkg/errors"
-	"github.com/trustwallet/watchmarket/coin"
 	"github.com/trustwallet/watchmarket/market/market"
 	"math/big"
 	"net/url"
