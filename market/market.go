@@ -3,14 +3,14 @@ package market
 import (
 	"github.com/robfig/cron/v3"
 	"github.com/spf13/viper"
-	"github.com/trustwallet/blockatlas/market/market"
-	"github.com/trustwallet/blockatlas/market/market/cmc"
-	"github.com/trustwallet/blockatlas/market/market/coingecko"
-	"github.com/trustwallet/blockatlas/market/market/compound"
-	"github.com/trustwallet/blockatlas/market/market/dex"
 	"github.com/trustwallet/blockatlas/pkg/errors"
 	"github.com/trustwallet/blockatlas/pkg/logger"
-	"github.com/trustwallet/blockatlas/storage"
+	"github.com/trustwallet/watchmarket/market/market"
+	"github.com/trustwallet/watchmarket/market/market/cmc"
+	"github.com/trustwallet/watchmarket/market/market/coingecko"
+	"github.com/trustwallet/watchmarket/market/market/compound"
+	"github.com/trustwallet/watchmarket/market/market/dex"
+	"github.com/trustwallet/watchmarket/storage"
 )
 
 var marketProviders market.Providers

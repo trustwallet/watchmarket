@@ -2,12 +2,12 @@ package market
 
 import (
 	"github.com/spf13/viper"
-	"github.com/trustwallet/blockatlas/market/chart"
-	"github.com/trustwallet/blockatlas/market/chart/cmc"
-	"github.com/trustwallet/blockatlas/market/chart/coingecko"
 	"github.com/trustwallet/blockatlas/pkg/blockatlas"
 	"github.com/trustwallet/blockatlas/pkg/errors"
 	"github.com/trustwallet/blockatlas/pkg/numbers"
+	"github.com/trustwallet/watchmarket/market/chart"
+	"github.com/trustwallet/watchmarket/market/chart/cmc"
+	"github.com/trustwallet/watchmarket/market/chart/coingecko"
 	"math"
 	"sort"
 )

@@ -2,7 +2,7 @@ package rate
 
 import (
 	"github.com/trustwallet/blockatlas/pkg/blockatlas"
-	"github.com/trustwallet/blockatlas/storage"
+	"github.com/trustwallet/watchmarket/storage"
 )
 
 type Provider interface {

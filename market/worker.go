@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"github.com/cenkalti/backoff"
 	"github.com/robfig/cron/v3"
-	"github.com/trustwallet/blockatlas/market/market"
-	"github.com/trustwallet/blockatlas/market/rate"
 	"github.com/trustwallet/blockatlas/pkg/errors"
 	"github.com/trustwallet/blockatlas/pkg/logger"
-	"github.com/trustwallet/blockatlas/storage"
+	"github.com/trustwallet/watchmarket/market/market"
+	"github.com/trustwallet/watchmarket/market/rate"
+	"github.com/trustwallet/watchmarket/storage"
 	"time"
 )
 

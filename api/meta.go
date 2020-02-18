@@ -18,13 +18,3 @@ If you know what you're doing:
  - Any questions? https://t.me/walletcore
 `)
 }
-
-func getEnabledEndpoints(c *gin.Context) {
-	var resp struct {
-		Endpoints []string `json:"endpoints,omitempty"`
-	}
-	for handle := range routers {
-		resp.Endpoints = append(resp.Endpoints, handle)
-	}
-	ginutils.RenderSuccess(c, &resp)
-}

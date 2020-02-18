@@ -7,6 +7,10 @@ import (
 	"time"
 )
 
+const (
+	AssetsURL = "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/"
+)
+
 func GetCoinInfo(coinId int, token string) (info *blockatlas.CoinInfo, err error) {
 	c, ok := coin.Coins[uint(coinId)]
 	if !ok {
