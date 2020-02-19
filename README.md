@@ -1,4 +1,4 @@
-# Watchmarket
+# Watchmarket Blockatlas version
 Is under development at master branch. Was migrated from [Blockatlas](https://github.com/trustwallet/blockatlas) at version/blockatlas branch
 ### What is “Watchmarket”?
 Watchmarket is an aggregation and caching service for blockchain market information. 
