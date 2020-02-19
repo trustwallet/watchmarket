@@ -8,7 +8,7 @@ gin:
 
 # The market watcher
 market:
-  enabled: false
+  enabled: true
   quote_update_time: 20m
   rate_update_time: 20m
   dex:
@@ -30,4 +30,4 @@ market:
     api: https://api.coingecko.com/api
 
 storage:
-  redis: redis://redis:6379
+  redis: redis://localhost:6379

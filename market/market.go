@@ -6,10 +6,7 @@ import (
 	"github.com/trustwallet/blockatlas/pkg/errors"
 	"github.com/trustwallet/blockatlas/pkg/logger"
 	"github.com/trustwallet/watchmarket/market/market"
-	"github.com/trustwallet/watchmarket/market/market/cmc"
 	"github.com/trustwallet/watchmarket/market/market/coingecko"
-	"github.com/trustwallet/watchmarket/market/market/compound"
-	"github.com/trustwallet/watchmarket/market/market/dex"
 	"github.com/trustwallet/watchmarket/storage"
 )
 
@@ -18,21 +15,21 @@ var marketProviders market.Providers
 func InitMarkets(storage storage.Market) {
 	marketProviders = market.Providers{
 		// Add Market Quote Providers:
-		0: dex.InitMarket(
-			viper.GetString("market.dex.api"),
-			viper.GetString("market.dex.quote_update_time"),
-		),
-		1: cmc.InitMarket(
-			viper.GetString("market.cmc.api"),
-			viper.GetString("market.cmc.api_key"),
-			viper.GetString("market.cmc.map_url"),
-			viper.GetString("market.quote_update_time"),
-		),
-		2: compound.InitMarket(
-			viper.GetString("market.compound.api"),
-			viper.GetString("market.quote_update_time"),
-		),
-		3: coingecko.InitMarket(
+		//0: dex.InitMarket(
+		//	viper.GetString("market.dex.api"),
+		//	viper.GetString("market.dex.quote_update_time"),
+		//),
+		//1: cmc.InitMarket(
+		//	viper.GetString("market.cmc.api"),
+		//	viper.GetString("market.cmc.api_key"),
+		//	viper.GetString("market.cmc.map_url"),
+		//	viper.GetString("market.quote_update_time"),
+		//),
+		//2: compound.InitMarket(
+		//	viper.GetString("market.compound.api"),
+		//	viper.GetString("market.quote_update_time"),
+		//),
+		0: coingecko.InitMarket(
 			viper.GetString("market.coingecko.api"),
 			viper.GetString("market.quote_update_time"),
 		),

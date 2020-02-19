@@ -1,0 +1,60 @@
+
+trigger:
+  branches:
+    include:
+      - master
+      - dev
+  tags:
+    include:
+      - '*'
+
+pr:
+  branches:
+    include:
+      - master
+      - dev
+
+pool:
+  vmImage: 'Ubuntu 16.04'
+
+variables:
+  GOVERSION: '1.13'
+
+jobs:
+  - job: environment
+    steps:
+      - task: GoTool@0
+        inputs:
+          version: '$(GOVERSION)'
+        displayName: 'Go Tool'
+
+      - task: Go@0
+        inputs:
+          command: 'get'
+          arguments: '-v -t -d ./...'
+          workingDirectory: '$(System.DefaultWorkingDirectory)'
+        displayName: 'Get dependencies'
+
+  - job: go_vet
+    dependsOn: environment
+    condition: succeeded()
+    steps:
+      - script: make govet
+        workingDirectory: '$(System.DefaultWorkingDirectory)'
+        displayName: 'Run go vet'
+
+  - job: unit_tests
+    dependsOn: environment
+    condition: succeeded()
+    steps:
+      - script: make test
+        workingDirectory: '$(System.DefaultWorkingDirectory)'
+        displayName: 'Run unit tests'
+
+  - job: build
+    dependsOn: environment
+    condition: succeeded()
+    steps:
+      - script: make go-build
+        workingDirectory: '$(System.DefaultWorkingDirectory)'
+        displayName: 'Build'
