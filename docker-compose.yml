@@ -20,26 +20,6 @@ services:
     links:
     - redis
 
-  observer_api:
-    container_name: observer_api
-    build:
-      context: .
-      args:
-        - SERVICE=observer_api
-    ports:
-      - 8422:8422
-    links:
-      - redis
-
-  platform_api:
-    container_name: platform_api
-    build:
-      context: .
-      args:
-        - SERVICE=platform_api
-    ports:
-    - 8420:8420
-
   swagger_api:
     container_name: swagger_api
     build:
@@ -58,7 +38,7 @@ services:
       - redis
 
   redis:
-    container_name: redis1
+    container_name: redis
     image: neojt/mredis
     ports:
     - 6379:6379
