@@ -6,6 +6,7 @@ import (
 	"github.com/trustwallet/blockatlas/pkg/errors"
 	"github.com/trustwallet/blockatlas/pkg/numbers"
 	"github.com/trustwallet/watchmarket/market/chart"
+	"github.com/trustwallet/watchmarket/market/chart/cmc"
 	"github.com/trustwallet/watchmarket/market/chart/coingecko"
 	"math"
 	"sort"
@@ -21,12 +22,12 @@ type Charts struct {
 
 func InitCharts() *Charts {
 	return &Charts{chart.Providers{
-		//0: cmc.InitChart(
-		//	viper.GetString("market.cmc.webapi"),
-		//	viper.GetString("market.cmc.widgetapi"),
-		//	viper.GetString("market.cmc.map_url"),
-		//),
-		0: coingecko.InitChart(
+		0: cmc.InitChart(
+			viper.GetString("market.cmc.webapi"),
+			viper.GetString("market.cmc.widgetapi"),
+			viper.GetString("market.cmc.map_url"),
+		),
+		1: coingecko.InitChart(
 			viper.GetString("market.coingecko.api"),
 		),
 	}}

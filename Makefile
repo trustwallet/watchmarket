@@ -122,10 +122,9 @@ ifeq (,$(host))
 endif
 ifeq (,$(test))
 	@bash -c "$(MAKE) newman test=healthcheck host=$(host)"
-	@bash -c "$(MAKE) newman test=observer host=$(host)"
 	@bash -c "$(MAKE) newman test=market host=$(host)"
 else
-	@newman run pkg/tests/postman/Blockatlas.postman_collection.json --folder $(test) -d pkg/tests/postman/$(test)_data.json --env-var "host=$(host)"
+	@newman run tests/postman/watchmarket.postman_collection.json --folder $(test) -d tests/postman/$(test)_data.json --env-var "host=$(host)"
 endif
 
 go-compile: go-get go-build
