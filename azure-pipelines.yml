@@ -1,6 +1,7 @@
 trigger:
   branches:
     include:
+      - master
       - version/blockatlas
   tags:
     include:
@@ -9,6 +10,7 @@ trigger:
 pr:
   branches:
     include:
+      - master
       - version/blockatlas
 
 pool:
