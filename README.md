@@ -1,7 +1,7 @@
 # Watchmarket Blockatlas version
 Is under development at master branch. Was migrated from [Blockatlas](https://github.com/trustwallet/blockatlas) at version/blockatlas branch
 
-[![Build Status](https://dev.azure.com/TrustWallet/WatchMarket/_apis/build/status/trustwallet.watchmarket?branchName=version%2Fblockatlas)](https://dev.azure.com/TrustWallet/WatchMarket/_build/latest?definitionId=45&branchName=version%2Fblockatlas)
+[![Build Status](https://dev.azure.com/TrustWallet/WatchMarket/_apis/build/status/trustwallet.watchmarket?branchName=master)](https://dev.azure.com/TrustWallet/WatchMarket/_build/latest?definitionId=45&branchName=master)
 
 **IMPORTANT!**
 Is under development at master branch. Was migrated from [Blockatlas](https://github.com/trustwallet/blockatlas) at version/blockatlas branch
