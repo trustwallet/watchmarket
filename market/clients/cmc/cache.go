@@ -3,8 +3,8 @@ package cmc
 import (
 	"fmt"
 	"github.com/trustwallet/blockatlas/coin"
-	"github.com/trustwallet/blockatlas/pkg/blockatlas"
 	"github.com/trustwallet/blockatlas/pkg/errors"
+	watchmarket "github.com/trustwallet/watchmarket/pkg/watchmarket"
 )
 
 type CoinMap struct {
@@ -18,7 +18,7 @@ type CoinResult struct {
 	Id       uint
 	Coin     coin.Coin
 	TokenId  string
-	CoinType blockatlas.CoinType
+	CoinType watchmarket.CoinType
 }
 
 type CmcSlice []CoinMap
@@ -56,7 +56,7 @@ func (cm CmcMapping) GetCoins(coinId uint) ([]CoinResult, error) {
 		if !ok {
 			continue
 		}
-		tokens = append(tokens, CoinResult{Coin: c, Id: cc.Id, TokenId: cc.TokenId, CoinType: blockatlas.CoinType(cc.Type)})
+		tokens = append(tokens, CoinResult{Coin: c, Id: cc.Id, TokenId: cc.TokenId, CoinType: watchmarket.CoinType(cc.Type)})
 	}
 	return tokens, nil
 }

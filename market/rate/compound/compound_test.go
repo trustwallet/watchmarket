@@ -2,8 +2,8 @@ package compound
 
 import (
 	"github.com/stretchr/testify/assert"
-	"github.com/trustwallet/blockatlas/pkg/blockatlas"
 	c "github.com/trustwallet/watchmarket/market/clients/compound"
+	watchmarket "github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"sort"
 	"testing"
 	"time"
@@ -14,7 +14,7 @@ func Test_normalizeRates(t *testing.T) {
 	tests := []struct {
 		name      string
 		prices    c.CoinPrices
-		wantRates blockatlas.Rates
+		wantRates watchmarket.Rates
 	}{
 		{
 			"test normalize compound rate 1",
@@ -30,9 +30,9 @@ func Test_normalizeRates(t *testing.T) {
 					},
 				},
 			},
-			blockatlas.Rates{
-				blockatlas.Rate{Currency: "CUSDC", Rate: 1 / 0.0021, Timestamp: 333, Provider: provider},
-				blockatlas.Rate{Currency: "CREP", Rate: 1 / 0.02, Timestamp: 333, Provider: provider},
+			watchmarket.Rates{
+				watchmarket.Rate{Currency: "CUSDC", Rate: 1 / 0.0021, Timestamp: 333, Provider: provider},
+				watchmarket.Rate{Currency: "CREP", Rate: 1 / 0.02, Timestamp: 333, Provider: provider},
 			},
 		},
 		{
@@ -49,9 +49,9 @@ func Test_normalizeRates(t *testing.T) {
 					},
 				},
 			},
-			blockatlas.Rates{
-				blockatlas.Rate{Currency: "CUSDC", Rate: 1 / 110.0021, Timestamp: 123, Provider: provider},
-				blockatlas.Rate{Currency: "CREP", Rate: 1 / 110.02, Timestamp: 123, Provider: provider},
+			watchmarket.Rates{
+				watchmarket.Rate{Currency: "CUSDC", Rate: 1 / 110.0021, Timestamp: 123, Provider: provider},
+				watchmarket.Rate{Currency: "CREP", Rate: 1 / 110.02, Timestamp: 123, Provider: provider},
 			},
 		},
 	}

@@ -1,9 +1,9 @@
 package compound
 
 import (
-	"github.com/trustwallet/blockatlas/pkg/blockatlas"
 	c "github.com/trustwallet/watchmarket/market/clients/compound"
 	"github.com/trustwallet/watchmarket/market/rate"
+	watchmarket "github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"strings"
 	"time"
 )
@@ -27,7 +27,7 @@ func InitRate(api string, updateTime string) rate.Provider {
 	}
 }
 
-func (c *Compound) FetchLatestRates() (rates blockatlas.Rates, err error) {
+func (c *Compound) FetchLatestRates() (rates watchmarket.Rates, err error) {
 	coinPrices, err := c.client.GetData()
 	if err != nil {
 		return
@@ -36,9 +36,9 @@ func (c *Compound) FetchLatestRates() (rates blockatlas.Rates, err error) {
 	return
 }
 
-func normalizeRates(coinPrices c.CoinPrices, provider string) (rates blockatlas.Rates) {
+func normalizeRates(coinPrices c.CoinPrices, provider string) (rates watchmarket.Rates) {
 	for _, cToken := range coinPrices.Data {
-		rates = append(rates, blockatlas.Rate{
+		rates = append(rates, watchmarket.Rate{
 			Currency:  strings.ToUpper(cToken.Symbol),
 			Rate:      1.0 / cToken.UnderlyingPrice.Value,
 			Timestamp: time.Now().Unix(),

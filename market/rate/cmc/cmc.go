@@ -1,9 +1,9 @@
 package cmc
 
 import (
-	"github.com/trustwallet/blockatlas/pkg/blockatlas"
 	"github.com/trustwallet/watchmarket/market/clients/cmc"
 	"github.com/trustwallet/watchmarket/market/rate"
+	watchmarket "github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"math/big"
 )
 
@@ -29,7 +29,7 @@ func InitRate(api string, apiKey string, mapApi string, updateTime string) rate.
 	return cmc
 }
 
-func (c *Cmc) FetchLatestRates() (rates blockatlas.Rates, err error) {
+func (c *Cmc) FetchLatestRates() (rates watchmarket.Rates, err error) {
 	prices, err := c.client.GetData()
 	if err != nil {
 		return
@@ -38,12 +38,12 @@ func (c *Cmc) FetchLatestRates() (rates blockatlas.Rates, err error) {
 	return
 }
 
-func normalizeRates(prices cmc.CoinPrices, provider string) (rates blockatlas.Rates) {
+func normalizeRates(prices cmc.CoinPrices, provider string) (rates watchmarket.Rates) {
 	for _, price := range prices.Data {
 		if price.Platform != nil {
 			continue
 		}
-		rates = append(rates, blockatlas.Rate{
+		rates = append(rates, watchmarket.Rate{
 			Currency:         price.Symbol,
 			Rate:             1.0 / price.Quote.USD.Price,
 			Timestamp:        price.LastUpdated.Unix(),

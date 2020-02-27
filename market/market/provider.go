@@ -1,7 +1,7 @@
 package market
 
 import (
-	"github.com/trustwallet/blockatlas/pkg/blockatlas"
+	watchmarket "github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"github.com/trustwallet/watchmarket/storage"
 )
 
@@ -9,7 +9,7 @@ type Provider interface {
 	Init(storage.Market) error
 	GetId() string
 	GetUpdateTime() string
-	GetData() (blockatlas.Tickers, error)
+	GetData() (watchmarket.Tickers, error)
 	GetLogType() string
 }
 

@@ -3,8 +3,8 @@ package coingecko
 import (
 	"fmt"
 	"github.com/trustwallet/blockatlas/pkg/address"
-	"github.com/trustwallet/blockatlas/pkg/blockatlas"
 	"github.com/trustwallet/blockatlas/pkg/errors"
+	watchmarket "github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"strings"
 )
 
@@ -89,7 +89,7 @@ func NewCache(coins GeckoCoins) *Cache {
 			m[coin.Id] = append(m[coin.Id], CoinResult{
 				Symbol:   platformCoin.Symbol,
 				TokenId:  tokenId,
-				CoinType: blockatlas.TypeToken,
+				CoinType: watchmarket.TypeToken,
 			})
 		}
 	}

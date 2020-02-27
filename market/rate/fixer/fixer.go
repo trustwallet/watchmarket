@@ -3,6 +3,7 @@ package fixer
 import (
 	"github.com/trustwallet/blockatlas/pkg/blockatlas"
 	"github.com/trustwallet/watchmarket/market/rate"
+	watchmarket "github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"net/url"
 )
 
@@ -27,10 +28,10 @@ func InitRate(api string, apiKey string, updateTime string) rate.Provider {
 	}
 }
 
-func (f *Fixer) FetchLatestRates() (rates blockatlas.Rates, err error) {
+func (f *Fixer) FetchLatestRates() (rates watchmarket.Rates, err error) {
 	values := url.Values{
 		"access_key": {f.APIKey},
-		"base":       {blockatlas.DefaultCurrency}, // Base USD supported only in paid api
+		"base":       {watchmarket.DefaultCurrency}, // Base USD supported only in paid api
 	}
 	var latest Latest
 	err = f.Get(&latest, "latest", values)
@@ -41,9 +42,9 @@ func (f *Fixer) FetchLatestRates() (rates blockatlas.Rates, err error) {
 	return
 }
 
-func normalizeRates(latest Latest, provider string) (rates blockatlas.Rates) {
+func normalizeRates(latest Latest, provider string) (rates watchmarket.Rates) {
 	for currency, rate := range latest.Rates {
-		rates = append(rates, blockatlas.Rate{Currency: currency, Rate: rate, Timestamp: latest.Timestamp, Provider: provider})
+		rates = append(rates, watchmarket.Rate{Currency: currency, Rate: rate, Timestamp: latest.Timestamp, Provider: provider})
 	}
 	return
 }

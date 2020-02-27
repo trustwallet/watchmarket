@@ -2,8 +2,8 @@ package coingecko
 
 import (
 	"github.com/stretchr/testify/assert"
-	"github.com/trustwallet/blockatlas/pkg/blockatlas"
 	"github.com/trustwallet/watchmarket/market/clients/coingecko"
+	watchmarket "github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"sort"
 	"testing"
 	"time"
@@ -50,7 +50,7 @@ func Test_normalizeTickers(t *testing.T) {
 	tests := []struct {
 		name        string
 		args        args
-		wantTickers blockatlas.Tickers
+		wantTickers watchmarket.Tickers
 	}{
 		{
 			"test normalize coingecko quote",
@@ -66,18 +66,18 @@ func Test_normalizeTickers(t *testing.T) {
 					CurrentPrice: 0.02,
 				},
 			}, provider: id},
-			blockatlas.Tickers{
-				&blockatlas.Ticker{CoinName: "ETH", TokenId: "0x39aa39c021dfbae8fac545936693ac917d5e7563", CoinType: blockatlas.TypeToken, LastUpdate: time.Unix(222, 0),
-					Price: blockatlas.TickerPrice{
+			watchmarket.Tickers{
+				&watchmarket.Ticker{CoinName: "ETH", TokenId: "0x39aa39c021dfbae8fac545936693ac917d5e7563", CoinType: watchmarket.TypeToken, LastUpdate: time.Unix(222, 0),
+					Price: watchmarket.TickerPrice{
 						Value:    0.0021,
-						Currency: blockatlas.DefaultCurrency,
+						Currency: watchmarket.DefaultCurrency,
 						Provider: id,
 					},
 				},
-				&blockatlas.Ticker{CoinName: "ETH", TokenId: "0x158079ee67fce2f58472a96584a73c7ab9ac95c1", CoinType: blockatlas.TypeToken, LastUpdate: time.Unix(444, 0),
-					Price: blockatlas.TickerPrice{
+				&watchmarket.Ticker{CoinName: "ETH", TokenId: "0x158079ee67fce2f58472a96584a73c7ab9ac95c1", CoinType: watchmarket.TypeToken, LastUpdate: time.Unix(444, 0),
+					Price: watchmarket.TickerPrice{
 						Value:    0.02,
-						Currency: blockatlas.DefaultCurrency,
+						Currency: watchmarket.DefaultCurrency,
 						Provider: id,
 					},
 				},

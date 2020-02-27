@@ -2,12 +2,12 @@ package market
 
 import (
 	"github.com/spf13/viper"
-	"github.com/trustwallet/blockatlas/pkg/blockatlas"
 	"github.com/trustwallet/blockatlas/pkg/errors"
 	"github.com/trustwallet/blockatlas/pkg/numbers"
 	"github.com/trustwallet/watchmarket/market/chart"
 	"github.com/trustwallet/watchmarket/market/chart/cmc"
 	"github.com/trustwallet/watchmarket/market/chart/coingecko"
+	watchmarket "github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"math"
 	"sort"
 )
@@ -33,8 +33,8 @@ func InitCharts() *Charts {
 	}}
 }
 
-func (c *Charts) GetChartData(coin uint, token string, currency string, timeStart int64, maxItems int) (blockatlas.ChartData, error) {
-	chartsData := blockatlas.ChartData{}
+func (c *Charts) GetChartData(coin uint, token string, currency string, timeStart int64, maxItems int) (watchmarket.ChartData, error) {
+	chartsData := watchmarket.ChartData{}
 	timeStart = numbers.Max(timeStart, minUnixTime)
 	for i := 0; i < len(c.chartProviders); i++ {
 		c := c.chartProviders[i]
@@ -48,8 +48,8 @@ func (c *Charts) GetChartData(coin uint, token string, currency string, timeStar
 	return chartsData, errors.E("No chart data found", errors.Params{"coin": coin, "token": token})
 }
 
-func (c *Charts) GetCoinInfo(coin uint, token string, currency string) (blockatlas.ChartCoinInfo, error) {
-	coinInfoData := blockatlas.ChartCoinInfo{}
+func (c *Charts) GetCoinInfo(coin uint, token string, currency string) (watchmarket.ChartCoinInfo, error) {
+	coinInfoData := watchmarket.ChartCoinInfo{}
 	for i := 0; i < len(c.chartProviders); i++ {
 		c := c.chartProviders[i]
 		info, err := c.GetCoinData(coin, token, currency)
@@ -61,7 +61,7 @@ func (c *Charts) GetCoinInfo(coin uint, token string, currency string) (blockatl
 	return coinInfoData, errors.E("No chart coin info data found", errors.Params{"coin": coin, "token": token})
 }
 
-func normalizePrices(prices []blockatlas.ChartPrice, maxItems int) (result []blockatlas.ChartPrice) {
+func normalizePrices(prices []watchmarket.ChartPrice, maxItems int) (result []watchmarket.ChartPrice) {
 	sort.Slice(prices, func(p, q int) bool {
 		return prices[p].Date < prices[q].Date
 	})

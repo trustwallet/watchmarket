@@ -4,6 +4,7 @@ import (
 	"github.com/trustwallet/blockatlas/coin"
 	"github.com/trustwallet/blockatlas/pkg/blockatlas"
 	"github.com/trustwallet/blockatlas/pkg/errors"
+	watchmarket "github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"time"
 )
 
@@ -11,7 +12,7 @@ const (
 	AssetsURL = "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/"
 )
 
-func GetCoinInfo(coinId int, token string) (info *blockatlas.CoinInfo, err error) {
+func GetCoinInfo(coinId int, token string) (info *watchmarket.CoinInfo, err error) {
 	c, ok := coin.Coins[uint(coinId)]
 	if !ok {
 		return info, errors.E("coin not found")

@@ -2,10 +2,10 @@ package coingecko
 
 import (
 	"github.com/trustwallet/blockatlas/coin"
-	"github.com/trustwallet/blockatlas/pkg/blockatlas"
 	"github.com/trustwallet/blockatlas/pkg/errors"
 	"github.com/trustwallet/watchmarket/market/chart"
 	"github.com/trustwallet/watchmarket/market/clients/coingecko"
+	watchmarket "github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"time"
 )
 
@@ -29,8 +29,8 @@ func InitChart(api string) chart.Provider {
 	return m
 }
 
-func (c *Chart) GetChartData(coinId uint, token string, currency string, timeStart int64) (blockatlas.ChartData, error) {
-	chartsData := blockatlas.ChartData{}
+func (c *Chart) GetChartData(coinId uint, token string, currency string, timeStart int64) (watchmarket.ChartData, error) {
+	chartsData := watchmarket.ChartData{}
 	coins, err := c.client.FetchCoinsList()
 	if err != nil {
 		return chartsData, err
@@ -51,21 +51,21 @@ func (c *Chart) GetChartData(coinId uint, token string, currency string, timeSta
 	return normalizeCharts(charts), nil
 }
 
-func (c *Chart) GetCoinData(coinId uint, token string, currency string) (blockatlas.ChartCoinInfo, error) {
+func (c *Chart) GetCoinData(coinId uint, token string, currency string) (watchmarket.ChartCoinInfo, error) {
 	coins, err := c.client.FetchCoinsList()
 	if err != nil {
-		return blockatlas.ChartCoinInfo{}, err
+		return watchmarket.ChartCoinInfo{}, err
 	}
 	cache := coingecko.NewSymbolsCache(coins)
 
 	coinResult, err := getCoinObj(cache, coinId, token)
 	if err != nil {
-		return blockatlas.ChartCoinInfo{}, err
+		return watchmarket.ChartCoinInfo{}, err
 	}
 
 	data := c.client.FetchLatestRates(coingecko.GeckoCoins{coinResult}, currency)
 	if len(data) == 0 {
-		return blockatlas.ChartCoinInfo{}, errors.E("No rates found", errors.Params{"id": coinResult.Id})
+		return watchmarket.ChartCoinInfo{}, errors.E("No rates found", errors.Params{"id": coinResult.Id})
 	}
 	return normalizeInfo(data[0]), nil
 }
@@ -85,16 +85,16 @@ func getCoinObj(cache *coingecko.SymbolsCache, coinId uint, token string) (coing
 	return c, nil
 }
 
-func normalizeCharts(charts coingecko.Charts) blockatlas.ChartData {
-	chartsData := blockatlas.ChartData{}
-	prices := make([]blockatlas.ChartPrice, 0)
+func normalizeCharts(charts coingecko.Charts) watchmarket.ChartData {
+	chartsData := watchmarket.ChartData{}
+	prices := make([]watchmarket.ChartPrice, 0)
 	for _, quote := range charts.Prices {
 		if len(quote) != chartDataSize {
 			continue
 		}
 
 		date := time.Unix(int64(quote[0])/1000, 0)
-		prices = append(prices, blockatlas.ChartPrice{
+		prices = append(prices, watchmarket.ChartPrice{
 			Price: quote[1],
 			Date:  date.Unix(),
 		})
@@ -105,8 +105,8 @@ func normalizeCharts(charts coingecko.Charts) blockatlas.ChartData {
 	return chartsData
 }
 
-func normalizeInfo(data coingecko.CoinPrice) blockatlas.ChartCoinInfo {
-	return blockatlas.ChartCoinInfo{
+func normalizeInfo(data coingecko.CoinPrice) watchmarket.ChartCoinInfo {
+	return watchmarket.ChartCoinInfo{
 		Vol24:             data.TotalVolume,
 		MarketCap:         data.MarketCap,
 		CirculatingSupply: data.CirculatingSupply,

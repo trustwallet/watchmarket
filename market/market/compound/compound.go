@@ -2,9 +2,9 @@ package compound
 
 import (
 	"github.com/trustwallet/blockatlas/coin"
-	"github.com/trustwallet/blockatlas/pkg/blockatlas"
 	c "github.com/trustwallet/watchmarket/market/clients/compound"
 	"github.com/trustwallet/watchmarket/market/market"
+	watchmarket "github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"time"
 )
 
@@ -28,7 +28,7 @@ func InitMarket(api string, updateTime string) market.Provider {
 	return m
 }
 
-func (m *Market) GetData() (result blockatlas.Tickers, err error) {
+func (m *Market) GetData() (result watchmarket.Tickers, err error) {
 	coinPrices, err := m.client.GetData()
 	if err != nil {
 		return
@@ -37,13 +37,13 @@ func (m *Market) GetData() (result blockatlas.Tickers, err error) {
 	return result, nil
 }
 
-func normalizeTicker(ctoken c.CToken, provider string) (*blockatlas.Ticker, error) {
+func normalizeTicker(ctoken c.CToken, provider string) (*watchmarket.Ticker, error) {
 	// TODO: add value24 calculation
-	return &blockatlas.Ticker{
+	return &watchmarket.Ticker{
 		CoinName: coin.Ethereum().Symbol,
-		CoinType: blockatlas.TypeToken,
+		CoinType: watchmarket.TypeToken,
 		TokenId:  ctoken.TokenAddress,
-		Price: blockatlas.TickerPrice{
+		Price: watchmarket.TickerPrice{
 			Value:    ctoken.UnderlyingPrice.Value,
 			Currency: coin.Coins[coin.ETH].Symbol,
 			Provider: provider,
@@ -52,7 +52,7 @@ func normalizeTicker(ctoken c.CToken, provider string) (*blockatlas.Ticker, erro
 	}, nil
 }
 
-func normalizeTickers(prices c.CoinPrices, provider string) (tickers blockatlas.Tickers) {
+func normalizeTickers(prices c.CoinPrices, provider string) (tickers watchmarket.Tickers) {
 	for _, price := range prices.Data {
 		t, err := normalizeTicker(price, provider)
 		if err != nil {

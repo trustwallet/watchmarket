@@ -3,6 +3,7 @@ package cmc
 import (
 	"github.com/trustwallet/blockatlas/pkg/blockatlas"
 	"github.com/trustwallet/blockatlas/pkg/errors"
+	watchmarket "github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"net/url"
 	"time"
 )
@@ -23,7 +24,7 @@ func NewClient(api string, key string) *Client {
 
 func (c *Client) GetData() (prices CoinPrices, err error) {
 	err = c.Get(&prices, "v1/cryptocurrency/listings/latest",
-		url.Values{"limit": {"5000"}, "convert": {blockatlas.DefaultCurrency}})
+		url.Values{"limit": {"5000"}, "convert": {watchmarket.DefaultCurrency}})
 	return
 }
 

@@ -1,9 +1,9 @@
 package cmc
 
 import (
-	"github.com/trustwallet/blockatlas/pkg/blockatlas"
 	"github.com/trustwallet/watchmarket/market/clients/cmc"
 	"github.com/trustwallet/watchmarket/market/market"
+	watchmarket "github.com/trustwallet/watchmarket/pkg/watchmarket"
 )
 
 const (
@@ -28,7 +28,7 @@ func InitMarket(api string, apiKey string, mapApi string, updateTime string) mar
 	return m
 }
 
-func (m *Market) GetData() (blockatlas.Tickers, error) {
+func (m *Market) GetData() (watchmarket.Tickers, error) {
 	cmap, err := cmc.GetCmcMap(m.mapApi)
 	if err != nil {
 		return nil, err
@@ -40,12 +40,12 @@ func (m *Market) GetData() (blockatlas.Tickers, error) {
 	return normalizeTickers(prices, m.GetId(), cmap), nil
 }
 
-func normalizeTicker(price cmc.Data, provider string, cmap cmc.CmcMapping) (tickers blockatlas.Tickers) {
+func normalizeTicker(price cmc.Data, provider string, cmap cmc.CmcMapping) (tickers watchmarket.Tickers) {
 	tokenId := ""
 	coinName := price.Symbol
-	coinType := blockatlas.TypeCoin
+	coinType := watchmarket.TypeCoin
 	if price.Platform != nil {
-		coinType = blockatlas.TypeToken
+		coinType = watchmarket.TypeToken
 		coinName = price.Platform.Symbol
 		tokenId = price.Platform.TokenAddress
 		if len(tokenId) == 0 {
@@ -55,14 +55,14 @@ func normalizeTicker(price cmc.Data, provider string, cmap cmc.CmcMapping) (tick
 
 	cmcCoin, err := cmap.GetCoins(price.Id)
 	if err != nil {
-		tickers = append(tickers, &blockatlas.Ticker{
+		tickers = append(tickers, &watchmarket.Ticker{
 			CoinName: coinName,
 			CoinType: coinType,
 			TokenId:  tokenId,
-			Price: blockatlas.TickerPrice{
+			Price: watchmarket.TickerPrice{
 				Value:     price.Quote.USD.Price,
 				Change24h: price.Quote.USD.PercentChange24h,
-				Currency:  blockatlas.DefaultCurrency,
+				Currency:  watchmarket.DefaultCurrency,
 				Provider:  provider,
 			},
 			LastUpdate: price.LastUpdated,
@@ -72,19 +72,19 @@ func normalizeTicker(price cmc.Data, provider string, cmap cmc.CmcMapping) (tick
 
 	for _, cmc := range cmcCoin {
 		coinName = cmc.Coin.Symbol
-		if cmc.CoinType == blockatlas.TypeCoin {
+		if cmc.CoinType == watchmarket.TypeCoin {
 			tokenId = ""
 		} else if len(cmc.TokenId) > 0 {
 			tokenId = cmc.TokenId
 		}
-		tickers = append(tickers, &blockatlas.Ticker{
+		tickers = append(tickers, &watchmarket.Ticker{
 			CoinName: coinName,
 			CoinType: cmc.CoinType,
 			TokenId:  tokenId,
-			Price: blockatlas.TickerPrice{
+			Price: watchmarket.TickerPrice{
 				Value:     price.Quote.USD.Price,
 				Change24h: price.Quote.USD.PercentChange24h,
-				Currency:  blockatlas.DefaultCurrency,
+				Currency:  watchmarket.DefaultCurrency,
 				Provider:  provider,
 			},
 			LastUpdate: price.LastUpdated,
@@ -93,7 +93,7 @@ func normalizeTicker(price cmc.Data, provider string, cmap cmc.CmcMapping) (tick
 	return
 }
 
-func normalizeTickers(prices cmc.CoinPrices, provider string, cmap cmc.CmcMapping) (tickers blockatlas.Tickers) {
+func normalizeTickers(prices cmc.CoinPrices, provider string, cmap cmc.CmcMapping) (tickers watchmarket.Tickers) {
 	for _, price := range prices.Data {
 		t := normalizeTicker(price, provider, cmap)
 		tickers = append(tickers, t...)
