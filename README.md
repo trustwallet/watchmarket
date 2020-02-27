@@ -20,6 +20,16 @@ Worker - service that periodically fetch latest data from **data providers** (li
 
 REST API - allows to get cached data through REST HTTP API
 
+### Getting started
+
+1. Spin up a Redis instance: `docker run -it -p 6379:6379 redis`
+1. Start the app: `make start`
+  1. Explore the API: [http://localhost:8423/swagger/index.html](http://localhost:8423/swagger/index.html)
+  1. Use the API: `curl -v "http://localhost:8421/v1/market/info?coin=60" | jq .`
+1. When done run `make stop`
+
+Run `make` to see a list of all available build directives.
+
 ### More details
 
 Current data providers: Coinmarketcap, BinanceDex, Compound, Fixer, Coingecko
