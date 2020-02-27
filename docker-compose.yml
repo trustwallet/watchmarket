@@ -29,14 +29,6 @@ services:
     ports:
       - 8423:8423
 
-  platform_observer:
-    build:
-      context: .
-      args:
-        - SERVICE=platform_observer
-    links:
-      - redis
-
   redis:
     container_name: redis
     image: neojt/mredis
