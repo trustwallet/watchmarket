@@ -32,13 +32,14 @@ PID_SWAGGER_API := /tmp/.$(PROJECT_NAME).$(SWAGGER_API).pid
 # Make is verbose in Linux. Make it silent.
 MAKEFLAGS += --silent
 
+all: help
+
 ## install: Install missing dependencies. Runs `go get` internally. e.g; make install get=github.com/foo/bar
 install: go-get
 
 ## start: Start API, Observer and Sync in development mode.
 start:
-	@bash -c "$(MAKE) clean compile start-platform-api start-platform-observer start-observer-api start-market-observer start-market-api"
-
+	@bash -c "$(MAKE) clean compile start-market-observer start-market-api"
 
 ## start-sync-market: Start Sync market in development mode.
 start-market-observer: stop
@@ -181,7 +182,7 @@ go-lint:
 	GOBIN=$(GOBIN) golint ./...
 
 .PHONY: help
-all: help
+
 help: Makefile
 	@echo
 	@echo " Choose a command run in "$(PROJECT_NAME)":"
