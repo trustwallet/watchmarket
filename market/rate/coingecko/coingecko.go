@@ -41,7 +41,7 @@ func (c *Coingecko) FetchLatestRates() (rates watchmarket.Rates, err error) {
 func normalizeRates(coinPrices coingecko.CoinPrices, provider string) (rates watchmarket.Rates) {
 	for _, price := range coinPrices {
 		rate := 0.0
-		if price.CurrentPrice > 0 {
+		if price.CurrentPrice != 0 {
 			rate = 1.0 / price.CurrentPrice
 		}
 		rates = append(rates, watchmarket.Rate{
