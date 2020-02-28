@@ -32,29 +32,30 @@ PID_SWAGGER_API := /tmp/.$(PROJECT_NAME).$(SWAGGER_API).pid
 # Make is verbose in Linux. Make it silent.
 MAKEFLAGS += --silent
 
+all: help
+
 ## install: Install missing dependencies. Runs `go get` internally. e.g; make install get=github.com/foo/bar
 install: go-get
 
-## start: Start API, Observer and Sync in development mode.
+## start: Start market API server, Observer, and swagger server in development mode.
 start:
-	@bash -c "$(MAKE) clean compile start-platform-api start-platform-observer start-observer-api start-market-observer start-market-api"
+	@bash -c "$(MAKE) clean compile start-market-observer start-market-api start-swagger-api"
 
-
-## start-sync-market: Start Sync market in development mode.
+## start-market-observer: Start market observer in development mode.
 start-market-observer: stop
 	@echo "  >  Starting $(PROJECT_NAME) Sync"
 	@-$(GOBIN)/$(MARKET_SERVICE)/market_observer -c $(CONFIG_FILE) 2>&1 & echo $$! > $(PID_MARKET)
 	@cat $(PID_MARKET) | sed "/^/s/^/  \>  Sync PID: /"
 	@echo "  >  Error log: $(STDERR)"
 
-## start-sync-market-api: Start Sync market api in development mode.
+## start-market-api: Start market api in development mode.
 start-market-api: stop
 	@echo "  >  Starting $(PROJECT_NAME) Sync API"
 	@-$(GOBIN)/$(MARKET_API)/market_api -c $(CONFIG_FILE) 2>&1 & echo $$! > $(PID_MARKET_API)
 	@cat $(PID_MARKET_API) | sed "/^/s/^/  \>  Sync PID: /"
 	@echo "  >  Error log: $(STDERR)"
 
-## start-sync-market-api: Start Sync market api in development mode.
+## start-swagger-api: Start Swagger server in development mode.
 start-swagger-api: stop
 	@echo "  >  Starting $(PROJECT_NAME) Sync API"
 	@-$(GOBIN)/$(SWAGGER_API)/swagger_api -c $(CONFIG_FILE) 2>&1 & echo $$! > $(PID_SWAGGER_API)
@@ -170,7 +171,7 @@ go-fmt:
 
 go-gen-docs:
 	@echo "  >  Generating swagger files"
-	swag init -g ./cmd/platform_api/main.go -o ./docs
+	swag init -g ./cmd/market_api/main.go -o ./docs
 
 go-vet:
 	@echo "  >  Running go vet"
@@ -181,7 +182,7 @@ go-lint:
 	GOBIN=$(GOBIN) golint ./...
 
 .PHONY: help
-all: help
+
 help: Makefile
 	@echo
 	@echo " Choose a command run in "$(PROJECT_NAME)":"
