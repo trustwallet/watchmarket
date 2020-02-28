@@ -1,7 +1,7 @@
 package coingecko
 
 import (
-	"github.com/trustwallet/blockatlas/pkg/blockatlas"
+	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"time"
 )
 
@@ -16,7 +16,7 @@ type ChartVolume []float64
 type CoinResult struct {
 	Symbol   string
 	TokenId  string
-	CoinType blockatlas.CoinType
+	CoinType watchmarket.CoinType
 }
 
 type CoinPrices []CoinPrice

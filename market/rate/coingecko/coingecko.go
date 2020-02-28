@@ -4,6 +4,7 @@ import (
 	"github.com/trustwallet/blockatlas/pkg/blockatlas"
 	"github.com/trustwallet/watchmarket/market/clients/coingecko"
 	"github.com/trustwallet/watchmarket/market/rate"
+	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"strings"
 )
 
@@ -26,7 +27,7 @@ func InitRate(api string, updateTime string) rate.Provider {
 	}
 }
 
-func (c *Coingecko) FetchLatestRates() (rates blockatlas.Rates, err error) {
+func (c *Coingecko) FetchLatestRates() (rates watchmarket.Rates, err error) {
 	coins, err := c.client.FetchCoinsList()
 	if err != nil {
 		return
@@ -37,9 +38,9 @@ func (c *Coingecko) FetchLatestRates() (rates blockatlas.Rates, err error) {
 	return
 }
 
-func normalizeRates(coinPrices coingecko.CoinPrices, provider string) (rates blockatlas.Rates) {
+func normalizeRates(coinPrices coingecko.CoinPrices, provider string) (rates watchmarket.Rates) {
 	for _, price := range coinPrices {
-		rates = append(rates, blockatlas.Rate{
+		rates = append(rates, watchmarket.Rate{
 			Currency:  strings.ToUpper(price.Symbol),
 			Rate:      1.0 / price.CurrentPrice,
 			Timestamp: price.LastUpdated.Unix(),

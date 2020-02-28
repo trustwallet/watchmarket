@@ -5,6 +5,7 @@ import (
 	"github.com/trustwallet/blockatlas/pkg/blockatlas"
 	"github.com/trustwallet/blockatlas/pkg/errors"
 	"github.com/trustwallet/watchmarket/market/market"
+	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"math/big"
 	"net/url"
 	"strconv"
@@ -32,7 +33,7 @@ func InitMarket(api string, updateTime string) market.Provider {
 	return m
 }
 
-func (m *Market) GetData() (blockatlas.Tickers, error) {
+func (m *Market) GetData() (watchmarket.Tickers, error) {
 	var prices []*CoinPrice
 	err := m.Get(&prices, "v1/ticker/24hr", url.Values{"limit": {"1000"}})
 	if err != nil {
@@ -46,11 +47,11 @@ func (m *Market) GetData() (blockatlas.Tickers, error) {
 	if rate.PercentChange24h != nil {
 		rate.PercentChange24h.Mul(rate.PercentChange24h, big.NewFloat(-1))
 	}
-	result.ApplyRate(blockatlas.DefaultCurrency, 1/rate.Rate, rate.PercentChange24h)
+	result.ApplyRate(watchmarket.DefaultCurrency, 1/rate.Rate, rate.PercentChange24h)
 	return result, nil
 }
 
-func normalizeTicker(price *CoinPrice, provider string) (*blockatlas.Ticker, error) {
+func normalizeTicker(price *CoinPrice, provider string) (*watchmarket.Ticker, error) {
 	if price.QuoteAssetName != BNBAsset && price.BaseAssetName != BNBAsset {
 		return nil, errors.E("invalid quote/base asset",
 			errors.Params{"Symbol": price.BaseAssetName, "QuoteAsset": price.QuoteAssetName})
@@ -70,11 +71,11 @@ func normalizeTicker(price *CoinPrice, provider string) (*blockatlas.Ticker, err
 		tokenId = price.QuoteAssetName
 		value = 1.0 / value
 	}
-	return &blockatlas.Ticker{
+	return &watchmarket.Ticker{
 		CoinName: BNBAsset,
-		CoinType: blockatlas.TypeToken,
+		CoinType: watchmarket.TypeToken,
 		TokenId:  tokenId,
-		Price: blockatlas.TickerPrice{
+		Price: watchmarket.TickerPrice{
 			Value:     value,
 			Change24h: value24h,
 			Currency:  "BNB",
@@ -84,7 +85,7 @@ func normalizeTicker(price *CoinPrice, provider string) (*blockatlas.Ticker, err
 	}, nil
 }
 
-func normalizeTickers(prices []*CoinPrice, provider string) (tickers blockatlas.Tickers) {
+func normalizeTickers(prices []*CoinPrice, provider string) (tickers watchmarket.Tickers) {
 	for _, price := range prices {
 		t, err := normalizeTicker(price, provider)
 		if err != nil {

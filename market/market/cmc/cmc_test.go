@@ -2,8 +2,8 @@ package cmc
 
 import (
 	"github.com/stretchr/testify/assert"
-	"github.com/trustwallet/blockatlas/pkg/blockatlas"
 	"github.com/trustwallet/watchmarket/market/clients/cmc"
+	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"sort"
 	"testing"
 	"time"
@@ -24,7 +24,7 @@ func Test_normalizeTickers(t *testing.T) {
 	tests := []struct {
 		name        string
 		args        args
-		wantTickers blockatlas.Tickers
+		wantTickers watchmarket.Tickers
 	}{
 		{
 			"test normalize cmc quote",
@@ -40,36 +40,36 @@ func Test_normalizeTickers(t *testing.T) {
 					USD: cmc.USD{Price: 123.09, PercentChange24h: -1.4}},
 					Platform: &cmc.Platform{Coin: cmc.Coin{Symbol: "BNB"}, TokenAddress: "0x8ce9137d39326ad0cd6491fb5cc0cba0e089b6a9"}}}},
 				provider: "cmc"},
-			blockatlas.Tickers{
-				&blockatlas.Ticker{CoinName: "BTC", CoinType: blockatlas.TypeCoin, LastUpdate: time.Unix(111, 0),
-					Price: blockatlas.TickerPrice{
+			watchmarket.Tickers{
+				&watchmarket.Ticker{CoinName: "BTC", CoinType: watchmarket.TypeCoin, LastUpdate: time.Unix(111, 0),
+					Price: watchmarket.TickerPrice{
 						Value:     223.55,
 						Change24h: 10,
-						Currency:  blockatlas.DefaultCurrency,
+						Currency:  watchmarket.DefaultCurrency,
 						Provider:  "cmc",
 					},
 				},
-				&blockatlas.Ticker{CoinName: "ETH", CoinType: blockatlas.TypeCoin, LastUpdate: time.Unix(333, 0),
-					Price: blockatlas.TickerPrice{
+				&watchmarket.Ticker{CoinName: "ETH", CoinType: watchmarket.TypeCoin, LastUpdate: time.Unix(333, 0),
+					Price: watchmarket.TickerPrice{
 						Value:     11.11,
 						Change24h: 20,
-						Currency:  blockatlas.DefaultCurrency,
+						Currency:  watchmarket.DefaultCurrency,
 						Provider:  "cmc",
 					},
 				},
-				&blockatlas.Ticker{CoinName: "ETH", TokenId: "0x8ce9137d39326ad0cd6491fb5cc0cba0e089b6a9", CoinType: blockatlas.TypeToken, LastUpdate: time.Unix(444, 0),
-					Price: blockatlas.TickerPrice{
+				&watchmarket.Ticker{CoinName: "ETH", TokenId: "0x8ce9137d39326ad0cd6491fb5cc0cba0e089b6a9", CoinType: watchmarket.TypeToken, LastUpdate: time.Unix(444, 0),
+					Price: watchmarket.TickerPrice{
 						Value:     463.22,
 						Change24h: -3,
-						Currency:  blockatlas.DefaultCurrency,
+						Currency:  watchmarket.DefaultCurrency,
 						Provider:  "cmc",
 					},
 				},
-				&blockatlas.Ticker{CoinName: "ONE", CoinType: blockatlas.TypeCoin, LastUpdate: time.Unix(555, 0),
-					Price: blockatlas.TickerPrice{
+				&watchmarket.Ticker{CoinName: "ONE", CoinType: watchmarket.TypeCoin, LastUpdate: time.Unix(555, 0),
+					Price: watchmarket.TickerPrice{
 						Value:     123.09,
 						Change24h: -1.4,
-						Currency:  blockatlas.DefaultCurrency,
+						Currency:  watchmarket.DefaultCurrency,
 						Provider:  "cmc",
 					},
 				},

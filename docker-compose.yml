@@ -7,7 +7,7 @@ services:
       args:
         - SERVICE=market_api
     ports:
-    - 8421:8421
+      - 8421:8421
     links:
       - redis
 
@@ -16,9 +16,9 @@ services:
     build:
       context: .
       args:
-      - SERVICE=market_observer
+        - SERVICE=market_observer
     links:
-    - redis
+      - redis
 
   swagger_api:
     container_name: swagger_api
@@ -33,4 +33,4 @@ services:
     container_name: redis
     image: neojt/mredis
     ports:
-    - 6379:6379
+      - 6379:6379

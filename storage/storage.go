@@ -1,8 +1,8 @@
 package storage
 
 import (
-	"github.com/trustwallet/blockatlas/pkg/blockatlas"
 	"github.com/trustwallet/blockatlas/pkg/storage/redis"
+	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 )
 
 type Storage struct {
@@ -15,8 +15,8 @@ func New() *Storage {
 }
 
 type Market interface {
-	SaveTicker(coin *blockatlas.Ticker, pl ProviderList) error
-	GetTicker(coin, token string) (*blockatlas.Ticker, error)
-	SaveRates(rates blockatlas.Rates, pl ProviderList)
-	GetRate(currency string) (*blockatlas.Rate, error)
+	SaveTicker(coin *watchmarket.Ticker, pl ProviderList) error
+	GetTicker(coin, token string) (*watchmarket.Ticker, error)
+	SaveRates(rates watchmarket.Rates, pl ProviderList)
+	GetRate(currency string) (*watchmarket.Rate, error)
 }

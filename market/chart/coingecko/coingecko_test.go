@@ -2,8 +2,8 @@ package coingecko
 
 import (
 	"github.com/stretchr/testify/assert"
-	"github.com/trustwallet/blockatlas/pkg/blockatlas"
 	"github.com/trustwallet/watchmarket/market/clients/coingecko"
+	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"reflect"
 	"testing"
 	"time"
@@ -16,7 +16,7 @@ func Test_normalizeInfo(t *testing.T) {
 	tests := []struct {
 		name     string
 		args     args
-		wantInfo blockatlas.ChartCoinInfo
+		wantInfo watchmarket.ChartCoinInfo
 	}{
 		{
 			"test normalize coingecko chart info 1",
@@ -28,7 +28,7 @@ func Test_normalizeInfo(t *testing.T) {
 					TotalSupply:       222,
 				},
 			},
-			blockatlas.ChartCoinInfo{
+			watchmarket.ChartCoinInfo{
 				Vol24:             444,
 				MarketCap:         555,
 				CirculatingSupply: 111,
@@ -56,7 +56,7 @@ func Test_normalizeCharts(t *testing.T) {
 	tests := []struct {
 		name     string
 		args     args
-		wantInfo blockatlas.ChartData
+		wantInfo watchmarket.ChartData
 	}{
 		{
 			"test normalize coingecko chart 1",
@@ -68,8 +68,8 @@ func Test_normalizeCharts(t *testing.T) {
 					},
 				},
 			},
-			blockatlas.ChartData{
-				Prices: []blockatlas.ChartPrice{
+			watchmarket.ChartData{
+				Prices: []watchmarket.ChartPrice{
 					{
 						Price: 222,
 						Date:  d1.Unix(),

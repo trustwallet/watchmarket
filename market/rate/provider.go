@@ -1,13 +1,13 @@
 package rate
 
 import (
-	"github.com/trustwallet/blockatlas/pkg/blockatlas"
+	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"github.com/trustwallet/watchmarket/storage"
 )
 
 type Provider interface {
 	Init(storage.Market) error
-	FetchLatestRates() (blockatlas.Rates, error)
+	FetchLatestRates() (watchmarket.Rates, error)
 	GetUpdateTime() string
 	GetId() string
 	GetLogType() string

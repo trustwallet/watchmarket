@@ -1,10 +1,10 @@
 package cmc
 
 import (
-	"github.com/trustwallet/blockatlas/pkg/blockatlas"
 	"github.com/trustwallet/blockatlas/pkg/errors"
 	"github.com/trustwallet/watchmarket/market/chart"
 	"github.com/trustwallet/watchmarket/market/clients/cmc"
+	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"time"
 )
 
@@ -32,8 +32,8 @@ func InitChart(webApi string, widgetApi string, mapApi string) chart.Provider {
 	return m
 }
 
-func (c *Chart) GetChartData(coin uint, token string, currency string, timeStart int64) (blockatlas.ChartData, error) {
-	chartsData := blockatlas.ChartData{}
+func (c *Chart) GetChartData(coin uint, token string, currency string, timeStart int64) (watchmarket.ChartData, error) {
+	chartsData := watchmarket.ChartData{}
 	cmap, err := cmc.GetCoinMap(c.mapApi)
 	if err != nil {
 		return chartsData, err
@@ -54,8 +54,8 @@ func (c *Chart) GetChartData(coin uint, token string, currency string, timeStart
 	return normalizeCharts(currency, charts), nil
 }
 
-func (c *Chart) GetCoinData(coin uint, token string, currency string) (blockatlas.ChartCoinInfo, error) {
-	info := blockatlas.ChartCoinInfo{}
+func (c *Chart) GetCoinData(coin uint, token string, currency string) (watchmarket.ChartCoinInfo, error) {
+	info := watchmarket.ChartCoinInfo{}
 
 	cmap, err := cmc.GetCoinMap(c.mapApi)
 	if err != nil {
@@ -74,9 +74,9 @@ func (c *Chart) GetCoinData(coin uint, token string, currency string) (blockatla
 	return normalizeInfo(currency, coinObj.Id, data)
 }
 
-func normalizeCharts(currency string, charts cmc.Charts) blockatlas.ChartData {
-	chartsData := blockatlas.ChartData{}
-	prices := make([]blockatlas.ChartPrice, 0)
+func normalizeCharts(currency string, charts cmc.Charts) watchmarket.ChartData {
+	chartsData := watchmarket.ChartData{}
+	prices := make([]watchmarket.ChartPrice, 0)
 	for dateSrt, q := range charts.Data {
 		date, err := time.Parse(time.RFC3339, dateSrt)
 		if err != nil {
@@ -91,7 +91,7 @@ func normalizeCharts(currency string, charts cmc.Charts) blockatlas.ChartData {
 		if len(quote) < chartDataSize {
 			continue
 		}
-		prices = append(prices, blockatlas.ChartPrice{
+		prices = append(prices, watchmarket.ChartPrice{
 			Price: quote[0],
 			Date:  date.Unix(),
 		})
@@ -102,14 +102,14 @@ func normalizeCharts(currency string, charts cmc.Charts) blockatlas.ChartData {
 	return chartsData
 }
 
-func normalizeInfo(currency string, cmcCoin uint, data cmc.ChartInfo) (blockatlas.ChartCoinInfo, error) {
-	info := blockatlas.ChartCoinInfo{}
+func normalizeInfo(currency string, cmcCoin uint, data cmc.ChartInfo) (watchmarket.ChartCoinInfo, error) {
+	info := watchmarket.ChartCoinInfo{}
 	quote, ok := data.Data.Quotes[currency]
 	if !ok {
 		return info, errors.E("Cant get coin info", errors.Params{"cmcCoin": cmcCoin, "currency": currency})
 	}
 
-	return blockatlas.ChartCoinInfo{
+	return watchmarket.ChartCoinInfo{
 		Vol24:             quote.Volume24,
 		MarketCap:         quote.MarketCap,
 		CirculatingSupply: data.Data.CirculatingSupply,

@@ -2,23 +2,23 @@ package market
 
 import (
 	"github.com/stretchr/testify/assert"
-	"github.com/trustwallet/blockatlas/pkg/blockatlas"
+	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"reflect"
 	"testing"
 )
 
 func Test_normalizeInfo(t *testing.T) {
 	type args struct {
-		prices   []blockatlas.ChartPrice
+		prices   []watchmarket.ChartPrice
 		maxItems int
 	}
 	tests := []struct {
 		args     args
-		wantInfo []blockatlas.ChartPrice
+		wantInfo []watchmarket.ChartPrice
 	}{
 		{
 			args{
-				prices: []blockatlas.ChartPrice{
+				prices: []watchmarket.ChartPrice{
 					{
 						Price: 1,
 						Date:  1578741541,
@@ -46,7 +46,7 @@ func Test_normalizeInfo(t *testing.T) {
 				},
 				maxItems: 3,
 			},
-			[]blockatlas.ChartPrice{
+			[]watchmarket.ChartPrice{
 				{
 					Price: 1,
 					Date:  1578741541,
@@ -63,7 +63,7 @@ func Test_normalizeInfo(t *testing.T) {
 		},
 		{
 			args{
-				prices: []blockatlas.ChartPrice{
+				prices: []watchmarket.ChartPrice{
 					{
 						Price: 1,
 						Date:  1578741541,
@@ -91,7 +91,7 @@ func Test_normalizeInfo(t *testing.T) {
 				},
 				maxItems: 20,
 			},
-			[]blockatlas.ChartPrice{
+			[]watchmarket.ChartPrice{
 				{
 					Price: 1,
 					Date:  1578741541,
@@ -120,7 +120,7 @@ func Test_normalizeInfo(t *testing.T) {
 		},
 		{
 			args{
-				prices: []blockatlas.ChartPrice{
+				prices: []watchmarket.ChartPrice{
 					{
 						Price: 1,
 						Date:  1578741541,
@@ -144,7 +144,7 @@ func Test_normalizeInfo(t *testing.T) {
 				},
 				maxItems: 3,
 			},
-			[]blockatlas.ChartPrice{
+			[]watchmarket.ChartPrice{
 				{
 					Price: 1,
 					Date:  1578741541,

@@ -1,13 +1,13 @@
 package chart
 
 import (
-	"github.com/trustwallet/blockatlas/pkg/blockatlas"
+	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 )
 
 type Provider interface {
 	GetId() string
-	GetChartData(coin uint, token string, currency string, timeStart int64) (blockatlas.ChartData, error)
-	GetCoinData(coin uint, token string, currency string) (blockatlas.ChartCoinInfo, error)
+	GetChartData(coin uint, token string, currency string, timeStart int64) (watchmarket.ChartData, error)
+	GetCoinData(coin uint, token string, currency string) (watchmarket.ChartCoinInfo, error)
 }
 
 type Providers map[int]Provider

@@ -2,8 +2,8 @@ package cmc
 
 import (
 	"github.com/stretchr/testify/assert"
-	"github.com/trustwallet/blockatlas/pkg/blockatlas"
 	"github.com/trustwallet/watchmarket/market/clients/cmc"
+	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"reflect"
 	"sort"
 	"testing"
@@ -19,7 +19,7 @@ func Test_normalizeInfo(t *testing.T) {
 	tests := []struct {
 		name     string
 		args     args
-		wantInfo blockatlas.ChartCoinInfo
+		wantInfo watchmarket.ChartCoinInfo
 	}{
 		{
 			"test normalize cmc chart info 1",
@@ -37,7 +37,7 @@ func Test_normalizeInfo(t *testing.T) {
 					},
 				},
 			},
-			blockatlas.ChartCoinInfo{
+			watchmarket.ChartCoinInfo{
 				Vol24:             444,
 				MarketCap:         555,
 				CirculatingSupply: 111,
@@ -60,7 +60,7 @@ func Test_normalizeInfo(t *testing.T) {
 					},
 				},
 			},
-			blockatlas.ChartCoinInfo{
+			watchmarket.ChartCoinInfo{
 				Vol24:             444,
 				MarketCap:         555,
 				CirculatingSupply: 111,
@@ -91,7 +91,7 @@ func Test_normalizeCharts(t *testing.T) {
 	tests := []struct {
 		name     string
 		args     args
-		wantInfo blockatlas.ChartData
+		wantInfo watchmarket.ChartData
 	}{
 		{
 			"test normalize cmc chart 1",
@@ -106,8 +106,8 @@ func Test_normalizeCharts(t *testing.T) {
 					},
 				},
 			},
-			blockatlas.ChartData{
-				Prices: []blockatlas.ChartPrice{
+			watchmarket.ChartData{
+				Prices: []watchmarket.ChartPrice{
 					{
 						Price: 111,
 						Date:  d1.Unix(),
@@ -131,8 +131,8 @@ func Test_normalizeCharts(t *testing.T) {
 					},
 				},
 			},
-			blockatlas.ChartData{
-				Prices: []blockatlas.ChartPrice{
+			watchmarket.ChartData{
+				Prices: []watchmarket.ChartPrice{
 					{
 						Price: 333,
 						Date:  d1.Unix(),

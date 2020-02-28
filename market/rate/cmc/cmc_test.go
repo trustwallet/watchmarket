@@ -2,8 +2,8 @@ package cmc
 
 import (
 	"github.com/stretchr/testify/assert"
-	"github.com/trustwallet/blockatlas/pkg/blockatlas"
 	"github.com/trustwallet/watchmarket/market/clients/cmc"
+	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"math/big"
 	"sort"
 	"testing"
@@ -15,7 +15,7 @@ func Test_normalizeRates(t *testing.T) {
 	tests := []struct {
 		name      string
 		prices    cmc.CoinPrices
-		wantRates blockatlas.Rates
+		wantRates watchmarket.Rates
 	}{
 		{
 			"test normalize cmc rate 1",
@@ -47,9 +47,9 @@ func Test_normalizeRates(t *testing.T) {
 					},
 				},
 			},
-			blockatlas.Rates{
-				blockatlas.Rate{Currency: "BTC", Rate: 1 / 223.5, Timestamp: 333, Provider: provider, PercentChange24h: big.NewFloat(0.33)},
-				blockatlas.Rate{Currency: "ETH", Rate: 1 / 11.11, Timestamp: 333, Provider: provider, PercentChange24h: big.NewFloat(-1.22)},
+			watchmarket.Rates{
+				watchmarket.Rate{Currency: "BTC", Rate: 1 / 223.5, Timestamp: 333, Provider: provider, PercentChange24h: big.NewFloat(0.33)},
+				watchmarket.Rate{Currency: "ETH", Rate: 1 / 11.11, Timestamp: 333, Provider: provider, PercentChange24h: big.NewFloat(-1.22)},
 			},
 		},
 		{
@@ -81,9 +81,9 @@ func Test_normalizeRates(t *testing.T) {
 					},
 				},
 			},
-			blockatlas.Rates{
-				blockatlas.Rate{Currency: "BNB", Rate: 1 / 30.333, Timestamp: 123, Provider: provider, PercentChange24h: big.NewFloat(2.1)},
-				blockatlas.Rate{Currency: "XRP", Rate: 1 / 0.4687, Timestamp: 123, Provider: provider, PercentChange24h: big.NewFloat(0)},
+			watchmarket.Rates{
+				watchmarket.Rate{Currency: "BNB", Rate: 1 / 30.333, Timestamp: 123, Provider: provider, PercentChange24h: big.NewFloat(2.1)},
+				watchmarket.Rate{Currency: "XRP", Rate: 1 / 0.4687, Timestamp: 123, Provider: provider, PercentChange24h: big.NewFloat(0)},
 			},
 		},
 	}

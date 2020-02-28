@@ -2,7 +2,7 @@ package dex
 
 import (
 	"github.com/stretchr/testify/assert"
-	"github.com/trustwallet/blockatlas/pkg/blockatlas"
+	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"sort"
 	"testing"
 	"time"
@@ -16,7 +16,7 @@ func Test_normalizeTickers(t *testing.T) {
 	tests := []struct {
 		name        string
 		args        args
-		wantTickers blockatlas.Tickers
+		wantTickers watchmarket.Tickers
 	}{
 		{
 			"test normalize dex quote",
@@ -41,17 +41,17 @@ func Test_normalizeTickers(t *testing.T) {
 				},
 			},
 				provider: "dex"},
-			blockatlas.Tickers{
-				&blockatlas.Ticker{CoinName: "BNB", TokenId: "RAVEN-F66", CoinType: blockatlas.TypeToken, LastUpdate: time.Now(),
-					Price: blockatlas.TickerPrice{
+			watchmarket.Tickers{
+				&watchmarket.Ticker{CoinName: "BNB", TokenId: "RAVEN-F66", CoinType: watchmarket.TypeToken, LastUpdate: time.Now(),
+					Price: watchmarket.TickerPrice{
 						Value:     0.00001082,
 						Change24h: -2.2500,
 						Currency:  "BNB",
 						Provider:  "dex",
 					},
 				},
-				&blockatlas.Ticker{CoinName: "BNB", TokenId: "SLV-986", CoinType: blockatlas.TypeToken, LastUpdate: time.Now(),
-					Price: blockatlas.TickerPrice{
+				&watchmarket.Ticker{CoinName: "BNB", TokenId: "SLV-986", CoinType: watchmarket.TypeToken, LastUpdate: time.Now(),
+					Price: watchmarket.TickerPrice{
 						Value:     0.0449451,
 						Change24h: -5.3700,
 						Currency:  "BNB",

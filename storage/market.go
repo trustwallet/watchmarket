@@ -1,9 +1,9 @@
 package storage
 
 import (
-	"github.com/trustwallet/blockatlas/pkg/blockatlas"
 	"github.com/trustwallet/blockatlas/pkg/errors"
 	"github.com/trustwallet/blockatlas/pkg/logger"
+	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"strings"
 )
 
@@ -16,7 +16,7 @@ type ProviderList interface {
 	GetPriority(providerId string) int
 }
 
-func (s *Storage) SaveTicker(coin *blockatlas.Ticker, pl ProviderList) error {
+func (s *Storage) SaveTicker(coin *watchmarket.Ticker, pl ProviderList) error {
 	cd, err := s.GetTicker(coin.CoinName, coin.TokenId)
 	if err == nil {
 		op := pl.GetPriority(cd.Price.Provider)
@@ -38,9 +38,9 @@ func (s *Storage) SaveTicker(coin *blockatlas.Ticker, pl ProviderList) error {
 	return s.AddHM(EntityQuotes, hm, coin)
 }
 
-func (s *Storage) GetTicker(coin, token string) (*blockatlas.Ticker, error) {
+func (s *Storage) GetTicker(coin, token string) (*watchmarket.Ticker, error) {
 	hm := createHashMap(coin, token)
-	var cd *blockatlas.Ticker
+	var cd *watchmarket.Ticker
 	err := s.GetHMValue(EntityQuotes, hm, &cd)
 	if err != nil {
 		return nil, err
@@ -48,7 +48,7 @@ func (s *Storage) GetTicker(coin, token string) (*blockatlas.Ticker, error) {
 	return cd, nil
 }
 
-func (s *Storage) SaveRates(rates blockatlas.Rates, pl ProviderList) {
+func (s *Storage) SaveRates(rates watchmarket.Rates, pl ProviderList) {
 	for _, rate := range rates {
 		r, err := s.GetRate(rate.Currency)
 		if err == nil {
@@ -70,7 +70,7 @@ func (s *Storage) SaveRates(rates blockatlas.Rates, pl ProviderList) {
 	}
 }
 
-func (s *Storage) GetRate(currency string) (rate *blockatlas.Rate, err error) {
+func (s *Storage) GetRate(currency string) (rate *watchmarket.Rate, err error) {
 	err = s.GetHMValue(EntityRates, currency, &rate)
 	return
 }
