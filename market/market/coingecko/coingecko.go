@@ -8,7 +8,8 @@ import (
 )
 
 const (
-	id = "coingecko"
+	id               = "coingecko"
+	minimalMarketCap = 0
 )
 
 type Market struct {
@@ -69,6 +70,11 @@ func (m *Market) normalizeTicker(price coingecko.CoinPrice, provider string) (ti
 		} else if len(cg.TokenId) > 0 {
 			tokenId = cg.TokenId
 		}
+
+		if !isSuitableTicker(price.MarketCap, price.TotalVolume, price.CirculatingSupply) {
+			continue
+		}
+
 		tickers = append(tickers, &watchmarket.Ticker{
 			CoinName: coinName,
 			CoinType: cg.CoinType,
@@ -83,6 +89,13 @@ func (m *Market) normalizeTicker(price coingecko.CoinPrice, provider string) (ti
 		})
 	}
 	return
+}
+
+func isSuitableTicker(marketCap, totalVolume, circulatingSupply float64) bool {
+	if marketCap > minimalMarketCap {
+		return true
+	}
+	return false
 }
 
 func (m *Market) normalizeTickers(prices coingecko.CoinPrices, provider string) (tickers watchmarket.Tickers) {

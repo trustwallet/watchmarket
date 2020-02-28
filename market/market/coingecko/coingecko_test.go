@@ -59,11 +59,13 @@ func Test_normalizeTickers(t *testing.T) {
 					Id:           "cUSDC",
 					Symbol:       "cUSDC",
 					CurrentPrice: 0.0021,
+					MarketCap:    minimalMarketCap + 1,
 				},
 				{
 					Id:           "cREP",
 					Symbol:       "cREP",
 					CurrentPrice: 0.02,
+					MarketCap:    minimalMarketCap + 1,
 				},
 			}, provider: id},
 			watchmarket.Tickers{
@@ -101,4 +103,59 @@ func Test_normalizeTickers(t *testing.T) {
 			assert.Equal(t, tt.wantTickers, gotTickers)
 		})
 	}
+}
+
+func Test_normalizeTickersWithFilter(t *testing.T) {
+	prices := coingecko.CoinPrices{
+		{
+			Id:           "cUSDC",
+			Symbol:       "cUSDC",
+			CurrentPrice: 0.0021,
+			MarketCap:    minimalMarketCap + 1,
+		},
+		{
+			Id:           "cREP",
+			Symbol:       "cREP",
+			CurrentPrice: 0.02,
+			MarketCap:    minimalMarketCap,
+		},
+		{
+			Id:           "cREP",
+			Symbol:       "cREP",
+			CurrentPrice: 0.02,
+			MarketCap:    minimalMarketCap - 1,
+		},
+	}
+
+	coins := coingecko.GeckoCoins{
+		coingecko.GeckoCoin{
+			Id:        "ethtereum",
+			Symbol:    "eth",
+			Name:      "eth",
+			Platforms: nil,
+		},
+		coingecko.GeckoCoin{
+			Id:        "bitcoin",
+			Symbol:    "btc",
+			Name:      "btc",
+			Platforms: nil,
+		},
+		coingecko.GeckoCoin{
+			Id:     "cREP",
+			Symbol: "cREP",
+			Name:   "cREP",
+			Platforms: coingecko.Platforms{
+				"ethtereum": "0x158079ee67fce2f58472a96584a73c7ab9ac95c1",
+			},
+		},
+	}
+
+	m := Market{}
+	m.cache = coingecko.NewCache(coins)
+	gotTickers := m.normalizeTickers(prices, id)
+
+	wantLen := 1
+	currentLen := len(gotTickers)
+
+	assert.Equal(t, wantLen, currentLen)
 }
