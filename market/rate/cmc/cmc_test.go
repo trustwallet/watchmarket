@@ -3,7 +3,7 @@ package cmc
 import (
 	"github.com/stretchr/testify/assert"
 	"github.com/trustwallet/watchmarket/market/clients/cmc"
-	watchmarket "github.com/trustwallet/watchmarket/pkg/watchmarket"
+	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"math/big"
 	"sort"
 	"testing"

@@ -3,7 +3,7 @@ package coingecko
 import (
 	"github.com/trustwallet/watchmarket/market/clients/coingecko"
 	"github.com/trustwallet/watchmarket/market/market"
-	watchmarket "github.com/trustwallet/watchmarket/pkg/watchmarket"
+	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"strings"
 )
 

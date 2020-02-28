@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/trustwallet/blockatlas/pkg/address"
 	"github.com/trustwallet/blockatlas/pkg/errors"
-	watchmarket "github.com/trustwallet/watchmarket/pkg/watchmarket"
+	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"strings"
 )
 

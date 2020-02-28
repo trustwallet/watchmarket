@@ -3,7 +3,7 @@ package compound
 import (
 	c "github.com/trustwallet/watchmarket/market/clients/compound"
 	"github.com/trustwallet/watchmarket/market/rate"
-	watchmarket "github.com/trustwallet/watchmarket/pkg/watchmarket"
+	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"strings"
 	"time"
 )

@@ -3,7 +3,7 @@ package coingecko
 import (
 	"github.com/stretchr/testify/assert"
 	"github.com/trustwallet/watchmarket/market/clients/coingecko"
-	watchmarket "github.com/trustwallet/watchmarket/pkg/watchmarket"
+	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"reflect"
 	"testing"
 	"time"

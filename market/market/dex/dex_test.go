@@ -2,7 +2,7 @@ package dex
 
 import (
 	"github.com/stretchr/testify/assert"
-	watchmarket "github.com/trustwallet/watchmarket/pkg/watchmarket"
+	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"sort"
 	"testing"
 	"time"

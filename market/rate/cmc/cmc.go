@@ -3,7 +3,7 @@ package cmc
 import (
 	"github.com/trustwallet/watchmarket/market/clients/cmc"
 	"github.com/trustwallet/watchmarket/market/rate"
-	watchmarket "github.com/trustwallet/watchmarket/pkg/watchmarket"
+	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"math/big"
 )
 

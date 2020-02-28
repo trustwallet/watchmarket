@@ -3,7 +3,7 @@ package compound
 import (
 	"github.com/stretchr/testify/assert"
 	c "github.com/trustwallet/watchmarket/market/clients/compound"
-	watchmarket "github.com/trustwallet/watchmarket/pkg/watchmarket"
+	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"sort"
 	"testing"
 	"time"

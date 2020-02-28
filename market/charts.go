@@ -7,7 +7,7 @@ import (
 	"github.com/trustwallet/watchmarket/market/chart"
 	"github.com/trustwallet/watchmarket/market/chart/cmc"
 	"github.com/trustwallet/watchmarket/market/chart/coingecko"
-	watchmarket "github.com/trustwallet/watchmarket/pkg/watchmarket"
+	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"math"
 	"sort"
 )

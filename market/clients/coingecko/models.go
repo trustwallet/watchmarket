@@ -1,7 +1,7 @@
 package coingecko
 
 import (
-	watchmarket "github.com/trustwallet/watchmarket/pkg/watchmarket"
+	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"time"
 )
 

@@ -4,7 +4,7 @@ import (
 	"github.com/trustwallet/blockatlas/coin"
 	c "github.com/trustwallet/watchmarket/market/clients/compound"
 	"github.com/trustwallet/watchmarket/market/market"
-	watchmarket "github.com/trustwallet/watchmarket/pkg/watchmarket"
+	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"time"
 )
 

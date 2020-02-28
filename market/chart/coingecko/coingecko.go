@@ -5,7 +5,7 @@ import (
 	"github.com/trustwallet/blockatlas/pkg/errors"
 	"github.com/trustwallet/watchmarket/market/chart"
 	"github.com/trustwallet/watchmarket/market/clients/coingecko"
-	watchmarket "github.com/trustwallet/watchmarket/pkg/watchmarket"
+	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"time"
 )
 

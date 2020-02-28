@@ -1,7 +1,7 @@
 package chart
 
 import (
-	watchmarket "github.com/trustwallet/watchmarket/pkg/watchmarket"
+	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 )
 
 type Provider interface {
