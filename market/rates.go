@@ -54,9 +54,7 @@ func runRate(storage storage.Market, p rate.Provider) error {
 	if err != nil {
 		return errors.E(err, "FetchLatestRates")
 	}
-	if len(rates) > 0 {
-		storage.SaveRates(rates, rateProviders)
-		logger.Info("Market rates", logger.Params{"rates": len(rates), "provider": p.GetId()})
-	}
+	results := storage.SaveRates(rates, rateProviders)
+	logger.Info("Done fetching latest rates", logger.Params{"numFetchedRates": len(rates), "provider": p.GetId(), "results": results})
 	return nil
 }

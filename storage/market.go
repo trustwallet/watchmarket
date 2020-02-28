@@ -1,7 +1,6 @@
 package storage
 
 import (
-	"github.com/trustwallet/blockatlas/pkg/errors"
 	"github.com/trustwallet/blockatlas/pkg/logger"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"strings"
@@ -16,26 +15,37 @@ type ProviderList interface {
 	GetPriority(providerId string) int
 }
 
-func (s *Storage) SaveTicker(coin *watchmarket.Ticker, pl ProviderList) error {
+func (s *Storage) SaveTicker(coin *watchmarket.Ticker, pl ProviderList) (SaveResult, error) {
 	cd, err := s.GetTicker(coin.CoinName, coin.TokenId)
 	if err == nil {
 		op := pl.GetPriority(cd.Price.Provider)
 		np := pl.GetPriority(coin.Price.Provider)
 		if op != -1 && np > op {
-			return errors.E("ticker provider with less priority")
+			logger.Debug("Skipping new ticker as its priority is lower than the existing record", logger.Params{
+				"oldTickerPriority": op,
+				"newTickerPriority": np,
+			})
+			return SaveResultSkippedLowPriority, nil
 		}
 
 		if cd.LastUpdate.After(coin.LastUpdate) && op >= np {
-			return errors.E("ticker is outdated or too low priority", errors.Params{
+			logger.Debug("Skipping new ticker as its priority is lower than the existing record or its timestamp is older", logger.Params{
 				"oldTickerTime":     cd.LastUpdate,
 				"newTickerTime":     coin.LastUpdate,
 				"oldTickerPriority": op,
 				"newTickerPriority": np,
 			})
+			return SaveResultSkippedLowPriorityOrOutdated, nil
 		}
 	}
 	hm := createHashMap(coin.CoinName, coin.TokenId)
-	return s.AddHM(EntityQuotes, hm, coin)
+	err = s.AddHM(EntityQuotes, hm, coin)
+	if err != nil {
+		logger.Error(err, "SaveTicker")
+		return SaveResultStorageFailure, err
+	}
+
+	return SaveResultSuccess, nil
 }
 
 func (s *Storage) GetTicker(coin, token string) (*watchmarket.Ticker, error) {
@@ -48,26 +58,32 @@ func (s *Storage) GetTicker(coin, token string) (*watchmarket.Ticker, error) {
 	return cd, nil
 }
 
-func (s *Storage) SaveRates(rates watchmarket.Rates, pl ProviderList) {
+func (s *Storage) SaveRates(rates watchmarket.Rates, pl ProviderList) map[SaveResult]int {
+	results := make(map[SaveResult]int)
 	for _, rate := range rates {
 		r, err := s.GetRate(rate.Currency)
 		if err == nil {
 			op := pl.GetPriority(r.Provider)
 			np := pl.GetPriority(rate.Provider)
 			if op != -1 && np > op {
+				results[SaveResultSkippedLowPriority]++
 				continue
 			}
 
 			if rate.Timestamp < r.Timestamp && op >= np {
+				results[SaveResultSkippedLowPriorityOrOutdated]++
 				continue
 			}
 		}
 		err = s.AddHM(EntityRates, rate.Currency, &rate)
 		if err != nil {
 			logger.Error(err, "SaveRates")
+			results[SaveResultStorageFailure]++
 			continue
 		}
+		results[SaveResultSuccess]++
 	}
+	return results
 }
 
 func (s *Storage) GetRate(currency string) (rate *watchmarket.Rate, err error) {
