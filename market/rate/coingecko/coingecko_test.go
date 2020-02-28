@@ -49,6 +49,23 @@ func Test_normalizeRates(t *testing.T) {
 				watchmarket.Rate{Currency: "CREP", Rate: 1 / 110.02, Timestamp: 123, Provider: id},
 			},
 		},
+		{
+			"test normalize 0 rates",
+			coingecko.CoinPrices{
+				{
+					Symbol:       "cUSDC",
+					CurrentPrice: 0.0,
+				},
+				{
+					Symbol:       "cREP",
+					CurrentPrice: 110.02,
+				},
+			},
+			watchmarket.Rates{
+				watchmarket.Rate{Currency: "CUSDC", Rate: 0.0, Timestamp: 123, Provider: id},
+				watchmarket.Rate{Currency: "CREP", Rate: 1 / 110.02, Timestamp: 123, Provider: id},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
