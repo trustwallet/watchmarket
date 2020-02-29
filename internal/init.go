@@ -7,6 +7,7 @@ import (
 	"github.com/spf13/viper"
 	"github.com/trustwallet/blockatlas/pkg/logger"
 	"github.com/trustwallet/watchmarket/config"
+	"github.com/trustwallet/watchmarket/redis"
 	"github.com/trustwallet/watchmarket/storage"
 	"path/filepath"
 )
@@ -41,7 +42,8 @@ func InitAPIWithRedis(defaultPort, defaultConfigPath string) (string, string, *g
 		sg             gin.HandlerFunc
 	)
 
-	cache = storage.New()
+	db := &redis.Redis{}
+	cache = &storage.Storage{db}
 	sg = sentrygin.New(sentrygin.Options{})
 
 	flag.StringVar(&port, "p", defaultPort, "port for api")

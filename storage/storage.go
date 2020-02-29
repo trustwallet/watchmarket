@@ -2,7 +2,6 @@ package storage
 
 import (
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
-	"github.com/trustwallet/watchmarket/redis"
 )
 
 type SaveResult string
@@ -14,12 +13,13 @@ const(
 )
 
 type Storage struct {
-	redis.Redis
+	DB
 }
 
-func New() *Storage {
-	s := new(Storage)
-	return s
+type DB interface {
+	GetHMValue(entity, key string, value interface{}) error
+	AddHM(entity, key string, value interface{}) error
+	Init(host string) error
 }
 
 type Market interface {

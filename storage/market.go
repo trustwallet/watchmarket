@@ -17,7 +17,9 @@ type ProviderList interface {
 
 func (s *Storage) SaveTicker(coin *watchmarket.Ticker, pl ProviderList) (SaveResult, error) {
 	cd, err := s.GetTicker(coin.CoinName, coin.TokenId)
-	if err == nil {
+	if err != nil && err != watchmarket.ErrNotFound {
+		return SaveResultStorageFailure, err
+	} else if err == nil {
 		op := pl.GetPriority(cd.Price.Provider)
 		np := pl.GetPriority(coin.Price.Provider)
 		if op != -1 && np > op {
@@ -38,6 +40,7 @@ func (s *Storage) SaveTicker(coin *watchmarket.Ticker, pl ProviderList) (SaveRes
 			return SaveResultSkippedLowPriorityOrOutdated, nil
 		}
 	}
+	
 	hm := createHashMap(coin.CoinName, coin.TokenId)
 	err = s.AddHM(EntityQuotes, hm, coin)
 	if err != nil {
@@ -62,6 +65,11 @@ func (s *Storage) SaveRates(rates watchmarket.Rates, pl ProviderList) map[SaveRe
 	results := make(map[SaveResult]int)
 	for _, rate := range rates {
 		r, err := s.GetRate(rate.Currency)
+		if err != nil && err != watchmarket.ErrNotFound {
+			logger.Error(err, "SaveRates")
+			results[SaveResultStorageFailure]++
+			continue
+		}
 		if err == nil {
 			op := pl.GetPriority(r.Provider)
 			np := pl.GetPriority(rate.Provider)

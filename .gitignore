@@ -19,6 +19,8 @@ cmd/__debug_bin
 config_*.yml
 *.orig
 *~
+mocks
+test_coverage.html
 
 ### macOS ###
 *.DS_Store

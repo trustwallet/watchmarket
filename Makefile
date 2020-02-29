@@ -84,10 +84,16 @@ exec:
 ## clean: Clean build files. Runs `go clean` internally.
 clean:
 	@-rm $(GOBIN)/$(PROJECT_NAME) 2> /dev/null
+	@-rm -rf mocks
 	@-$(MAKE) go-clean
 
+## generate-mocks: Creates mockfiles.
+generate-mocks:
+	@-mockery -dir storage -name DB
+	@-mockery -dir storage -name ProviderList
+
 ## test: Run all unit tests.
-test: go-test
+test: generate-mocks go-test
 
 ## functional: Run all functional tests.
 functional: go-functional
@@ -155,7 +161,8 @@ go-clean:
 
 go-test:
 	@echo "  >  Running unit tests"
-	GOBIN=$(GOBIN) go test -cover -race -v ./...
+	GOBIN=$(GOBIN) go test -coverprofile cover.out -cover -race -v ./...
+	GOBIN=$(GOBIN) go tool cover -html=cover.out -o test_coverage.html
 
 go-functional:
 	@echo "  >  Running functional tests"
