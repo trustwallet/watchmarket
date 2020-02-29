@@ -1,7 +1,6 @@
 package api
 
 import (
-	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
 	"github.com/trustwallet/blockatlas/coin"
@@ -64,7 +63,7 @@ func getTickersHandler(storage storage.Market) func(c *gin.Context) {
 		}
 
 		rate, err := storage.GetRate(strings.ToUpper(md.Currency))
-		if errors.Is(err, watchmarket.ErrNotFound) {
+		if err == watchmarket.ErrNotFound {
 			ginutils.RenderError(c, http.StatusNotFound, fmt.Sprintf("Currency %s not found", md.Currency))
 			return
 		} else if err != nil {
@@ -84,7 +83,7 @@ func getTickersHandler(storage storage.Market) func(c *gin.Context) {
 			}
 			r, err := storage.GetTicker(coinObj.Symbol, strings.ToUpper(coinRequest.TokenId))
 			if err != nil {
-				if errors.Is(err, watchmarket.ErrNotFound) {
+				if err == watchmarket.ErrNotFound {
 					logger.Warn("Ticker not found", logger.Params{"coin": coinObj.Symbol, "token": coinRequest.TokenId})
 				} else if err != nil {
 					logger.Error(err, "Failed to retrieve ticker", logger.Params{"coin": coinObj.Symbol, "token": coinRequest.TokenId})
