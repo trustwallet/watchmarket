@@ -48,18 +48,8 @@ func (m *Market) normalizeTicker(price coingecko.CoinPrice, provider string) (ti
 
 	cgCoins, err := m.cache.GetCoinsById(price.Id)
 	if err != nil {
-		tickers = append(tickers, &watchmarket.Ticker{
-			CoinName: coinName,
-			CoinType: coinType,
-			TokenId:  tokenId,
-			Price: watchmarket.TickerPrice{
-				Value:     price.CurrentPrice,
-				Change24h: price.PriceChangePercentage24h,
-				Currency:  watchmarket.DefaultCurrency,
-				Provider:  provider,
-			},
-			LastUpdate: price.LastUpdated,
-		})
+		ticker := createTicker(price, coinType, coinName, tokenId, provider)
+		tickers = append(tickers, &ticker)
 		return
 	}
 
@@ -71,13 +61,17 @@ func (m *Market) normalizeTicker(price coingecko.CoinPrice, provider string) (ti
 			tokenId = cg.TokenId
 		}
 
-		if !isSuitableTicker(price.MarketCap, price.TotalVolume, price.CirculatingSupply) {
-			continue
-		}
+		ticker := createTicker(price, cg.CoinType, coinName, tokenId, provider)
+		tickers = append(tickers, &ticker)
+	}
+	return
+}
 
-		tickers = append(tickers, &watchmarket.Ticker{
+func createTicker(price coingecko.CoinPrice, coinType watchmarket.CoinType, coinName, tokenId, provider string) watchmarket.Ticker {
+	if isRespectableMarketCap(price.MarketCap) {
+		return watchmarket.Ticker{
 			CoinName: coinName,
-			CoinType: cg.CoinType,
+			CoinType: coinType,
 			TokenId:  tokenId,
 			Price: watchmarket.TickerPrice{
 				Value:     price.CurrentPrice,
@@ -86,16 +80,24 @@ func (m *Market) normalizeTicker(price coingecko.CoinPrice, provider string) (ti
 				Provider:  provider,
 			},
 			LastUpdate: price.LastUpdated,
-		})
+		}
 	}
-	return
+	return watchmarket.Ticker{
+		CoinName: coinName,
+		CoinType: coinType,
+		TokenId:  tokenId,
+		Price: watchmarket.TickerPrice{
+			Value:     0,
+			Change24h: 0,
+			Currency:  watchmarket.DefaultCurrency,
+			Provider:  provider,
+		},
+		LastUpdate: price.LastUpdated,
+	}
 }
 
-func isSuitableTicker(marketCap, totalVolume, circulatingSupply float64) bool {
-	if marketCap > minimalMarketCap {
-		return true
-	}
-	return false
+func isRespectableMarketCap(targetMarketCap float64) bool {
+	return targetMarketCap >= minimalMarketCap
 }
 
 func (m *Market) normalizeTickers(prices coingecko.CoinPrices, provider string) (tickers watchmarket.Tickers) {
