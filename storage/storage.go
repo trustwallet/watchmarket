@@ -1,8 +1,8 @@
 package storage
 
 import (
-	"github.com/trustwallet/blockatlas/pkg/storage/redis"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
+	"github.com/trustwallet/watchmarket/redis"
 )
 
 type Storage struct {

@@ -24,9 +24,12 @@ REST API - allows to get cached data through REST HTTP API
 
 1. Spin up a Redis instance: `docker run -it -p 6379:6379 redis`
 1. Start the app: `make start`
-  1. Explore the API: [http://localhost:8423/swagger/index.html](http://localhost:8423/swagger/index.html)
-  1. Use the API: `curl -v "http://localhost:8421/v1/market/info?coin=60" | jq .`
-1. When done run `make stop`
+   1. Explore the API: [http://localhost:8423/swagger/index.html](http://localhost:8423/swagger/index.html)
+   1. Use the API:
+      * `curl -v "http://localhost:8421/v1/market/info?coin=60" | jq .`
+      * `curl -v -X POST 'http://localhost:8421/v1/market/ticker' -H 'Content-Type: application/json' -d '{"currency":"ETH","assets":[{"type":"coin","coin":60}]}'`
+      * `curl -v "http://localhost:8421/v1/market/charts?coin=60&time_start=1574483028" | jq .`
+1. When done: `make stop`
 
 Run `make` to see a list of all available build directives.
 

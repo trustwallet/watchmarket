@@ -1,6 +1,7 @@
 package api
 
 import (
+	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
 	"github.com/trustwallet/blockatlas/coin"
@@ -15,6 +16,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"fmt"
 )
 
 const (
@@ -60,10 +62,14 @@ func getTickersHandler(storage storage.Market) func(c *gin.Context) {
 			ginutils.ErrorResponse(c).Message(err.Error()).Render()
 			return
 		}
+
 		rate, err := storage.GetRate(strings.ToUpper(md.Currency))
-		if err != nil {
+		if errors.Is(err, watchmarket.ErrNotFound) {
+			ginutils.RenderError(c, http.StatusNotFound, fmt.Sprintf("Currency %s not found", md.Currency))
+			return
+		} else if err != nil {
 			logger.Error(err, "Failed to retrieve rate", logger.Params{"currency": md.Currency})
-			ginutils.RenderError(c, http.StatusInternalServerError, "Failed to retrieve rate")
+			ginutils.RenderError(c, http.StatusInternalServerError, fmt.Sprintf("Failed to get rate for %s", md.Currency))
 			return
 		}
 
@@ -78,8 +84,13 @@ func getTickersHandler(storage storage.Market) func(c *gin.Context) {
 			}
 			r, err := storage.GetTicker(coinObj.Symbol, strings.ToUpper(coinRequest.TokenId))
 			if err != nil {
-				// TODO: either fail the request or signal to requester that ticker for coin couldn't be retrieved
-				logger.Error(err, "Failed to retrieve ticker", logger.Params{"coin": coinObj.Symbol, "currency": md.Currency})
+				if errors.Is(err, watchmarket.ErrNotFound) {
+					logger.Warn("Ticker not found", logger.Params{"coin": coinObj.Symbol, "token": coinRequest.TokenId})
+				} else if err != nil {
+					logger.Error(err, "Failed to retrieve ticker", logger.Params{"coin": coinObj.Symbol, "token": coinRequest.TokenId})
+					ginutils.RenderError(c, http.StatusInternalServerError, "Failed to retrieve tickers")
+					return
+				}
 				continue
 			}
 			if r.Price.Currency != watchmarket.DefaultCurrency {
