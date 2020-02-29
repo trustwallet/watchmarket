@@ -17,7 +17,7 @@ pool:
   vmImage: 'Ubuntu 16.04'
 
 variables:
-  GOVERSION: '1.13'
+  GOVERSION: '1.13.6'
 
 jobs:
   - job: environment
