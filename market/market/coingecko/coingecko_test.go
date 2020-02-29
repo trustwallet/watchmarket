@@ -59,11 +59,13 @@ func Test_normalizeTickers(t *testing.T) {
 					Id:           "cUSDC",
 					Symbol:       "cUSDC",
 					CurrentPrice: 0.0021,
+					MarketCap:    minimalMarketCap + 1,
 				},
 				{
 					Id:           "cREP",
 					Symbol:       "cREP",
 					CurrentPrice: 0.02,
+					MarketCap:    minimalMarketCap + 1,
 				},
 			}, provider: id},
 			watchmarket.Tickers{
@@ -101,4 +103,24 @@ func Test_normalizeTickers(t *testing.T) {
 			assert.Equal(t, tt.wantTickers, gotTickers)
 		})
 	}
+}
+
+func Test_createTicker(t *testing.T) {
+	price := coingecko.CoinPrice{
+		Id:           "SH",
+		Symbol:       "shitcoin",
+		CurrentPrice: 0.00000001,
+		MarketCap:    minimalMarketCap - 1,
+	}
+	ticker := createTicker(price, watchmarket.TypeToken, "shitcoin", "shitcoinID", "coingecko")
+
+	wantedTicker := watchmarket.Ticker{
+		Price: watchmarket.TickerPrice{
+			Value:     0,
+			Change24h: 0,
+		},
+	}
+
+	assert.Equal(t, ticker.Price.Value, wantedTicker.Price.Value)
+	assert.Equal(t, ticker.Price.Change24h, wantedTicker.Price.Change24h)
 }
