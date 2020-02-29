@@ -60,12 +60,14 @@ func Test_normalizeTickers(t *testing.T) {
 					Symbol:       "cUSDC",
 					CurrentPrice: 0.0021,
 					MarketCap:    minimalMarketCap + 1,
+					TotalVolume:  5000,
 				},
 				{
 					Id:           "cREP",
 					Symbol:       "cREP",
 					CurrentPrice: 0.02,
 					MarketCap:    minimalMarketCap + 1,
+					TotalVolume:  5000,
 				},
 			}, provider: id},
 			watchmarket.Tickers{
@@ -113,6 +115,7 @@ func Test_createTicker(t *testing.T) {
 		CurrentPrice:             0.00000001,
 		MarketCap:                -1,
 		PriceChangePercentage24h: 1,
+		TotalVolume:              0,
 	})
 	prices = append(prices, coingecko.CoinPrice{
 		Id:                       "SH",
@@ -120,6 +123,7 @@ func Test_createTicker(t *testing.T) {
 		CurrentPrice:             0.00000001,
 		MarketCap:                20,
 		PriceChangePercentage24h: 1,
+		TotalVolume:              5000,
 	})
 
 	emptyTicker := watchmarket.Ticker{
