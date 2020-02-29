@@ -106,21 +106,45 @@ func Test_normalizeTickers(t *testing.T) {
 }
 
 func Test_createTicker(t *testing.T) {
-	price := coingecko.CoinPrice{
-		Id:           "SH",
-		Symbol:       "shitcoin",
-		CurrentPrice: 0.00000001,
-		MarketCap:    minimalMarketCap - 1,
-	}
-	ticker := createTicker(price, watchmarket.TypeToken, "shitcoin", "shitcoinID", "coingecko")
+	prices := make(coingecko.CoinPrices, 0)
+	prices = append(prices, coingecko.CoinPrice{
+		Id:                       "SH",
+		Symbol:                   "shitcoin",
+		CurrentPrice:             0.00000001,
+		MarketCap:                -1,
+		PriceChangePercentage24h: 1,
+	})
+	prices = append(prices, coingecko.CoinPrice{
+		Id:                       "SH",
+		Symbol:                   "shitcoin",
+		CurrentPrice:             0.00000001,
+		MarketCap:                20,
+		PriceChangePercentage24h: 1,
+	})
 
-	wantedTicker := watchmarket.Ticker{
+	emptyTicker := watchmarket.Ticker{
 		Price: watchmarket.TickerPrice{
 			Value:     0,
 			Change24h: 0,
 		},
 	}
 
-	assert.Equal(t, ticker.Price.Value, wantedTicker.Price.Value)
-	assert.Equal(t, ticker.Price.Change24h, wantedTicker.Price.Change24h)
+	normalTicker := watchmarket.Ticker{
+		Price: watchmarket.TickerPrice{
+			Value:     0.00000001,
+			Change24h: 1,
+		},
+	}
+
+	wantedTickers := make(watchmarket.Tickers, 0)
+	wantedTickers = append(wantedTickers, &emptyTicker)
+	wantedTickers = append(wantedTickers, &normalTicker)
+
+	for i, price := range prices {
+		ticker := createTicker(price, watchmarket.TypeToken, "shitcoin", "shitcoinID", "coingecko")
+
+		assert.Equal(t, ticker.Price.Value, wantedTickers[i].Price.Value)
+		assert.Equal(t, ticker.Price.Change24h, wantedTickers[i].Price.Change24h)
+	}
+
 }
