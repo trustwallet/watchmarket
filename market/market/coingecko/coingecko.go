@@ -75,17 +75,17 @@ func createTicker(price coingecko.CoinPrice, coinType watchmarket.CoinType, coin
 		CoinType: coinType,
 		TokenId:  tokenId,
 		Price: watchmarket.TickerPrice{
-			Value:     0,
-			Change24h: 0,
+			Value:     price.PriceChangePercentage24h,
+			Change24h: price.CurrentPrice,
 			Currency:  watchmarket.DefaultCurrency,
 			Provider:  provider,
 		},
 		LastUpdate: price.LastUpdated,
 	}
 
-	if isRespectableMarketCap(price.MarketCap) {
-		ticker.Price.Change24h = price.PriceChangePercentage24h
-		ticker.Price.Value = price.CurrentPrice
+	if !isRespectableMarketCap(price.MarketCap) {
+		ticker.Price.Change24h = 0
+		ticker.Price.Value = 0
 	}
 	return ticker
 }
