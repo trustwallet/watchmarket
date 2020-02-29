@@ -84,10 +84,16 @@ exec:
 ## clean: Clean build files. Runs `go clean` internally.
 clean:
 	@-rm $(GOBIN)/$(PROJECT_NAME) 2> /dev/null
+	@-rm -rf mocks
 	@-$(MAKE) go-clean
 
+## generate-mocks: Creates mockfiles.
+generate-mocks:
+	@-$(GOBIN)/mockery -dir storage -name DB
+	@-$(GOBIN)/mockery -dir storage -name ProviderList
+
 ## test: Run all unit tests.
-test: go-test
+test: go-install-mockery generate-mocks go-test
 
 ## functional: Run all functional tests.
 functional: go-functional
@@ -99,7 +105,7 @@ integration: go-integration
 fmt: go-fmt
 
 ## govet: Run go vet.
-govet: go-vet
+govet: go-install-mockery generate-mocks go-vet
 
 ## golint: Run golint.
 golint: go-lint
@@ -143,7 +149,7 @@ go-generate:
 	GOBIN=$(GOBIN) go generate $(generate)
 
 go-get:
-	@echo "  >  Checking if there is any missing dependencies..."
+	@echo "  >  Checking if there are any missing dependencies..."
 	GOBIN=$(GOBIN) go get cmd/... $(get)
 
 go-install:
@@ -176,6 +182,10 @@ go-gen-docs:
 go-vet:
 	@echo "  >  Running go vet"
 	GOBIN=$(GOBIN) go vet ./...
+
+go-install-mockery:
+	@echo "  >  Installing mockery"
+	GOBIN=$(GOBIN) go get github.com/vektra/mockery/.../
 
 go-lint:
 	@echo "  >  Running golint"
