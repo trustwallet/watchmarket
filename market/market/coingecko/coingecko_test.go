@@ -115,7 +115,7 @@ func Test_createTicker(t *testing.T) {
 		CurrentPrice:             0.00000001,
 		MarketCap:                -1,
 		PriceChangePercentage24h: 1,
-		TotalVolume:              0,
+		TotalVolume:              -1,
 	})
 	prices = append(prices, coingecko.CoinPrice{
 		Id:                       "SH",
