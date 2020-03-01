@@ -178,10 +178,13 @@ func getCoinInfoHandler() func(c *gin.Context) {
 		chart, err := charts.GetCoinInfo(uint(coinId), token, currency)
 		if err != nil {
 			logger.Error(err, "Failed to retrieve coin info", logger.Params{"coin": coinId, "currency": currency})
+		}
+		chart.Info, err = assets.GetCoinInfo(coinId, token)
+		if err != nil {
+			logger.Error(err, "Failed to retrieve coin info", logger.Params{"coin": coinId, "currency": currency})
 			ginutils.RenderError(c, http.StatusInternalServerError, err.Error())
 			return
 		}
-		chart.Info, _ = assets.GetCoinInfo(coinId, token)
 		ginutils.RenderSuccess(c, chart)
 	}
 }
