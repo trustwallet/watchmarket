@@ -4,6 +4,7 @@ go 1.13
 
 require (
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
+	github.com/alicebob/miniredis/v2 v2.11.2
 	github.com/cenkalti/backoff v2.2.1+incompatible
 	github.com/getsentry/sentry-go v0.5.1
 	github.com/gin-gonic/gin v1.5.0

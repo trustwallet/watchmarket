@@ -1,0 +1,12 @@
+coverage:
+  range: 70..100 # This value is used to customize the visible color range in Codecov. The first number represents the red, and the second represents green. You can change the range of colors by adjusting this configuration.
+  round: down
+  precision: 0
+
+  status:
+    project:
+      default:
+        # basic
+        target: 0% # Slowly move up from here...if set to auto commits with newly added tests may bring more files into test scope and therefore actually decrease the coverage and fail the build see https://docs.codecov.io/docs/commit-status
+
+

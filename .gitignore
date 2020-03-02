@@ -19,8 +19,6 @@ cmd/__debug_bin
 config_*.yml
 *.orig
 *~
-mocks
-
 coverage.txt
 mocks
 
