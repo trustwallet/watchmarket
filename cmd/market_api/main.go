@@ -1,9 +1,9 @@
 package main
 
 import (
+	sentrygin "github.com/getsentry/sentry-go/gin"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
-	"github.com/trustwallet/blockatlas/pkg/ginutils"
 	"github.com/trustwallet/blockatlas/pkg/logger"
 	"github.com/trustwallet/watchmarket/api"
 	_ "github.com/trustwallet/watchmarket/docs"
@@ -19,33 +19,26 @@ const (
 var (
 	port, confPath string
 	cache          *storage.Storage
-	sg             *gin.HandlerFunc
+	engine         *gin.Engine
 )
 
 func init() {
-	port, confPath, sg, cache = internal.InitAPIWithRedis(defaultPort, defaultConfigPath)
+	port, confPath = internal.ParseArgs(defaultPort, defaultConfigPath)
+
+	internal.InitConfig(confPath)
+	logger.InitLogger()
+	tmp := sentrygin.New(sentrygin.Options{}); sg := &tmp
+
+	redisHost := viper.GetString("storage.redis")
+	cache = internal.InitRedis(redisHost)
+	engine = internal.InitEngine(sg, viper.GetString("gin.mode"))
 }
 
 func main() {
-	gin.SetMode(viper.GetString("gin.mode"))
-
-	engine := gin.New()
-	engine.Use(ginutils.CheckReverseProxy, *sg)
-	engine.Use(ginutils.CORSMiddleware())
-	engine.Use(gin.Logger())
-
-	engine.OPTIONS("/*path", ginutils.CORSMiddleware())
 	engine.GET("/", api.GetRoot)
-	engine.GET("/status", func(c *gin.Context) {
-		ginutils.RenderSuccess(c, map[string]interface{}{
-			"status": true,
-		})
-	})
-
 	logger.Info("Loading market API")
-
 	marketAPI := engine.Group("/v1/market")
-
 	api.SetupMarketAPI(marketAPI, cache)
+
 	internal.SetupGracefulShutdown(port, engine)
 }
