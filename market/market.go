@@ -53,15 +53,15 @@ func runMarket(storage storage.Market, p market.Provider) error {
 	if err != nil {
 		return errors.E(err, "GetData")
 	}
-	var saveErrs = 0
+	results := make(map[string]int)
 	for _, result := range data {
-		err = storage.SaveTicker(result, marketProviders)
+		res, err := storage.SaveTicker(result, marketProviders)
+		results[string(res)]++
 		if err != nil {
-			saveErrs++
-			logger.Error(errors.E(err, "SaveTicker",
-				errors.Params{"result": result}))
+			logger.Error(errors.E(err, "SaveTicker", errors.Params{"result": result}))
 		}
 	}
-	logger.Info("Market data result", logger.Params{"markets": len(data), "provider": p.GetId(), "failed": saveErrs})
+
+	logger.Info("Market data result", logger.Params{"markets": len(data), "provider": p.GetId(), "results": results})
 	return nil
 }
