@@ -150,6 +150,7 @@ go-generate:
 
 go-get:
 	@echo "  >  Checking if there are any missing dependencies..."
+	GOBIN=$(GOBIN) go get github.com/vektra/mockery/.../
 	GOBIN=$(GOBIN) go get cmd/... $(get)
 
 go-install:
