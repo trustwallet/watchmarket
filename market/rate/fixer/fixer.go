@@ -17,7 +17,7 @@ type Fixer struct {
 	blockatlas.Request
 }
 
-func InitRate(api string, apiKey string, updateTime string) rate.Provider {
+func InitRate(api string, apiKey string, updateTime string) rate.RateProvider {
 	return &Fixer{
 		Rate: rate.Rate{
 			Id:         id,

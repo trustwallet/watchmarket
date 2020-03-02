@@ -11,7 +11,7 @@ import (
 	"github.com/spf13/viper"
 	"github.com/trustwallet/blockatlas/coin"
 	"github.com/trustwallet/watchmarket/internal"
-	"github.com/trustwallet/watchmarket/mocks"
+	"github.com/trustwallet/watchmarket/mocks/storage"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"github.com/trustwallet/watchmarket/storage"
 	"io"

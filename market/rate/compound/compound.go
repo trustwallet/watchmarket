@@ -17,7 +17,7 @@ type Compound struct {
 	client *c.Client
 }
 
-func InitRate(api string, updateTime string) rate.Provider {
+func InitRate(api string, updateTime string) rate.RateProvider {
 	return &Compound{
 		Rate: rate.Rate{
 			Id:         compound,

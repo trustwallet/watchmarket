@@ -19,7 +19,7 @@ type Market struct {
 	market.Market
 }
 
-func InitMarket(api, updateTime string) market.Provider {
+func InitMarket(api, updateTime string) market.MarketProvider {
 	m := &Market{
 		client: coingecko.NewClient(api),
 		Market: market.Market{

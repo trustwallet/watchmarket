@@ -16,7 +16,7 @@ type Market struct {
 	client *cmc.Client
 }
 
-func InitMarket(api string, apiKey string, mapApi string, updateTime string) market.Provider {
+func InitMarket(api string, apiKey string, mapApi string, updateTime string) market.MarketProvider {
 	m := &Market{
 		Market: market.Market{
 			Id:         id,

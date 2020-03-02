@@ -5,7 +5,7 @@ import (
 	"github.com/trustwallet/watchmarket/storage"
 )
 
-type Provider interface {
+type MarketProvider interface {
 	Init(storage.Market) error
 	GetId() string
 	GetUpdateTime() string
@@ -13,7 +13,7 @@ type Provider interface {
 	GetLogType() string
 }
 
-type Providers map[int]Provider
+type Providers map[int]MarketProvider
 
 func (ps Providers) GetPriority(providerId string) int {
 	for priority, provider := range ps {

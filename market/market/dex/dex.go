@@ -22,7 +22,7 @@ type Market struct {
 	blockatlas.Request
 }
 
-func InitMarket(api string, updateTime string) market.Provider {
+func InitMarket(api string, updateTime string) market.MarketProvider {
 	m := &Market{
 		Market: market.Market{
 			Id:         id,

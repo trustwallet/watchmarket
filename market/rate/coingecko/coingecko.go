@@ -17,7 +17,7 @@ type Coingecko struct {
 	rate.Rate
 }
 
-func InitRate(api string, updateTime string) rate.Provider {
+func InitRate(api string, updateTime string) rate.RateProvider {
 	return &Coingecko{
 		client: coingecko.NewClient(api),
 		Rate: rate.Rate{

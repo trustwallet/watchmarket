@@ -4,7 +4,7 @@ import (
 	"errors"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"github.com/trustwallet/watchmarket/mocks"
+	"github.com/trustwallet/watchmarket/mocks/storage"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"testing"
 	"time"
