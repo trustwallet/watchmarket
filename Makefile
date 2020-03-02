@@ -89,8 +89,8 @@ clean:
 
 ## generate-mocks: Creates mockfiles.
 generate-mocks:
-	@-${GOPATH}/bin/mockery -dir storage -name DB
-	@-${GOPATH}/bin/mockery -dir storage -name ProviderList
+	@-$(GOBIN)/mockery -dir storage -name DB
+	@-$(GOBIN)/mockery -dir storage -name ProviderList
 
 ## test: Run all unit tests.
 test: generate-mocks go-test
@@ -149,7 +149,7 @@ go-generate:
 	GOBIN=$(GOBIN) go generate $(generate)
 
 go-get:
-	@echo "  >  Checking if there is any missing dependencies..."
+	@echo "  >  Checking if there are any missing dependencies..."
 	GOBIN=$(GOBIN) go get cmd/... $(get)
 
 go-install:
