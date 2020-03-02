@@ -89,8 +89,8 @@ clean:
 
 ## generate-mocks: Creates mockfiles.
 generate-mocks:
-	@-mockery -dir storage -name DB
-	@-mockery -dir storage -name ProviderList
+	@-${GOPATH}/bin/mockery -dir storage -name DB
+	@-${GOPATH}/bin/mockery -dir storage -name ProviderList
 
 ## test: Run all unit tests.
 test: generate-mocks go-test
