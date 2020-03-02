@@ -105,7 +105,7 @@ integration: go-integration
 fmt: go-fmt
 
 ## govet: Run go vet.
-govet: go-vet
+govet: generate-mocks go-vet
 
 ## golint: Run golint.
 golint: go-lint
