@@ -2,65 +2,58 @@ package internal
 
 import (
 	"flag"
-	sentrygin "github.com/getsentry/sentry-go/gin"
 	"github.com/gin-gonic/gin"
-	"github.com/spf13/viper"
+	"github.com/trustwallet/blockatlas/pkg/ginutils"
 	"github.com/trustwallet/blockatlas/pkg/logger"
 	"github.com/trustwallet/watchmarket/config"
 	"github.com/trustwallet/watchmarket/storage"
 	"path/filepath"
 )
 
-func InitAPI(defaultPort, defaultConfigPath string) (string, string, *gin.HandlerFunc) {
+func ParseArgs(defaultPort, defaultConfigPath string) (string, string) {
 	var (
 		port, confPath string
-		sg             gin.HandlerFunc
 	)
-
-	sg = sentrygin.New(sentrygin.Options{})
 
 	flag.StringVar(&port, "p", defaultPort, "port for api")
 	flag.StringVar(&confPath, "c", defaultConfigPath, "config file for api")
 	flag.Parse()
 
-	confPath, err := filepath.Abs(confPath)
-	if err != nil {
-		logger.Fatal(err)
-	}
-
-	config.LoadConfig(confPath)
-	logger.InitLogger()
-
-	return port, confPath, &sg
+	return port, confPath
 }
 
-func InitAPIWithRedis(defaultPort, defaultConfigPath string) (string, string, *gin.HandlerFunc, *storage.Storage) {
-	var (
-		port, confPath string
-		cache          *storage.Storage
-		sg             gin.HandlerFunc
-	)
+func InitRedis(host string) *storage.Storage {
+	cache := storage.New()
+	err := cache.Init(host)
+	if err != nil {
+		logger.Fatal(err)
+	}
+	return cache
+}
 
-	cache = storage.New()
-	sg = sentrygin.New(sentrygin.Options{})
-
-	flag.StringVar(&port, "p", defaultPort, "port for api")
-	flag.StringVar(&confPath, "c", defaultConfigPath, "config file for api")
-	flag.Parse()
-
+func InitConfig(confPath string) {
 	confPath, err := filepath.Abs(confPath)
 	if err != nil {
 		logger.Fatal(err)
 	}
 
 	config.LoadConfig(confPath)
-	logger.InitLogger()
+}
 
-	host := viper.GetString("storage.redis")
-	err = cache.Init(host)
-	if err != nil {
-		logger.Fatal(err)
-	}
+func InitEngine(handler *gin.HandlerFunc, ginMode string) *gin.Engine  {
+	gin.SetMode(ginMode)
+	engine := gin.New()
+	engine.Use(ginutils.CheckReverseProxy, *handler)
+	engine.Use(ginutils.CORSMiddleware())
+	engine.Use(gin.Logger())
 
-	return port, confPath, &sg, cache
+	engine.OPTIONS("/*path", ginutils.CORSMiddleware())
+	engine.GET("/status", func(c *gin.Context) {
+		ginutils.RenderSuccess(c, map[string]interface{}{
+			"status": true,
+		})
+	})
+
+
+	return engine
 }
