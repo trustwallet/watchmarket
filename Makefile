@@ -93,7 +93,7 @@ generate-mocks:
 	@-$(GOBIN)/mockery -dir storage -name ProviderList
 
 ## test: Run all unit tests.
-test: generate-mocks go-test
+test: go-install-mockery generate-mocks go-test
 
 ## functional: Run all functional tests.
 functional: go-functional
@@ -105,7 +105,7 @@ integration: go-integration
 fmt: go-fmt
 
 ## govet: Run go vet.
-govet: generate-mocks go-vet
+govet: go-install-mockery generate-mocks go-vet
 
 ## golint: Run golint.
 golint: go-lint
@@ -150,7 +150,6 @@ go-generate:
 
 go-get:
 	@echo "  >  Checking if there are any missing dependencies..."
-	GOBIN=$(GOBIN) go get github.com/vektra/mockery/.../
 	GOBIN=$(GOBIN) go get cmd/... $(get)
 
 go-install:
@@ -184,6 +183,10 @@ go-gen-docs:
 go-vet:
 	@echo "  >  Running go vet"
 	GOBIN=$(GOBIN) go vet ./...
+
+go-install-mockery:
+	@echo "  >  Installing mockery"
+	GOBIN=$(GOBIN) go get github.com/vektra/mockery/.../
 
 go-lint:
 	@echo "  >  Running golint"
