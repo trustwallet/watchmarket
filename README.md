@@ -2,6 +2,7 @@
 Is under development at master branch. Was migrated from [Blockatlas](https://github.com/trustwallet/blockatlas) at version/blockatlas branch
 
 [![Build Status](https://dev.azure.com/TrustWallet/WatchMarket/_apis/build/status/trustwallet.watchmarket?branchName=master)](https://dev.azure.com/TrustWallet/WatchMarket/_build/latest?definitionId=45&branchName=master)
+[![codecov](https://codecov.io/gh/trustwallet/watchmarket/branch/develop/graph/badge.svg)](https://codecov.io/gh/trustwallet/watchmarket)
 
 **IMPORTANT!**
 Is under development at master branch. Was migrated from [Blockatlas](https://github.com/trustwallet/blockatlas) at version/blockatlas branch
