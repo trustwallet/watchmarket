@@ -1,6 +1,7 @@
 package api
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
 	"github.com/trustwallet/blockatlas/coin"
@@ -15,7 +16,6 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
-	"fmt"
 )
 
 const (
