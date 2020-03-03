@@ -21,6 +21,9 @@ config_*.yml
 *~
 mocks
 
+coverage.txt
+mocks
+
 ### macOS ###
 *.DS_Store
 .AppleDouble
