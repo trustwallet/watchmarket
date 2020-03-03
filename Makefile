@@ -155,7 +155,7 @@ go-clean:
 
 go-test:
 	@echo "  >  Running unit tests"
-	GOBIN=$(GOBIN) go test -coverprofile=coverage.txt -cover -race -v ./...
+	GOBIN=$(GOBIN) go test -coverprofile=cover.txt -cover -race -v ./...
 
 go-functional:
 	@echo "  >  Running functional tests"

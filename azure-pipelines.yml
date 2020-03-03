@@ -49,7 +49,7 @@ jobs:
       - script: make test
         workingDirectory: '$(System.DefaultWorkingDirectory)'
         displayName: 'Run unit tests'
-      - script: bash <(curl -s https://codecov.io/bash) -f coverage.txt
+      - script: bash <(curl -s https://codecov.io/bash) -f cover.txt
         workingDirectory: '$(System.DefaultWorkingDirectory)'
         displayName: 'Upload coverage codecov.io'
 
