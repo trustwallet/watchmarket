@@ -15,9 +15,9 @@ The main features of it are:
 
 ### Architecture
 
-This project consists of 2 main parts: Worker and REST API 
+This project consists of 2 main parts: Observer and REST API 
 
-Worker - service that periodically fetch latest data from **data providers** (like coinmarketcap), parse it to the common data structure, set the parsed data to the cache (Redis)
+Observer - service that periodically fetch latest data from **data providers** (like coinmarketcap), parse it to the common data structure, set the parsed data to the cache (Redis)
 
 REST API - allows to get cached data through REST HTTP API
 
