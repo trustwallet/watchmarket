@@ -66,9 +66,9 @@ func scheduleTasks(storage storage.Market, md Provider, c *cron.Cron) {
 func run(storage storage.Market, md Provider) error {
 	logger.Info("Starting market data task...", logger.Params{"Type": md.GetLogType(), "Market": md.GetId()})
 	switch m := md.(type) {
-	case market.Provider:
+	case market.MarketProvider:
 		return runMarket(storage, m)
-	case rate.Provider:
+	case rate.RateProvider:
 		return runRate(storage, m)
 	}
 	return errors.E("invalid market interface")

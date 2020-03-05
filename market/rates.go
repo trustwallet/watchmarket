@@ -2,54 +2,28 @@ package market
 
 import (
 	"github.com/robfig/cron/v3"
-	"github.com/spf13/viper"
 	"github.com/trustwallet/blockatlas/pkg/errors"
 	"github.com/trustwallet/blockatlas/pkg/logger"
 	"github.com/trustwallet/watchmarket/market/rate"
-	"github.com/trustwallet/watchmarket/market/rate/cmc"
-	"github.com/trustwallet/watchmarket/market/rate/coingecko"
-	"github.com/trustwallet/watchmarket/market/rate/compound"
-	"github.com/trustwallet/watchmarket/market/rate/fixer"
 	"github.com/trustwallet/watchmarket/storage"
 )
 
 var rateProviders rate.Providers
 
-func InitRates(storage storage.Market) {
-	rateProviders = rate.Providers{
-		// Add Market Quote Providers:
-		0: cmc.InitRate(
-			viper.GetString("market.cmc.api"),
-			viper.GetString("market.cmc.api_key"),
-			viper.GetString("market.cmc.map_url"),
-			viper.GetString("market.rate_update_time"),
-		),
-		1: fixer.InitRate(
-			viper.GetString("market.fixer.api"),
-			viper.GetString("market.fixer.api_key"),
-			viper.GetString("market.fixer.rate_update_time"),
-		),
-		2: compound.InitRate(
-			viper.GetString("market.compound.api"),
-			viper.GetString("market.rate_update_time"),
-		),
-		3: coingecko.InitRate(
-			viper.GetString("market.coingecko.api"),
-			viper.GetString("market.rate_update_time"),
-		),
-	}
-	addRates(storage, rateProviders)
+func InitRates(storage storage.Market, providers *rate.Providers) *cron.Cron {
+	rateProviders = *providers
+	return scheduleRates(storage, rateProviders)
 }
 
-func addRates(storage storage.Market, rates rate.Providers) {
+func scheduleRates(storage storage.Market, rates rate.Providers) *cron.Cron {
 	c := cron.New()
 	for _, r := range rates {
 		scheduleTasks(storage, r, c)
 	}
-	c.Start()
+	return c
 }
 
-func runRate(storage storage.Market, p rate.Provider) error {
+func runRate(storage storage.Market, p rate.RateProvider) error {
 	rates, err := p.FetchLatestRates()
 	if err != nil {
 		return errors.E(err, "FetchLatestRates")

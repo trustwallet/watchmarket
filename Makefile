@@ -89,8 +89,10 @@ clean:
 
 ## generate-mocks: Creates mockfiles.
 generate-mocks:
-	@-$(GOBIN)/mockery -dir storage -name DB
-	@-$(GOBIN)/mockery -dir storage -name ProviderList
+	@-$(GOBIN)/mockery -dir storage -output mocks/storage -name DB
+	@-$(GOBIN)/mockery -dir storage -output mocks/storage -name ProviderList
+	@-$(GOBIN)/mockery -dir market/rate -output mocks/market/rate -name RateProvider
+	@-$(GOBIN)/mockery -dir market/market -output mocks/market/market -name MarketProvider
 
 ## test: Run all unit tests.
 test: go-install-mockery generate-mocks go-test
