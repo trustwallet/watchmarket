@@ -95,10 +95,7 @@ generate-mocks:
 ## test: Run all unit tests.
 test: go-install-mockery generate-mocks go-test
 
-## functional: Run all functional tests.
-functional: go-functional
-
-## integration: Run all functional tests.
+## integration: Run all integration tests.
 integration: go-integration
 
 ## fmt: Run `go fmt` for all go files.
@@ -162,10 +159,6 @@ go-clean:
 go-test:
 	@echo "  >  Running unit tests"
 	GOBIN=$(GOBIN) go test -coverprofile=coverage.txt -cover -race -v ./...
-
-go-functional:
-	@echo "  >  Running functional tests"
-	GOBIN=$(GOBIN) TEST_CONFIG=$(CONFIG_FILE) go test -race -tags=functional -v ./pkg/tests/functional
 
 go-integration:
 	@echo "  >  Running integration tests"

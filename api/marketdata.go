@@ -58,7 +58,7 @@ func getTickersHandler(storage storage.Market) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		md := TickerRequest{Currency: watchmarket.DefaultCurrency}
 		if err := c.BindJSON(&md); err != nil {
-			ginutils.ErrorResponse(c).Message(err.Error()).Render()
+			ginutils.RenderError(c, http.StatusBadRequest, "Invalid request payload")
 			return
 		}
 
@@ -79,6 +79,7 @@ func getTickersHandler(storage storage.Market) func(c *gin.Context) {
 
 			coinObj, ok := coin.Coins[coinRequest.Coin]
 			if !ok {
+				logger.Warn("Requested coin does not exist", logger.Params{"coin": coinRequest.Coin})
 				continue
 			}
 			r, err := storage.GetTicker(coinObj.Symbol, strings.ToUpper(coinRequest.TokenId))
@@ -150,7 +151,6 @@ func getChartsHandler() func(c *gin.Context) {
 		}
 
 		currency := c.DefaultQuery("currency", watchmarket.DefaultCurrency)
-
 		chart, err := charts.GetChartData(uint(coinId), token, currency, timeStart, maxItems)
 		if err != nil {
 			logger.Error(err, "Failed to retrieve chart", logger.Params{"coin": coinId, "currency": currency})

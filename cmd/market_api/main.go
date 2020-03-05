@@ -35,10 +35,6 @@ func init() {
 }
 
 func main() {
-	engine.GET("/", api.GetRoot)
-	logger.Info("Loading market API")
-	marketAPI := engine.Group("/v1/market")
-	api.SetupMarketAPI(marketAPI, cache)
-
+	api.Bootstrap(engine, cache)
 	internal.SetupGracefulShutdown(port, engine)
 }
