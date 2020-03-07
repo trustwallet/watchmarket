@@ -9,6 +9,7 @@ require (
 	github.com/getsentry/sentry-go v0.5.1
 	github.com/gin-gonic/gin v1.5.0
 	github.com/go-redis/redis v6.15.6+incompatible
+	github.com/magiconair/properties v1.8.1
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/spf13/viper v1.6.2
 	github.com/stretchr/testify v1.5.1

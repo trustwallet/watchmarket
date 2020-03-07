@@ -26,7 +26,7 @@ func TestSaveTickerWhenTickerDoesntExist(t *testing.T) {
 
 	subject := &Storage{mockDb}
 
-	res ,err := subject.SaveTicker(mockTicker, mockProviderList)
+	res, err := subject.SaveTicker(mockTicker, mockProviderList)
 
 	assert.Nil(t, err)
 	assert.Equal(t, SaveResultSuccess, res)
@@ -83,19 +83,19 @@ func TestSaveTickerWhenTickerExistsAndPriorityTooLow(t *testing.T) {
 	mockProviderList.On("GetPriority", "myNewTestProvider").Return(10)
 	mockProviderList.On("GetPriority", "myOldTestProvider").Return(0)
 	mockTicker := &watchmarket.Ticker{
-		CoinName:   "myTestCoin",
-		TokenId:    "myTestTokenId",
-		Price:      watchmarket.TickerPrice{
-			Provider:  "myNewTestProvider",
+		CoinName: "myTestCoin",
+		TokenId:  "myTestTokenId",
+		Price: watchmarket.TickerPrice{
+			Provider: "myNewTestProvider",
 		},
 		LastUpdate: time.Now(),
 	}
 	mockDb.On("GetHMValue", "ATLAS_MARKET_QUOTES", "MYTESTCOIN_MYTESTTOKENID", mock.MatchedBy(func(value interface{}) bool {
 		*value.(**watchmarket.Ticker) = &watchmarket.Ticker{
-			CoinName:   "myTestCoin",
-			TokenId:    "myTestTokenId",
-			Price:      watchmarket.TickerPrice{
-				Provider:  "myOldTestProvider",
+			CoinName: "myTestCoin",
+			TokenId:  "myTestTokenId",
+			Price: watchmarket.TickerPrice{
+				Provider: "myOldTestProvider",
 			},
 			LastUpdate: time.Now(),
 		}
@@ -116,19 +116,19 @@ func TestSaveTickerWhenTickerExistsAndOutdated(t *testing.T) {
 	mockProviderList.On("GetPriority", "myNewTestProvider").Return(0)
 	mockProviderList.On("GetPriority", "myOldTestProvider").Return(10)
 	mockTicker := &watchmarket.Ticker{
-		CoinName:   "myTestCoin",
-		TokenId:    "myTestTokenId",
-		Price:      watchmarket.TickerPrice{
-			Provider:  "myNewTestProvider",
+		CoinName: "myTestCoin",
+		TokenId:  "myTestTokenId",
+		Price: watchmarket.TickerPrice{
+			Provider: "myNewTestProvider",
 		},
 		LastUpdate: time.Now(),
 	}
 	mockDb.On("GetHMValue", "ATLAS_MARKET_QUOTES", "MYTESTCOIN_MYTESTTOKENID", mock.MatchedBy(func(value interface{}) bool {
 		*value.(**watchmarket.Ticker) = &watchmarket.Ticker{
-			CoinName:   "myTestCoin",
-			TokenId:    "myTestTokenId",
-			Price:      watchmarket.TickerPrice{
-				Provider:  "myOldTestProvider",
+			CoinName: "myTestCoin",
+			TokenId:  "myTestTokenId",
+			Price: watchmarket.TickerPrice{
+				Provider: "myOldTestProvider",
 			},
 			LastUpdate: time.Now(),
 		}
@@ -205,7 +205,7 @@ func TestSaveRatesNoExistingRate(t *testing.T) {
 	mockDb.On("GetHMValue", "ATLAS_MARKET_RATES", "myTestCurrency", mock.AnythingOfType("**watchmarket.Rate")).Return(watchmarket.ErrNotFound)
 	mockDb.On("AddHM", "ATLAS_MARKET_RATES", "myTestCurrency", mock.AnythingOfType("*watchmarket.Rate")).Return(nil)
 	mockRates := watchmarket.Rates{}
-	mockRates = append(mockRates, watchmarket.Rate{Currency: "myTestCurrency",})
+	mockRates = append(mockRates, watchmarket.Rate{Currency: "myTestCurrency"})
 	mockProviderList := &mocks.ProviderList{}
 
 	subject := &Storage{mockDb}
@@ -221,18 +221,18 @@ func TestSaveRatesExistingRate(t *testing.T) {
 	mockDb := &mocks.DB{}
 	mockDb.On("GetHMValue", "ATLAS_MARKET_RATES", "myTestCurrency", mock.MatchedBy(func(value interface{}) bool {
 		*value.(**watchmarket.Rate) = &watchmarket.Rate{
-			Currency:         "myTestCurrency",
-			Provider:         "myOldTestProvider",
-			Timestamp:        0,
+			Currency:  "myTestCurrency",
+			Provider:  "myOldTestProvider",
+			Timestamp: 0,
 		}
 		return true
 	})).Return(nil)
 	mockDb.On("AddHM", "ATLAS_MARKET_RATES", "myTestCurrency", mock.AnythingOfType("*watchmarket.Rate")).Return(nil)
 	mockRates := watchmarket.Rates{}
 	mockRates = append(mockRates, watchmarket.Rate{
-		Currency:         "myTestCurrency",
-		Provider:         "myNewTestProvider",
-		Timestamp:        10,
+		Currency:  "myTestCurrency",
+		Provider:  "myNewTestProvider",
+		Timestamp: 10,
 	})
 	mockProviderList := &mocks.ProviderList{}
 	mockProviderList.On("GetPriority", "myNewTestProvider").Return(0)
@@ -251,18 +251,18 @@ func TestSaveRatesExistingRateNewRateLowPriority(t *testing.T) {
 	mockDb := &mocks.DB{}
 	mockDb.On("GetHMValue", "ATLAS_MARKET_RATES", "myTestCurrency", mock.MatchedBy(func(value interface{}) bool {
 		*value.(**watchmarket.Rate) = &watchmarket.Rate{
-			Currency:         "myTestCurrency",
-			Provider:         "myOldTestProvider",
-			Timestamp:        0,
+			Currency:  "myTestCurrency",
+			Provider:  "myOldTestProvider",
+			Timestamp: 0,
 		}
 		return true
 	})).Return(nil)
 	mockDb.On("AddHM", "ATLAS_MARKET_RATES", "myTestCurrency", mock.AnythingOfType("*watchmarket.Rate")).Return(nil)
 	mockRates := watchmarket.Rates{}
 	mockRates = append(mockRates, watchmarket.Rate{
-		Currency:         "myTestCurrency",
-		Provider:         "myNewTestProvider",
-		Timestamp:        10,
+		Currency:  "myTestCurrency",
+		Provider:  "myNewTestProvider",
+		Timestamp: 10,
 	})
 	mockProviderList := &mocks.ProviderList{}
 	mockProviderList.On("GetPriority", "myNewTestProvider").Return(10)
@@ -281,18 +281,18 @@ func TestSaveRatesExistingRateNewRateOutdated(t *testing.T) {
 	mockDb := &mocks.DB{}
 	mockDb.On("GetHMValue", "ATLAS_MARKET_RATES", "myTestCurrency", mock.MatchedBy(func(value interface{}) bool {
 		*value.(**watchmarket.Rate) = &watchmarket.Rate{
-			Currency:         "myTestCurrency",
-			Provider:         "myOldTestProvider",
-			Timestamp:        10,
+			Currency:  "myTestCurrency",
+			Provider:  "myOldTestProvider",
+			Timestamp: 10,
 		}
 		return true
 	})).Return(nil)
 	mockDb.On("AddHM", "ATLAS_MARKET_RATES", "myTestCurrency", mock.AnythingOfType("*watchmarket.Rate")).Return(nil)
 	mockRates := watchmarket.Rates{}
 	mockRates = append(mockRates, watchmarket.Rate{
-		Currency:         "myTestCurrency",
-		Provider:         "myNewTestProvider",
-		Timestamp:        0,
+		Currency:  "myTestCurrency",
+		Provider:  "myNewTestProvider",
+		Timestamp: 0,
 	})
 	mockProviderList := &mocks.ProviderList{}
 	mockProviderList.On("GetPriority", "myNewTestProvider").Return(0)
@@ -313,7 +313,7 @@ func TestSaveRatesDbSaveFails(t *testing.T) {
 	dbSaveFailure := errors.New("boom")
 	mockDb.On("AddHM", "ATLAS_MARKET_RATES", "myTestCurrency", mock.AnythingOfType("*watchmarket.Rate")).Return(dbSaveFailure)
 	mockRates := watchmarket.Rates{}
-	mockRates = append(mockRates, watchmarket.Rate{Currency: "myTestCurrency",})
+	mockRates = append(mockRates, watchmarket.Rate{Currency: "myTestCurrency"})
 	mockProviderList := &mocks.ProviderList{}
 
 	subject := &Storage{mockDb}
@@ -329,7 +329,7 @@ func TestSaveRatesDbRetrievalFails(t *testing.T) {
 	dbRetrievalFailure := errors.New("boom")
 	mockDb.On("GetHMValue", "ATLAS_MARKET_RATES", "myTestCurrency", mock.AnythingOfType("**watchmarket.Rate")).Return(dbRetrievalFailure)
 	mockRates := watchmarket.Rates{}
-	mockRates = append(mockRates, watchmarket.Rate{Currency: "myTestCurrency",})
+	mockRates = append(mockRates, watchmarket.Rate{Currency: "myTestCurrency"})
 	mockProviderList := &mocks.ProviderList{}
 
 	subject := &Storage{mockDb}

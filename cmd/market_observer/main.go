@@ -23,8 +23,8 @@ const (
 )
 
 var (
-	cache         *storage.Storage
-	rateProviders *rateprovider.Providers
+	cache           *storage.Storage
+	rateProviders   *rateprovider.Providers
 	marketProviders *marketprovider.Providers
 )
 
