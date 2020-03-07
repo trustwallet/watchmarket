@@ -89,5 +89,6 @@ func main() {
 	marketCron := market.InitMarkets(cache, marketProviders)
 	defer marketCron.Stop()
 	marketCron.Start()
-	<-make(chan struct{})
+	internal.WaitingForExitSignal()
+	logger.Info("Waiting for all observer jobs to stop")
 }
