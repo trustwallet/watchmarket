@@ -9,7 +9,7 @@
 Watchmarket comes with three apps:
 * API: RESTful API to retrieve coin info, charts, and tickers
 * Observer: caches data from explorer APIs in Redis
-* Swapper: API explorer
+* Swagger: API explorer
 
 #### Supported Explorer APIs
 
