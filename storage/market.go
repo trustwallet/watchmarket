@@ -31,7 +31,7 @@ func (s *Storage) SaveTicker(coin *watchmarket.Ticker, pl ProviderList) (SaveRes
 		}
 
 		if cd.LastUpdate.After(coin.LastUpdate) && op >= np {
-			logger.Debug("Skipping new ticker as its priority is lower than the existing record or its Timestamp is older", logger.Params{
+			logger.Debug("Skipping new ticker as its priority is lower than the existing record or its timestamp is older", logger.Params{
 				"oldTickerTime":     cd.LastUpdate,
 				"newTickerTime":     coin.LastUpdate,
 				"oldTickerPriority": op,
@@ -40,7 +40,7 @@ func (s *Storage) SaveTicker(coin *watchmarket.Ticker, pl ProviderList) (SaveRes
 			return SaveResultSkippedLowPriorityOrOutdated, nil
 		}
 	}
-
+	
 	hm := createHashMap(coin.CoinName, coin.TokenId)
 	err = s.AddHM(EntityQuotes, hm, coin)
 	if err != nil {
