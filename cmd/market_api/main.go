@@ -27,8 +27,7 @@ func init() {
 
 	internal.InitConfig(confPath)
 	logger.InitLogger()
-	tmp := sentrygin.New(sentrygin.Options{})
-	sg := &tmp
+	tmp := sentrygin.New(sentrygin.Options{}); sg := &tmp
 
 	redisHost := viper.GetString("storage.redis")
 	cache = internal.InitRedis(redisHost)
@@ -36,6 +35,6 @@ func init() {
 }
 
 func main() {
-	api.Bootstrap(engine, *cache)
+	api.Bootstrap(engine, cache)
 	internal.SetupGracefulShutdown(port, engine)
 }
