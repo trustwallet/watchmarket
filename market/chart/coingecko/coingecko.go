@@ -19,7 +19,7 @@ type Chart struct {
 	client *coingecko.Client
 }
 
-func InitChart(api string) chart.Provider {
+func InitChart(api string) chart.ChartProvider {
 	m := &Chart{
 		Chart: chart.Chart{
 			Id: id,

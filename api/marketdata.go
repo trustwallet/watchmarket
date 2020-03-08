@@ -35,13 +35,13 @@ type Coin struct {
 	TokenId  string              `json:"token_id,omitempty"`
 }
 
-func SetupMarketAPI(router gin.IRouter, db storage.Market) {
+func SetupMarketAPI(router gin.IRouter, db storage.Market, charts *market.Charts, ac assets.AssetClient) {
 	router.Use(ginutils.TokenAuthMiddleware(viper.GetString("market.auth")))
 	// Ticker
 	router.POST("/ticker", getTickersHandler(db))
 	// Charts
 	router.GET("/charts", gincache.CacheMiddleware(time.Minute*5, getChartsHandler()))
-	router.GET("/info", getCoinInfoHandler())
+  router.GET("/info", getCoinInfoHandler(charts, ac))
 }
 
 // @Summary Get ticker values for a specific market
@@ -175,26 +175,39 @@ func getChartsHandler() func(c *gin.Context) {
 // @Param currency query string false "The currency to show coin info in" default(USD)
 // @Success 200 {object} watchmarket.ChartCoinInfo
 // @Router /v1/market/info [get]
-func getCoinInfoHandler() func(c *gin.Context) {
-	var charts = market.InitCharts()
+func getCoinInfoHandler(charts *market.Charts, ac assets.AssetClient) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		coinQuery := c.Query("coin")
+		if len(coinQuery) == 0 {
+			ginutils.RenderError(c, http.StatusBadRequest, "No coin provided")
+			return
+		}
+
 		coinId, err := strconv.Atoi(coinQuery)
 		if err != nil {
-			ginutils.RenderError(c, http.StatusBadRequest, "Invalid coin")
+			ginutils.RenderError(c, http.StatusBadRequest, "Invalid coin provided")
 			return
 		}
 
 		token := c.Query("token")
 		currency := c.DefaultQuery("currency", watchmarket.DefaultCurrency)
 		chart, err := charts.GetCoinInfo(uint(coinId), token, currency)
-		if err != nil {
-			logger.Error(err, "Failed to retrieve coin info", logger.Params{"coin": coinId, "currency": currency})
+		if err == watchmarket.ErrNotFound {
+			ginutils.RenderError(c, http.StatusNotFound, fmt.Sprintf("Coin info for coin id %d (token: %s, currency: %s) not found", coinId, token, currency))
+			return
+		} else if err != nil {
+			logger.Error(err, "Failed to retrieve coin info", logger.Params{"coinId": coinId, "token": token, "currency": currency})
+			ginutils.RenderError(c, http.StatusInternalServerError, "Failed to retrieve coin info")
+			return
 		}
-		chart.Info, err = assets.GetCoinInfo(coinId, token)
-		if err != nil {
-			logger.Error(err, "Failed to retrieve coin info", logger.Params{"coin": coinId, "currency": currency})
-			ginutils.RenderError(c, http.StatusInternalServerError, err.Error())
+
+		chart.Info, err = ac.GetCoinInfo(coinId, token)
+		if err == watchmarket.ErrNotFound {
+			ginutils.RenderError(c, http.StatusNotFound, fmt.Sprintf("Coin assets for coin id %d (token: %s) not found", coinId, token))
+			return
+		} else if err != nil {
+			logger.Error(err, "Failed to retrieve coin assets", logger.Params{"coinId": coinId, "token": token})
+			ginutils.RenderError(c, http.StatusInternalServerError, "Failed to retrieve coin assets")
 			return
 		}
 		ginutils.RenderSuccess(c, chart)

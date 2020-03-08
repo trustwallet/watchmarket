@@ -3,11 +3,14 @@ package main
 import (
 	sentrygin "github.com/getsentry/sentry-go/gin"
 	"github.com/gin-gonic/gin"
+	"github.com/go-resty/resty/v2"
 	"github.com/spf13/viper"
 	"github.com/trustwallet/blockatlas/pkg/logger"
 	"github.com/trustwallet/watchmarket/api"
 	_ "github.com/trustwallet/watchmarket/docs"
 	"github.com/trustwallet/watchmarket/internal"
+	"github.com/trustwallet/watchmarket/market"
+	"github.com/trustwallet/watchmarket/services/assets"
 	"github.com/trustwallet/watchmarket/storage"
 )
 
@@ -35,6 +38,6 @@ func init() {
 }
 
 func main() {
-	api.Bootstrap(engine, cache)
+	api.Bootstrap(engine, cache, market.InitCharts(), &assets.HttpAssetClient{HttpClient: resty.New()})
 	internal.SetupGracefulShutdown(port, engine)
 }
