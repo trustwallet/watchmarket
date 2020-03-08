@@ -20,7 +20,7 @@ type Chart struct {
 	widgetClient *cmc.WidgetClient
 }
 
-func InitChart(webApi string, widgetApi string, mapApi string) chart.Provider {
+func InitChart(webApi string, widgetApi string, mapApi string) chart.ChartProvider {
 	m := &Chart{
 		Chart: chart.Chart{
 			Id: id,

@@ -17,11 +17,11 @@ const (
 )
 
 type Charts struct {
-	chartProviders chart.Providers
+	ChartProviders chart.ChartProviders
 }
 
 func InitCharts() *Charts {
-	return &Charts{chart.Providers{
+	return &Charts{chart.ChartProviders{
 		0: cmc.InitChart(
 			viper.GetString("market.cmc.webapi"),
 			viper.GetString("market.cmc.widgetapi"),
@@ -36,8 +36,8 @@ func InitCharts() *Charts {
 func (c *Charts) GetChartData(coin uint, token string, currency string, timeStart int64, maxItems int) (watchmarket.ChartData, error) {
 	chartsData := watchmarket.ChartData{}
 	timeStart = numbers.Max(timeStart, minUnixTime)
-	for i := 0; i < len(c.chartProviders); i++ {
-		c := c.chartProviders[i]
+	for i := 0; i < len(c.ChartProviders); i++ {
+		c := c.ChartProviders[i]
 		charts, err := c.GetChartData(coin, token, currency, timeStart)
 		if err != nil {
 			continue
@@ -48,17 +48,19 @@ func (c *Charts) GetChartData(coin uint, token string, currency string, timeStar
 	return chartsData, errors.E("No chart data found", errors.Params{"coin": coin, "token": token})
 }
 
+
 func (c *Charts) GetCoinInfo(coin uint, token string, currency string) (watchmarket.ChartCoinInfo, error) {
 	coinInfoData := watchmarket.ChartCoinInfo{}
-	for i := 0; i < len(c.chartProviders); i++ {
-		c := c.chartProviders[i]
+	for i := 0; i < len(c.ChartProviders); i++ {
+		c := c.ChartProviders[i]
 		info, err := c.GetCoinData(coin, token, currency)
 		if err != nil {
 			continue
 		}
 		return info, nil
 	}
-	return coinInfoData, errors.E("No chart coin info data found", errors.Params{"coin": coin, "token": token})
+
+	return coinInfoData, watchmarket.ErrNotFound
 }
 
 func normalizePrices(prices []watchmarket.ChartPrice, maxItems int) (result []watchmarket.ChartPrice) {

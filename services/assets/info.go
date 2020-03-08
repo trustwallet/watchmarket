@@ -1,26 +1,49 @@
 package assets
 
 import (
+	"errors"
+	"fmt"
+	"github.com/go-resty/resty/v2"
 	"github.com/trustwallet/blockatlas/coin"
-	"github.com/trustwallet/blockatlas/pkg/blockatlas"
-	"github.com/trustwallet/blockatlas/pkg/errors"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
-	"time"
 )
 
 const (
 	AssetsURL = "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/"
 )
 
-func GetCoinInfo(coinId int, token string) (info *watchmarket.CoinInfo, err error) {
+type AssetClient interface {
+	GetCoinInfo(coinId int, token string) (info *watchmarket.CoinInfo, err error)
+}
+
+type HttpAssetClient struct {
+	HttpClient *resty.Client
+}
+
+func (cl *HttpAssetClient) GetCoinInfo(coinId int, token string) (*watchmarket.CoinInfo, error) {
 	c, ok := coin.Coins[uint(coinId)]
 	if !ok {
-		return info, errors.E("coin not found")
+		return nil, watchmarket.ErrNotFound
 	}
-	url := getCoinInfoUrl(c, token)
-	request := blockatlas.InitClient(url)
-	err = request.GetWithCache(&info, "/info.json", nil, time.Hour*1)
-	return
+	url := fmt.Sprintf("%s/info.json", getCoinInfoUrl(c, token))
+	resp, err := cl.HttpClient.R().
+		EnableTrace().
+		SetResult(&watchmarket.CoinInfo{}).
+		Get(url)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.StatusCode() == 404 {
+		return nil, watchmarket.ErrNotFound
+	}
+
+	if !resp.IsSuccess() {
+		return nil, errors.New(fmt.Sprintf("Request to %s failed with HTTP %d: %s", url, resp.StatusCode(), resp.String()))
+	}
+
+	return resp.Result().(*watchmarket.CoinInfo), nil
 }
 
 func getCoinInfoUrl(c coin.Coin, token string) string {

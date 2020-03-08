@@ -11,8 +11,13 @@ import (
 	"github.com/spf13/viper"
 	"github.com/trustwallet/blockatlas/coin"
 	"github.com/trustwallet/watchmarket/internal"
-	"github.com/trustwallet/watchmarket/mocks/storage"
+	"github.com/trustwallet/watchmarket/market"
+	"github.com/trustwallet/watchmarket/market/chart"
+	mockchartprovider "github.com/trustwallet/watchmarket/mocks/market/chart"
+	mockassetprovider "github.com/trustwallet/watchmarket/mocks/services/assets"
+	mocks "github.com/trustwallet/watchmarket/mocks/storage"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
+	"github.com/trustwallet/watchmarket/services/assets"
 	"github.com/trustwallet/watchmarket/storage"
 	"io"
 	"io/ioutil"
@@ -38,7 +43,7 @@ func TestTickers(t *testing.T) {
 	db := internal.InitRedis(fmt.Sprintf("redis://%s", s.Addr()))
 	seedDb(t, db)
 
-	Bootstrap(engine, db)
+	Bootstrap(engine, db, getChartsMock(), getAssetClientMock())
 
 	server := httptest.NewServer(engine)
 	defer server.Close()
@@ -107,7 +112,86 @@ func TestTickers(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			fmt.Printf("Responded with %d: \n%s\n", resp.StatusCode, string(responseBytes))
+
+			assert.Equal(t, parseJson(t, responseBytes), parseJson(t, []byte(tt.expectedBody)))
+		})
+	}
+}
+
+func TestCoinInfo(t *testing.T) {
+	s := setupRedis(t)
+	defer s.Close()
+
+	engine := setupEngine()
+	db := internal.InitRedis(fmt.Sprintf("redis://%s", s.Addr()))
+	seedDb(t, db)
+
+	Bootstrap(engine, db, getChartsMock(), getAssetClientMock())
+
+	server := httptest.NewServer(engine)
+	defer server.Close()
+
+	tests := []struct {
+		name           string
+		requestMethod  string
+		requestUrl     string
+		requestBody    string
+		expectedStatus int
+		expectedBody   string
+	}{
+		{
+			name: "test no coin provided",
+			requestUrl: fmt.Sprintf("%s/v1/market/info", server.URL),
+			requestMethod: "GET",
+			requestBody: "",
+			expectedStatus: 400,
+			expectedBody: "{\"code\":400,\"error\":\"No coin provided\"}",
+		},
+		{
+			name: "test invalid coin provided",
+			requestUrl: fmt.Sprintf("%s/v1/market/info?coin=invalid", server.URL),
+			requestMethod: "GET",
+			requestBody: "",
+			expectedStatus: 400,
+			expectedBody: "{\"code\":400,\"error\":\"Invalid coin provided\"}",
+		},
+		{
+			name: "test nominal",
+			requestUrl: fmt.Sprintf("%s/v1/market/info?coin=60&token=ETHToken", server.URL),
+			requestMethod: "GET",
+			requestBody: "",
+			expectedStatus: 200,
+			expectedBody: "{\"circulating_supply\": 0, \"info\": {}, \"market_cap\": 0, \"total_supply\": 0, \"volume_24\": 0}",
+		},
+		{
+			name: "test coin info not found",
+			requestUrl: fmt.Sprintf("%s/v1/market/info?coin=500&token=ETHToken", server.URL),
+			requestMethod: "GET",
+			requestBody: "",
+			expectedStatus: 404,
+			expectedBody: "{\"code\":404,\"error\":\"Coin info for coin id 500 (token: ETHToken, currency: USD) not found\"}",
+		},
+		{
+			name: "test coin assets not found",
+			requestUrl: fmt.Sprintf("%s/v1/market/info?coin=1000&token=ETHToken", server.URL),
+			requestMethod: "GET",
+			requestBody: "",
+			expectedStatus: 404,
+			expectedBody: "{\"code\":404,\"error\":\"Coin assets for coin id 1000 (token: ETHToken) not found\"}",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			resp, err := http.DefaultClient.Do(makeRequest(t, tt.requestMethod, tt.requestUrl, strings.NewReader(tt.requestBody)))
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer resp.Body.Close()
+			assert.Equal(t, resp.StatusCode, tt.expectedStatus)
+			responseBytes, err := ioutil.ReadAll(resp.Body)
+			if err != nil {
+				t.Fatal(err)
+			}
 
 			assert.Equal(t, parseJson(t, responseBytes), parseJson(t, []byte(tt.expectedBody)))
 		})
@@ -131,11 +215,48 @@ func setupRedis(t *testing.T) *miniredis.Miniredis {
 	return s
 }
 
+func getAssetClientMock() assets.AssetClient {
+	client := &mockassetprovider.AssetClient{}
+	client.On("GetCoinInfo", 60, "ETHToken").Return(&watchmarket.CoinInfo{
+		Name:             "",
+		Website:          "",
+		SourceCode:       "",
+		WhitePaper:       "",
+		Description:      "",
+		ShortDescription: "",
+		DataSource:       "",
+	}, nil)
+	client.On("GetCoinInfo", 1000, "ETHToken").Return(nil, watchmarket.ErrNotFound)
+
+	return client
+}
+
+func getChartsMock() *market.Charts {
+	mockChartProvider := mockchartprovider.ChartProvider{}
+	mockChartProvider.On("GetCoinData", uint(60), "ETHToken", watchmarket.DefaultCurrency).Return(watchmarket.ChartCoinInfo{
+		Vol24:             0,
+		MarketCap:         0,
+		CirculatingSupply: 0,
+		TotalSupply:       0,
+	}, nil)
+	mockChartProvider.On("GetCoinData", uint(1000), "ETHToken", watchmarket.DefaultCurrency).Return(watchmarket.ChartCoinInfo{
+		Vol24:             0,
+		MarketCap:         0,
+		CirculatingSupply: 0,
+		TotalSupply:       0,
+	}, nil)
+	mockChartProvider.On("GetCoinData", uint(500), "ETHToken", watchmarket.DefaultCurrency).Return(watchmarket.ChartCoinInfo{}, watchmarket.ErrNotFound)
+	return &market.Charts{ChartProviders: chart.ChartProviders{
+		0: &mockChartProvider,
+	}}
+}
+
 func setupEngine() *gin.Engine {
 	internal.InitConfig("../../config.yml")
 	tmp := sentrygin.New(sentrygin.Options{}); sg := &tmp
 	return internal.InitEngine(sg, viper.GetString("gin.mode"))
 }
+
 
 func seedDb(t *testing.T, db *storage.Storage) {
 	mockProviderList := &mocks.ProviderList{}

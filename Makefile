@@ -93,6 +93,8 @@ generate-mocks:
 	@-$(GOBIN)/mockery -dir storage -output mocks/storage -name ProviderList
 	@-$(GOBIN)/mockery -dir market/rate -output mocks/market/rate -name RateProvider
 	@-$(GOBIN)/mockery -dir market/market -output mocks/market/market -name MarketProvider
+	@-$(GOBIN)/mockery -dir market/chart -output mocks/market/chart -name ChartProvider
+	@-$(GOBIN)/mockery -dir services/assets -output mocks/services/assets -name AssetClient
 
 ## test: Run all unit tests.
 test: go-install-mockery generate-mocks go-test
