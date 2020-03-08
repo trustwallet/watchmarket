@@ -7,6 +7,7 @@ import (
 	"github.com/trustwallet/blockatlas/coin"
 	"github.com/trustwallet/blockatlas/pkg/blockatlas"
 	"github.com/trustwallet/blockatlas/pkg/ginutils"
+	"github.com/trustwallet/blockatlas/pkg/ginutils/gincache"
 	"github.com/trustwallet/blockatlas/pkg/logger"
 	"github.com/trustwallet/watchmarket/market"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
@@ -16,6 +17,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 )
 
 const (
@@ -38,8 +40,8 @@ func SetupMarketAPI(router gin.IRouter, db storage.Market, charts *market.Charts
 	// Ticker
 	router.POST("/ticker", getTickersHandler(db))
 	// Charts
-	router.GET("/charts", getChartsHandler())
-	router.GET("/info", getCoinInfoHandler(charts, ac))
+	router.GET("/charts", gincache.CacheMiddleware(time.Minute*5, getChartsHandler()))
+  router.GET("/info", getCoinInfoHandler(charts, ac))
 }
 
 // @Summary Get ticker values for a specific market

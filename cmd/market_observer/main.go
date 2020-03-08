@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/robfig/cron/v3"
 	"github.com/spf13/viper"
 	"github.com/trustwallet/blockatlas/pkg/logger"
 	"github.com/trustwallet/watchmarket/internal"
@@ -16,15 +17,17 @@ import (
 	ratecompound "github.com/trustwallet/watchmarket/market/rate/compound"
 	ratefixer "github.com/trustwallet/watchmarket/market/rate/fixer"
 	"github.com/trustwallet/watchmarket/storage"
+	"time"
 )
 
 const (
-	defaultConfigPath = "../../config.yml"
+	defaultConfigPath              = "../../config.yml"
+	gracefulShutdownTimeoutSeconds = 1
 )
 
 var (
-	cache         *storage.Storage
-	rateProviders *rateprovider.Providers
+	cache           *storage.Storage
+	rateProviders   *rateprovider.Providers
 	marketProviders *marketprovider.Providers
 )
 
@@ -84,11 +87,19 @@ func init() {
 
 func main() {
 	rateCron := market.InitRates(cache, rateProviders)
-	defer rateCron.Stop()
+	defer gracefullyShutDown(rateCron)
 	rateCron.Start()
 	marketCron := market.InitMarkets(cache, marketProviders)
-	defer marketCron.Stop()
+	defer gracefullyShutDown(marketCron)
 	marketCron.Start()
 	internal.WaitingForExitSignal()
 	logger.Info("Waiting for all observer jobs to stop")
+}
+
+func gracefullyShutDown(job *cron.Cron) {
+	c := job.Stop()
+	select {
+	case <-time.After(gracefulShutdownTimeoutSeconds * time.Second):
+	case <-c.Done():
+	}
 }
