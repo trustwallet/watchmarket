@@ -28,7 +28,7 @@ func Test_GetCoinInfo(t *testing.T) {
 		Description:      "Open source platform to write and distribute decentralized applications.",
 		ShortDescription: "Open source platform to write and distribute decentralized applications.",
 		Explorers:        []watchmarket.Link{{Name: "Ethereum", Url: "https://etherscan.io/"}},
-		Socials:          []watchmarket.SocialLink{{Name: "Twitter",Url: "https://twitter.com/ethereum", Handle: "ethereum"}},
+		Socials:          []watchmarket.SocialLink{{Name: "Twitter", Url: "https://twitter.com/ethereum", Handle: "ethereum"}},
 		DataSource:       "crowd",
 	}
 
@@ -36,16 +36,18 @@ func Test_GetCoinInfo(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	httpmock.RegisterResponder("GET", "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/bitcoin/info/info.json", httpmock.NewStringResponder(200, "Bad data"))
 	httpmock.RegisterResponder("GET", "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/info/info.json", ethResponder)
 	httpmock.RegisterResponder("GET", "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/binance/info/info.json", httpmock.NewStringResponder(404, "Not Found"))
 	httpmock.RegisterResponder("GET", "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/vechain/info/info.json", httpmock.NewStringResponder(400, "Boom!"))
 
 	tests := []struct {
-		name string
-		args args
-		wantErr error
+		name     string
+		args     args
+		wantErr  error
 		wantInfo watchmarket.CoinInfo
 	}{
+		{"test bad response from cmc", args{coin.Bitcoin(), ""}, errors.New("Failed to unmarshal invalid character 'B' looking for beginning of value"), watchmarket.CoinInfo{}},
 		{"test nominal", args{coin.Ethereum(), ""}, nil, mockEthCoinInfo},
 		{"test not found", args{coin.Binance(), ""}, watchmarket.ErrNotFound, watchmarket.CoinInfo{}},
 		{"test not found", args{coin.Vechain(), ""}, errors.New("Request to https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/vechain/info/info.json failed with HTTP 400: Boom!"), watchmarket.CoinInfo{}},

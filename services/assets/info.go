@@ -48,7 +48,7 @@ func (cl *HttpAssetClient) GetCoinInfo(coinId int, token string) (*watchmarket.C
 
 	err = json.Unmarshal(resp.Body(), &info)
 	if err != nil {
-		return nil, err
+		return &info, errors.New(fmt.Sprintf("Failed to unmarshal %s", err.Error()))
 	}
 
 	return &info, nil
