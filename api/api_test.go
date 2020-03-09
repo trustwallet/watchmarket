@@ -30,10 +30,10 @@ import (
 	"time"
 )
 
-const(
-	USDRate = 1
+const (
+	USDRate      = 1
 	ETHToUSDRate = 10
-	ETHPrice = 10
+	ETHPrice     = 10
 )
 
 func TestTickers(t *testing.T) {
@@ -58,47 +58,47 @@ func TestTickers(t *testing.T) {
 		expectedBody   string
 	}{
 		{
-			name: "test bad payload",
-			requestUrl: fmt.Sprintf("%s/v1/market/ticker", server.URL),
-			requestMethod: "POST",
-			requestBody: "bad payload",
+			name:           "test bad payload",
+			requestUrl:     fmt.Sprintf("%s/v1/market/ticker", server.URL),
+			requestMethod:  "POST",
+			requestBody:    "bad payload",
 			expectedStatus: 400,
-			expectedBody: "{\"code\":400,\"error\":\"Invalid request payload\"}",
+			expectedBody:   "{\"code\":400,\"error\":\"Invalid request payload\"}",
 		},
 		{
-			name: "test unknown currency",
-			requestUrl: fmt.Sprintf("%s/v1/market/ticker", server.URL),
-			requestMethod: "POST",
-			requestBody: "{\"currency\":\"i-do-not-exist\",\"assets\":[{\"type\":\"coin\",\"coin\":60}]}",
+			name:           "test unknown currency",
+			requestUrl:     fmt.Sprintf("%s/v1/market/ticker", server.URL),
+			requestMethod:  "POST",
+			requestBody:    "{\"currency\":\"i-do-not-exist\",\"assets\":[{\"type\":\"coin\",\"coin\":60}]}",
 			expectedStatus: 404,
-			expectedBody: "{\"code\":404,\"error\":\"Currency i-do-not-exist not found\"}",
+			expectedBody:   "{\"code\":404,\"error\":\"Currency i-do-not-exist not found\"}",
 		},
 		{
-			name: "without conversion",
-			requestUrl: fmt.Sprintf("%s/v1/market/ticker", server.URL),
-			requestMethod: "POST",
-			requestBody: "{\"currency\":\"ETH\",\"assets\":[{\"type\":\"coin\",\"coin\":60}]}",
+			name:           "without conversion",
+			requestUrl:     fmt.Sprintf("%s/v1/market/ticker", server.URL),
+			requestMethod:  "POST",
+			requestBody:    "{\"currency\":\"ETH\",\"assets\":[{\"type\":\"coin\",\"coin\":60}]}",
 			expectedStatus: 200,
 			expectedBody: fmt.Sprintf("{\"currency\":\"ETH\",\"docs\":[{\"coin\":60,\"type\":\"tbd\",\"price\":{\"value\":%d,\"change_24h\":0},\"last_update\":\"0001-01-01T00:00:00Z\"}]}",
 				ETHPrice),
 		},
 		{
-			name: "with conversion",
-			requestUrl: fmt.Sprintf("%s/v1/market/ticker", server.URL),
-			requestMethod: "POST",
-			requestBody: "{\"currency\":\"USD\",\"assets\":[{\"type\":\"coin\",\"coin\":60}]}",
+			name:           "with conversion",
+			requestUrl:     fmt.Sprintf("%s/v1/market/ticker", server.URL),
+			requestMethod:  "POST",
+			requestBody:    "{\"currency\":\"USD\",\"assets\":[{\"type\":\"coin\",\"coin\":60}]}",
 			expectedStatus: 200,
 			expectedBody: fmt.Sprintf("{\"currency\":\"USD\",\"docs\":[{\"coin\":60,\"type\":\"tbd\",\"price\":{\"value\":%d,\"change_24h\":0},\"last_update\":\"0001-01-01T00:00:00Z\"}]}",
-				ETHToUSDRate * ETHPrice),
+				ETHToUSDRate*ETHPrice),
 		},
 		{
-			name: "with conversion when there is no rate for the currency of the coin price but a ticker for the currency of the coin price",
-			requestUrl: fmt.Sprintf("%s/v1/market/ticker", server.URL),
-			requestMethod: "POST",
-			requestBody: "{\"currency\":\"USD\",\"assets\":[{\"type\":\"coin\",\"coin\":714}]}",
+			name:           "with conversion when there is no rate for the currency of the coin price but a ticker for the currency of the coin price",
+			requestUrl:     fmt.Sprintf("%s/v1/market/ticker", server.URL),
+			requestMethod:  "POST",
+			requestBody:    "{\"currency\":\"USD\",\"assets\":[{\"type\":\"coin\",\"coin\":714}]}",
 			expectedStatus: 200,
 			expectedBody: fmt.Sprintf("{\"currency\":\"USD\",\"docs\":[{\"coin\":714,\"type\":\"tbd\",\"price\":{\"value\":%d,\"change_24h\":0},\"last_update\":\"0001-01-01T00:00:00Z\"}]}",
-				ETHToUSDRate * ETHPrice),
+				ETHToUSDRate*ETHPrice),
 		},
 	}
 	for _, tt := range tests {
@@ -229,44 +229,28 @@ func TestCoinInfo(t *testing.T) {
 		expectedBody   string
 	}{
 		{
-			name: "test no coin provided",
-			requestUrl: fmt.Sprintf("%s/v1/market/info", server.URL),
-			requestMethod: "GET",
-			requestBody: "",
+			name:           "test no coin provided",
+			requestUrl:     fmt.Sprintf("%s/v1/market/info", server.URL),
+			requestMethod:  "GET",
+			requestBody:    "",
 			expectedStatus: 400,
-			expectedBody: "{\"code\":400,\"error\":\"No coin provided\"}",
+			expectedBody:   "{\"code\":400,\"error\":\"No coin provided\"}",
 		},
 		{
-			name: "test invalid coin provided",
-			requestUrl: fmt.Sprintf("%s/v1/market/info?coin=invalid", server.URL),
-			requestMethod: "GET",
-			requestBody: "",
+			name:           "test invalid coin provided",
+			requestUrl:     fmt.Sprintf("%s/v1/market/info?coin=invalid", server.URL),
+			requestMethod:  "GET",
+			requestBody:    "",
 			expectedStatus: 400,
-			expectedBody: "{\"code\":400,\"error\":\"Invalid coin provided\"}",
+			expectedBody:   "{\"code\":400,\"error\":\"Invalid coin provided\"}",
 		},
 		{
-			name: "test nominal",
-			requestUrl: fmt.Sprintf("%s/v1/market/info?coin=60&token=ETHToken", server.URL),
-			requestMethod: "GET",
-			requestBody: "",
+			name:           "test nominal",
+			requestUrl:     fmt.Sprintf("%s/v1/market/info?coin=60&token=ETHToken", server.URL),
+			requestMethod:  "GET",
+			requestBody:    "",
 			expectedStatus: 200,
-			expectedBody: "{\"circulating_supply\": 0, \"info\": {}, \"market_cap\": 0, \"total_supply\": 0, \"volume_24\": 0}",
-		},
-		{
-			name: "test coin info not found",
-			requestUrl: fmt.Sprintf("%s/v1/market/info?coin=500&token=ETHToken", server.URL),
-			requestMethod: "GET",
-			requestBody: "",
-			expectedStatus: 404,
-			expectedBody: "{\"code\":404,\"error\":\"Coin info for coin id 500 (token: ETHToken, currency: USD) not found\"}",
-		},
-		{
-			name: "test coin assets not found",
-			requestUrl: fmt.Sprintf("%s/v1/market/info?coin=1000&token=ETHToken", server.URL),
-			requestMethod: "GET",
-			requestBody: "",
-			expectedStatus: 404,
-			expectedBody: "{\"code\":404,\"error\":\"Coin assets for coin id 1000 (token: ETHToken) not found\"}",
+			expectedBody:   "{\"circulating_supply\": 0, \"info\": {}, \"market_cap\": 0, \"total_supply\": 0, \"volume_24\": 0}",
 		},
 	}
 	for _, tt := range tests {
@@ -354,10 +338,10 @@ func getChartsMock() *market.Charts {
 
 func setupEngine() *gin.Engine {
 	internal.InitConfig("../../config.yml")
-	tmp := sentrygin.New(sentrygin.Options{}); sg := &tmp
+	tmp := sentrygin.New(sentrygin.Options{})
+	sg := &tmp
 	return internal.InitEngine(sg, viper.GetString("gin.mode"))
 }
-
 
 func seedDb(t *testing.T, db *storage.Storage) {
 	mockProviderList := &mocks.ProviderList{}
@@ -379,11 +363,11 @@ func saveTicker(t *testing.T, db *storage.Storage, pl storage.ProviderList, coin
 		t.Fatal(errors.New("coin does not exist"))
 	}
 	_, err := db.SaveTicker(&watchmarket.Ticker{
-		Coin:       coinObj.ID,
-		CoinName:   coinObj.Symbol,
-		TokenId:    "",
-		CoinType:   "tbd",
-		Price:      watchmarket.TickerPrice{
+		Coin:     coinObj.ID,
+		CoinName: coinObj.Symbol,
+		TokenId:  "",
+		CoinType: "tbd",
+		Price: watchmarket.TickerPrice{
 			Value:     coinPrice,
 			Change24h: 0,
 			Currency:  coinCurrency,

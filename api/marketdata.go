@@ -22,6 +22,7 @@ import (
 
 const (
 	defaultMaxChartItems = 64
+	tokenTWT             = "TWT-8C2"
 )
 
 type TickerRequest struct {
@@ -40,8 +41,8 @@ func SetupMarketAPI(router gin.IRouter, db storage.Market, charts *market.Charts
 	// Ticker
 	router.POST("/ticker", getTickersHandler(db))
 	// Charts
-	router.GET("/charts", gincache.CacheMiddleware(time.Minute*5, getChartsHandler(charts)))
-  router.GET("/info", getCoinInfoHandler(charts, ac))
+	router.GET("/charts", gincache.CacheMiddleware(time.Minute*10, getChartsHandler(charts)))
+	router.GET("/info", gincache.CacheMiddleware(time.Minute*5, getCoinInfoHandler(charts, ac)))
 }
 
 // @Summary Get ticker values for a specific market
@@ -205,10 +206,10 @@ func getCoinInfoHandler(charts *market.Charts, ac assets.AssetClient) func(c *gi
 		token := c.Query("token")
 		currency := c.DefaultQuery("currency", watchmarket.DefaultCurrency)
 		chart, err := charts.GetCoinInfo(uint(coinId), token, currency)
-		if err == watchmarket.ErrNotFound {
+		if err == watchmarket.ErrNotFound && token != tokenTWT {
 			ginutils.RenderError(c, http.StatusNotFound, fmt.Sprintf("Coin info for coin id %d (token: %s, currency: %s) not found", coinId, token, currency))
 			return
-		} else if err != nil {
+		} else if err != nil && token != tokenTWT {
 			logger.Error(err, "Failed to retrieve coin info", logger.Params{"coinId": coinId, "token": token, "currency": currency})
 			ginutils.RenderError(c, http.StatusInternalServerError, "Failed to retrieve coin info")
 			return
@@ -216,7 +217,8 @@ func getCoinInfoHandler(charts *market.Charts, ac assets.AssetClient) func(c *gi
 
 		chart.Info, err = ac.GetCoinInfo(coinId, token)
 		if err == watchmarket.ErrNotFound {
-			ginutils.RenderError(c, http.StatusNotFound, fmt.Sprintf("Coin assets for coin id %d (token: %s) not found", coinId, token))
+			logger.Error(err, fmt.Sprintf("Coin assets for coin id %d (token: %s) not found", coinId, token))
+			ginutils.RenderSuccess(c, chart)
 			return
 		} else if err != nil {
 			logger.Error(err, "Failed to retrieve coin assets", logger.Params{"coinId": coinId, "token": token})
