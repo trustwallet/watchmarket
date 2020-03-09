@@ -48,7 +48,6 @@ func (c *Charts) GetChartData(coin uint, token string, currency string, timeStar
 	return chartsData, watchmarket.ErrNotFound
 }
 
-
 func (c *Charts) GetCoinInfo(coin uint, token string, currency string) (watchmarket.ChartCoinInfo, error) {
 	coinInfoData := watchmarket.ChartCoinInfo{}
 	for i := 0; i < len(c.ChartProviders); i++ {

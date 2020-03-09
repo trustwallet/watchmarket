@@ -3,12 +3,11 @@ package api
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/spf13/viper"
 	"github.com/trustwallet/blockatlas/coin"
 	"github.com/trustwallet/blockatlas/pkg/blockatlas"
 	"github.com/trustwallet/blockatlas/pkg/ginutils"
-	"github.com/trustwallet/blockatlas/pkg/ginutils/gincache"
 	"github.com/trustwallet/blockatlas/pkg/logger"
+	"github.com/trustwallet/watchmarket/api/middleware"
 	"github.com/trustwallet/watchmarket/market"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"github.com/trustwallet/watchmarket/services/assets"
@@ -17,12 +16,12 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
-	"time"
 )
 
 const (
 	defaultMaxChartItems = 64
 	tokenTWT             = "TWT-8C2"
+	minute               = 60
 )
 
 type TickerRequest struct {
@@ -37,12 +36,11 @@ type Coin struct {
 }
 
 func SetupMarketAPI(router gin.IRouter, db storage.Market, charts *market.Charts, ac assets.AssetClient) {
-	router.Use(ginutils.TokenAuthMiddleware(viper.GetString("market.auth")))
 	// Ticker
 	router.POST("/ticker", getTickersHandler(db))
 	// Charts
-	router.GET("/charts", gincache.CacheMiddleware(time.Minute*10, getChartsHandler(charts)))
-	router.GET("/info", gincache.CacheMiddleware(time.Minute*5, getCoinInfoHandler(charts, ac)))
+	router.GET("/charts", middleware.CacheMiddleware(minute*5, getChartsHandler(charts)))
+	router.GET("/info", middleware.CacheMiddleware(minute*5, getCoinInfoHandler(charts, ac)))
 }
 
 // @Summary Get ticker values for a specific market
@@ -171,7 +169,6 @@ func getChartsHandler(charts *market.Charts) func(c *gin.Context) {
 			ginutils.RenderError(c, http.StatusInternalServerError, "Failed to retrieve chart")
 			return
 		}
-
 
 		ginutils.RenderSuccess(c, chart)
 	}

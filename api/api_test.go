@@ -11,6 +11,7 @@ import (
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/mock"
 	"github.com/trustwallet/blockatlas/coin"
+	"github.com/trustwallet/watchmarket/api/middleware"
 	"github.com/trustwallet/watchmarket/internal"
 	"github.com/trustwallet/watchmarket/market"
 	"github.com/trustwallet/watchmarket/market/chart"
@@ -43,7 +44,7 @@ func TestTickers(t *testing.T) {
 	engine := setupEngine()
 	db := internal.InitRedis(fmt.Sprintf("redis://%s", s.Addr()))
 	seedDb(t, db)
-
+	middleware.InitCachingMiddleware(db)
 	Bootstrap(engine, db, getChartsMock(), getAssetClientMock())
 
 	server := httptest.NewServer(engine)
@@ -126,9 +127,8 @@ func TestCharts(t *testing.T) {
 	engine := setupEngine()
 	db := internal.InitRedis(fmt.Sprintf("redis://%s", s.Addr()))
 	seedDb(t, db)
-
+	middleware.InitCachingMiddleware(db)
 	Bootstrap(engine, db, getChartsMock(), getAssetClientMock())
-
 	server := httptest.NewServer(engine)
 	defer server.Close()
 
@@ -141,52 +141,52 @@ func TestCharts(t *testing.T) {
 		expectedBody   string
 	}{
 		{
-			name: "test no coin provided",
-			requestUrl: fmt.Sprintf("%s/v1/market/charts?time_start=1574483028", server.URL),
-			requestMethod: "GET",
-			requestBody: "",
+			name:           "test no coin provided",
+			requestUrl:     fmt.Sprintf("%s/v1/market/charts?time_start=1574483028", server.URL),
+			requestMethod:  "GET",
+			requestBody:    "",
 			expectedStatus: 400,
-			expectedBody: "{\"code\":400,\"error\":\"No coin provided\"}",
+			expectedBody:   "{\"code\":400,\"error\":\"No coin provided\"}",
 		},
 		{
-			name: "test no time_start provided",
-			requestUrl: fmt.Sprintf("%s/v1/market/charts?coin=60", server.URL),
-			requestMethod: "GET",
-			requestBody: "",
+			name:           "test no time_start provided",
+			requestUrl:     fmt.Sprintf("%s/v1/market/charts?coin=60", server.URL),
+			requestMethod:  "GET",
+			requestBody:    "",
 			expectedStatus: 400,
-			expectedBody: "{\"code\":400,\"error\":\"No time_start provided\"}",
+			expectedBody:   "{\"code\":400,\"error\":\"No time_start provided\"}",
 		},
 		{
-			name: "test invalid coin provided",
-			requestUrl: fmt.Sprintf("%s/v1/market/charts?coin=invalid&time_start=1574483028", server.URL),
-			requestMethod: "GET",
-			requestBody: "",
+			name:           "test invalid coin provided",
+			requestUrl:     fmt.Sprintf("%s/v1/market/charts?coin=invalid&time_start=1574483028", server.URL),
+			requestMethod:  "GET",
+			requestBody:    "",
 			expectedStatus: 400,
-			expectedBody: "{\"code\":400,\"error\":\"Invalid coin provided\"}",
+			expectedBody:   "{\"code\":400,\"error\":\"Invalid coin provided\"}",
 		},
 		{
-			name: "test invalid time_start provided",
-			requestUrl: fmt.Sprintf("%s/v1/market/charts?coin=60&time_start=invalid", server.URL),
-			requestMethod: "GET",
-			requestBody: "",
+			name:           "test invalid time_start provided",
+			requestUrl:     fmt.Sprintf("%s/v1/market/charts?coin=60&time_start=invalid", server.URL),
+			requestMethod:  "GET",
+			requestBody:    "",
 			expectedStatus: 400,
-			expectedBody: "{\"code\":400,\"error\":\"Invalid time_start provided\"}",
+			expectedBody:   "{\"code\":400,\"error\":\"Invalid time_start provided\"}",
 		},
 		{
-			name: "test chart data not found",
-			requestUrl: fmt.Sprintf("%s/v1/market/charts?coin=714&time_start=1574483028", server.URL),
-			requestMethod: "GET",
-			requestBody: "",
+			name:           "test chart data not found",
+			requestUrl:     fmt.Sprintf("%s/v1/market/charts?coin=714&time_start=1574483028", server.URL),
+			requestMethod:  "GET",
+			requestBody:    "",
 			expectedStatus: 404,
-			expectedBody: "{\"code\":404,\"error\":\"Chart data not found\"}",
+			expectedBody:   "{\"code\":404,\"error\":\"Chart data not found\"}",
 		},
 		{
-			name: "test nominal",
-			requestUrl: fmt.Sprintf("%s/v1/market/charts?coin=60&time_start=1574483028&token=ETHToken", server.URL),
-			requestMethod: "GET",
-			requestBody: "",
+			name:           "test nominal",
+			requestUrl:     fmt.Sprintf("%s/v1/market/charts?coin=60&time_start=1574483028&token=ETHToken", server.URL),
+			requestMethod:  "GET",
+			requestBody:    "",
 			expectedStatus: 200,
-			expectedBody: `{"prices":[{"price":10,"date":1583712036}]}`,
+			expectedBody:   `{"prices":[{"price":10,"date":1583712036}]}`,
 		},
 	}
 	for _, tt := range tests {
@@ -214,9 +214,8 @@ func TestCoinInfo(t *testing.T) {
 	engine := setupEngine()
 	db := internal.InitRedis(fmt.Sprintf("redis://%s", s.Addr()))
 	seedDb(t, db)
-
+	middleware.InitCachingMiddleware(db)
 	Bootstrap(engine, db, getChartsMock(), getAssetClientMock())
-
 	server := httptest.NewServer(engine)
 	defer server.Close()
 

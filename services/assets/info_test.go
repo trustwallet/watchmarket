@@ -28,7 +28,7 @@ func Test_GetCoinInfo(t *testing.T) {
 		Description:      "Open source platform to write and distribute decentralized applications.",
 		ShortDescription: "Open source platform to write and distribute decentralized applications.",
 		Explorers:        []watchmarket.Link{{Name: "Ethereum", Url: "https://etherscan.io/"}},
-		Socials:          []watchmarket.SocialLink{{Name: "Twitter",Url: "https://twitter.com/ethereum", Handle: "ethereum"}},
+		Socials:          []watchmarket.SocialLink{{Name: "Twitter", Url: "https://twitter.com/ethereum", Handle: "ethereum"}},
 		DataSource:       "crowd",
 	}
 
@@ -41,9 +41,9 @@ func Test_GetCoinInfo(t *testing.T) {
 	httpmock.RegisterResponder("GET", "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/vechain/info/info.json", httpmock.NewStringResponder(400, "Boom!"))
 
 	tests := []struct {
-		name string
-		args args
-		wantErr error
+		name     string
+		args     args
+		wantErr  error
 		wantInfo watchmarket.CoinInfo
 	}{
 		{"test nominal", args{coin.Ethereum(), ""}, nil, mockEthCoinInfo},
