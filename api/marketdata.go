@@ -41,7 +41,7 @@ func SetupMarketAPI(router gin.IRouter, db storage.Market, charts *market.Charts
 	// Ticker
 	router.POST("/ticker", getTickersHandler(db))
 	// Charts
-	router.GET("/charts", gincache.CacheMiddleware(time.Minute*10, getChartsHandler()))
+	router.GET("/charts", gincache.CacheMiddleware(time.Minute*10, getChartsHandler(charts)))
 	router.GET("/info", gincache.CacheMiddleware(time.Minute*5, getCoinInfoHandler(charts, ac)))
 }
 
@@ -132,20 +132,28 @@ func getTickersHandler(storage storage.Market) func(c *gin.Context) {
 // @Param currency query string false "The currency to show charts" default(USD)
 // @Success 200 {object} watchmarket.ChartData
 // @Router /v1/market/charts [get]
-func getChartsHandler() func(c *gin.Context) {
-	var charts = market.InitCharts()
+func getChartsHandler(charts *market.Charts) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		coinQuery := c.Query("coin")
+		if len(coinQuery) == 0 {
+			ginutils.RenderError(c, http.StatusBadRequest, "No coin provided")
+			return
+		}
+		if len(c.Query("time_start")) == 0 {
+			ginutils.RenderError(c, http.StatusBadRequest, "No time_start provided")
+			return
+		}
+
 		coinId, err := strconv.Atoi(coinQuery)
 		if err != nil {
-			ginutils.RenderError(c, http.StatusBadRequest, "Invalid coin")
+			ginutils.RenderError(c, http.StatusBadRequest, "Invalid coin provided")
 			return
 		}
 		token := c.Query("token")
 
 		timeStart, err := strconv.ParseInt(c.Query("time_start"), 10, 64)
 		if err != nil {
-			ginutils.RenderError(c, http.StatusBadRequest, "Invalid time_start")
+			ginutils.RenderError(c, http.StatusBadRequest, "Invalid time_start provided")
 			return
 		}
 		maxItems, err := strconv.Atoi(c.Query("max_items"))
@@ -155,11 +163,16 @@ func getChartsHandler() func(c *gin.Context) {
 
 		currency := c.DefaultQuery("currency", watchmarket.DefaultCurrency)
 		chart, err := charts.GetChartData(uint(coinId), token, currency, timeStart, maxItems)
-		if err != nil {
-			logger.Error(err, "Failed to retrieve chart", logger.Params{"coin": coinId, "currency": currency})
-			ginutils.RenderError(c, http.StatusInternalServerError, err.Error())
+		if err == watchmarket.ErrNotFound {
+			ginutils.RenderError(c, http.StatusNotFound, "Chart data not found")
+			return
+		} else if err != nil {
+			logger.Error(err, "Failed to retrieve chart", logger.Params{"coin": coinId, "currency": currency, "token": token, "time_start": timeStart})
+			ginutils.RenderError(c, http.StatusInternalServerError, "Failed to retrieve chart")
 			return
 		}
+
+
 		ginutils.RenderSuccess(c, chart)
 	}
 }

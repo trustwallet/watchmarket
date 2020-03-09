@@ -2,7 +2,6 @@ package market
 
 import (
 	"github.com/spf13/viper"
-	"github.com/trustwallet/blockatlas/pkg/errors"
 	"github.com/trustwallet/blockatlas/pkg/numbers"
 	"github.com/trustwallet/watchmarket/market/chart"
 	"github.com/trustwallet/watchmarket/market/chart/cmc"
@@ -45,7 +44,8 @@ func (c *Charts) GetChartData(coin uint, token string, currency string, timeStar
 		charts.Prices = normalizePrices(charts.Prices, maxItems)
 		return charts, nil
 	}
-	return chartsData, errors.E("No chart data found", errors.Params{"coin": coin, "token": token})
+
+	return chartsData, watchmarket.ErrNotFound
 }
 
 
