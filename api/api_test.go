@@ -252,6 +252,22 @@ func TestCoinInfo(t *testing.T) {
 			expectedStatus: 200,
 			expectedBody:   "{\"circulating_supply\": 0, \"info\": {}, \"market_cap\": 0, \"total_supply\": 0, \"volume_24\": 0}",
 		},
+		{
+			name:      	    "test coin info not found",
+			requestUrl:     fmt.Sprintf("%s/v1/market/info?coin=500&token=ETHToken", server.URL),
+			requestMethod:  "GET",
+			requestBody:    "",
+			expectedStatus: 404,
+			expectedBody:   "{\"code\":404,\"error\":\"Coin info for coin id 500 (token: ETHToken, currency: USD) not found\"}",
+		},
+		{
+			name:           "test coin assets not found",
+			requestUrl:     fmt.Sprintf("%s/v1/market/info?coin=1000&token=ETHToken", server.URL),
+			requestMethod:  "GET",
+			requestBody:    "",
+			expectedStatus: 200,
+			expectedBody:   `{"circulating_supply": 0, "market_cap": 0, "total_supply": 0, "volume_24": 0}`,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
