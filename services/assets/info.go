@@ -46,6 +46,7 @@ func (cl *HttpAssetClient) GetCoinInfo(coinId int, token string) (*watchmarket.C
 
 	var info watchmarket.CoinInfo
 
+	// TODO: cover this in tests
 	err = json.Unmarshal(resp.Body(), &info)
 	if err != nil {
 		return nil, err
