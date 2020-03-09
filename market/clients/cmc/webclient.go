@@ -27,6 +27,6 @@ func (c *WebClient) GetChartsData(id uint, currency string, timeStart int64, tim
 		"time_end":   {strconv.FormatInt(timeEnd, 10)},
 		"interval":   {interval},
 	}
-	err = c.GetWithCache(&charts, "v1/cryptocurrency/quotes/historical", values, time.Minute*5)
+	err = c.GetWithCache(&charts, "v1/cryptocurrency/quotes/historical", values, time.Minute*15)
 	return
 }
