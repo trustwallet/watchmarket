@@ -1,6 +1,7 @@
 package assets
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/go-resty/resty/v2"
@@ -43,7 +44,14 @@ func (cl *HttpAssetClient) GetCoinInfo(coinId int, token string) (*watchmarket.C
 		return nil, errors.New(fmt.Sprintf("Request to %s failed with HTTP %d: %s", url, resp.StatusCode(), resp.String()))
 	}
 
-	return resp.Result().(*watchmarket.CoinInfo), nil
+	var info watchmarket.CoinInfo
+
+	err = json.Unmarshal(resp.Body(), &info)
+	if err != nil {
+		return nil, err
+	}
+
+	return &info, nil
 }
 
 func getCoinInfoUrl(c coin.Coin, token string) string {

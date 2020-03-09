@@ -22,6 +22,7 @@ import (
 
 const (
 	defaultMaxChartItems = 64
+	tokenTWT             = "TWT-8C2"
 )
 
 type TickerRequest struct {
@@ -192,10 +193,10 @@ func getCoinInfoHandler(charts *market.Charts, ac assets.AssetClient) func(c *gi
 		token := c.Query("token")
 		currency := c.DefaultQuery("currency", watchmarket.DefaultCurrency)
 		chart, err := charts.GetCoinInfo(uint(coinId), token, currency)
-		if err == watchmarket.ErrNotFound {
+		if err == watchmarket.ErrNotFound && token != tokenTWT {
 			ginutils.RenderError(c, http.StatusNotFound, fmt.Sprintf("Coin info for coin id %d (token: %s, currency: %s) not found", coinId, token, currency))
 			return
-		} else if err != nil {
+		} else if err != nil && token != tokenTWT {
 			logger.Error(err, "Failed to retrieve coin info", logger.Params{"coinId": coinId, "token": token, "currency": currency})
 			ginutils.RenderError(c, http.StatusInternalServerError, "Failed to retrieve coin info")
 			return
