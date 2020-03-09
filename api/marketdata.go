@@ -41,7 +41,7 @@ func SetupMarketAPI(router gin.IRouter, db storage.Market, charts *market.Charts
 	router.POST("/ticker", getTickersHandler(db))
 	// Charts
 	router.GET("/charts", gincache.CacheMiddleware(time.Minute*5, getChartsHandler()))
-  router.GET("/info", getCoinInfoHandler(charts, ac))
+	router.GET("/info", getCoinInfoHandler(charts, ac))
 }
 
 // @Summary Get ticker values for a specific market
@@ -203,7 +203,8 @@ func getCoinInfoHandler(charts *market.Charts, ac assets.AssetClient) func(c *gi
 
 		chart.Info, err = ac.GetCoinInfo(coinId, token)
 		if err == watchmarket.ErrNotFound {
-			ginutils.RenderError(c, http.StatusNotFound, fmt.Sprintf("Coin assets for coin id %d (token: %s) not found", coinId, token))
+			logger.Error(err, fmt.Sprintf("Coin assets for coin id %d (token: %s) not found", coinId, token))
+			ginutils.RenderSuccess(c, chart)
 			return
 		} else if err != nil {
 			logger.Error(err, "Failed to retrieve coin assets", logger.Params{"coinId": coinId, "token": token})
