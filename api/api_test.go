@@ -9,6 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/magiconair/properties/assert"
 	"github.com/spf13/viper"
+	"github.com/stretchr/testify/mock"
 	"github.com/trustwallet/blockatlas/coin"
 	"github.com/trustwallet/watchmarket/internal"
 	"github.com/trustwallet/watchmarket/market"
@@ -98,6 +99,94 @@ func TestTickers(t *testing.T) {
 			expectedStatus: 200,
 			expectedBody: fmt.Sprintf("{\"currency\":\"USD\",\"docs\":[{\"coin\":714,\"type\":\"tbd\",\"price\":{\"value\":%d,\"change_24h\":0},\"last_update\":\"0001-01-01T00:00:00Z\"}]}",
 				ETHToUSDRate * ETHPrice),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			resp, err := http.DefaultClient.Do(makeRequest(t, tt.requestMethod, tt.requestUrl, strings.NewReader(tt.requestBody)))
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer resp.Body.Close()
+			assert.Equal(t, resp.StatusCode, tt.expectedStatus)
+			responseBytes, err := ioutil.ReadAll(resp.Body)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			assert.Equal(t, parseJson(t, responseBytes), parseJson(t, []byte(tt.expectedBody)))
+		})
+	}
+}
+
+func TestCharts(t *testing.T) {
+	s := setupRedis(t)
+	defer s.Close()
+
+	engine := setupEngine()
+	db := internal.InitRedis(fmt.Sprintf("redis://%s", s.Addr()))
+	seedDb(t, db)
+
+	Bootstrap(engine, db, getChartsMock(), getAssetClientMock())
+
+	server := httptest.NewServer(engine)
+	defer server.Close()
+
+	tests := []struct {
+		name           string
+		requestMethod  string
+		requestUrl     string
+		requestBody    string
+		expectedStatus int
+		expectedBody   string
+	}{
+		{
+			name: "test no coin provided",
+			requestUrl: fmt.Sprintf("%s/v1/market/charts?time_start=1574483028", server.URL),
+			requestMethod: "GET",
+			requestBody: "",
+			expectedStatus: 400,
+			expectedBody: "{\"code\":400,\"error\":\"No coin provided\"}",
+		},
+		{
+			name: "test no time_start provided",
+			requestUrl: fmt.Sprintf("%s/v1/market/charts?coin=60", server.URL),
+			requestMethod: "GET",
+			requestBody: "",
+			expectedStatus: 400,
+			expectedBody: "{\"code\":400,\"error\":\"No time_start provided\"}",
+		},
+		{
+			name: "test invalid coin provided",
+			requestUrl: fmt.Sprintf("%s/v1/market/charts?coin=invalid&time_start=1574483028", server.URL),
+			requestMethod: "GET",
+			requestBody: "",
+			expectedStatus: 400,
+			expectedBody: "{\"code\":400,\"error\":\"Invalid coin provided\"}",
+		},
+		{
+			name: "test invalid time_start provided",
+			requestUrl: fmt.Sprintf("%s/v1/market/charts?coin=60&time_start=invalid", server.URL),
+			requestMethod: "GET",
+			requestBody: "",
+			expectedStatus: 400,
+			expectedBody: "{\"code\":400,\"error\":\"Invalid time_start provided\"}",
+		},
+		{
+			name: "test chart data not found",
+			requestUrl: fmt.Sprintf("%s/v1/market/charts?coin=714&time_start=1574483028", server.URL),
+			requestMethod: "GET",
+			requestBody: "",
+			expectedStatus: 404,
+			expectedBody: "{\"code\":404,\"error\":\"Chart data not found\"}",
+		},
+		{
+			name: "test nominal",
+			requestUrl: fmt.Sprintf("%s/v1/market/charts?coin=60&time_start=1574483028&token=ETHToken", server.URL),
+			requestMethod: "GET",
+			requestBody: "",
+			expectedStatus: 200,
+			expectedBody: `{"prices":[{"price":10,"date":1583712036}]}`,
 		},
 	}
 	for _, tt := range tests {
@@ -246,6 +335,18 @@ func getChartsMock() *market.Charts {
 		TotalSupply:       0,
 	}, nil)
 	mockChartProvider.On("GetCoinData", uint(500), "ETHToken", watchmarket.DefaultCurrency).Return(watchmarket.ChartCoinInfo{}, watchmarket.ErrNotFound)
+
+	mockChartProvider.On("GetChartData", uint(60), "ETHToken", watchmarket.DefaultCurrency, mock.AnythingOfType("int64")).Return(watchmarket.ChartData{
+		Prices: []watchmarket.ChartPrice{
+			watchmarket.ChartPrice{
+				Price: 10,
+				Date:  1583712036,
+			},
+		},
+	}, nil)
+
+	mockChartProvider.On("GetChartData", uint(714), "", watchmarket.DefaultCurrency, mock.AnythingOfType("int64")).Return(watchmarket.ChartData{}, watchmarket.ErrNotFound)
+
 	return &market.Charts{ChartProviders: chart.ChartProviders{
 		0: &mockChartProvider,
 	}}
