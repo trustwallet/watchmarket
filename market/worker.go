@@ -2,18 +2,11 @@ package market
 
 import (
 	"fmt"
-	"github.com/cenkalti/backoff"
 	"github.com/robfig/cron/v3"
-	"github.com/trustwallet/blockatlas/pkg/errors"
 	"github.com/trustwallet/blockatlas/pkg/logger"
 	"github.com/trustwallet/watchmarket/market/market"
 	"github.com/trustwallet/watchmarket/market/rate"
 	"github.com/trustwallet/watchmarket/storage"
-	"time"
-)
-
-const (
-	backoffValue = 2
 )
 
 type Provider interface {
@@ -21,24 +14,6 @@ type Provider interface {
 	GetId() string
 	GetLogType() string
 	GetUpdateTime() string
-}
-
-// processBackoff make a exponential backoff for market run
-// errors, increasing the retry in a exponential period for each attempt.
-func processBackoff(storage storage.Market, md Provider) {
-	b := backoff.NewExponentialBackOff()
-	b.MaxElapsedTime = backoffValue * time.Minute
-	r := func() error {
-		return run(storage, md)
-	}
-
-	n := func(err error, t time.Duration) {
-		logger.Error(err, "process backoff market", logger.Params{"Duration": t.String()})
-	}
-	err := backoff.RetryNotify(r, b, n)
-	if err != nil {
-		logger.Error(err, "Market ProcessBackoff")
-	}
 }
 
 func scheduleTasks(storage storage.Market, md Provider, c *cron.Cron) {
@@ -54,22 +29,21 @@ func scheduleTasks(storage storage.Market, md Provider, c *cron.Cron) {
 		"Market":   md.GetId(),
 		"Interval": spec,
 	})
-	_, err = c.AddFunc(spec, func() {
-		go processBackoff(storage, md)
-	})
-	processBackoff(storage, md)
+	_, err = c.AddFunc(spec, func() { go run(storage, md) })
+	go run(storage, md)
 	if err != nil {
 		logger.Error(err, "AddFunc")
 	}
 }
 
-func run(storage storage.Market, md Provider) error {
+func run(storage storage.Market, md Provider) {
 	logger.Info("Starting market data task...", logger.Params{"Type": md.GetLogType(), "Market": md.GetId()})
 	switch m := md.(type) {
 	case market.MarketProvider:
-		return runMarket(storage, m)
+		runMarket(storage, m)
 	case rate.RateProvider:
-		return runRate(storage, m)
+		runRate(storage, m)
+	default:
+		logger.Error("Invalid market interface provided")
 	}
-	return errors.E("invalid market interface")
 }

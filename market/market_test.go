@@ -76,6 +76,8 @@ func TestMarketObserver(t *testing.T) {
 	defer marketCron.Stop()
 	marketCron.Start()
 
+	time.Sleep(100 * time.Millisecond) // Allow cron to process
+
 	// Verify
 	resultRate, err := cache.GetRate("USD")
 	if err != nil {

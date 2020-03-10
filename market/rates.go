@@ -2,7 +2,6 @@ package market
 
 import (
 	"github.com/robfig/cron/v3"
-	"github.com/trustwallet/blockatlas/pkg/errors"
 	"github.com/trustwallet/blockatlas/pkg/logger"
 	"github.com/trustwallet/watchmarket/market/rate"
 	"github.com/trustwallet/watchmarket/storage"
@@ -23,12 +22,12 @@ func scheduleRates(storage storage.Market, rates rate.Providers) *cron.Cron {
 	return c
 }
 
-func runRate(storage storage.Market, p rate.RateProvider) error {
+func runRate(storage storage.Market, p rate.RateProvider) {
 	rates, err := p.FetchLatestRates()
 	if err != nil {
-		return errors.E(err, "FetchLatestRates")
+		logger.Error("Failed to fetch rates", logger.Params{"error": err, "provider": p.GetId()})
+		return
 	}
 	results := storage.SaveRates(rates, rateProviders)
 	logger.Info("Done fetching latest rates", logger.Params{"numFetchedRates": len(rates), "provider": p.GetId(), "results": results})
-	return nil
 }
