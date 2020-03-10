@@ -1,10 +1,5 @@
 [
   {
-    "coin": 60,
-    "type": "coin",
-    "currency": "USD"
-  },
-  {
     "coin": 0,
     "type": "coin",
     "currency": "USD"
@@ -15,7 +10,122 @@
     "currency": "USD"
   },
   {
+    "coin": 3,
+    "type": "coin",
+    "currency": "USD"
+  },
+  {
+    "coin": 5,
+    "type": "coin",
+    "currency": "USD"
+  },
+  {
+    "coin": 14,
+    "type": "coin",
+    "currency": "USD"
+  },
+  {
+    "coin": 17,
+    "type": "coin",
+    "currency": "USD"
+  },
+  {
+    "coin": 60,
+    "type": "coin",
+    "currency": "USD"
+  },
+  {
+    "coin": 60,
+    "type": "coin",
+    "currency": "RUB"
+  },
+  {
+    "coin": 60,
+    "type": "coin",
+    "currency": "EUR"
+  },
+  {
+    "coin": 60,
+    "type": "token",
+    "currency": "EUR",
+    "token_id": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+  },
+  {
+    "coin": 60,
+    "type": "token",
+    "currency": "EUR",
+    "token_id": "0x6b175474e89094c44da98b954eedeac495271d0f"
+  },
+  {
+    "coin": 60,
+    "type": "token",
+    "currency": "RUB",
+    "token_id": "0xB8c77482e45F1F44dE1745F52C74426C631bDD52"
+  },
+  {
+    "coin": 61,
+    "type": "coin",
+    "currency": "USD"
+  },
+  {
+    "coin": 118,
+    "type": "coin",
+    "currency": "USD"
+  },
+  {
+    "coin": 144,
+    "type": "coin",
+    "currency": "USD"
+  },
+  {
+    "coin": 145,
+    "type": "coin",
+    "currency": "USD"
+  },
+  {
+    "coin": 148,
+    "type": "coin",
+    "currency": "USD"
+  },
+  {
+    "coin": 178,
+    "type": "coin",
+    "currency": "USD"
+  },
+  {
     "coin": 195,
+    "type": "coin",
+    "currency": "USD"
+  },
+  {
+    "coin": 195,
+    "type": "token",
+    "currency": "USD",
+    "token_id": "TUL5yxRKeSWvceLZ3BSU5iNJcQmNxkWayh"
+  },
+  {
+    "coin": 195,
+    "type": "token",
+    "currency": "USD",
+    "token_id": "1002413"
+  },
+  {
+    "coin": 242,
+    "type": "coin",
+    "currency": "USD"
+  },
+  {
+    "coin": 283,
+    "type": "coin",
+    "currency": "USD"
+  },
+  {
+    "coin": 313,
+    "type": "coin",
+    "currency": "USD"
+  },
+  {
+    "coin": 459,
     "type": "coin",
     "currency": "USD"
   },
@@ -31,21 +141,34 @@
     "token_id": "BTCB-1DE"
   },
   {
-    "coin": 195,
+    "coin": 714,
     "type": "token",
     "currency": "USD",
-    "token_id": "TUL5yxRKeSWvceLZ3BSU5iNJcQmNxkWayh"
+    "token_id": "BUSD-BD1"
   },
   {
-    "coin": 195,
-    "type": "token",
-    "currency": "USD",
-    "token_id": "1002413"
+    "coin": 1023,
+    "type": "coin",
+    "currency": "USD"
   },
   {
-    "coin": 60,
-    "type": "token",
-    "currency": "EUR",
-    "token_id": "0xeF65887a05415bF6316204b5ffB350d4d1a19BBA"
+    "coin": 1024,
+    "type": "coin",
+    "currency": "USD"
+  },
+  {
+    "coin": 1729,
+    "type": "coin",
+    "currency": "USD"
+  },
+  {
+    "coin": 5741564,
+    "type": "coin",
+    "currency": "USD"
+  },
+  {
+    "coin": 5741564,
+    "type": "coin",
+    "currency": "RUB"
   }
 ]
