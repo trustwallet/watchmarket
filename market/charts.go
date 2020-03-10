@@ -4,7 +4,6 @@ import (
 	"github.com/spf13/viper"
 	"github.com/trustwallet/blockatlas/pkg/numbers"
 	"github.com/trustwallet/watchmarket/market/chart"
-	"github.com/trustwallet/watchmarket/market/chart/cmc"
 	"github.com/trustwallet/watchmarket/market/chart/coingecko"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"math"
@@ -21,12 +20,7 @@ type Charts struct {
 
 func InitCharts() *Charts {
 	return &Charts{chart.ChartProviders{
-		0: cmc.InitChart(
-			viper.GetString("market.cmc.webapi"),
-			viper.GetString("market.cmc.widgetapi"),
-			viper.GetString("market.cmc.map_url"),
-		),
-		1: coingecko.InitChart(
+		0: coingecko.InitChart(
 			viper.GetString("market.coingecko.api"),
 		),
 	}}
@@ -47,7 +41,6 @@ func (c *Charts) GetChartData(coin uint, token string, currency string, timeStar
 
 	return chartsData, watchmarket.ErrNotFound
 }
-
 
 func (c *Charts) GetCoinInfo(coin uint, token string, currency string) (watchmarket.ChartCoinInfo, error) {
 	coinInfoData := watchmarket.ChartCoinInfo{}
