@@ -254,11 +254,11 @@ func TestCoinInfo(t *testing.T) {
 		},
 		{
 			name:           "test coin info not found",
-			requestUrl:     fmt.Sprintf("%s/v1/market/info?coin=500&token=ETHToken", server.URL),
+			requestUrl:     fmt.Sprintf("%s/v1/market/info?coin=1000&token=ETHToken", server.URL),
 			requestMethod:  "GET",
 			requestBody:    "",
-			expectedStatus: 404,
-			expectedBody:   "{\"code\":404,\"error\":\"Coin info for coin id 500 (token: ETHToken, currency: USD) not found\"}",
+			expectedStatus: 200,
+			expectedBody:   "",
 		},
 		{
 			name:           "test coin assets not found",
@@ -281,7 +281,6 @@ func TestCoinInfo(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-
 			assert.Equal(t, parseJson(t, responseBytes), parseJson(t, []byte(tt.expectedBody)))
 		})
 	}
