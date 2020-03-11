@@ -172,7 +172,6 @@ func getChartsHandler(charts *market.Charts) func(c *gin.Context) {
 			return
 		}
 
-
 		ginutils.RenderSuccess(c, chart)
 	}
 }

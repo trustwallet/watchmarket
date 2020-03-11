@@ -23,7 +23,6 @@ func ParseArgs(defaultPort, defaultConfigPath string) (string, string) {
 	return port, confPath
 }
 
-
 func InitRedis(host string) *storage.Storage {
 	cache := &storage.Storage{DB: &redis.Redis{}}
 	err := cache.Init(host)
@@ -42,7 +41,7 @@ func InitConfig(confPath string) {
 	config.LoadConfig(confPath)
 }
 
-func InitEngine(handler *gin.HandlerFunc, ginMode string) *gin.Engine  {
+func InitEngine(handler *gin.HandlerFunc, ginMode string) *gin.Engine {
 	gin.SetMode(ginMode)
 	engine := gin.New()
 	engine.Use(ginutils.CheckReverseProxy, *handler)
@@ -55,7 +54,6 @@ func InitEngine(handler *gin.HandlerFunc, ginMode string) *gin.Engine  {
 			"status": true,
 		})
 	})
-
 
 	return engine
 }
