@@ -254,11 +254,11 @@ func TestCoinInfo(t *testing.T) {
 		},
 		{
 			name:           "test coin info not found",
-			requestUrl:     fmt.Sprintf("%s/v1/market/info?coin=1000&token=ETHToken", server.URL),
+			requestUrl:     fmt.Sprintf("%s/v1/market/info?coin=500&token=ETHToken", server.URL),
 			requestMethod:  "GET",
 			requestBody:    "",
 			expectedStatus: 200,
-			expectedBody:   "",
+			expectedBody:   "{\"circulating_supply\": 0, \"info\": {}, \"market_cap\": 0, \"total_supply\": 0, \"volume_24\": 0}",
 		},
 		{
 			name:           "test coin assets not found",
@@ -306,6 +306,15 @@ func setupRedis(t *testing.T) *miniredis.Miniredis {
 func getAssetClientMock() assets.AssetClient {
 	client := &mockassetprovider.AssetClient{}
 	client.On("GetCoinInfo", 60, "ETHToken").Return(&watchmarket.CoinInfo{
+		Name:             "",
+		Website:          "",
+		SourceCode:       "",
+		WhitePaper:       "",
+		Description:      "",
+		ShortDescription: "",
+		DataSource:       "",
+	}, nil)
+	client.On("GetCoinInfo", 500, "ETHToken").Return(&watchmarket.CoinInfo{
 		Name:             "",
 		Website:          "",
 		SourceCode:       "",
