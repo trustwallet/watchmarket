@@ -39,8 +39,8 @@ func SetupMarketAPI(router gin.IRouter, db storage.Market, charts *market.Charts
 	// Ticker
 	router.POST("/ticker", getTickersHandler(db))
 	// Charts
-	router.GET("/charts", middleware.CacheMiddleware(minute*5, getChartsHandler(charts)))
-	router.GET("/info", middleware.CacheMiddleware(minute*5, getCoinInfoHandler(charts, ac)))
+	router.GET("/charts", middleware.GinCachingMiddleware(minute*5, getChartsHandler(charts)))
+	router.GET("/info", middleware.GinCachingMiddleware(minute*5, getCoinInfoHandler(charts, ac)))
 }
 
 // @Summary Get ticker values for a specific market

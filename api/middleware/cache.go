@@ -58,8 +58,8 @@ func (w *cachedWriter) Write(data []byte) (int, error) {
 		Data:   data,
 	}
 	cacheData := storage.CacheData{
-		Data:    cacheResp,
-		Expired: time.Now().Unix(),
+		Response: cacheResp,
+		Expired:  time.Now().Unix(),
 	}
 
 	result, err := cache.Set(w.key, cacheData)
@@ -84,8 +84,8 @@ func (w *cachedWriter) WriteString(data string) (n int, err error) {
 		Data:   []byte(data),
 	}
 	cacheData := storage.CacheData{
-		Data:    cacheResp,
-		Expired: time.Now().Unix(),
+		Response: cacheResp,
+		Expired:  time.Now().Unix(),
 	}
 	result, err := cache.Set(w.key, cacheData)
 	if err != nil || result != storage.SaveResultSuccess {
@@ -107,36 +107,38 @@ func generateKey(c *gin.Context) string {
 	return base64.URLEncoding.EncodeToString(hash[:])
 }
 
-// CacheMiddleware encapsulates a gin handler function and caches the response with an expiration time.
-func CacheMiddleware(expiration int64, handle gin.HandlerFunc) gin.HandlerFunc {
+// GinCachingMiddleware encapsulates a gin handler function and caches the response with an maxAgeSeconds time.
+func GinCachingMiddleware(maxAgeSeconds int64, handle gin.HandlerFunc) gin.HandlerFunc {
 	if cache == nil {
 		logger.Fatal("gin cache middleware is created with empty cache")
 	}
 	return func(c *gin.Context) {
 		defer c.Next()
 		key := generateKey(c)
-		mc, err := cache.Get(key)
-		if err != nil || mc.Data.Data == nil || time.Now().Unix()-mc.Expired > expiration {
-			writer := NewCachedWriter(expiration, c.Writer, key)
+		result, err := cache.Get(key)
+		now := time.Now().Unix()
+		if err != nil || result.Response.Data == nil || now-result.Expired > maxAgeSeconds {
+			writer := NewCachedWriter(maxAgeSeconds, c.Writer, key)
 			c.Writer = writer
 			handle(c)
 
 			if c.IsAborted() {
-				cache.Delete(key)
+				_, err = cache.Delete(key)
+				logger.Error(err, "cannot delete result", result)
 			}
 			return
 		}
 
-		c.Writer.WriteHeader(mc.Data.Status)
-		for k, vals := range mc.Data.Header {
+		c.Writer.WriteHeader(result.Response.Status)
+		for k, vals := range result.Response.Header {
 			for _, v := range vals {
 				c.Writer.Header().Set(k, v)
 			}
 		}
-		_, err = c.Writer.Write(mc.Data.Data)
+		_, err = c.Writer.Write(result.Response.Data)
 		if err != nil {
-			cache.Delete(key)
-			logger.Error(err, "cannot write data", mc)
+			_, err = cache.Delete(key)
+			logger.Error(err, "cannot delete result", result)
 		}
 	}
 }

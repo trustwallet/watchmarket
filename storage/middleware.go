@@ -15,8 +15,8 @@ type (
 	}
 
 	CacheData struct {
-		Data    CacheResponse
-		Expired int64
+		Response CacheResponse
+		Expired  int64
 	}
 )
 

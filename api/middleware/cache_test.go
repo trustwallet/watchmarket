@@ -55,7 +55,7 @@ func TestWrite(t *testing.T) {
 func TestCachePage(t *testing.T) {
 	InitCachingMiddleware(Cache)
 	router := gin.New()
-	router.GET("/cache_ping", CacheMiddleware(60*3, func(c *gin.Context) {
+	router.GET("/cache_ping", GinCachingMiddleware(60*3, func(c *gin.Context) {
 		ginutils.RenderSuccess(c, "pong "+fmt.Sprint(time.Now().UnixNano()))
 	}))
 
@@ -70,7 +70,7 @@ func TestCachePage(t *testing.T) {
 func TestCachePageExpire(t *testing.T) {
 	InitCachingMiddleware(Cache)
 	router := gin.New()
-	router.GET("/cache_ping", CacheMiddleware(1, func(c *gin.Context) {
+	router.GET("/cache_ping", GinCachingMiddleware(1, func(c *gin.Context) {
 		ginutils.RenderSuccess(c, "pong "+fmt.Sprint(time.Now().UnixNano()))
 	}))
 
