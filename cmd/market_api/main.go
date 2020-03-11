@@ -30,7 +30,8 @@ func init() {
 
 	internal.InitConfig(confPath)
 	logger.InitLogger()
-	tmp := sentrygin.New(sentrygin.Options{}); sg := &tmp
+	tmp := sentrygin.New(sentrygin.Options{})
+	sg := &tmp
 
 	redisHost := viper.GetString("storage.redis")
 	cache = internal.InitRedis(redisHost)

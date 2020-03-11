@@ -10,8 +10,8 @@ import (
 	"github.com/trustwallet/watchmarket/internal"
 	"github.com/trustwallet/watchmarket/market/market"
 	"github.com/trustwallet/watchmarket/market/rate"
-	rateprovider "github.com/trustwallet/watchmarket/mocks/market/rate"
 	marketprovider "github.com/trustwallet/watchmarket/mocks/market/market"
+	rateprovider "github.com/trustwallet/watchmarket/mocks/market/rate"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"testing"
 	"time"
@@ -51,11 +51,11 @@ func TestMarketObserver(t *testing.T) {
 		t.Fatal(errors.New("coin does not exist"))
 	}
 	testTicker := watchmarket.Ticker{
-		Coin:       coinObj.ID,
-		CoinName:   coinObj.Symbol,
-		TokenId:    "",
-		CoinType:   "tbd",
-		Price:      watchmarket.TickerPrice{
+		Coin:     coinObj.ID,
+		CoinName: coinObj.Symbol,
+		TokenId:  "",
+		CoinType: "tbd",
+		Price: watchmarket.TickerPrice{
 			Value:     50,
 			Change24h: 0,
 			Currency:  "USD",

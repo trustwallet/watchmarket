@@ -5,7 +5,8 @@ import (
 )
 
 type SaveResult string
-const(
+
+const (
 	SaveResultSuccess                      SaveResult = "Success"
 	SaveResultStorageFailure               SaveResult = "StorageFailure"
 	SaveResultSkippedLowPriority           SaveResult = "SkippedLowPriority"

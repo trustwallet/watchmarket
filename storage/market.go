@@ -40,7 +40,7 @@ func (s *Storage) SaveTicker(coin *watchmarket.Ticker, pl ProviderList) (SaveRes
 			return SaveResultSkippedLowPriorityOrOutdated, nil
 		}
 	}
-	
+
 	hm := createHashMap(coin.CoinName, coin.TokenId)
 	err = s.AddHM(EntityQuotes, hm, coin)
 	if err != nil {
