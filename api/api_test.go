@@ -83,6 +83,14 @@ func TestTickers(t *testing.T) {
 				ETHPrice),
 		},
 		{
+			name:           "coin record not found",
+			requestUrl:     fmt.Sprintf("%s/v1/market/ticker", server.URL),
+			requestMethod:  "POST",
+			requestBody:    "{\"currency\":\"ETH\",\"assets\":[{\"type\":\"coin\",\"coin\":61}]}",
+			expectedStatus: 200,
+			expectedBody:   fmt.Sprintf("{\"currency\":\"ETH\",\"docs\":[]}"),
+		},
+		{
 			name:           "with conversion",
 			requestUrl:     fmt.Sprintf("%s/v1/market/ticker", server.URL),
 			requestMethod:  "POST",
@@ -98,6 +106,28 @@ func TestTickers(t *testing.T) {
 			requestBody:    "{\"currency\":\"USD\",\"assets\":[{\"type\":\"coin\",\"coin\":714}]}",
 			expectedStatus: 200,
 			expectedBody: fmt.Sprintf("{\"currency\":\"USD\",\"docs\":[{\"coin\":714,\"type\":\"tbd\",\"price\":{\"value\":%d,\"change_24h\":0},\"last_update\":\"0001-01-01T00:00:00Z\"}]}",
+				ETHToUSDRate*ETHPrice),
+		},
+		{
+			name:           "multiple coins with conversion",
+			requestUrl:     fmt.Sprintf("%s/v1/market/ticker", server.URL),
+			requestMethod:  "POST",
+			requestBody:    `{"currency":"USD","assets":[{"type":"coin","coin":60}, {"type":"coin","coin":714}]}`,
+			expectedStatus: 200,
+			expectedBody: fmt.Sprintf(`{"currency":"USD","docs":[
+												{"coin":60,"type":"tbd","price":{"value":%d,"change_24h":0},"last_update":"0001-01-01T00:00:00Z"},
+												{"coin":714,"type":"tbd","price":{"value":%d,"change_24h":0},"last_update":"0001-01-01T00:00:00Z"}
+                                              ]}`,
+				ETHToUSDRate*ETHPrice, ETHToUSDRate*ETHPrice),
+		},
+		{
+			name:           "multiple coins requested one not modeled in coins and no ticker found for one",
+			requestUrl:     fmt.Sprintf("%s/v1/market/ticker", server.URL),
+			requestMethod:  "POST",
+			requestBody:    `{"currency":"USD","assets":[{"type":"coin","coin":60}, {"type":"coin","coin":404}, {"type":"coin","coin":61}]}`,
+			expectedStatus: 200,
+			expectedBody: fmt.Sprintf(`{"currency":"USD","docs":[
+												{"coin":60,"type":"tbd","price":{"value":%d,"change_24h":0},"last_update":"0001-01-01T00:00:00Z"}]}`,
 				ETHToUSDRate*ETHPrice),
 		},
 	}
