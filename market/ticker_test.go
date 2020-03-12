@@ -8,10 +8,10 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/trustwallet/blockatlas/coin"
 	"github.com/trustwallet/watchmarket/internal"
-	"github.com/trustwallet/watchmarket/market/market"
 	"github.com/trustwallet/watchmarket/market/rate"
-	marketprovider "github.com/trustwallet/watchmarket/mocks/market/market"
+	"github.com/trustwallet/watchmarket/market/ticker"
 	rateprovider "github.com/trustwallet/watchmarket/mocks/market/rate"
+	tickerprovider "github.com/trustwallet/watchmarket/mocks/market/ticker"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"testing"
 	"time"
@@ -41,11 +41,11 @@ func TestMarketObserver(t *testing.T) {
 		0: mockRateProvider,
 	}
 
-	mockMarketProvider := &marketprovider.MarketProvider{}
-	mockMarketProvider.On("Init", mock.AnythingOfType("*storage.Storage")).Return(nil)
-	mockMarketProvider.On("GetUpdateTime").Return("5m")
-	mockMarketProvider.On("GetLogType").Return("market-data")
-	mockMarketProvider.On("GetId").Return("coingecko")
+	mockTickerProvider := &tickerprovider.TickerProvider{}
+	mockTickerProvider.On("Init", mock.AnythingOfType("*storage.Storage")).Return(nil)
+	mockTickerProvider.On("GetUpdateTime").Return("5m")
+	mockTickerProvider.On("GetLogType").Return("market-data")
+	mockTickerProvider.On("GetId").Return("coingecko")
 	coinObj, ok := coin.Coins[60] // ETH
 	if !ok {
 		t.Fatal(errors.New("coin does not exist"))
@@ -63,18 +63,18 @@ func TestMarketObserver(t *testing.T) {
 		},
 		LastUpdate: time.Now(),
 	}
-	mockMarketProvider.On("GetData").Return(watchmarket.Tickers{&testTicker}, nil)
-	marketProviders := &market.Providers{
-		0: mockMarketProvider,
+	mockTickerProvider.On("GetData").Return(watchmarket.Tickers{&testTicker}, nil)
+	tickerProviders := &ticker.Providers{
+		0: mockTickerProvider,
 	}
 
 	// Act
 	rateCron := InitRates(cache, rateProviders)
 	defer rateCron.Stop()
 	rateCron.Start()
-	marketCron := InitMarkets(cache, marketProviders)
-	defer marketCron.Stop()
-	marketCron.Start()
+	tickerCron := InitTickers(cache, tickerProviders)
+	defer tickerCron.Stop()
+	tickerCron.Start()
 
 	time.Sleep(100 * time.Millisecond) // Allow cron to process
 

@@ -1,11 +1,11 @@
-package market
+package ticker
 
 import (
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"github.com/trustwallet/watchmarket/storage"
 )
 
-type MarketProvider interface {
+type TickerProvider interface {
 	Init(storage.Market) error
 	GetId() string
 	GetUpdateTime() string
@@ -13,7 +13,7 @@ type MarketProvider interface {
 	GetLogType() string
 }
 
-type Providers map[int]MarketProvider
+type Providers map[int]TickerProvider
 
 func (ps Providers) GetPriority(providerId string) int {
 	for priority, provider := range ps {

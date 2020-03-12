@@ -1,4 +1,4 @@
-package market
+package ticker
 
 import (
 	"github.com/trustwallet/blockatlas/pkg/errors"

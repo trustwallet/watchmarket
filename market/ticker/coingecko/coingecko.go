@@ -2,7 +2,7 @@ package coingecko
 
 import (
 	"github.com/trustwallet/watchmarket/market/clients/coingecko"
-	"github.com/trustwallet/watchmarket/market/market"
+	"github.com/trustwallet/watchmarket/market/ticker"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"strings"
 )
@@ -16,13 +16,13 @@ const (
 type Market struct {
 	client *coingecko.Client
 	cache  *coingecko.Cache
-	market.Market
+	ticker.Market
 }
 
-func InitMarket(api, updateTime string) market.MarketProvider {
+func InitMarket(api, updateTime string) ticker.TickerProvider {
 	m := &Market{
 		client: coingecko.NewClient(api),
-		Market: market.Market{
+		Market: ticker.Market{
 			Id:         id,
 			UpdateTime: updateTime,
 		},
@@ -51,8 +51,8 @@ func (m *Market) normalizeTicker(price coingecko.CoinPrice, provider string) wat
 
 	coins, err := m.cache.GetCoinsById(price.Id)
 	if err != nil {
-		ticker := createTicker(price, coinType, coinName, tokenId, provider)
-		tickers = append(tickers, &ticker)
+		t := createTicker(price, coinType, coinName, tokenId, provider)
+		tickers = append(tickers, &t)
 		return tickers
 	}
 
@@ -64,14 +64,14 @@ func (m *Market) normalizeTicker(price coingecko.CoinPrice, provider string) wat
 			tokenId = cg.TokenId
 		}
 
-		ticker := createTicker(price, cg.CoinType, coinName, tokenId, provider)
-		tickers = append(tickers, &ticker)
+		t := createTicker(price, cg.CoinType, coinName, tokenId, provider)
+		tickers = append(tickers, &t)
 	}
 	return tickers
 }
 
 func createTicker(price coingecko.CoinPrice, coinType watchmarket.CoinType, coinName, tokenId, provider string) watchmarket.Ticker {
-	var ticker = watchmarket.Ticker{
+	var t = watchmarket.Ticker{
 		CoinName: coinName,
 		CoinType: coinType,
 		TokenId:  tokenId,
@@ -85,14 +85,14 @@ func createTicker(price coingecko.CoinPrice, coinType watchmarket.CoinType, coin
 	}
 
 	if isRespectableTradingVolume(price.TotalVolume) {
-		ticker.Price.Change24h = price.PriceChangePercentage24h
-		ticker.Price.Value = price.CurrentPrice
+		t.Price.Change24h = price.PriceChangePercentage24h
+		t.Price.Value = price.CurrentPrice
 	} else {
-		ticker.Price.Change24h = 0
-		ticker.Price.Value = 0
+		t.Price.Change24h = 0
+		t.Price.Value = 0
 	}
 
-	return ticker
+	return t
 }
 
 func isRespectableMarketCap(targetMarketCap float64) bool {
