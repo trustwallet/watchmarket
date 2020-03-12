@@ -6,16 +6,16 @@ import (
 	"github.com/trustwallet/blockatlas/pkg/logger"
 	"github.com/trustwallet/watchmarket/internal"
 	"github.com/trustwallet/watchmarket/market"
-	marketprovider "github.com/trustwallet/watchmarket/market/market"
-	marketcmc "github.com/trustwallet/watchmarket/market/market/cmc"
-	marketcoingecko "github.com/trustwallet/watchmarket/market/market/coingecko"
-	marketcompound "github.com/trustwallet/watchmarket/market/market/compound"
-	marketdex "github.com/trustwallet/watchmarket/market/market/dex"
-	rateprovider "github.com/trustwallet/watchmarket/market/rate"
-	ratecmc "github.com/trustwallet/watchmarket/market/rate/cmc"
-	ratecoingecko "github.com/trustwallet/watchmarket/market/rate/coingecko"
-	ratecompound "github.com/trustwallet/watchmarket/market/rate/compound"
-	ratefixer "github.com/trustwallet/watchmarket/market/rate/fixer"
+	"github.com/trustwallet/watchmarket/market/rate"
+	rateCMC "github.com/trustwallet/watchmarket/market/rate/cmc"
+	rateCoingecko "github.com/trustwallet/watchmarket/market/rate/coingecko"
+	rateCompound "github.com/trustwallet/watchmarket/market/rate/compound"
+	rateFixer "github.com/trustwallet/watchmarket/market/rate/fixer"
+	"github.com/trustwallet/watchmarket/market/ticker"
+	tickerCMC "github.com/trustwallet/watchmarket/market/ticker/cmc"
+	tickerCoingecko "github.com/trustwallet/watchmarket/market/ticker/coingecko"
+	tickerCompound "github.com/trustwallet/watchmarket/market/ticker/compound"
+	tickerDEX "github.com/trustwallet/watchmarket/market/ticker/dex"
 	"github.com/trustwallet/watchmarket/storage"
 	"time"
 )
@@ -27,8 +27,8 @@ const (
 
 var (
 	cache           *storage.Storage
-	rateProviders   *rateprovider.Providers
-	marketProviders *marketprovider.Providers
+	rateProviders   *rate.Providers
+	tickerProviders *ticker.Providers
 )
 
 func init() {
@@ -39,46 +39,46 @@ func init() {
 	redisHost := viper.GetString("storage.redis")
 	cache = internal.InitRedis(redisHost)
 
-	rateProviders = &rateprovider.Providers{
+	rateProviders = &rate.Providers{
 		// Add Market Quote Providers:
-		0: ratecmc.InitRate(
+		0: rateCMC.InitRate(
 			viper.GetString("market.cmc.api"),
 			viper.GetString("market.cmc.api_key"),
 			viper.GetString("market.cmc.map_url"),
 			viper.GetString("market.rate_update_time"),
 		),
-		1: ratefixer.InitRate(
+		1: rateFixer.InitRate(
 			viper.GetString("market.fixer.api"),
 			viper.GetString("market.fixer.api_key"),
 			viper.GetString("market.fixer.rate_update_time"),
 		),
-		2: ratecompound.InitRate(
+		2: rateCompound.InitRate(
 			viper.GetString("market.compound.api"),
 			viper.GetString("market.rate_update_time"),
 		),
-		3: ratecoingecko.InitRate(
+		3: rateCoingecko.InitRate(
 			viper.GetString("market.coingecko.api"),
 			viper.GetString("market.rate_update_time"),
 		),
 	}
 
-	marketProviders = &marketprovider.Providers{
+	tickerProviders = &ticker.Providers{
 		// Add Market Quote Providers:
-		0: marketcmc.InitMarket(
+		0: tickerCMC.InitMarket(
 			viper.GetString("market.cmc.api"),
 			viper.GetString("market.cmc.api_key"),
 			viper.GetString("market.cmc.map_url"),
 			viper.GetString("market.quote_update_time"),
 		),
-		1: marketcompound.InitMarket(
+		1: tickerCompound.InitMarket(
 			viper.GetString("market.compound.api"),
 			viper.GetString("market.quote_update_time"),
 		),
-		2: marketcoingecko.InitMarket(
+		2: tickerCoingecko.InitMarket(
 			viper.GetString("market.coingecko.api"),
 			viper.GetString("market.quote_update_time"),
 		),
-		3: marketdex.InitMarket(
+		3: tickerDEX.InitMarket(
 			viper.GetString("market.dex.api"),
 			viper.GetString("market.dex.quote_update_time"),
 		),
@@ -89,7 +89,7 @@ func main() {
 	rateCron := market.InitRates(cache, rateProviders)
 	defer gracefullyShutDown(rateCron)
 	rateCron.Start()
-	marketCron := market.InitMarkets(cache, marketProviders)
+	marketCron := market.InitTickers(cache, tickerProviders)
 	defer gracefullyShutDown(marketCron)
 	marketCron.Start()
 	internal.WaitingForExitSignal()

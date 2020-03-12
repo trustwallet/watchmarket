@@ -3,7 +3,7 @@ package compound
 import (
 	"github.com/trustwallet/blockatlas/coin"
 	c "github.com/trustwallet/watchmarket/market/clients/compound"
-	"github.com/trustwallet/watchmarket/market/market"
+	"github.com/trustwallet/watchmarket/market/ticker"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"time"
 )
@@ -13,13 +13,13 @@ const (
 )
 
 type Market struct {
-	market.Market
+	ticker.Market
 	client *c.Client
 }
 
-func InitMarket(api string, updateTime string) market.MarketProvider {
+func InitMarket(api string, updateTime string) ticker.TickerProvider {
 	m := &Market{
-		Market: market.Market{
+		Market: ticker.Market{
 			Id:         id,
 			UpdateTime: updateTime,
 		},

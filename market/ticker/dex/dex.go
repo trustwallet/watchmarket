@@ -4,7 +4,7 @@ import (
 	"github.com/trustwallet/blockatlas/coin"
 	"github.com/trustwallet/blockatlas/pkg/blockatlas"
 	"github.com/trustwallet/blockatlas/pkg/errors"
-	"github.com/trustwallet/watchmarket/market/market"
+	"github.com/trustwallet/watchmarket/market/ticker"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"math/big"
 	"net/url"
@@ -18,13 +18,13 @@ var (
 )
 
 type Market struct {
-	market.Market
+	ticker.Market
 	blockatlas.Request
 }
 
-func InitMarket(api string, updateTime string) market.MarketProvider {
+func InitMarket(api string, updateTime string) ticker.TickerProvider {
 	m := &Market{
-		Market: market.Market{
+		Market: ticker.Market{
 			Id:         id,
 			UpdateTime: updateTime,
 		},

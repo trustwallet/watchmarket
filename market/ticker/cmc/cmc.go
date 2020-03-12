@@ -2,7 +2,7 @@ package cmc
 
 import (
 	"github.com/trustwallet/watchmarket/market/clients/cmc"
-	"github.com/trustwallet/watchmarket/market/market"
+	"github.com/trustwallet/watchmarket/market/ticker"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 )
 
@@ -11,14 +11,14 @@ const (
 )
 
 type Market struct {
-	market.Market
+	ticker.Market
 	mapApi string
 	client *cmc.Client
 }
 
-func InitMarket(api string, apiKey string, mapApi string, updateTime string) market.MarketProvider {
+func InitMarket(api string, apiKey string, mapApi string, updateTime string) ticker.TickerProvider {
 	m := &Market{
-		Market: market.Market{
+		Market: ticker.Market{
 			Id:         id,
 			UpdateTime: updateTime,
 		},
@@ -70,16 +70,16 @@ func normalizeTicker(price cmc.Data, provider string, cmap cmc.CmcMapping) (tick
 		return
 	}
 
-	for _, cmc := range cmcCoin {
-		coinName = cmc.Coin.Symbol
-		if cmc.CoinType == watchmarket.TypeCoin {
+	for _, result := range cmcCoin {
+		coinName = result.Coin.Symbol
+		if result.CoinType == watchmarket.TypeCoin {
 			tokenId = ""
-		} else if len(cmc.TokenId) > 0 {
-			tokenId = cmc.TokenId
+		} else if len(result.TokenId) > 0 {
+			tokenId = result.TokenId
 		}
 		tickers = append(tickers, &watchmarket.Ticker{
 			CoinName: coinName,
-			CoinType: cmc.CoinType,
+			CoinType: result.CoinType,
 			TokenId:  tokenId,
 			Price: watchmarket.TickerPrice{
 				Value:     price.Quote.USD.Price,
