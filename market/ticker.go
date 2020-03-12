@@ -4,6 +4,7 @@ import (
 	"github.com/robfig/cron/v3"
 	"github.com/trustwallet/blockatlas/pkg/logger"
 	"github.com/trustwallet/watchmarket/market/ticker"
+	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"github.com/trustwallet/watchmarket/storage"
 )
 
@@ -28,13 +29,23 @@ func runTicker(storage storage.Market, p ticker.TickerProvider) {
 		logger.Error("Failed to fetch market data", logger.Params{"error": err, "provider": p.GetId()})
 		return
 	}
-	results := make(map[string]int)
-	for _, result := range data {
-		res, err := storage.SaveTicker(result, tickerProviders)
-		results[string(res)]++
+
+	ch := make(chan string)
+	save := func(ticker *watchmarket.Ticker, ch chan string) {
+		res, err := storage.SaveTicker(ticker, tickerProviders)
 		if err != nil {
-			logger.Error("Failed to save ticker", logger.Params{"error": err, "provider": p.GetId(), "result": result})
+			logger.Error("Failed to save ticker", logger.Params{"error": err, "provider": p.GetId(), "result": ticker})
 		}
+		ch <- string(res)
+	}
+
+	for _, result := range data {
+		go save(result, ch)
+	}
+
+	results := make(map[string]int)
+	for i := 0; i < len(data); i++ {
+		results[<-ch]++
 	}
 
 	logger.Info("Market data result", logger.Params{"markets": len(data), "provider": p.GetId(), "results": results})
