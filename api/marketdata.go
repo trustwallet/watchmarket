@@ -75,30 +75,26 @@ func getTickersHandler(storage storage.Market) func(c *gin.Context) {
 			return
 		}
 
-		type getTickerResult struct {
-			Error error
-			Ticker *watchmarket.Ticker
-		}
-
-		getTicker := func(coinRequest Coin, c chan getTickerResult) {
+		tickers := make(watchmarket.Tickers, 0)
+		for _, coinRequest := range md.Assets {
 			exchangeRate := rate.Rate
 			percentChange := rate.PercentChange24h
 
 			coinObj, ok := coin.Coins[coinRequest.Coin]
 			if !ok {
 				logger.Warn("Requested coin does not exist", logger.Params{"coin": coinRequest.Coin})
-				c <- getTickerResult{Error: watchmarket.ErrNotFound}
-				return
+				continue
 			}
-
 			r, err := storage.GetTicker(coinObj.Symbol, strings.ToUpper(coinRequest.TokenId))
 			if err != nil {
 				if err == watchmarket.ErrNotFound {
 					logger.Warn("Ticker not found", logger.Params{"coin": coinObj.Symbol, "token": coinRequest.TokenId})
 				} else if err != nil {
 					logger.Error(err, "Failed to retrieve ticker", logger.Params{"coin": coinObj.Symbol, "token": coinRequest.TokenId})
+					ginutils.RenderError(c, http.StatusInternalServerError, "Failed to retrieve tickers")
+					return
 				}
-				c <- getTickerResult{Error: err}
+				continue
 			}
 			if r.Price.Currency != watchmarket.DefaultCurrency {
 				newRate, err := storage.GetRate(strings.ToUpper(r.Price.Currency))
@@ -116,27 +112,12 @@ func getTickersHandler(storage storage.Market) func(c *gin.Context) {
 
 			r.ApplyRate(md.Currency, exchangeRate, percentChange)
 			r.SetCoinId(coinRequest.Coin)
-
-			c <- getTickerResult{Ticker: r}
-		}
-
-		ch := make(chan getTickerResult)
-		for _, coinRequest := range md.Assets { go getTicker(coinRequest, ch) }
-		tickers := make(watchmarket.Tickers, 0)
-		for i := 0; i < len(md.Assets); i++ {
-			res := <-ch
-			if res.Error != nil && res.Error != blockatlas.ErrNotFound {
-				ginutils.RenderError(c, http.StatusInternalServerError, "Failed to retrieve tickers")
-				return
-			}
-			tickers = append(tickers, res.Ticker)
+			tickers = append(tickers, r)
 		}
 
 		ginutils.RenderSuccess(c, watchmarket.TickerResponse{Currency: md.Currency, Docs: tickers})
 	}
 }
-
-
 
 // @Summary Get charts data for a specific coin
 // @Id get_charts_data
