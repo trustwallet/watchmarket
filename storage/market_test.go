@@ -217,6 +217,26 @@ func TestSaveRatesNoExistingRate(t *testing.T) {
 	assert.Equal(t, results[SaveResultSuccess], 1)
 }
 
+func TestSaveRatesMultipleRates(t *testing.T) {
+	mockDb := &mocks.DB{}
+	mockDb.On("GetHMValue", "ATLAS_MARKET_RATES", "myTestCurrency1", mock.AnythingOfType("**watchmarket.Rate")).Return(watchmarket.ErrNotFound)
+	mockDb.On("AddHM", "ATLAS_MARKET_RATES", "myTestCurrency1", mock.AnythingOfType("*watchmarket.Rate")).Return(nil)
+	mockDb.On("GetHMValue", "ATLAS_MARKET_RATES", "myTestCurrency2", mock.AnythingOfType("**watchmarket.Rate")).Return(watchmarket.ErrNotFound)
+	mockDb.On("AddHM", "ATLAS_MARKET_RATES", "myTestCurrency2", mock.AnythingOfType("*watchmarket.Rate")).Return(nil)
+	mockRates := watchmarket.Rates{}
+	mockRates = append(mockRates, watchmarket.Rate{Currency: "myTestCurrency1"})
+	mockRates = append(mockRates, watchmarket.Rate{Currency: "myTestCurrency2"})
+	mockProviderList := &mocks.ProviderList{}
+
+	subject := &Storage{mockDb}
+
+	results := subject.SaveRates(mockRates, mockProviderList)
+
+	assert.Len(t, results, 1)
+	assert.Contains(t, results, SaveResultSuccess)
+	assert.Equal(t, results[SaveResultSuccess], 2)
+}
+
 func TestSaveRatesExistingRate(t *testing.T) {
 	mockDb := &mocks.DB{}
 	mockDb.On("GetHMValue", "ATLAS_MARKET_RATES", "myTestCurrency", mock.MatchedBy(func(value interface{}) bool {
