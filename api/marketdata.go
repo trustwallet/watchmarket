@@ -205,14 +205,10 @@ func getCoinInfoHandler(charts *market.Charts, ac assets.AssetClient) func(c *gi
 		token := c.Query("token")
 		currency := c.DefaultQuery("currency", watchmarket.DefaultCurrency)
 		chart, err := charts.GetCoinInfo(uint(coinId), token, currency)
-		// TODO: cover special casing of TWT token in tests
-		if err == watchmarket.ErrNotFound && token != tokenTWT {
-			ginutils.RenderError(c, http.StatusNotFound, fmt.Sprintf("Coin info for coin id %d (token: %s, currency: %s) not found", coinId, token, currency))
-			return
-		} else if err != nil && token != tokenTWT {
-			logger.Error(err, "Failed to retrieve coin info", logger.Params{"coinId": coinId, "token": token, "currency": currency})
-			ginutils.RenderError(c, http.StatusInternalServerError, "Failed to retrieve coin info")
-			return
+		if err == watchmarket.ErrNotFound {
+			logger.Info(fmt.Sprintf("Coin info for coin id %d (token: %s, currency: %s) not found", coinId, token, currency))
+		} else if err != nil {
+			logger.Info(err, "Failed to retrieve coin info", logger.Params{"coinId": coinId, "token": token, "currency": currency})
 		}
 
 		chart.Info, err = ac.GetCoinInfo(coinId, token)
