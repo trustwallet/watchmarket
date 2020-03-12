@@ -11,6 +11,7 @@ import (
 	"github.com/trustwallet/watchmarket/internal"
 	"github.com/trustwallet/watchmarket/market"
 	"github.com/trustwallet/watchmarket/services/assets"
+	"github.com/trustwallet/watchmarket/services/caching"
 	"github.com/trustwallet/watchmarket/storage"
 )
 
@@ -20,9 +21,11 @@ const (
 )
 
 var (
-	port, confPath string
-	cache          *storage.Storage
-	engine         *gin.Engine
+	port, confPath        string
+	db                    *storage.Storage
+	engine                *gin.Engine
+	chartsCachingDuration int64
+	cache                 *caching.Provider
 )
 
 func init() {
@@ -34,11 +37,13 @@ func init() {
 	sg := &tmp
 
 	redisHost := viper.GetString("storage.redis")
-	cache = internal.InitRedis(redisHost)
+	db = internal.InitRedis(redisHost)
 	engine = internal.InitEngine(sg, viper.GetString("gin.mode"))
+	cache = internal.InitCaching(db)
+
 }
 
 func main() {
-	api.Bootstrap(engine, cache, market.InitCharts(), &assets.HttpAssetClient{HttpClient: resty.New()})
+	api.Bootstrap(engine, db, market.InitCharts(), &assets.HttpAssetClient{HttpClient: resty.New()}, cache)
 	internal.SetupGracefulShutdown(port, engine)
 }

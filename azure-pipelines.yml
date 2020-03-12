@@ -2,7 +2,6 @@ trigger:
   branches:
     include:
       - master
-      - version/blockatlas
   tags:
     include:
       - '*'
@@ -11,7 +10,6 @@ pr:
   branches:
     include:
       - master
-      - version/blockatlas
 
 pool:
   vmImage: 'Ubuntu 16.04'
@@ -41,6 +39,14 @@ jobs:
       - script: make govet
         workingDirectory: '$(System.DefaultWorkingDirectory)'
         displayName: 'Run go vet'
+
+  - job: integration_tests
+    dependsOn: environment
+    condition: succeeded()
+    steps:
+      - script: make integration
+        workingDirectory: '$(System.DefaultWorkingDirectory)'
+        displayName: 'Run integration tests'
 
   - job: unit_tests
     dependsOn: environment

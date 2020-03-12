@@ -113,3 +113,10 @@ func (t *Ticker) ApplyRate(currency string, rate float64, percentChange24h *big.
 		t.Price.Change24h -= change24h
 	}
 }
+
+func (d ChartData) IsEmpty() bool {
+	if len(d.Prices) < 1 {
+		return true
+	}
+	return false
+}
