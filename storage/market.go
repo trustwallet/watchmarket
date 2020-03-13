@@ -62,46 +62,35 @@ func (s *Storage) GetTicker(coin, token string) (*watchmarket.Ticker, error) {
 }
 
 func (s *Storage) SaveRates(rates watchmarket.Rates, pl ProviderList) map[SaveResult]int {
-	ch := make(chan SaveResult)
-	saveRate := func(rate watchmarket.Rate, ch chan SaveResult) {
+	results := make(map[SaveResult]int)
+	for _, rate := range rates {
 		r, err := s.GetRate(rate.Currency)
 		if err != nil && err != watchmarket.ErrNotFound {
 			logger.Error(err, "SaveRates")
-			ch <- SaveResultStorageFailure
-			return
+			results[SaveResultStorageFailure]++
+			continue
 		}
 		if err == nil {
 			op := pl.GetPriority(r.Provider)
 			np := pl.GetPriority(rate.Provider)
 			if op != -1 && np > op {
-				ch <- SaveResultSkippedLowPriority
-				return
+				results[SaveResultSkippedLowPriority]++
+				continue
 			}
 
 			if rate.Timestamp < r.Timestamp && op >= np {
-				ch <- SaveResultSkippedLowPriorityOrOutdated
-				return
+				results[SaveResultSkippedLowPriorityOrOutdated]++
+				continue
 			}
 		}
 		err = s.AddHM(EntityRates, rate.Currency, &rate)
 		if err != nil {
 			logger.Error(err, "SaveRates")
-			ch <- SaveResultStorageFailure
-			return
+			results[SaveResultStorageFailure]++
+			continue
 		}
-		ch <- SaveResultSuccess
-		return
+		results[SaveResultSuccess]++
 	}
-
-	for _, rate := range rates {
-		go saveRate(rate, ch)
-	}
-
-	results := make(map[SaveResult]int)
-	for i := 0; i < len(rates); i++ {
-		results[<-ch]++
-	}
-
 	return results
 }
 
