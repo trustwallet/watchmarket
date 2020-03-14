@@ -21,11 +21,10 @@ const (
 )
 
 var (
-	port, confPath        string
-	db                    *storage.Storage
-	engine                *gin.Engine
-	chartsCachingDuration int64
-	cache                 *caching.Provider
+	port, confPath string
+	db             *storage.Storage
+	engine         *gin.Engine
+	cache          *caching.Provider
 )
 
 func init() {
@@ -39,11 +38,16 @@ func init() {
 	redisHost := viper.GetString("storage.redis")
 	db = internal.InitRedis(redisHost)
 	engine = internal.InitEngine(sg, viper.GetString("gin.mode"))
-	cache = internal.InitCaching(db)
-
+	cache = internal.InitCaching(db, viper.GetString("market.caching.charts"))
 }
 
 func main() {
-	api.Bootstrap(engine, db, market.InitCharts(), &assets.HttpAssetClient{HttpClient: resty.New()}, cache)
+	api.Bootstrap(api.BootstrapProviders{
+		Engine: engine,
+		Market: db,
+		Charts: market.InitCharts(),
+		Ac:     &assets.HttpAssetClient{HttpClient: resty.New()},
+		Cache:  cache,
+	})
 	internal.SetupGracefulShutdown(port, engine)
 }

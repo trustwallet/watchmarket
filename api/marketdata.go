@@ -21,7 +21,6 @@ import (
 
 const (
 	defaultMaxChartItems = 64
-	minute               = 60
 )
 
 type TickerRequest struct {
@@ -35,13 +34,11 @@ type Coin struct {
 	TokenId  string              `json:"token_id,omitempty"`
 }
 
-func SetupMarketAPI(router gin.IRouter, db storage.Market, charts *market.Charts, ac assets.AssetClient, cache *caching.Provider) {
+func SetupMarketAPI(router gin.IRouter, provider BootstrapProviders) {
 	router.Use(ginutils.TokenAuthMiddleware(viper.GetString("market.auth")))
-	// Ticker
-	router.POST("/ticker", getTickersHandler(db))
-	// Charts
-	router.GET("/charts", getChartsHandler(charts, cache))
-	router.GET("/info", getCoinInfoHandler(charts, ac))
+	router.POST("/ticker", getTickersHandler(provider.Market))
+	router.GET("/charts", getChartsHandler(provider.Charts, provider.Cache))
+	router.GET("/info", getCoinInfoHandler(provider.Charts, provider.Ac))
 }
 
 // @Summary Get ticker values for a specific market

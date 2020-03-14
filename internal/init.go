@@ -3,7 +3,6 @@ package internal
 import (
 	"flag"
 	"github.com/gin-gonic/gin"
-	"github.com/spf13/viper"
 	"github.com/trustwallet/blockatlas/pkg/ginutils"
 	"github.com/trustwallet/blockatlas/pkg/logger"
 	"github.com/trustwallet/watchmarket/config"
@@ -61,13 +60,12 @@ func InitEngine(handler *gin.HandlerFunc, ginMode string) *gin.Engine {
 	return engine
 }
 
-func InitCaching(db *storage.Storage) *caching.Provider {
-	chartsCachingDurationString := viper.GetString("market.caching.charts")
-	chartsCachingDuration, err := time.ParseDuration(chartsCachingDurationString)
+func InitCaching(db *storage.Storage, chartsDuration string) *caching.Provider {
+	chartsCachingDuration, err := time.ParseDuration(chartsDuration)
 	if err != nil {
 		logger.Warn("Failed to parse duration from config, using default value")
-		chartsCachingDuration = time.Minute * 5
+	} else {
+		caching.SetChartsCachingDuration(int64(chartsCachingDuration.Seconds()))
 	}
-	caching.SetChartsCachingDuration(int64(chartsCachingDuration.Seconds()))
 	return caching.InitCaching(db)
 }

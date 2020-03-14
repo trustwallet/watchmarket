@@ -17,10 +17,9 @@ func TestResponseSet(t *testing.T) {
 	mockDb.On("AddHM", EntityCache, responseKey, mock.AnythingOfType("*storage.CacheData")).Return(nil)
 
 	subject := &Storage{mockDb}
-	res, err := subject.Set(responseKey, CacheData{})
+	err := subject.Set(responseKey, CacheData{})
 
 	assert.Equal(t, nil, err)
-	assert.Equal(t, SaveResultSuccess, res)
 }
 
 func TestResponseSetDbFails(t *testing.T) {
@@ -29,10 +28,10 @@ func TestResponseSetDbFails(t *testing.T) {
 	mockDb.On("AddHM", EntityCache, responseKey, mock.AnythingOfType("*storage.CacheData")).Return(addHMErr)
 
 	subject := &Storage{mockDb}
-	res, err := subject.Set(responseKey, CacheData{})
+	err := subject.Set(responseKey, CacheData{})
 
 	assert.Equal(t, addHMErr, err)
-	assert.Equal(t, SaveResultStorageFailure, res)
+
 }
 
 func TestResponseSetExistingKey(t *testing.T) {
@@ -40,16 +39,12 @@ func TestResponseSetExistingKey(t *testing.T) {
 	mockDb.On("AddHM", EntityCache, responseKey, mock.AnythingOfType("*storage.CacheData")).Return(nil)
 
 	subject := &Storage{mockDb}
-	res, err := subject.Set(responseKey, CacheData{})
 
+	err := subject.Set(responseKey, CacheData{})
 	assert.Equal(t, nil, err)
-	assert.Equal(t, SaveResultSuccess, res)
 
-	resTwo, err := subject.Set(responseKey, CacheData{})
-
+	err = subject.Set(responseKey, CacheData{})
 	assert.Equal(t, nil, err)
-	assert.Equal(t, SaveResultSuccess, resTwo)
-
 }
 
 func TestResponseGet(t *testing.T) {
@@ -97,10 +92,9 @@ func TestResponseDelete(t *testing.T) {
 	mockDb.On("DeleteHM", EntityCache, responseKey).Return(nil)
 
 	subject := &Storage{mockDb}
-	result, err := subject.Delete(responseKey)
+	err := subject.Delete(responseKey)
 
 	assert.Equal(t, nil, err)
-	assert.Equal(t, SaveResultSuccess, result)
 }
 
 func TestResponseDeleteDbFails(t *testing.T) {
@@ -109,10 +103,9 @@ func TestResponseDeleteDbFails(t *testing.T) {
 	mockDb.On("DeleteHM", EntityCache, responseKey).Return(addHMErr)
 
 	subject := &Storage{mockDb}
-	result, err := subject.Delete(responseKey)
+	err := subject.Delete(responseKey)
 
 	assert.Equal(t, addHMErr, err)
-	assert.Equal(t, SaveResultStorageFailure, result)
 }
 
 func TestResponseGetAndExpiredWithDeletion(t *testing.T) {
@@ -127,11 +120,9 @@ func TestResponseGetAndExpiredWithDeletion(t *testing.T) {
 	assert.Equal(t, CacheData{}, res)
 	assert.True(t, res.Validate(1, 10))
 
-	var result SaveResult
 	if res.Validate(1, 10) {
-		result, err = subject.Delete(responseKey)
+		err = subject.Delete(responseKey)
 	}
 
 	assert.Equal(t, nil, err)
-	assert.Equal(t, SaveResultSuccess, result)
 }

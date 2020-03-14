@@ -36,7 +36,7 @@ type Market interface {
 }
 
 type Caching interface {
-	Set(key string, data CacheData) (SaveResult, error)
+	Set(key string, data CacheData) error
 	Get(key string) (CacheData, error)
-	Delete(key string) (SaveResult, error)
+	Delete(key string) error
 }

@@ -45,7 +45,13 @@ func TestTickers(t *testing.T) {
 	db := internal.InitRedis(fmt.Sprintf("redis://%s", s.Addr()))
 	seedDb(t, db)
 
-	Bootstrap(engine, db, getChartsMock(), getAssetClientMock(), nil)
+	Bootstrap(BootstrapProviders{
+		Engine: engine,
+		Market: db,
+		Charts: getChartsMock(),
+		Ac:     getAssetClientMock(),
+		Cache:  nil,
+	})
 
 	server := httptest.NewServer(engine)
 	defer server.Close()
@@ -127,8 +133,14 @@ func TestCharts(t *testing.T) {
 	engine := setupEngine()
 	db := internal.InitRedis(fmt.Sprintf("redis://%s", s.Addr()))
 	seedDb(t, db)
-	cache := caching.InitCaching(db)
-	Bootstrap(engine, db, getChartsMock(), getAssetClientMock(), cache)
+
+	Bootstrap(BootstrapProviders{
+		Engine: engine,
+		Market: db,
+		Charts: getChartsMock(),
+		Ac:     getAssetClientMock(),
+		Cache:  caching.InitCaching(db),
+	})
 
 	server := httptest.NewServer(engine)
 	defer server.Close()
@@ -217,7 +229,13 @@ func TestCoinInfo(t *testing.T) {
 	db := internal.InitRedis(fmt.Sprintf("redis://%s", s.Addr()))
 	seedDb(t, db)
 
-	Bootstrap(engine, db, getChartsMock(), getAssetClientMock(), nil)
+	Bootstrap(BootstrapProviders{
+		Engine: engine,
+		Market: db,
+		Charts: getChartsMock(),
+		Ac:     getAssetClientMock(),
+		Cache:  nil,
+	})
 
 	server := httptest.NewServer(engine)
 	defer server.Close()

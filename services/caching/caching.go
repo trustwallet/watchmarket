@@ -14,8 +14,6 @@ type Provider struct {
 	DB storage.Caching
 }
 
-const DefaultChartsCachingDuration = 60 * 5
-
 var ChartsCachingDuration int64
 
 func SetChartsCachingDuration(duration int64) {
@@ -26,10 +24,6 @@ func SetChartsCachingDuration(duration int64) {
 }
 
 func InitCaching(db *storage.Storage) *Provider {
-	if ChartsCachingDuration < 0 {
-		ChartsCachingDuration = DefaultChartsCachingDuration
-		logger.Warn("Current caching duration is default  (seconds)", logger.Params{"duration": DefaultChartsCachingDuration})
-	}
 	if ChartsCachingDuration == 0 {
 		logger.Warn("Caching only the absolutely same response", logger.Params{"caching_duration": 0})
 	}
@@ -51,11 +45,11 @@ func (p *Provider) SaveChartsCache(key string, data watchmarket.ChartData, timeS
 		return err
 	}
 
-	saveResult, err := p.DB.Set(key, storage.CacheData{
+	err = p.DB.Set(key, storage.CacheData{
 		RawData:      rawData,
 		WasSavedTime: timeStart,
 	})
-	if err != nil || saveResult != storage.SaveResultSuccess {
+	if err != nil {
 		return err
 	}
 	return nil
@@ -77,8 +71,8 @@ func (p *Provider) GetChartsCache(key string, timeStart int64) (watchmarket.Char
 		return data, nil
 	}
 
-	deleteResult, err := p.DB.Delete(key)
-	if err != nil || deleteResult != storage.SaveResultSuccess {
+	err = p.DB.Delete(key)
+	if err != nil {
 		return watchmarket.ChartData{}, errors.New("invalid cache is not deleted")
 	}
 

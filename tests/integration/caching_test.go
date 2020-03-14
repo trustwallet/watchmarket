@@ -37,10 +37,18 @@ func TestChartsCachingInit(t *testing.T) {
 	engine := gin.New()
 	assert.NotNil(t, engine)
 
+	caching.SetChartsCachingDuration(300)
 	cache = caching.InitCaching(setup.Cache)
 	assert.NotNil(t, cache)
 
-	api.Bootstrap(engine, setup.Cache, &mockedCharts, &assets.HttpAssetClient{HttpClient: resty.New()}, cache)
+	api.Bootstrap(api.BootstrapProviders{
+		Engine: engine,
+		Market: setup.Cache,
+		Charts: &mockedCharts,
+		Ac:     &assets.HttpAssetClient{HttpClient: resty.New()},
+		Cache:  cache,
+	})
+
 	go internal.SetupGracefulShutdown("8080", engine)
 }
 
@@ -79,7 +87,7 @@ func TestWithThatCacheResetsWithIfOutdated(t *testing.T) {
 
 	timeWithInvalidPeriod := 1574483128
 	url, key := buildUrlAndKey(timeWithInvalidPeriod)
-	SetCachedData(*cache, key, rawData, int64(timeWithInvalidPeriod-caching.DefaultChartsCachingDuration-1))
+	SetCachedData(*cache, key, rawData, int64(timeWithInvalidPeriod-(60*5)-1))
 
 	makeRequestAndTestIt(t, url, `{"prices":[{"price":10,"date":0},{"price":10,"date":0}]}`)
 	cleanupCache(*setup.Cache)

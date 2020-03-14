@@ -44,7 +44,7 @@ func TestProvider_GetChartsCache_CachingDataWasEmpty(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, r)
 
-	_, err = db.Set("testKEY", storage.CacheData{RawData: r, WasSavedTime: 0})
+	err = db.Set("testKEY", storage.CacheData{RawData: r, WasSavedTime: 0})
 	assert.Nil(t, err)
 	provider := InitCaching(db)
 
@@ -188,7 +188,7 @@ func TestProvider_GetChartsCache_BadCachingDataWasDeletedAndHandledRight(t *test
 
 	db := InitRedis(fmt.Sprintf("redis://%s", s.Addr()))
 
-	_, err := db.Set("testKEY", storage.CacheData{RawData: []byte{0, 1, 2}, WasSavedTime: 0})
+	err := db.Set("testKEY", storage.CacheData{RawData: []byte{0, 1, 2}, WasSavedTime: 0})
 	assert.Nil(t, err)
 
 	provider := InitCaching(db)
