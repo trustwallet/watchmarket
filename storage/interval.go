@@ -19,8 +19,10 @@ func (s *Storage) GetIntervalKey(key string, time int64) (string, error) {
 		return "", err
 	}
 
-	var results = make([]string, 0)
-	var counter int
+	var (
+		results = make([]string, 0)
+		counter int
+	)
 	for _, interval := range currentIntervals {
 		if time >= interval.Timestamp && time <= interval.Timestamp+interval.Duration {
 			results = append(results, interval.Key)
