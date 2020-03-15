@@ -6,7 +6,6 @@
 
 > Watchmarket is a Blockchain explorer API aggregator and caching layer. It's your one-stop-shop to get information for (almost) any coin in a common format
 
-
 Watchmarket comes with three apps:
 * API: RESTful API to retrieve coin info, charts, and tickers
 * Observer: caches data from explorer APIs in Redis
