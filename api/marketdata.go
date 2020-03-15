@@ -165,7 +165,6 @@ func getChartsHandler(charts *market.Charts, cache *caching.Provider) func(c *gi
 
 		chart, err := cache.GetChartsCache(key, timeStart)
 		if err == nil {
-			logger.Warn("Cached")
 			ginutils.RenderSuccess(c, chart)
 			return
 		}

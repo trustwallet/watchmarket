@@ -44,7 +44,7 @@ func TestStorage_GetIntervalKey_Mixed(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, excpected.Key, res)
 
-	resTwo, err := s.GetIntervalKey("1", 3)
+	resTwo, err := s.GetIntervalKey("1", 4)
 	assert.Nil(t, err)
 	assert.Equal(t, ivOne.Key, resTwo)
 }
