@@ -7,22 +7,20 @@ import (
 	"github.com/trustwallet/blockatlas/coin"
 	"github.com/trustwallet/blockatlas/pkg/blockatlas"
 	"github.com/trustwallet/blockatlas/pkg/ginutils"
-	"github.com/trustwallet/blockatlas/pkg/ginutils/gincache"
 	"github.com/trustwallet/blockatlas/pkg/logger"
 	"github.com/trustwallet/watchmarket/market"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"github.com/trustwallet/watchmarket/services/assets"
+	"github.com/trustwallet/watchmarket/services/caching"
 	"github.com/trustwallet/watchmarket/storage"
 	"math/big"
 	"net/http"
 	"strconv"
 	"strings"
-	"time"
 )
 
 const (
 	defaultMaxChartItems = 64
-	tokenTWT             = "TWT-8C2"
 )
 
 type TickerRequest struct {
@@ -36,13 +34,11 @@ type Coin struct {
 	TokenId  string              `json:"token_id,omitempty"`
 }
 
-func SetupMarketAPI(router gin.IRouter, db storage.Market, charts *market.Charts, ac assets.AssetClient) {
+func SetupMarketAPI(router gin.IRouter, provider BootstrapProviders) {
 	router.Use(ginutils.TokenAuthMiddleware(viper.GetString("market.auth")))
-	// Ticker
-	router.POST("/ticker", getTickersHandler(db))
-	// Charts
-	router.GET("/charts", gincache.CacheMiddleware(time.Minute*10, getChartsHandler(charts)))
-	router.GET("/info", gincache.CacheMiddleware(time.Minute*5, getCoinInfoHandler(charts, ac)))
+	router.POST("/ticker", getTickersHandler(provider.Market))
+	router.GET("/charts", getChartsHandler(provider.Charts, provider.Cache))
+	router.GET("/info", getCoinInfoHandler(provider.Charts, provider.Ac))
 }
 
 // @Summary Get ticker values for a specific market
@@ -89,7 +85,7 @@ func getTickersHandler(storage storage.Market) func(c *gin.Context) {
 			if err != nil {
 				if err == watchmarket.ErrNotFound {
 					logger.Warn("Ticker not found", logger.Params{"coin": coinObj.Symbol, "token": coinRequest.TokenId})
-				} else if err != nil {
+				} else {
 					logger.Error(err, "Failed to retrieve ticker", logger.Params{"coin": coinObj.Symbol, "token": coinRequest.TokenId})
 					ginutils.RenderError(c, http.StatusInternalServerError, "Failed to retrieve tickers")
 					return
@@ -132,7 +128,7 @@ func getTickersHandler(storage storage.Market) func(c *gin.Context) {
 // @Param currency query string false "The currency to show charts" default(USD)
 // @Success 200 {object} watchmarket.ChartData
 // @Router /v1/market/charts [get]
-func getChartsHandler(charts *market.Charts) func(c *gin.Context) {
+func getChartsHandler(charts *market.Charts, cache *caching.Provider) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		coinQuery := c.Query("coin")
 		if len(coinQuery) == 0 {
@@ -156,13 +152,23 @@ func getChartsHandler(charts *market.Charts) func(c *gin.Context) {
 			ginutils.RenderError(c, http.StatusBadRequest, "Invalid time_start provided")
 			return
 		}
-		maxItems, err := strconv.Atoi(c.Query("max_items"))
+		maxItemsRaw := c.Query("max_items")
+		maxItems, err := strconv.Atoi(maxItemsRaw)
 		if err != nil || maxItems <= 0 {
 			maxItems = defaultMaxChartItems
 		}
 
 		currency := c.DefaultQuery("currency", watchmarket.DefaultCurrency)
-		chart, err := charts.GetChartData(uint(coinId), token, currency, timeStart, maxItems)
+
+		key := cache.GenerateKey(coinQuery + token + maxItemsRaw + currency)
+
+		chart, err := cache.GetChartsCache(key, timeStart)
+		if err == nil {
+			ginutils.RenderSuccess(c, chart)
+			return
+		}
+
+		chart, err = charts.GetChartData(uint(coinId), token, currency, timeStart, maxItems)
 		if err == watchmarket.ErrNotFound {
 			ginutils.RenderError(c, http.StatusNotFound, "Chart data not found")
 			return
@@ -170,6 +176,11 @@ func getChartsHandler(charts *market.Charts) func(c *gin.Context) {
 			logger.Error(err, "Failed to retrieve chart", logger.Params{"coin": coinId, "currency": currency, "token": token, "time_start": timeStart})
 			ginutils.RenderError(c, http.StatusInternalServerError, "Failed to retrieve chart")
 			return
+		}
+
+		err = cache.SaveChartsCache(key, chart, timeStart)
+		if err != nil {
+			logger.Error(err, "Failed to save cache chart", logger.Params{"coin": coinId, "currency": currency, "token": token, "time_start": timeStart, "key": key, "err": err})
 		}
 
 		ginutils.RenderSuccess(c, chart)

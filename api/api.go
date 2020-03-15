@@ -5,11 +5,20 @@ import (
 	"github.com/trustwallet/blockatlas/pkg/ginutils"
 	"github.com/trustwallet/watchmarket/market"
 	"github.com/trustwallet/watchmarket/services/assets"
+	"github.com/trustwallet/watchmarket/services/caching"
 	"github.com/trustwallet/watchmarket/storage"
 )
 
-func Bootstrap(engine *gin.Engine, market storage.Market, charts *market.Charts, ac assets.AssetClient) {
-	engine.GET("/", func(c *gin.Context) { ginutils.RenderSuccess(c, `Watchmarket API`) })
-	marketAPI := engine.Group("/v1/market")
-	SetupMarketAPI(marketAPI, market, charts, ac)
+type BootstrapProviders struct {
+	Engine *gin.Engine
+	Market storage.Market
+	Charts *market.Charts
+	Ac     assets.AssetClient
+	Cache  *caching.Provider
+}
+
+func Bootstrap(providers BootstrapProviders) {
+	providers.Engine.GET("/", func(c *gin.Context) { ginutils.RenderSuccess(c, `Watchmarket API`) })
+	marketAPI := providers.Engine.Group("/v1/market")
+	SetupMarketAPI(marketAPI, providers)
 }

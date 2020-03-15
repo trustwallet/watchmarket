@@ -40,7 +40,6 @@ func init() {
 	cache = internal.InitRedis(redisHost)
 
 	rateProviders = &rate.Providers{
-		// Add Market Quote Providers:
 		0: rateCMC.InitRate(
 			viper.GetString("market.cmc.api"),
 			viper.GetString("market.cmc.api_key"),
@@ -63,7 +62,6 @@ func init() {
 	}
 
 	tickerProviders = &ticker.Providers{
-		// Add Market Quote Providers:
 		0: tickerCMC.InitMarket(
 			viper.GetString("market.cmc.api"),
 			viper.GetString("market.cmc.api_key"),

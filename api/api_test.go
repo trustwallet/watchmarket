@@ -19,6 +19,7 @@ import (
 	mocks "github.com/trustwallet/watchmarket/mocks/storage"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"github.com/trustwallet/watchmarket/services/assets"
+	"github.com/trustwallet/watchmarket/services/caching"
 	"github.com/trustwallet/watchmarket/storage"
 	"io"
 	"io/ioutil"
@@ -44,7 +45,13 @@ func TestTickers(t *testing.T) {
 	db := internal.InitRedis(fmt.Sprintf("redis://%s", s.Addr()))
 	seedDb(t, db)
 
-	Bootstrap(engine, db, getChartsMock(), getAssetClientMock())
+	Bootstrap(BootstrapProviders{
+		Engine: engine,
+		Market: db,
+		Charts: getChartsMock(),
+		Ac:     getAssetClientMock(),
+		Cache:  nil,
+	})
 
 	server := httptest.NewServer(engine)
 	defer server.Close()
@@ -127,7 +134,13 @@ func TestCharts(t *testing.T) {
 	db := internal.InitRedis(fmt.Sprintf("redis://%s", s.Addr()))
 	seedDb(t, db)
 
-	Bootstrap(engine, db, getChartsMock(), getAssetClientMock())
+	Bootstrap(BootstrapProviders{
+		Engine: engine,
+		Market: db,
+		Charts: getChartsMock(),
+		Ac:     getAssetClientMock(),
+		Cache:  caching.InitCaching(db),
+	})
 
 	server := httptest.NewServer(engine)
 	defer server.Close()
@@ -196,6 +209,7 @@ func TestCharts(t *testing.T) {
 				t.Fatal(err)
 			}
 			defer resp.Body.Close()
+			assert.Equal(t, err, nil)
 			assert.Equal(t, resp.StatusCode, tt.expectedStatus)
 			responseBytes, err := ioutil.ReadAll(resp.Body)
 			if err != nil {
@@ -215,7 +229,13 @@ func TestCoinInfo(t *testing.T) {
 	db := internal.InitRedis(fmt.Sprintf("redis://%s", s.Addr()))
 	seedDb(t, db)
 
-	Bootstrap(engine, db, getChartsMock(), getAssetClientMock())
+	Bootstrap(BootstrapProviders{
+		Engine: engine,
+		Market: db,
+		Charts: getChartsMock(),
+		Ac:     getAssetClientMock(),
+		Cache:  nil,
+	})
 
 	server := httptest.NewServer(engine)
 	defer server.Close()
