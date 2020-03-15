@@ -25,9 +25,9 @@ func scheduleTasks(storage storage.Market, p Provider, c *cron.Cron) {
 	t := p.GetUpdateTime()
 	spec := fmt.Sprintf("@every %s", t)
 	logger.Info("Scheduling market data task", logger.Params{
-		"Type":     p.GetLogType(),
-		"Market":   p.GetId(),
-		"Interval": spec,
+		"Type":           p.GetLogType(),
+		"Market":         p.GetId(),
+		"CachedInterval": spec,
 	})
 	_, err = c.AddFunc(spec, func() { go run(storage, p) })
 	go run(storage, p)

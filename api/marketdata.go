@@ -17,6 +17,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 )
 
 const (
@@ -135,23 +136,23 @@ func getChartsHandler(charts *market.Charts, cache *caching.Provider) func(c *gi
 			ginutils.RenderError(c, http.StatusBadRequest, "No coin provided")
 			return
 		}
-		if len(c.Query("time_start")) == 0 {
-			ginutils.RenderError(c, http.StatusBadRequest, "No time_start provided")
-			return
-		}
 
 		coinId, err := strconv.Atoi(coinQuery)
 		if err != nil {
 			ginutils.RenderError(c, http.StatusBadRequest, "Invalid coin provided")
 			return
 		}
+
+		timeStart := time.Now().Unix() - 60*60*24
+		if len(c.Query("time_start")) != 0 {
+			timeStart, err = strconv.ParseInt(c.Query("time_start"), 10, 64)
+			if err != nil {
+				ginutils.RenderError(c, http.StatusBadRequest, "Invalid time_start provided")
+				return
+			}
+		}
 		token := c.Query("token")
 
-		timeStart, err := strconv.ParseInt(c.Query("time_start"), 10, 64)
-		if err != nil {
-			ginutils.RenderError(c, http.StatusBadRequest, "Invalid time_start provided")
-			return
-		}
 		maxItemsRaw := c.Query("max_items")
 		maxItems, err := strconv.Atoi(maxItemsRaw)
 		if err != nil || maxItems <= 0 {
@@ -164,6 +165,7 @@ func getChartsHandler(charts *market.Charts, cache *caching.Provider) func(c *gi
 
 		chart, err := cache.GetChartsCache(key, timeStart)
 		if err == nil {
+			logger.Warn("Cached")
 			ginutils.RenderSuccess(c, chart)
 			return
 		}

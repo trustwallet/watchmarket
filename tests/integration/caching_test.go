@@ -53,6 +53,7 @@ func TestChartsCachingInit(t *testing.T) {
 }
 
 func TestWithAlreadySetupedCache(t *testing.T) {
+	cleanupCache(*setup.Cache)
 	rawData, err := makeRawDataMock()
 	if err != nil {
 		t.Fatal(err)
@@ -60,26 +61,26 @@ func TestWithAlreadySetupedCache(t *testing.T) {
 
 	timeFirst := 1574483028
 	url, key := buildUrlAndKey(timeFirst)
-	SetCachedData(*cache, key, rawData, int64(timeFirst))
+	SetCachedData(*cache, key, rawData, "oZGj-pQpMkoKoxDLy07SEb1XwH4=", int64(timeFirst))
 	makeRequestAndTestIt(t, url, `{"prices":[{"price":100000,"date":0},{"price":100000,"date":0}]}`)
-	cleanupCache(*setup.Cache)
 }
 
 func TestWithThatCacheResetsWithTimeBefore(t *testing.T) {
+	cleanupCache(*setup.Cache)
 	rawData, err := makeRawDataMock()
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	timeBeforeFirst := 1574483027
+	timeBeforeFirst := 1574483026
 	url, key := buildUrlAndKey(timeBeforeFirst)
-	SetCachedData(*cache, key, rawData, int64(timeBeforeFirst+1))
+	SetCachedData(*cache, key, rawData, "oZGj-pQpMkoKoxDLy07SEb1XwH4=", int64(timeBeforeFirst+1))
 
 	makeRequestAndTestIt(t, url, `{"prices":[{"price":10,"date":0},{"price":10,"date":0}]}`)
-	cleanupCache(*setup.Cache)
 }
 
-func TestWithThatCacheResetsWithIfOutdated(t *testing.T) {
+func TestWithThatCacheIsNotDisplayedIfOutdated(t *testing.T) {
+	cleanupCache(*setup.Cache)
 	rawData, err := makeRawDataMock()
 	if err != nil {
 		t.Fatal(err)
@@ -87,10 +88,10 @@ func TestWithThatCacheResetsWithIfOutdated(t *testing.T) {
 
 	timeWithInvalidPeriod := 1574483128
 	url, key := buildUrlAndKey(timeWithInvalidPeriod)
-	SetCachedData(*cache, key, rawData, int64(timeWithInvalidPeriod-(60*5)-1))
+	SetCachedData(*cache, key, rawData, "oZGj-pQpMkoKoxDLy07SEb1XwH4=", int64(timeWithInvalidPeriod+100000))
 
 	makeRequestAndTestIt(t, url, `{"prices":[{"price":10,"date":0},{"price":10,"date":0}]}`)
-	cleanupCache(*setup.Cache)
+
 }
 
 func makeRawDataMock() ([]byte, error) {
@@ -117,7 +118,8 @@ func makeRawDataMock() ([]byte, error) {
 }
 
 func cleanupCache(db storage.Storage) {
-	db.DeleteHM(storage.EntityCache, "Zfb7OX4NBbtWQn_Wtz8e3YfmWiM=")
+	db.DeleteHM(storage.EntityInterval, "Zfb7OX4NBbtWQn_Wtz8e3YfmWiM=")
+	db.DeleteHM(storage.EntityCache, "oZGj-pQpMkoKoxDLy07SEb1XwH4=")
 }
 
 func buildUrlAndKey(timeStart int) (string, string) {
@@ -137,13 +139,15 @@ func makeRequestAndTestIt(t *testing.T, url, wantRes string) {
 		t.Fatal(err)
 	}
 
-	assert.Equal(t, parseJson(t, responseBytes), parseJson(t, []byte(wantRes)))
+	assert.Equal(t, parseJson(t, []byte(wantRes)), parseJson(t, responseBytes))
 }
 
-func SetCachedData(cache caching.Provider, key string, rawData []byte, wasSavedTime int64) {
-	cache.DB.Set(key, storage.CacheData{
-		RawData:      rawData,
-		WasSavedTime: wasSavedTime,
+func SetCachedData(cache caching.Provider, key string, rawData []byte, keyTwo string, timestamp int64) {
+	cache.DB.Set(keyTwo, rawData)
+	cache.DB.UpdateInterval(key, storage.CachedInterval{
+		Timestamp: timestamp,
+		Duration:  300,
+		Key:       keyTwo,
 	})
 }
 

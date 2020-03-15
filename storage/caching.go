@@ -2,14 +2,7 @@ package storage
 
 const EntityCache = "MARKET_CACHE"
 
-type (
-	CacheData struct {
-		RawData      []byte
-		WasSavedTime int64
-	}
-)
-
-func (s *Storage) Set(key string, data CacheData) error {
+func (s *Storage) Set(key string, data []byte) error {
 	err := s.AddHM(EntityCache, key, &data)
 	if err != nil {
 		return err
@@ -17,11 +10,11 @@ func (s *Storage) Set(key string, data CacheData) error {
 	return nil
 }
 
-func (s *Storage) Get(key string) (CacheData, error) {
-	var cd CacheData
+func (s *Storage) Get(key string) ([]byte, error) {
+	var cd []byte
 	err := s.GetHMValue(EntityCache, key, &cd)
 	if err != nil {
-		return CacheData{}, err
+		return nil, err
 	}
 	return cd, nil
 }
@@ -32,13 +25,4 @@ func (s *Storage) Delete(key string) error {
 		return err
 	}
 	return nil
-}
-
-func (c *CacheData) Validate(time, duration int64) bool {
-	// must not be expired
-	// must not be before caching
-	isExpired := c.WasSavedTime+duration < time
-	isBeforeCaching := c.WasSavedTime-time > 0
-
-	return !isExpired && !isBeforeCaching
 }
