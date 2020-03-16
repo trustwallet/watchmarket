@@ -36,7 +36,9 @@ type Market interface {
 }
 
 type Caching interface {
-	Set(key string, data CacheData) error
-	Get(key string) (CacheData, error)
+	Set(key string, data []byte) error
+	Get(key string) ([]byte, error)
 	Delete(key string) error
+	UpdateInterval(key string, interval CachedInterval) error
+	GetIntervalKey(key string, time int64) (string, error)
 }

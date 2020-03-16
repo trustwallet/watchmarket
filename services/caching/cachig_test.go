@@ -44,21 +44,16 @@ func TestProvider_GetChartsCache_CachingDataWasEmpty(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, r)
 
-	err = db.Set("testKEY", storage.CacheData{RawData: r, WasSavedTime: 0})
+	err = db.Set("testKEY", r)
 	assert.Nil(t, err)
 	provider := InitCaching(db)
 
 	assert.NotNil(t, provider)
 	SetChartsCachingDuration(testedCachingDuration)
 
-	data, err := provider.GetChartsCache("testKEY", 1)
-	assert.Equal(t, "cache is not valid", err.Error())
+	data, err := provider.GetChartsCache("testKEY", 10000)
+	assert.Equal(t, "record does not exist", err.Error())
 	assert.Equal(t, watchmarket.ChartData{}, data)
-
-	res, err := provider.DB.Get("testKEY")
-	assert.NotNil(t, err)
-	assert.Equal(t, storage.ErrNotExist, err)
-	assert.Nil(t, res.RawData)
 }
 
 func TestProvider_GetChartsCache_notExistingKey(t *testing.T) {
@@ -74,22 +69,6 @@ func TestProvider_GetChartsCache_notExistingKey(t *testing.T) {
 
 	data, err := provider.GetChartsCache("testKEY+1", 1)
 	assert.Equal(t, "record does not exist", err.Error())
-	assert.Equal(t, watchmarket.ChartData{}, data)
-}
-
-func TestProvider_GetChartsCache_Delete_Error(t *testing.T) {
-	mockDb := &mocks.DB{}
-
-	addHMErr := errors.New("boom")
-	mockDb.On("GetHMValue", storage.EntityCache, "testKEY", mock.AnythingOfType("*storage.CacheData")).Return(nil)
-	mockDb.On("DeleteHM", storage.EntityCache, "testKEY").Return(addHMErr)
-
-	provider := InitCaching(&storage.Storage{DB: mockDb})
-	assert.NotNil(t, provider)
-	SetChartsCachingDuration(testedCachingDuration)
-
-	data, err := provider.GetChartsCache("testKEY", 0)
-	assert.Equal(t, "invalid cache is not deleted", err.Error())
 	assert.Equal(t, watchmarket.ChartData{}, data)
 }
 
@@ -109,7 +88,7 @@ func TestProvider_GetChartsCache_Outdated(t *testing.T) {
 	assert.NotNil(t, err)
 }
 
-func TestProvider_GetChartsCache_OutdatedCacheIsDeleted(t *testing.T) {
+func TestProvider_GetChartsCache_OutdatedCacheIsNotReturned(t *testing.T) {
 	s := setupRedis(t)
 	defer s.Close()
 
@@ -127,10 +106,10 @@ func TestProvider_GetChartsCache_OutdatedCacheIsDeleted(t *testing.T) {
 	res, err := provider.DB.Get("testKEY")
 	assert.NotNil(t, err)
 	assert.Equal(t, storage.ErrNotExist, err)
-	assert.Nil(t, res.RawData)
+	assert.Nil(t, res)
 }
 
-func TestProvider_GetChartsCache_ValidCacheIsNotDeleted(t *testing.T) {
+func TestProvider_GetChartsCache_ValidCacheIsReturned(t *testing.T) {
 	s := setupRedis(t)
 	defer s.Close()
 
@@ -145,9 +124,9 @@ func TestProvider_GetChartsCache_ValidCacheIsNotDeleted(t *testing.T) {
 	assert.Equal(t, makeChartDataMock(), data)
 	assert.Nil(t, err)
 
-	res, err := provider.DB.Get("testKEY")
+	res, err := provider.DB.Get("data_key")
 	assert.Nil(t, err)
-	assert.NotNil(t, res.RawData)
+	assert.NotNil(t, res)
 }
 
 func TestProvider_GetChartsCache_StartTimeIsEarlierThatWasCached(t *testing.T) {
@@ -168,7 +147,7 @@ func TestProvider_GetChartsCache_StartTimeIsEarlierThatWasCached(t *testing.T) {
 	res, err := provider.DB.Get("testKEY")
 	assert.NotNil(t, err)
 	assert.Equal(t, storage.ErrNotExist, err)
-	assert.Nil(t, res.RawData)
+	assert.Nil(t, res)
 
 	// emulate that cache was created
 	seedDb(t, db)
@@ -177,9 +156,9 @@ func TestProvider_GetChartsCache_StartTimeIsEarlierThatWasCached(t *testing.T) {
 	assert.Equal(t, makeChartDataMock(), dataTwo)
 	assert.Nil(t, err)
 
-	resTwo, err := provider.DB.Get("testKEY")
+	resTwo, err := provider.DB.Get("data_key")
 	assert.Nil(t, err)
-	assert.NotNil(t, resTwo.RawData)
+	assert.NotNil(t, resTwo)
 }
 
 func TestProvider_GetChartsCache_BadCachingDataWasDeletedAndHandledRight(t *testing.T) {
@@ -188,7 +167,13 @@ func TestProvider_GetChartsCache_BadCachingDataWasDeletedAndHandledRight(t *test
 
 	db := InitRedis(fmt.Sprintf("redis://%s", s.Addr()))
 
-	err := db.Set("testKEY", storage.CacheData{RawData: []byte{0, 1, 2}, WasSavedTime: 0})
+	err := db.Set("data_key", []byte{0, 1, 2})
+	assert.Nil(t, err)
+	err = db.UpdateInterval("testKEY", storage.CachedInterval{
+		Timestamp: 0,
+		Duration:  1000,
+		Key:       "data_key",
+	})
 	assert.Nil(t, err)
 
 	provider := InitCaching(db)
@@ -203,7 +188,7 @@ func TestProvider_GetChartsCache_BadCachingDataWasDeletedAndHandledRight(t *test
 	res, err := provider.DB.Get("testKEY")
 	assert.NotNil(t, err)
 	assert.Equal(t, storage.ErrNotExist, err)
-	assert.Nil(t, res.RawData)
+	assert.Nil(t, res)
 }
 
 func TestProvider_SaveChartsCache_Success(t *testing.T) {
@@ -219,9 +204,9 @@ func TestProvider_SaveChartsCache_Success(t *testing.T) {
 	err := provider.SaveChartsCache("testKEY", makeChartDataMock(), 0)
 	assert.Nil(t, err)
 
-	res, err := provider.DB.Get("testKEY")
+	res, err := provider.DB.Get("xQNa0B7ITYf1gJY0dGG3fabGPic=")
 	mocked, _ := makeRawDataMock()
-	assert.Equal(t, mocked, res.RawData)
+	assert.Equal(t, mocked, res)
 	assert.Nil(t, err)
 }
 
@@ -233,10 +218,9 @@ func TestProvider_Mixed(t *testing.T) {
 
 	provider := InitCaching(db)
 	assert.NotNil(t, provider)
-
+	SetChartsCachingDuration(testedCachingDuration)
 	err := provider.SaveChartsCache("testKEY", makeChartDataMock(), 0)
 	assert.Nil(t, err)
-	SetChartsCachingDuration(testedCachingDuration)
 
 	data, err := provider.GetChartsCache("testKEY", 100)
 	assert.Equal(t, makeChartDataMock(), data)
@@ -244,13 +228,8 @@ func TestProvider_Mixed(t *testing.T) {
 
 	dataTwo, err := provider.GetChartsCache("testKEY", 10001)
 	assert.NotNil(t, err)
-	assert.Equal(t, "cache is not valid", err.Error())
+	assert.Equal(t, "no suitable intervals", err.Error())
 	assert.Equal(t, watchmarket.ChartData{}, dataTwo)
-
-	res, err := provider.DB.Get("testKEY")
-	assert.NotNil(t, err)
-	assert.Equal(t, storage.ErrNotExist, err)
-	assert.Nil(t, res.RawData)
 }
 
 func TestProvider_SaveChartsCache_DataIsEmpty(t *testing.T) {
@@ -265,10 +244,10 @@ func TestProvider_SaveChartsCache_DataIsEmpty(t *testing.T) {
 
 	err := provider.SaveChartsCache("testKEY", watchmarket.ChartData{Prices: nil, Error: ""}, 0)
 	assert.Equal(t, "data is empty", err.Error())
-	res, err := provider.DB.Get("testKEY")
+	res, err := provider.GetChartsCache("testKEY", 0)
 	assert.NotNil(t, err)
 	assert.Equal(t, storage.ErrNotExist, err)
-	assert.Nil(t, res.RawData)
+	assert.Equal(t, watchmarket.ChartData{}, res)
 }
 
 func TestProvider_GetChartsCache_FailedToDBGet(t *testing.T) {
@@ -276,7 +255,7 @@ func TestProvider_GetChartsCache_FailedToDBGet(t *testing.T) {
 
 	addHMErr := errors.New("boom")
 
-	mockDb.On("GetHMValue", storage.EntityCache, "testKEY", mock.AnythingOfType("*storage.CacheData")).Return(addHMErr)
+	mockDb.On("GetHMValue", storage.EntityInterval, "testKEY", mock.Anything).Return(addHMErr)
 
 	provider := InitCaching(&storage.Storage{DB: mockDb})
 	assert.NotNil(t, provider)
@@ -291,11 +270,12 @@ func TestProvider_SaveChartsCache_FailedToDBSet(t *testing.T) {
 
 	addHMErr := errors.New("boom")
 
-	mockDb.On("AddHM", storage.EntityCache, "testKEY", mock.AnythingOfType("*storage.CacheData")).Return(addHMErr)
+	mockDb.On("AddHM", storage.EntityInterval, "testKEY", mock.Anything).Return(addHMErr)
+	mockDb.On("GetHMValue", storage.EntityInterval, "testKEY", mock.Anything).Return(nil)
 
+	SetChartsCachingDuration(testedCachingDuration)
 	provider := InitCaching(&storage.Storage{DB: mockDb})
 	assert.NotNil(t, provider)
-	SetChartsCachingDuration(testedCachingDuration)
 
 	err := provider.SaveChartsCache("testKEY", makeChartDataMock(), 0)
 	assert.Equal(t, addHMErr, err)
@@ -310,10 +290,17 @@ func setupRedis(t *testing.T) *miniredis.Miniredis {
 }
 
 func seedDb(t *testing.T, db storage.Caching) {
+
 	rawData, err := makeRawDataMock()
 	assert.NotNil(t, rawData)
 	assert.Nil(t, err)
-	db.Set("testKEY", storage.CacheData{RawData: rawData, WasSavedTime: 0})
+	db.UpdateInterval("testKEY", storage.CachedInterval{
+		Timestamp: 0,
+		Duration:  1000,
+		Key:       "data_key",
+	})
+	db.Set("data_key", rawData)
+
 }
 
 func makeRawDataMock() ([]byte, error) {

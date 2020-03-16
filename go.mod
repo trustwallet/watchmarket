@@ -15,6 +15,7 @@ require (
 	github.com/gin-gonic/gin v1.5.0
 	github.com/go-redis/redis v6.15.6+incompatible
 	github.com/go-resty/resty/v2 v2.2.0
+	github.com/google/go-intervals v0.0.0-20171120085516-250c62ad245e // indirect
 	github.com/gotestyourself/gotestyourself v1.4.0 // indirect
 	github.com/jarcoal/httpmock v1.0.4
 	github.com/magiconair/properties v1.8.1

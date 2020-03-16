@@ -8,6 +8,7 @@ import (
 	"github.com/trustwallet/blockatlas/pkg/logger"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"github.com/trustwallet/watchmarket/storage"
+	"strconv"
 )
 
 type Provider struct {
@@ -44,11 +45,19 @@ func (p *Provider) SaveChartsCache(key string, data watchmarket.ChartData, timeS
 	if err != nil {
 		return err
 	}
+	cachingKey := p.GenerateKey(key + strconv.Itoa(int(timeStart)))
+	interval := storage.CachedInterval{
+		Timestamp: timeStart,
+		Duration:  ChartsCachingDuration,
+		Key:       cachingKey,
+	}
 
-	err = p.DB.Set(key, storage.CacheData{
-		RawData:      rawData,
-		WasSavedTime: timeStart,
-	})
+	err = p.DB.UpdateInterval(key, interval)
+	if err != nil {
+		return err
+	}
+
+	err = p.DB.Set(cachingKey, rawData)
 	if err != nil {
 		return err
 	}
@@ -56,22 +65,27 @@ func (p *Provider) SaveChartsCache(key string, data watchmarket.ChartData, timeS
 }
 
 func (p *Provider) GetChartsCache(key string, timeStart int64) (watchmarket.ChartData, error) {
-	var data watchmarket.ChartData
-
-	cacheData, err := p.DB.Get(key)
+	var (
+		keyInterval string
+		data        watchmarket.ChartData
+	)
+	keyInterval, err := p.DB.GetIntervalKey(key, timeStart)
 	if err != nil {
 		return data, err
 	}
 
-	if cacheData.Validate(timeStart, ChartsCachingDuration) {
-		err = json.Unmarshal(cacheData.RawData, &data)
+	cacheData, err := p.DB.Get(keyInterval)
+	if err != nil {
+		return data, err
 	}
+
+	err = json.Unmarshal(cacheData, &data)
 
 	if err == nil && !data.IsEmpty() {
 		return data, nil
 	}
 
-	err = p.DB.Delete(key)
+	err = p.DB.Delete(keyInterval)
 	if err != nil {
 		return watchmarket.ChartData{}, errors.New("invalid cache is not deleted")
 	}

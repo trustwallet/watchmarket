@@ -163,11 +163,11 @@ func TestCharts(t *testing.T) {
 		},
 		{
 			name:           "test no time_start provided",
-			requestUrl:     fmt.Sprintf("%s/v1/market/charts?coin=60", server.URL),
+			requestUrl:     fmt.Sprintf("%s/v1/market/charts?coin=60&&token=ETHToken", server.URL),
 			requestMethod:  "GET",
 			requestBody:    "",
-			expectedStatus: 400,
-			expectedBody:   "{\"code\":400,\"error\":\"No time_start provided\"}",
+			expectedStatus: 200,
+			expectedBody:   `{"prices":[{"price":10,"date":1583712036}]}`,
 		},
 		{
 			name:           "test invalid coin provided",
