@@ -3,7 +3,6 @@ package api
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/spf13/viper"
 	"github.com/trustwallet/blockatlas/coin"
 	"github.com/trustwallet/blockatlas/pkg/blockatlas"
 	"github.com/trustwallet/blockatlas/pkg/ginutils"
@@ -22,6 +21,7 @@ import (
 
 const (
 	defaultMaxChartItems = 64
+	day                  = 24 * 60 * 60
 )
 
 type TickerRequest struct {
@@ -36,10 +36,9 @@ type Coin struct {
 }
 
 func SetupMarketAPI(router gin.IRouter, provider BootstrapProviders) {
-	router.Use(ginutils.TokenAuthMiddleware(viper.GetString("market.auth")))
 	router.POST("/ticker", getTickersHandler(provider.Market))
 	router.GET("/charts", getChartsHandler(provider.Charts, provider.Cache))
-	router.GET("/info", getCoinInfoHandler(provider.Charts, provider.Ac))
+	router.GET("/info", getCoinInfoHandler(provider.Charts, provider.Ac, provider.Cache))
 }
 
 // @Summary Get ticker values for a specific market
@@ -143,7 +142,7 @@ func getChartsHandler(charts *market.Charts, cache *caching.Provider) func(c *gi
 			return
 		}
 
-		timeStart := time.Now().Unix() - 60*60*24
+		timeStart := time.Now().Unix() - day
 		if len(c.Query("time_start")) != 0 {
 			timeStart, err = strconv.ParseInt(c.Query("time_start"), 10, 64)
 			if err != nil {
@@ -196,11 +195,10 @@ func getChartsHandler(charts *market.Charts, cache *caching.Provider) func(c *gi
 // @Tags Market
 // @Param coin query int true "Coin ID" default(60)
 // @Param token query string false "Token ID"
-// @Param time_start query int false "Start timestamp" default(1574483028)
 // @Param currency query string false "The currency to show coin info in" default(USD)
 // @Success 200 {object} watchmarket.ChartCoinInfo
 // @Router /v1/market/info [get]
-func getCoinInfoHandler(charts *market.Charts, ac assets.AssetClient) func(c *gin.Context) {
+func getCoinInfoHandler(charts *market.Charts, ac assets.AssetClient, cache *caching.Provider) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		coinQuery := c.Query("coin")
 		if len(coinQuery) == 0 {
@@ -216,7 +214,18 @@ func getCoinInfoHandler(charts *market.Charts, ac assets.AssetClient) func(c *gi
 
 		token := c.Query("token")
 		currency := c.DefaultQuery("currency", watchmarket.DefaultCurrency)
-		chart, err := charts.GetCoinInfo(uint(coinId), token, currency)
+
+		var chart watchmarket.ChartCoinInfo
+		key := cache.GenerateKey(coinQuery + token + currency)
+		timeStart := time.Now().Unix() - day
+
+		chart, err = cache.GetCoinInfoCache(key, timeStart)
+		if err == nil {
+			ginutils.RenderSuccess(c, chart)
+			return
+		}
+
+		chart, err = charts.GetCoinInfo(uint(coinId), token, currency)
 		if err == watchmarket.ErrNotFound {
 			logger.Info(fmt.Sprintf("Coin info for coin id %d (token: %s, currency: %s) not found", coinId, token, currency))
 		} else if err != nil {
@@ -233,6 +242,12 @@ func getCoinInfoHandler(charts *market.Charts, ac assets.AssetClient) func(c *gi
 			ginutils.RenderError(c, http.StatusInternalServerError, "Failed to retrieve coin assets")
 			return
 		}
+
+		err = cache.SaveCoinInfoCache(key, chart, timeStart)
+		if err != nil {
+			logger.Error(err, "Failed to save cache info chart", logger.Params{"coin": coinId, "currency": currency, "token": token, "time_start": timeStart, "key": key, "err": err})
+		}
+
 		ginutils.RenderSuccess(c, chart)
 	}
 }
