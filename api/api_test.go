@@ -50,7 +50,7 @@ func TestTickers(t *testing.T) {
 		Market: db,
 		Charts: getChartsMock(),
 		Ac:     getAssetClientMock(),
-		Cache:  nil,
+		Cache:  caching.InitCaching(db),
 	})
 
 	server := httptest.NewServer(engine)
@@ -234,7 +234,7 @@ func TestCoinInfo(t *testing.T) {
 		Market: db,
 		Charts: getChartsMock(),
 		Ac:     getAssetClientMock(),
-		Cache:  nil,
+		Cache:  caching.InitCaching(db),
 	})
 
 	server := httptest.NewServer(engine)
