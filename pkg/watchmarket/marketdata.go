@@ -120,3 +120,7 @@ func (d ChartData) IsEmpty() bool {
 	}
 	return false
 }
+
+func (i ChartCoinInfo) IsEmpty() bool {
+	return i.Info == nil || i.Info.Name == ""
+}

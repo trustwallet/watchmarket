@@ -14,6 +14,7 @@ market:
   rate_update_time: 20m
   caching:
     charts: 5m
+    info: 2h
   dex:
     quote_update_time: 5m
     api: https://dex.binance.org/api

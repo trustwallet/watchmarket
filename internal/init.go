@@ -60,12 +60,18 @@ func InitEngine(handler *gin.HandlerFunc, ginMode string) *gin.Engine {
 	return engine
 }
 
-func InitCaching(db *storage.Storage, chartsDuration string) *caching.Provider {
+func InitCaching(db *storage.Storage, chartsDuration string, chartsInfoDuration string) *caching.Provider {
 	chartsCachingDuration, err := time.ParseDuration(chartsDuration)
 	if err != nil {
-		logger.Warn("Failed to parse duration from config, using default value")
+		logger.Warn("Failed to parse charts duration from config, using default value")
 	} else {
 		caching.SetChartsCachingDuration(int64(chartsCachingDuration.Seconds()))
+	}
+	chartsInfoCachingDuration, err := time.ParseDuration(chartsInfoDuration)
+	if err != nil {
+		logger.Warn("Failed to parse charts INFO duration from config, using default value")
+	} else {
+		caching.SetChartsCachingInfoDuration(int64(chartsInfoCachingDuration.Seconds()))
 	}
 	return caching.InitCaching(db)
 }

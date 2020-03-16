@@ -22,7 +22,7 @@ func TestProvider_GetChartsCache_notOutdated(t *testing.T) {
 	defer s.Close()
 
 	db := InitRedis(fmt.Sprintf("redis://%s", s.Addr()))
-	seedDb(t, db)
+	seedDbCharts(t, db)
 	provider := InitCaching(db)
 	assert.NotNil(t, provider)
 
@@ -61,7 +61,7 @@ func TestProvider_GetChartsCache_notExistingKey(t *testing.T) {
 	defer s.Close()
 
 	db := InitRedis(fmt.Sprintf("redis://%s", s.Addr()))
-	seedDb(t, db)
+	seedDbCharts(t, db)
 	provider := InitCaching(db)
 
 	assert.NotNil(t, provider)
@@ -77,7 +77,7 @@ func TestProvider_GetChartsCache_Outdated(t *testing.T) {
 	defer s.Close()
 
 	db := InitRedis(fmt.Sprintf("redis://%s", s.Addr()))
-	seedDb(t, db)
+	seedDbCharts(t, db)
 	provider := InitCaching(db)
 
 	assert.NotNil(t, provider)
@@ -93,7 +93,7 @@ func TestProvider_GetChartsCache_OutdatedCacheIsNotReturned(t *testing.T) {
 	defer s.Close()
 
 	db := InitRedis(fmt.Sprintf("redis://%s", s.Addr()))
-	seedDb(t, db)
+	seedDbCharts(t, db)
 	provider := InitCaching(db)
 
 	assert.NotNil(t, provider)
@@ -114,7 +114,7 @@ func TestProvider_GetChartsCache_ValidCacheIsReturned(t *testing.T) {
 	defer s.Close()
 
 	db := InitRedis(fmt.Sprintf("redis://%s", s.Addr()))
-	seedDb(t, db)
+	seedDbCharts(t, db)
 
 	provider := InitCaching(db)
 	assert.NotNil(t, provider)
@@ -134,7 +134,7 @@ func TestProvider_GetChartsCache_StartTimeIsEarlierThatWasCached(t *testing.T) {
 	defer s.Close()
 
 	db := InitRedis(fmt.Sprintf("redis://%s", s.Addr()))
-	seedDb(t, db)
+	seedDbCharts(t, db)
 
 	provider := InitCaching(db)
 	assert.NotNil(t, provider)
@@ -150,7 +150,7 @@ func TestProvider_GetChartsCache_StartTimeIsEarlierThatWasCached(t *testing.T) {
 	assert.Nil(t, res)
 
 	// emulate that cache was created
-	seedDb(t, db)
+	seedDbCharts(t, db)
 
 	dataTwo, err := provider.GetChartsCache("testKEY", 100)
 	assert.Equal(t, makeChartDataMock(), dataTwo)
@@ -205,7 +205,7 @@ func TestProvider_SaveChartsCache_Success(t *testing.T) {
 	assert.Nil(t, err)
 
 	res, err := provider.DB.Get("xQNa0B7ITYf1gJY0dGG3fabGPic=")
-	mocked, _ := makeRawDataMock()
+	mocked, _ := makeRawDataMockCharts()
 	assert.Equal(t, mocked, res)
 	assert.Nil(t, err)
 }
@@ -281,6 +281,96 @@ func TestProvider_SaveChartsCache_FailedToDBSet(t *testing.T) {
 	assert.Equal(t, addHMErr, err)
 }
 
+func TestProvider_GetCoinInfoCache(t *testing.T) {
+	s := setupRedis(t)
+	defer s.Close()
+
+	db := InitRedis(fmt.Sprintf("redis://%s", s.Addr()))
+	seedDbChartsInfo(t, db)
+	provider := InitCaching(db)
+	assert.NotNil(t, provider)
+
+	SetChartsCachingInfoDuration(testedCachingDuration)
+
+	data, err := provider.GetCoinInfoCache("testKEY", 1)
+	assert.NotNil(t, data)
+	assert.Nil(t, err)
+	assert.Equal(t, makeChartInfoMock(), data)
+}
+
+func TestProvider_GetCoinInfoCache_Expired(t *testing.T) {
+	s := setupRedis(t)
+	defer s.Close()
+
+	db := InitRedis(fmt.Sprintf("redis://%s", s.Addr()))
+	seedDbChartsInfo(t, db)
+	provider := InitCaching(db)
+	assert.NotNil(t, provider)
+
+	SetChartsCachingInfoDuration(testedCachingDuration)
+
+	data, err := provider.GetCoinInfoCache("testKEY", 1001)
+	assert.NotNil(t, data)
+	assert.NotNil(t, err)
+	assert.Equal(t, watchmarket.ChartCoinInfo{}, data)
+}
+
+func TestProvider_GetCoinInfoCache_Mixed(t *testing.T) {
+	s := setupRedis(t)
+	defer s.Close()
+
+	db := InitRedis(fmt.Sprintf("redis://%s", s.Addr()))
+	seedDbChartsInfo(t, db)
+	provider := InitCaching(db)
+	assert.NotNil(t, provider)
+
+	SetChartsCachingInfoDuration(testedCachingDuration)
+
+	data, err := provider.GetCoinInfoCache("testKEY", 1001)
+	assert.NotNil(t, data)
+	assert.NotNil(t, err)
+	assert.Equal(t, watchmarket.ChartCoinInfo{}, data)
+
+	dataTwo, err := provider.GetCoinInfoCache("testKEY", 101)
+	assert.NotNil(t, dataTwo)
+	assert.Nil(t, err)
+	assert.Equal(t, makeChartInfoMock(), dataTwo)
+}
+
+func TestProvider_SaveCoinInfoCache(t *testing.T) {
+	s := setupRedis(t)
+	defer s.Close()
+
+	db := InitRedis(fmt.Sprintf("redis://%s", s.Addr()))
+
+	provider := InitCaching(db)
+	assert.NotNil(t, provider)
+	SetChartsCachingInfoDuration(testedCachingDuration)
+
+	err := provider.SaveCoinInfoCache("testKEY", watchmarket.ChartCoinInfo{}, 0)
+	assert.Equal(t, "data is empty", err.Error())
+	res, err := provider.GetCoinInfoCache("testKEY", 0)
+	assert.NotNil(t, err)
+	assert.Equal(t, storage.ErrNotExist, err)
+	assert.Equal(t, watchmarket.ChartCoinInfo{}, res)
+}
+
+func TestProvider_SaveCoinInfoCache_DbFails(t *testing.T) {
+	mockDb := &mocks.DB{}
+
+	addHMErr := errors.New("boom")
+
+	mockDb.On("AddHM", storage.EntityInterval, "testKEY", mock.Anything).Return(addHMErr)
+	mockDb.On("GetHMValue", storage.EntityInterval, "testKEY", mock.Anything).Return(nil)
+
+	SetChartsCachingInfoDuration(testedCachingDuration)
+	provider := InitCaching(&storage.Storage{DB: mockDb})
+	assert.NotNil(t, provider)
+
+	err := provider.SaveCoinInfoCache("testKEY", makeChartInfoMock(), 0)
+	assert.Equal(t, addHMErr, err)
+}
+
 func setupRedis(t *testing.T) *miniredis.Miniredis {
 	s, err := miniredis.Run()
 	if err != nil {
@@ -289,9 +379,8 @@ func setupRedis(t *testing.T) *miniredis.Miniredis {
 	return s
 }
 
-func seedDb(t *testing.T, db storage.Caching) {
-
-	rawData, err := makeRawDataMock()
+func seedDbCharts(t *testing.T, db storage.Caching) {
+	rawData, err := makeRawDataMockCharts()
 	assert.NotNil(t, rawData)
 	assert.Nil(t, err)
 	db.UpdateInterval("testKEY", storage.CachedInterval{
@@ -303,13 +392,57 @@ func seedDb(t *testing.T, db storage.Caching) {
 
 }
 
-func makeRawDataMock() ([]byte, error) {
+func seedDbChartsInfo(t *testing.T, db storage.Caching) {
+
+	rawData, err := makeRawDataMockChartsInfo()
+	assert.NotNil(t, rawData)
+	assert.Nil(t, err)
+	db.UpdateInterval("testKEY", storage.CachedInterval{
+		Timestamp: 0,
+		Duration:  1000,
+		Key:       "data_key",
+	})
+	db.Set("data_key", rawData)
+
+}
+
+func makeRawDataMockCharts() ([]byte, error) {
 	rawData, err := json.Marshal(makeChartDataMock())
 	if err != nil {
 		return nil, err
 	}
 
 	return rawData, nil
+}
+
+func makeRawDataMockChartsInfo() ([]byte, error) {
+	rawData, err := json.Marshal(makeChartInfoMock())
+	if err != nil {
+		return nil, err
+	}
+
+	return rawData, nil
+}
+
+func makeChartInfoMock() watchmarket.ChartCoinInfo {
+	info := watchmarket.CoinInfo{
+		Name:             "name test",
+		Website:          "website test",
+		SourceCode:       "source code",
+		WhitePaper:       "paper",
+		Description:      "desc",
+		ShortDescription: "short",
+		Explorers:        nil,
+		Socials:          nil,
+		DataSource:       "source",
+	}
+	return watchmarket.ChartCoinInfo{
+		Vol24:             10,
+		MarketCap:         10,
+		CirculatingSupply: 11,
+		TotalSupply:       33,
+		Info:              &info,
+	}
 }
 
 func makeChartDataMock() watchmarket.ChartData {
