@@ -10,7 +10,7 @@ import (
 const (
 	id                   = "coingecko"
 	minimalTradingVolume = 5000
-	minimalMarketCap     = 0
+	minimalMarketCap     = 5000
 )
 
 type Market struct {
