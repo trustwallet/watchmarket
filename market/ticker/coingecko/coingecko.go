@@ -10,6 +10,7 @@ import (
 const (
 	id                   = "coingecko"
 	minimalTradingVolume = 5000
+	minimalMarketCap     = 0
 )
 
 type Market struct {
@@ -83,7 +84,7 @@ func createTicker(price coingecko.CoinPrice, coinType watchmarket.CoinType, coin
 		LastUpdate: price.LastUpdated,
 	}
 
-	if isRespectableTradingVolume(price.TotalVolume) {
+	if isRespectableTradingVolume(price.TotalVolume) && isRespectableMarketCap(price.MarketCap) {
 		t.Price.Change24h = price.PriceChangePercentage24h
 		t.Price.Value = price.CurrentPrice
 	} else {
@@ -96,6 +97,10 @@ func createTicker(price coingecko.CoinPrice, coinType watchmarket.CoinType, coin
 
 func isRespectableTradingVolume(targetTradingVolume float64) bool {
 	return targetTradingVolume >= minimalTradingVolume
+}
+
+func isRespectableMarketCap(targetMarketCap float64) bool {
+	return targetMarketCap >= minimalMarketCap
 }
 
 func (m *Market) normalizeTickers(prices coingecko.CoinPrices, provider string) watchmarket.Tickers {
