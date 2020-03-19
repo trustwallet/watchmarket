@@ -9,8 +9,7 @@ import (
 
 const (
 	id                   = "coingecko"
-	minimalMarketCap     = 0
-	minimalTradingVolume = 0
+	minimalTradingVolume = 5000
 )
 
 type Market struct {
@@ -93,10 +92,6 @@ func createTicker(price coingecko.CoinPrice, coinType watchmarket.CoinType, coin
 	}
 
 	return t
-}
-
-func isRespectableMarketCap(targetMarketCap float64) bool {
-	return targetMarketCap >= minimalMarketCap
 }
 
 func isRespectableTradingVolume(targetTradingVolume float64) bool {
