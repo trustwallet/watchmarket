@@ -332,7 +332,6 @@ func getAssetClientMock() assets.AssetClient {
 		WhitePaper:       "",
 		Description:      "",
 		ShortDescription: "",
-		DataSource:       "",
 	}, nil)
 	client.On("GetCoinInfo", 500, "ETHToken").Return(&watchmarket.CoinInfo{
 		Name:             "",
@@ -341,7 +340,6 @@ func getAssetClientMock() assets.AssetClient {
 		WhitePaper:       "",
 		Description:      "",
 		ShortDescription: "",
-		DataSource:       "",
 	}, nil)
 	client.On("GetCoinInfo", 1000, "ETHToken").Return(nil, watchmarket.ErrNotFound)
 

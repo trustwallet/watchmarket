@@ -54,20 +54,14 @@ type CoinInfo struct {
 	WhitePaper       string       `json:"white_paper,omitempty"`
 	Description      string       `json:"description,omitempty"`
 	ShortDescription string       `json:"short_description,omitempty"`
-	Explorers        []Link       `json:"explorers,omitempty"`
+	Explorer         string       `json:"explorer,omitempty"`
 	Socials          []SocialLink `json:"socials,omitempty"`
-	DataSource       string       `json:"data_source,omitempty"`
 }
 
 type SocialLink struct {
 	Name   string `json:"name"`
 	Url    string `json:"url"`
 	Handle string `json:"handle"`
-}
-
-type Link struct {
-	Name string `json:"name"`
-	Url  string `json:"url"`
 }
 
 func (t *Ticker) SetCoinId(coinId uint) {
