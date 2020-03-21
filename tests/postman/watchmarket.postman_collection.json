@@ -1,6 +1,6 @@
 {
   "info": {
-    "_postman_id": "03a2fb4f-9cb4-4e01-a980-c04bb5aed8b4",
+    "_postman_id": "53e6d76f-6a28-4e3c-a032-759a7a9bbc52",
     "name": "Watchmarket",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
@@ -168,17 +168,14 @@
                   "        \"whitepaper\": {",
                   "          \"type\": \"string\"",
                   "        },",
-                  "        \"explorers\": {",
-                  "          \"type\": \"array\"",
+                  "        \"explorer\": {",
+                  "          \"type\": \"string\"",
                   "        },",
                   "        \"socials\": {",
                   "          \"type\": \"array\"",
                   "        },",
                   "        \"details\": {",
                   "          \"type\": \"array\"",
-                  "        },",
-                  "        \"data_source\": {",
-                  "          \"type\": \"string\"",
                   "        }",
                   "      }",
                   "    }",
