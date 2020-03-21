@@ -49,14 +49,10 @@ definitions:
     type: object
   watchmarket.CoinInfo:
     properties:
-      data_source:
-        type: string
       description:
         type: string
-      explorers:
-        items:
-          $ref: '#/definitions/watchmarket.Link'
-        type: array
+      explorer:
+        type: string
       name:
         type: string
       short_description:
@@ -70,13 +66,6 @@ definitions:
       website:
         type: string
       white_paper:
-        type: string
-    type: object
-  watchmarket.Link:
-    properties:
-      name:
-        type: string
-      url:
         type: string
     type: object
   watchmarket.SocialLink:
@@ -184,11 +173,6 @@ paths:
         in: query
         name: token
         type: string
-      - default: 1574483028
-        description: Start timestamp
-        in: query
-        name: time_start
-        type: integer
       - default: USD
         description: The currency to show coin info in
         in: query
