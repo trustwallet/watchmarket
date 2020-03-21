@@ -6,8 +6,8 @@ import (
 
 type ChartProvider interface {
 	GetId() string
-	GetChartData(coin uint, token string, currency string, timeStart int64) (watchmarket.ChartData, error)
-	GetCoinData(coin uint, token string, currency string) (watchmarket.ChartCoinInfo, error)
+	GetChartData(coin uint, token, currency string, timeStart int64) (watchmarket.ChartData, error)
+	GetCoinData(coin uint, token, currency string) (watchmarket.ChartCoinInfo, error)
 }
 
 type ChartProviders map[int]ChartProvider

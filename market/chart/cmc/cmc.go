@@ -54,7 +54,7 @@ func (c *Chart) GetChartData(coin uint, token string, currency string, timeStart
 	return normalizeCharts(currency, charts), nil
 }
 
-func (c *Chart) GetCoinData(coin uint, token string, currency string) (watchmarket.ChartCoinInfo, error) {
+func (c *Chart) GetCoinData(coin uint, token, currency string) (watchmarket.ChartCoinInfo, error) {
 	info := watchmarket.ChartCoinInfo{}
 
 	cmap, err := cmc.GetCoinMap(c.mapApi)
