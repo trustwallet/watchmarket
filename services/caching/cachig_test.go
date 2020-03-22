@@ -432,9 +432,8 @@ func makeChartInfoMock() watchmarket.ChartCoinInfo {
 		WhitePaper:       "paper",
 		Description:      "desc",
 		ShortDescription: "short",
-		Explorers:        nil,
+		Explorer:         "explorer",
 		Socials:          nil,
-		DataSource:       "source",
 	}
 	return watchmarket.ChartCoinInfo{
 		Vol24:             10,

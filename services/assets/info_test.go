@@ -27,9 +27,8 @@ func Test_GetCoinInfo(t *testing.T) {
 		WhitePaper:       "https://github.com/ethereum/wiki/wiki/White-Paper",
 		Description:      "Open source platform to write and distribute decentralized applications.",
 		ShortDescription: "Open source platform to write and distribute decentralized applications.",
-		Explorers:        []watchmarket.Link{{Name: "Ethereum", Url: "https://etherscan.io/"}},
+		Explorer:         "https://etherscan.io/",
 		Socials:          []watchmarket.SocialLink{{Name: "Twitter", Url: "https://twitter.com/ethereum", Handle: "ethereum"}},
-		DataSource:       "crowd",
 	}
 
 	ethResponder, err := httpmock.NewJsonResponder(200, mockEthCoinInfo)

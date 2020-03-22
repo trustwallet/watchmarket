@@ -32,7 +32,7 @@ func InitCharts() *Charts {
 	}}
 }
 
-func (c *Charts) GetChartData(coin uint, token string, currency string, timeStart int64, maxItems int) (watchmarket.ChartData, error) {
+func (c *Charts) GetChartData(coin uint, token, currency string, timeStart int64, maxItems int) (watchmarket.ChartData, error) {
 	chartsData := watchmarket.ChartData{}
 	timeStart = numbers.Max(timeStart, minUnixTime)
 	for i := 0; i < len(c.ChartProviders); i++ {
@@ -48,7 +48,7 @@ func (c *Charts) GetChartData(coin uint, token string, currency string, timeStar
 	return chartsData, watchmarket.ErrNotFound
 }
 
-func (c *Charts) GetCoinInfo(coin uint, token string, currency string) (watchmarket.ChartCoinInfo, error) {
+func (c *Charts) GetCoinInfo(coin uint, token, currency string) (watchmarket.ChartCoinInfo, error) {
 	coinInfoData := watchmarket.ChartCoinInfo{}
 	for i := 0; i < len(c.ChartProviders); i++ {
 		c := c.ChartProviders[i]
