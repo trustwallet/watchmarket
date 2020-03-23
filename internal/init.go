@@ -6,7 +6,8 @@ import (
 	"github.com/trustwallet/blockatlas/pkg/ginutils"
 	"github.com/trustwallet/blockatlas/pkg/logger"
 	"github.com/trustwallet/watchmarket/config"
-	"github.com/trustwallet/watchmarket/redis"
+	"github.com/trustwallet/watchmarket/redis/cluster"
+	"github.com/trustwallet/watchmarket/redis/single"
 	"github.com/trustwallet/watchmarket/services/caching"
 	"github.com/trustwallet/watchmarket/storage"
 	"path/filepath"
@@ -25,8 +26,17 @@ func ParseArgs(defaultPort, defaultConfigPath string) (string, string) {
 	return port, confPath
 }
 
+func InitRedisCluster(host []string) *storage.Storage {
+	cache := &storage.Storage{DB: &cluster.Redis{}}
+	err := cache.InitCluster(host)
+	if err != nil {
+		logger.Fatal(err)
+	}
+	return cache
+}
+
 func InitRedis(host string) *storage.Storage {
-	cache := &storage.Storage{DB: &redis.Redis{}}
+	cache := &storage.Storage{DB: &single.Redis{}}
 	err := cache.Init(host)
 	if err != nil {
 		logger.Fatal(err)

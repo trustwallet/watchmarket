@@ -1,24 +1,48 @@
-package redis
+package cluster
 
 import (
 	"encoding/json"
 	"github.com/go-redis/redis"
+	"github.com/trustwallet/blockatlas/pkg/errors"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 )
 
 type Redis struct {
-	client *redis.Client
+	client *redis.ClusterClient
 }
 
 func (db *Redis) Init(host string) error {
-	options, err := redis.ParseURL(host)
-	if err != nil {
-		return err
+	return errors.E("Use single redis package for that")
+}
+
+func (db *Redis) InitCluster(host []string) error {
+	if len(host) == 0 {
+		return errors.E("Empty host")
 	}
-	client := redis.NewClient(options)
+
+	var (
+		addresses []string
+		password  string
+	)
+
+	for _, h := range host {
+		url, err := redis.ParseURL(h)
+		if err != nil {
+			return err
+		}
+		addresses = append(addresses, url.Addr)
+		password = url.Password
+	}
+
+	client := redis.NewClusterClient(&redis.ClusterOptions{
+		Addrs:    addresses,
+		Password: password,
+	})
+
 	if err := client.Ping().Err(); err != nil {
 		return err
 	}
+
 	db.client = client
 	return nil
 }

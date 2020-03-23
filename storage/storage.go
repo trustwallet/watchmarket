@@ -26,6 +26,7 @@ type DB interface {
 	GetHMValue(entity, key string, value interface{}) error
 	AddHM(entity, key string, value interface{}) error
 	Init(host string) error
+	InitCluster(host []string) error
 }
 
 type Market interface {

@@ -36,8 +36,8 @@ func init() {
 	internal.InitConfig(confPath)
 	logger.InitLogger()
 
-	redisHost := viper.GetString("storage.redis")
-	cache = internal.InitRedis(redisHost)
+	redisHost := viper.GetStringSlice("storage.redis")
+	cache = internal.InitRedisCluster(redisHost)
 
 	rateProviders = &rate.Providers{
 		0: rateCMC.InitRate(

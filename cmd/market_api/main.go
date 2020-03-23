@@ -35,8 +35,8 @@ func init() {
 	tmp := sentrygin.New(sentrygin.Options{})
 	sg := &tmp
 
-	redisHost := viper.GetString("storage.redis")
-	db = internal.InitRedis(redisHost)
+	redisHost := viper.GetStringSlice("storage.redis")
+	db = internal.InitRedisCluster(redisHost)
 	engine = internal.InitEngine(sg, viper.GetString("gin.mode"))
 	cache = internal.InitCaching(db, viper.GetString("market.caching.charts"), viper.GetString("market.caching.info"))
 }
