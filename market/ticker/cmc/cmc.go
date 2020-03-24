@@ -16,14 +16,14 @@ type Market struct {
 	client *cmc.Client
 }
 
-func InitMarket(api string, apiKey string, mapApi string, updateTime string) ticker.TickerProvider {
+func InitMarket(mapApi string, updateTime string, client *cmc.Client) ticker.TickerProvider {
 	m := &Market{
 		Market: ticker.Market{
 			Id:         id,
 			UpdateTime: updateTime,
 		},
 		mapApi: mapApi,
-		client: cmc.NewClient(api, apiKey),
+		client: client,
 	}
 	return m
 }

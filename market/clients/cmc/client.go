@@ -5,12 +5,14 @@ import (
 	"github.com/trustwallet/blockatlas/pkg/errors"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"net/url"
+	"sync"
 	"time"
 )
 
 type Client struct {
 	apiKey string
 	blockatlas.Request
+	mu sync.Mutex
 }
 
 func NewClient(api string, key string) *Client {
@@ -23,8 +25,15 @@ func NewClient(api string, key string) *Client {
 }
 
 func (c *Client) GetData() (prices CoinPrices, err error) {
-	err = c.Get(&prices, "v1/cryptocurrency/listings/latest",
-		url.Values{"limit": {"5000"}, "convert": {watchmarket.DefaultCurrency}})
+	c.mu.Lock()
+	request := blockatlas.Request{
+		BaseUrl:      c.BaseUrl,
+		Headers:      c.Headers,
+		HttpClient:   blockatlas.DefaultClient,
+		ErrorHandler: blockatlas.DefaultErrorHandler,
+	}
+	err = request.GetWithCache(&prices, "v1/cryptocurrency/listings/latest", url.Values{"limit": {"5000"}, "convert": {watchmarket.DefaultCurrency}}, time.Minute*5)
+	c.mu.Unlock()
 	return
 }
 
