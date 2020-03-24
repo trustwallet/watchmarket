@@ -40,7 +40,7 @@ func init() {
 	redisHost := viper.GetString("storage.redis")
 	cache = internal.InitRedis(redisHost)
 
-	cmcClient := cmc.NewClient(viper.GetString("market.cmc.api"), viper.GetString("market.cmc.api_key"))
+	cmcClient := cmc.NewClient(viper.GetString("market.cmc.api"), viper.GetString("market.cmc.api_key"), viper.GetDuration("market.cmc.caching_duration"))
 
 	rateProviders = &rate.Providers{
 		0: rateCMC.InitRate(
