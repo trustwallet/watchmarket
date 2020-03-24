@@ -22,7 +22,7 @@ type Client struct {
 	CachingDuration time.Duration
 }
 
-func NewClient(api string, key string, cachingDuration time.Duration) *Client {
+func NewClient(api, key string, cachingDuration time.Duration) *Client {
 	c := Client{
 		Request: blockatlas.InitClient(api),
 		apiKey:  key,

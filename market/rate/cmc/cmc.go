@@ -17,7 +17,7 @@ type Cmc struct {
 	client *cmc.Client
 }
 
-func InitRate(mapApi string, updateTime string, client *cmc.Client) rate.RateProvider {
+func InitRate(mapApi, updateTime string, client *cmc.Client) rate.RateProvider {
 	cmc := &Cmc{
 		Rate: rate.Rate{
 			Id:         id,
