@@ -17,14 +17,14 @@ type Cmc struct {
 	client *cmc.Client
 }
 
-func InitRate(api string, apiKey string, mapApi string, updateTime string) rate.RateProvider {
+func InitRate(mapApi, updateTime string, client *cmc.Client) rate.RateProvider {
 	cmc := &Cmc{
 		Rate: rate.Rate{
 			Id:         id,
 			UpdateTime: updateTime,
 		},
 		mapApi: mapApi,
-		client: cmc.NewClient(api, apiKey),
+		client: client,
 	}
 	return cmc
 }

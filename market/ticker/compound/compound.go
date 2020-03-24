@@ -17,7 +17,7 @@ type Market struct {
 	client *c.Client
 }
 
-func InitMarket(api string, updateTime string) ticker.TickerProvider {
+func InitMarket(api, updateTime string) ticker.TickerProvider {
 	m := &Market{
 		Market: ticker.Market{
 			Id:         id,

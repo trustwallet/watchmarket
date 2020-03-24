@@ -23,6 +23,7 @@ market:
     widgetapi: https://widgets.coinmarketcap.com
     api_key: # YOUR_API_KEY
     map_url: https://raw.githubusercontent.com/trustwallet/assets/master/pricing/coinmarketcap
+    caching_duration: 1m
   fixer:
     rate_update_time: 1h
     api: https://data.fixer.io/api
