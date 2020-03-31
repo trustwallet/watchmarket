@@ -15,7 +15,6 @@ Watchmarket comes with three apps:
 
 <a href="https://coinmarketcap.com" target="_blank"><img src="https://coinmarketcap.com/apple-touch-icon.png" width="32" /></a>
 <a href="https://www.binance.org/" target="_blank"><img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/binance/info/logo.png" width="32" /></a>
-<a href="https://compound.finance/" target="_blank"><img src="https://assets.coingecko.com/markets/images/517/large/compound-finance.png" width="32" /></a>
 <a href="https://fixer.io/" target="_blank"><img src="https://fixer.io/fixer_images/fixer_money.png" width="32" /></a>
 <a href="https://www.coingecko.com/" target="_blank"><img src="https://static.coingecko.com/s/thumbnail-007177f3eca19695592f0b8b0eabbdae282b54154e1be912285c9034ea6cbaf2.png" width="32" /></a>
 

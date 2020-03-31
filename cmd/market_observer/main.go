@@ -10,12 +10,10 @@ import (
 	"github.com/trustwallet/watchmarket/market/rate"
 	rateCMC "github.com/trustwallet/watchmarket/market/rate/cmc"
 	rateCoingecko "github.com/trustwallet/watchmarket/market/rate/coingecko"
-	rateCompound "github.com/trustwallet/watchmarket/market/rate/compound"
 	rateFixer "github.com/trustwallet/watchmarket/market/rate/fixer"
 	"github.com/trustwallet/watchmarket/market/ticker"
 	tickerCMC "github.com/trustwallet/watchmarket/market/ticker/cmc"
 	tickerCoingecko "github.com/trustwallet/watchmarket/market/ticker/coingecko"
-	tickerCompound "github.com/trustwallet/watchmarket/market/ticker/compound"
 	tickerDEX "github.com/trustwallet/watchmarket/market/ticker/dex"
 	"github.com/trustwallet/watchmarket/storage"
 	"time"
@@ -53,10 +51,6 @@ func init() {
 			viper.GetString("market.fixer.api_key"),
 			viper.GetString("market.fixer.rate_update_time"),
 		),
-		2: rateCompound.InitRate(
-			viper.GetString("market.compound.api"),
-			viper.GetString("market.rate_update_time"),
-		),
 		3: rateCoingecko.InitRate(
 			viper.GetString("market.coingecko.api"),
 			viper.GetString("market.rate_update_time"),
@@ -68,10 +62,6 @@ func init() {
 			viper.GetString("market.cmc.map_url"),
 			viper.GetString("market.quote_update_time"),
 			cmcClient,
-		),
-		1: tickerCompound.InitMarket(
-			viper.GetString("market.compound.api"),
-			viper.GetString("market.quote_update_time"),
 		),
 		2: tickerCoingecko.InitMarket(
 			viper.GetString("market.coingecko.api"),
