@@ -28,8 +28,6 @@ market:
     rate_update_time: 1h
     api: https://data.fixer.io/api
     api_key: # YOUR_API_KEY
-  compound:
-    api: https://api.compound.finance/api
   coingecko:
     api: https://api.coingecko.com/api
 
