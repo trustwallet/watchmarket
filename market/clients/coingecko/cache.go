@@ -55,6 +55,9 @@ func NewSymbolsCache(coins GeckoCoins) *SymbolsCache {
 			if !ok {
 				continue
 			}
+			if strings.ToLower(platformCoin.Symbol) == strings.ToLower(address) {
+				m[m.generateId(platformCoin.Symbol, "")] = coin
+			}
 			m[m.generateId(platformCoin.Symbol, address)] = coin
 		}
 	}
