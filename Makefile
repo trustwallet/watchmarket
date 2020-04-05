@@ -188,9 +188,9 @@ go-lint-install:
 	@echo "  >  Installing golint"
 	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s
 
-go-lint:
+go-lint: go-install-mockery generate-mocks
 	@echo "  >  Running golint"
-	bin/golangci-lint run --skip-files='api/($|/)api_test.go'  --skip-dirs='($|/)mocks($|/)'
+	bin/golangci-lint
 
 .PHONY: help
 
