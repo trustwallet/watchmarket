@@ -190,7 +190,7 @@ go-lint-install:
 
 go-lint:
 	@echo "  >  Running golint"
-	golangci-lint run --skip-files='api/($|/)api_test.go'
+	bin/golangci-lint run --skip-files='api/($|/)api_test.go'
 
 .PHONY: help
 
