@@ -18,6 +18,20 @@ variables:
   GOVERSION: '1.13'
 
 jobs:
+  - job: environment
+    steps:
+      - task: GoTool@0
+        inputs:
+          version: '$(GOVERSION)'
+        displayName: 'Go Tool'
+
+      - task: Go@0
+        inputs:
+          command: 'get'
+          arguments: '-v -t -d ./...'
+          workingDirectory: '$(System.DefaultWorkingDirectory)'
+        displayName: 'Get dependencies'
+
   - job: go_lint
     dependsOn: environment
     condition: succeeded()
