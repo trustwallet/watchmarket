@@ -109,10 +109,7 @@ func (t *Ticker) ApplyRate(currency string, rate float64, percentChange24h *big.
 }
 
 func (d ChartData) IsEmpty() bool {
-	if len(d.Prices) == 0 {
-		return true
-	}
-	return false
+	return len(d.Prices) == 0
 }
 
 func (i ChartCoinInfo) IsEmpty() bool {

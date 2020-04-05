@@ -109,7 +109,7 @@ fmt: go-fmt
 govet: go-install-mockery generate-mocks go-vet
 
 ## golint: Run golint.
-golint: go-lint
+lint: go-lint-install go-lint
 
 ## docs: Generate swagger docs.
 docs: go-gen-docs
@@ -184,9 +184,13 @@ go-install-mockery:
 	@echo "  >  Installing mockery"
 	GOBIN=$(GOBIN) go get github.com/vektra/mockery/.../
 
-go-lint:
+go-lint-install:
+	@echo "  >  Installing golint"
+	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s
+
+go-lint: go-install-mockery generate-mocks
 	@echo "  >  Running golint"
-	GOBIN=$(GOBIN) golint ./...
+	bin/golangci-lint
 
 .PHONY: help
 

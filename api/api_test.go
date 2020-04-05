@@ -1,3 +1,4 @@
+//nolint:unparam
 package api
 
 import (
@@ -14,7 +15,7 @@ import (
 	"github.com/trustwallet/watchmarket/internal"
 	"github.com/trustwallet/watchmarket/market"
 	"github.com/trustwallet/watchmarket/market/chart"
-	mockchartprovider "github.com/trustwallet/watchmarket/mocks/market/chart"
+	mockchartprovider "github.com/trustwallet/watchmarket/mocks/market/chart" //nolint
 	mockassetprovider "github.com/trustwallet/watchmarket/mocks/services/assets"
 	mocks "github.com/trustwallet/watchmarket/mocks/storage"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
