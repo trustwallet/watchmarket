@@ -1,3 +1,7 @@
 run:
   skip-dirs:
-    - mocks
+    - mocks/market/chart
+    - mocks/market/rate
+    - mocks/market/ticker
+    - mocks/services
+    - mocks/storage
