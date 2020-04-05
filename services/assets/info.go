@@ -2,7 +2,6 @@ package assets
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"github.com/go-resty/resty/v2"
 	"github.com/trustwallet/blockatlas/coin"
@@ -41,14 +40,14 @@ func (cl *HttpAssetClient) GetCoinInfo(coinId int, token string) (*watchmarket.C
 	}
 
 	if !resp.IsSuccess() {
-		return nil, errors.New(fmt.Sprintf("Request to %s failed with HTTP %d: %s", url, resp.StatusCode(), resp.String()))
+		return nil, fmt.Errorf("Request to %s failed with HTTP %d: %s", url, resp.StatusCode(), resp.String())
 	}
 
 	var info watchmarket.CoinInfo
 
 	err = json.Unmarshal(resp.Body(), &info)
 	if err != nil {
-		return &info, errors.New(fmt.Sprintf("Failed to unmarshal %s", err.Error()))
+		return &info, fmt.Errorf("Failed to unmarshal %s", err.Error())
 	}
 
 	return &info, nil

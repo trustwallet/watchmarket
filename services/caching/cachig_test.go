@@ -383,12 +383,12 @@ func seedDbCharts(t *testing.T, db storage.Caching) {
 	rawData, err := makeRawDataMockCharts()
 	assert.NotNil(t, rawData)
 	assert.Nil(t, err)
-	db.UpdateInterval("testKEY", storage.CachedInterval{
+	_ = db.UpdateInterval("testKEY", storage.CachedInterval{
 		Timestamp: 0,
 		Duration:  1000,
 		Key:       "data_key",
 	})
-	db.Set("data_key", rawData)
+	_ = db.Set("data_key", rawData)
 
 }
 
@@ -397,12 +397,12 @@ func seedDbChartsInfo(t *testing.T, db storage.Caching) {
 	rawData, err := makeRawDataMockChartsInfo()
 	assert.NotNil(t, rawData)
 	assert.Nil(t, err)
-	db.UpdateInterval("testKEY", storage.CachedInterval{
+	_ = db.UpdateInterval("testKEY", storage.CachedInterval{
 		Timestamp: 0,
 		Duration:  1000,
 		Key:       "data_key",
 	})
-	db.Set("data_key", rawData)
+	_ = db.Set("data_key", rawData)
 
 }
 

@@ -7,7 +7,6 @@ import (
 	"github.com/trustwallet/watchmarket/market/chart/cmc"
 	"github.com/trustwallet/watchmarket/market/chart/coingecko"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
-	"math"
 	"sort"
 )
 
@@ -67,7 +66,7 @@ func normalizePrices(prices []watchmarket.ChartPrice, maxItems int) (result []wa
 		return prices[p].Date < prices[q].Date
 	})
 	if len(prices) > maxItems && maxItems > 0 {
-		skip := int(math.Ceil(float64(len(prices) / maxItems)))
+		skip := int(float64(len(prices) / maxItems))
 		i := 0
 		for i < len(prices) {
 			result = append(result, prices[i])

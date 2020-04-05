@@ -47,18 +47,18 @@ func NewSymbolsCache(coins GeckoCoins) *SymbolsCache {
 		if len(coin.Platforms) == 0 {
 			m[m.generateId(coin.Symbol, "")] = coin
 		}
-		for platform, address := range coin.Platforms {
-			if len(platform) == 0 || len(address) == 0 {
+		for platform, addr := range coin.Platforms {
+			if len(platform) == 0 || len(addr) == 0 {
 				continue
 			}
 			platformCoin, ok := coinsMap[platform]
 			if !ok {
 				continue
 			}
-			if strings.ToLower(platformCoin.Symbol) == strings.ToLower(address) {
+			if strings.EqualFold(platformCoin.Symbol, addr) {
 				m[m.generateId(platformCoin.Symbol, "")] = coin
 			}
-			m[m.generateId(platformCoin.Symbol, address)] = coin
+			m[m.generateId(platformCoin.Symbol, addr)] = coin
 		}
 	}
 
@@ -70,8 +70,8 @@ func NewCache(coins GeckoCoins) *Cache {
 	coinsMap := getCoinsMap(coins)
 
 	for _, coin := range coins {
-		for platform, address := range coin.Platforms {
-			if len(platform) == 0 || len(address) == 0 {
+		for platform, addr := range coin.Platforms {
+			if len(platform) == 0 || len(addr) == 0 {
 				continue
 			}
 			platformCoin, ok := coinsMap[platform]
@@ -84,7 +84,7 @@ func NewCache(coins GeckoCoins) *Cache {
 				m[coin.Id] = make([]CoinResult, 0)
 			}
 
-			tokenId := normalizeTokenId(platform, address)
+			tokenId := normalizeTokenId(platform, addr)
 			if tokenId == "" {
 				continue
 			}

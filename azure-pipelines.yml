@@ -18,27 +18,13 @@ variables:
   GOVERSION: '1.13'
 
 jobs:
-  - job: environment
-    steps:
-      - task: GoTool@0
-        inputs:
-          version: '$(GOVERSION)'
-        displayName: 'Go Tool'
-
-      - task: Go@0
-        inputs:
-          command: 'get'
-          arguments: '-v -t -d ./...'
+  - job: go_lint
+      dependsOn: environment
+      condition: succeeded()
+      steps:
+        - script: sudo make lint
           workingDirectory: '$(System.DefaultWorkingDirectory)'
-        displayName: 'Get dependencies'
-
-  - job: go_vet
-    dependsOn: environment
-    condition: succeeded()
-    steps:
-      - script: make govet
-        workingDirectory: '$(System.DefaultWorkingDirectory)'
-        displayName: 'Run go vet'
+          displayName: 'Run go lint'
 
   - job: integration_tests
     dependsOn: environment
