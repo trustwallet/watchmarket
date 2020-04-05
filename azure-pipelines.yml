@@ -19,12 +19,12 @@ variables:
 
 jobs:
   - job: go_lint
-      dependsOn: environment
-      condition: succeeded()
-      steps:
-        - script: sudo make lint
-          workingDirectory: '$(System.DefaultWorkingDirectory)'
-          displayName: 'Run go lint'
+    dependsOn: environment
+    condition: succeeded()
+    steps:
+      - script: sudo make lint
+        workingDirectory: '$(System.DefaultWorkingDirectory)'
+        displayName: 'Run go lint'
 
   - job: integration_tests
     dependsOn: environment
