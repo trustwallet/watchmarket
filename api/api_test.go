@@ -71,7 +71,7 @@ func TestTickers(t *testing.T) {
 			requestMethod:  "POST",
 			requestBody:    "bad payload",
 			expectedStatus: 400,
-			expectedBody:   "{\"code\":400,\"error\":\"Invalid request payload\"}",
+			expectedBody:   `{"error":{"code":1,"message":"Invalid request payload"}}`,
 		},
 		{
 			name:           "test unknown currency",
@@ -79,7 +79,7 @@ func TestTickers(t *testing.T) {
 			requestMethod:  "POST",
 			requestBody:    "{\"currency\":\"i-do-not-exist\",\"assets\":[{\"type\":\"coin\",\"coin\":60}]}",
 			expectedStatus: 404,
-			expectedBody:   "{\"code\":404,\"error\":\"Currency i-do-not-exist not found\"}",
+			expectedBody:   `{"error":{"code":2,"message":"Currency i-do-not-exist not found"}}`,
 		},
 		{
 			name:           "without conversion",
@@ -160,7 +160,7 @@ func TestCharts(t *testing.T) {
 			requestMethod:  "GET",
 			requestBody:    "",
 			expectedStatus: 400,
-			expectedBody:   "{\"code\":400,\"error\":\"No coin provided\"}",
+			expectedBody:   `{"error":{"code":1,"message":"No coin provided"}}`,
 		},
 		{
 			name:           "test no time_start provided",
@@ -176,7 +176,7 @@ func TestCharts(t *testing.T) {
 			requestMethod:  "GET",
 			requestBody:    "",
 			expectedStatus: 400,
-			expectedBody:   "{\"code\":400,\"error\":\"Invalid coin provided\"}",
+			expectedBody:   `{"error":{"code":1,"message":"Invalid coin provided"}}`,
 		},
 		{
 			name:           "test invalid time_start provided",
@@ -184,7 +184,7 @@ func TestCharts(t *testing.T) {
 			requestMethod:  "GET",
 			requestBody:    "",
 			expectedStatus: 400,
-			expectedBody:   "{\"code\":400,\"error\":\"Invalid time_start provided\"}",
+			expectedBody:   `{"error":{"code":1,"message":"Invalid time_start provided"}}`,
 		},
 		{
 			name:           "test chart data not found",
@@ -192,7 +192,7 @@ func TestCharts(t *testing.T) {
 			requestMethod:  "GET",
 			requestBody:    "",
 			expectedStatus: 404,
-			expectedBody:   "{\"code\":404,\"error\":\"Chart data not found\"}",
+			expectedBody:   `{"error":{"code":2,"message":"Chart data not found"}}`,
 		},
 		{
 			name:           "test nominal",
@@ -255,7 +255,7 @@ func TestCoinInfo(t *testing.T) {
 			requestMethod:  "GET",
 			requestBody:    "",
 			expectedStatus: 400,
-			expectedBody:   "{\"code\":400,\"error\":\"No coin provided\"}",
+			expectedBody:   `{"error":{"code":1,"message":"No coin provided"}}`,
 		},
 		{
 			name:           "test invalid coin provided",
@@ -263,7 +263,7 @@ func TestCoinInfo(t *testing.T) {
 			requestMethod:  "GET",
 			requestBody:    "",
 			expectedStatus: 400,
-			expectedBody:   "{\"code\":400,\"error\":\"Invalid coin provided\"}",
+			expectedBody:   `{"error":{"code":1,"message":"Invalid coin provided"}}`,
 		},
 		{
 			name:           "test nominal",

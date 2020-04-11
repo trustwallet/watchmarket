@@ -3,9 +3,9 @@ package api
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/trustwallet/blockatlas/api/model"
 	"github.com/trustwallet/blockatlas/coin"
-	"github.com/trustwallet/blockatlas/pkg/blockatlas"
-	"github.com/trustwallet/blockatlas/pkg/ginutils"
+	"github.com/trustwallet/blockatlas/pkg/errors"
 	"github.com/trustwallet/blockatlas/pkg/logger"
 	"github.com/trustwallet/watchmarket/api/middleware"
 	"github.com/trustwallet/watchmarket/market"
@@ -25,16 +25,20 @@ const (
 	day                  = 24 * 60 * 60
 )
 
-type TickerRequest struct {
-	Currency string `json:"currency"`
-	Assets   []Coin `json:"assets"`
-}
+type (
+	CoinType string
 
-type Coin struct {
-	Coin     uint                `json:"coin"`
-	CoinType blockatlas.CoinType `json:"type"`
-	TokenId  string              `json:"token_id,omitempty"`
-}
+	TickerRequest struct {
+		Currency string `json:"currency"`
+		Assets   []Coin `json:"assets"`
+	}
+
+	Coin struct {
+		Coin     uint     `json:"coin"`
+		CoinType CoinType `json:"type"`
+		TokenId  string   `json:"token_id,omitempty"`
+	}
+)
 
 func SetupMarketAPI(router gin.IRouter, provider BootstrapProviders) {
 	router.POST("/ticker",
@@ -61,17 +65,18 @@ func getTickersHandler(storage storage.Market) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		md := TickerRequest{Currency: watchmarket.DefaultCurrency}
 		if err := c.BindJSON(&md); err != nil {
-			ginutils.RenderError(c, http.StatusBadRequest, "Invalid request payload")
+			c.JSON(http.StatusBadRequest, model.CreateErrorResponse(model.InvalidQuery, errors.E("Invalid request payload")))
 			return
 		}
 
 		rate, err := storage.GetRate(strings.ToUpper(md.Currency))
 		if err == watchmarket.ErrNotFound {
-			ginutils.RenderError(c, http.StatusNotFound, fmt.Sprintf("Currency %s not found", md.Currency))
+			c.JSON(http.StatusNotFound, model.CreateErrorResponse(model.RequestedDataNotFound, errors.E(fmt.Sprintf("Currency %s not found", md.Currency))))
+			logger.Warn(fmt.Sprintf("Currency %s not found", md.Currency))
 			return
 		} else if err != nil {
 			logger.Error(err, "Failed to retrieve rate", logger.Params{"currency": md.Currency})
-			ginutils.RenderError(c, http.StatusInternalServerError, fmt.Sprintf("Failed to get rate for %s", md.Currency))
+			c.JSON(http.StatusInternalServerError, model.CreateErrorResponse(model.InternalFail, errors.E(fmt.Sprintf("Failed to get rate for %s", md.Currency))))
 			return
 		}
 
@@ -91,7 +96,7 @@ func getTickersHandler(storage storage.Market) func(c *gin.Context) {
 					logger.Warn("Ticker not found", logger.Params{"coin": coinObj.Symbol, "token": coinRequest.TokenId})
 				} else {
 					logger.Error(err, "Failed to retrieve ticker", logger.Params{"coin": coinObj.Symbol, "token": coinRequest.TokenId})
-					ginutils.RenderError(c, http.StatusInternalServerError, "Failed to retrieve tickers")
+					c.JSON(http.StatusInternalServerError, model.CreateErrorResponse(model.InternalFail, errors.E("Failed to retrieve tickers")))
 					return
 				}
 				continue
@@ -114,8 +119,7 @@ func getTickersHandler(storage storage.Market) func(c *gin.Context) {
 			r.SetCoinId(coinRequest.Coin)
 			tickers = append(tickers, r)
 		}
-
-		ginutils.RenderSuccess(c, watchmarket.TickerResponse{Currency: md.Currency, Docs: tickers})
+		c.JSON(http.StatusOK, watchmarket.TickerResponse{Currency: md.Currency, Docs: tickers})
 	}
 }
 
@@ -136,13 +140,13 @@ func getChartsHandler(charts *market.Charts, cache *caching.Provider) func(c *gi
 	return func(c *gin.Context) {
 		coinQuery := c.Query("coin")
 		if len(coinQuery) == 0 {
-			ginutils.RenderError(c, http.StatusBadRequest, "No coin provided")
+			c.JSON(http.StatusBadRequest, model.CreateErrorResponse(model.InvalidQuery, errors.E("No coin provided")))
 			return
 		}
 
 		coinId, err := strconv.Atoi(coinQuery)
 		if err != nil {
-			ginutils.RenderError(c, http.StatusBadRequest, "Invalid coin provided")
+			c.JSON(http.StatusBadRequest, model.CreateErrorResponse(model.InvalidQuery, errors.E("Invalid coin provided")))
 			return
 		}
 
@@ -150,7 +154,7 @@ func getChartsHandler(charts *market.Charts, cache *caching.Provider) func(c *gi
 		if len(c.Query("time_start")) != 0 {
 			timeStart, err = strconv.ParseInt(c.Query("time_start"), 10, 64)
 			if err != nil {
-				ginutils.RenderError(c, http.StatusBadRequest, "Invalid time_start provided")
+				c.JSON(http.StatusBadRequest, model.CreateErrorResponse(model.InvalidQuery, errors.E("Invalid time_start provided")))
 				return
 			}
 		}
@@ -168,17 +172,17 @@ func getChartsHandler(charts *market.Charts, cache *caching.Provider) func(c *gi
 
 		chart, err := cache.GetChartsCache(key, timeStart)
 		if err == nil {
-			ginutils.RenderSuccess(c, chart)
+			c.JSON(http.StatusOK, chart)
 			return
 		}
 
 		chart, err = charts.GetChartData(uint(coinId), token, currency, timeStart, maxItems)
 		if err == watchmarket.ErrNotFound {
-			ginutils.RenderError(c, http.StatusNotFound, "Chart data not found")
+			c.JSON(http.StatusNotFound, model.CreateErrorResponse(model.RequestedDataNotFound, errors.E("Chart data not found")))
 			return
 		} else if err != nil {
 			logger.Error(err, "Failed to retrieve chart", logger.Params{"coin": coinId, "currency": currency, "token": token, "time_start": timeStart})
-			ginutils.RenderError(c, http.StatusInternalServerError, "Failed to retrieve chart")
+			c.JSON(http.StatusInternalServerError, model.CreateErrorResponse(model.InternalFail, errors.E("Failed to retrieve chart")))
 			return
 		}
 
@@ -187,7 +191,7 @@ func getChartsHandler(charts *market.Charts, cache *caching.Provider) func(c *gi
 			logger.Error(err, "Failed to save cache chart", logger.Params{"coin": coinId, "currency": currency, "token": token, "time_start": timeStart, "key": key, "err": err})
 		}
 
-		ginutils.RenderSuccess(c, chart)
+		c.JSON(http.StatusOK, chart)
 	}
 }
 
@@ -206,13 +210,13 @@ func getCoinInfoHandler(charts *market.Charts, ac assets.AssetClient, cache *cac
 	return func(c *gin.Context) {
 		coinQuery := c.Query("coin")
 		if len(coinQuery) == 0 {
-			ginutils.RenderError(c, http.StatusBadRequest, "No coin provided")
+			c.JSON(http.StatusBadRequest, model.CreateErrorResponse(model.InvalidQuery, errors.E("No coin provided")))
 			return
 		}
 
 		coinId, err := strconv.Atoi(coinQuery)
 		if err != nil {
-			ginutils.RenderError(c, http.StatusBadRequest, "Invalid coin provided")
+			c.JSON(http.StatusBadRequest, model.CreateErrorResponse(model.InvalidQuery, errors.E("Invalid coin provided")))
 			return
 		}
 
@@ -225,7 +229,7 @@ func getCoinInfoHandler(charts *market.Charts, ac assets.AssetClient, cache *cac
 
 		chart, err = cache.GetCoinInfoCache(key, timeStart)
 		if err == nil {
-			ginutils.RenderSuccess(c, chart)
+			c.JSON(http.StatusOK, chart)
 			return
 		}
 
@@ -239,11 +243,11 @@ func getCoinInfoHandler(charts *market.Charts, ac assets.AssetClient, cache *cac
 		chart.Info, err = ac.GetCoinInfo(coinId, token)
 		if err == watchmarket.ErrNotFound {
 			logger.Warn(err, fmt.Sprintf("Coin assets for coin id %d (token: %s) not found", coinId, token))
-			ginutils.RenderSuccess(c, chart)
+			c.JSON(http.StatusOK, chart)
 			return
 		} else if err != nil {
 			logger.Error(err, "Failed to retrieve coin assets", logger.Params{"coinId": coinId, "token": token})
-			ginutils.RenderError(c, http.StatusInternalServerError, "Failed to retrieve coin assets")
+			c.JSON(http.StatusInternalServerError, model.CreateErrorResponse(model.InvalidQuery, errors.E("Failed to retrieve coin assets")))
 			return
 		}
 
@@ -251,7 +255,6 @@ func getCoinInfoHandler(charts *market.Charts, ac assets.AssetClient, cache *cac
 		if err != nil {
 			logger.Error(err, "Failed to save cache info chart", logger.Params{"coin": coinId, "currency": currency, "token": token, "time_start": timeStart, "key": key, "err": err})
 		}
-
-		ginutils.RenderSuccess(c, chart)
+		c.JSON(http.StatusOK, chart)
 	}
 }

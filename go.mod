@@ -27,7 +27,8 @@ require (
 	github.com/stretchr/testify v1.5.1
 	github.com/swaggo/gin-swagger v1.2.0
 	github.com/swaggo/swag v1.6.5
-	github.com/trustwallet/blockatlas v1.0.38-0.20200410173932-371a83b5292a // indirect
+	github.com/trustwallet/blockatlas v1.0.38-0.20200410173932-371a83b5292a
+	github.com/vektra/mockery v0.0.0-20181123154057-e78b021dcbb5 // indirect
 	gopkg.in/fatih/pool.v2 v2.0.0 // indirect
 	gopkg.in/gorethink/gorethink.v3 v3.0.5 // indirect
 )
