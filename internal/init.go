@@ -3,12 +3,13 @@ package internal
 import (
 	"flag"
 	"github.com/gin-gonic/gin"
-	"github.com/trustwallet/blockatlas/pkg/ginutils"
+	"github.com/trustwallet/blockatlas/api/middleware"
 	"github.com/trustwallet/blockatlas/pkg/logger"
 	"github.com/trustwallet/watchmarket/config"
 	"github.com/trustwallet/watchmarket/redis"
 	"github.com/trustwallet/watchmarket/services/caching"
 	"github.com/trustwallet/watchmarket/storage"
+	"net/http"
 	"path/filepath"
 	"time"
 )
@@ -46,13 +47,12 @@ func InitConfig(confPath string) {
 func InitEngine(handler *gin.HandlerFunc, ginMode string) *gin.Engine {
 	gin.SetMode(ginMode)
 	engine := gin.New()
-	engine.Use(ginutils.CheckReverseProxy, *handler)
-	engine.Use(ginutils.CORSMiddleware())
+	engine.Use(middleware.CheckReverseProxy, *handler)
+	engine.Use(middleware.CORSMiddleware())
 	engine.Use(gin.Logger())
 
-	engine.OPTIONS("/*path", ginutils.CORSMiddleware())
 	engine.GET("/status", func(c *gin.Context) {
-		ginutils.RenderSuccess(c, map[string]interface{}{
+		c.JSON(http.StatusOK, map[string]interface{}{
 			"status": true,
 		})
 	})
