@@ -38,7 +38,7 @@ const (
 	ETHPrice     = 10
 )
 
-func TestTickers(t *testing.T) {
+func TestRoutes(t *testing.T) {
 	s := setupRedis(t)
 	defer s.Close()
 
@@ -53,10 +53,15 @@ func TestTickers(t *testing.T) {
 		Ac:     getAssetClientMock(),
 		Cache:  caching.InitCaching(db),
 	})
-
 	server := httptest.NewServer(engine)
 	defer server.Close()
 
+	testTickers(t, server)
+	testCharts(t, server)
+	testCoinInfo(t, server)
+}
+
+func testTickers(t *testing.T, server *httptest.Server) {
 	tests := []struct {
 		name           string
 		requestMethod  string
@@ -127,25 +132,7 @@ func TestTickers(t *testing.T) {
 	}
 }
 
-func TestCharts(t *testing.T) {
-	s := setupRedis(t)
-	defer s.Close()
-
-	engine := setupEngine()
-	db := internal.InitRedis(fmt.Sprintf("redis://%s", s.Addr()))
-	seedDb(t, db)
-
-	Bootstrap(BootstrapProviders{
-		Engine: engine,
-		Market: db,
-		Charts: getChartsMock(),
-		Ac:     getAssetClientMock(),
-		Cache:  caching.InitCaching(db),
-	})
-
-	server := httptest.NewServer(engine)
-	defer server.Close()
-
+func testCharts(t *testing.T, server *httptest.Server) {
 	tests := []struct {
 		name           string
 		requestMethod  string
@@ -222,25 +209,7 @@ func TestCharts(t *testing.T) {
 	}
 }
 
-func TestCoinInfo(t *testing.T) {
-	s := setupRedis(t)
-	defer s.Close()
-
-	engine := setupEngine()
-	db := internal.InitRedis(fmt.Sprintf("redis://%s", s.Addr()))
-	seedDb(t, db)
-
-	Bootstrap(BootstrapProviders{
-		Engine: engine,
-		Market: db,
-		Charts: getChartsMock(),
-		Ac:     getAssetClientMock(),
-		Cache:  caching.InitCaching(db),
-	})
-
-	server := httptest.NewServer(engine)
-	defer server.Close()
-
+func testCoinInfo(t *testing.T, server *httptest.Server) {
 	tests := []struct {
 		name           string
 		requestMethod  string
