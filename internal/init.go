@@ -51,6 +51,8 @@ func InitEngine(handler *gin.HandlerFunc, ginMode string) *gin.Engine {
 	engine.Use(middleware.CORSMiddleware())
 	engine.Use(gin.Logger())
 
+	engine.Use(middleware.Prometheus())
+
 	engine.GET("/status", func(c *gin.Context) {
 		c.JSON(http.StatusOK, map[string]interface{}{
 			"status": true,
