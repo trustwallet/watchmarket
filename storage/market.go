@@ -16,11 +16,11 @@ type ProviderList interface {
 }
 
 func (s *Storage) SaveTicker(coin *watchmarket.Ticker, pl ProviderList) (SaveResult, error) {
-	cd, err := s.GetTicker(coin.CoinName, coin.TokenId)
+	sTicker, err := s.GetTicker(coin.CoinName, coin.TokenId)
 	if err != nil && err != watchmarket.ErrNotFound {
 		return SaveResultStorageFailure, err
 	} else if err == nil {
-		op := pl.GetPriority(cd.Price.Provider)
+		op := pl.GetPriority(sTicker.Price.Provider)
 		np := pl.GetPriority(coin.Price.Provider)
 		if op != -1 && np > op {
 			logger.Debug("Skipping new ticker as its priority is lower than the existing record", logger.Params{
@@ -30,9 +30,9 @@ func (s *Storage) SaveTicker(coin *watchmarket.Ticker, pl ProviderList) (SaveRes
 			return SaveResultSkippedLowPriority, nil
 		}
 
-		if cd.LastUpdate.After(coin.LastUpdate) && op >= np {
+		if sTicker.LastUpdate.After(coin.LastUpdate) && op >= np {
 			logger.Debug("Skipping new ticker as its priority is lower than the existing record or its timestamp is older", logger.Params{
-				"oldTickerTime":     cd.LastUpdate,
+				"oldTickerTime":     sTicker.LastUpdate,
 				"newTickerTime":     coin.LastUpdate,
 				"oldTickerPriority": op,
 				"newTickerPriority": np,
@@ -99,6 +99,7 @@ func (s *Storage) GetRate(currency string) (rate *watchmarket.Rate, err error) {
 	return
 }
 
+// ETH 0xbc4... => ETH_0xBC4...
 func createHashMap(coin, token string) string {
 	if len(token) == 0 {
 		return strings.ToUpper(coin)
