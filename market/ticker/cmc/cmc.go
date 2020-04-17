@@ -1,6 +1,7 @@
 package cmc
 
 import (
+	"github.com/trustwallet/blockatlas/pkg/address"
 	"github.com/trustwallet/watchmarket/market/clients/cmc"
 	"github.com/trustwallet/watchmarket/market/ticker"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
@@ -47,7 +48,7 @@ func normalizeTicker(price cmc.Data, provider string, cmap cmc.CmcMapping) (tick
 	if price.Platform != nil {
 		coinType = watchmarket.TypeToken
 		coinName = price.Platform.Symbol
-		tokenId = price.Platform.TokenAddress
+		tokenId = address.EIP55Checksum(price.Platform.TokenAddress)
 		if len(tokenId) == 0 {
 			tokenId = price.Symbol
 		}
@@ -75,7 +76,7 @@ func normalizeTicker(price cmc.Data, provider string, cmap cmc.CmcMapping) (tick
 		if result.CoinType == watchmarket.TypeCoin {
 			tokenId = ""
 		} else if len(result.TokenId) > 0 {
-			tokenId = result.TokenId
+			tokenId = address.EIP55Checksum(result.TokenId)
 		}
 		tickers = append(tickers, &watchmarket.Ticker{
 			CoinName: coinName,
