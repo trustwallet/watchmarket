@@ -47,11 +47,7 @@ func normalizeTicker(price cmc.Data, provider string, cmap cmc.CmcMapping) (tick
 	coinName := price.Symbol
 	coinType := watchmarket.TypeCoin
 	if price.Platform != nil {
-		if price.Platform.Symbol == coin.Ethereum().Symbol {
-			tokenId = address.EIP55Checksum(price.Platform.TokenAddress)
-		} else {
-			tokenId = price.Platform.TokenAddress
-		}
+		tokenId = normalizeTokenId(price.Platform.TokenAddress, price.Platform.Symbol)
 		coinType = watchmarket.TypeToken
 		coinName = price.Platform.Symbol
 		if len(tokenId) == 0 {
@@ -81,11 +77,7 @@ func normalizeTicker(price cmc.Data, provider string, cmap cmc.CmcMapping) (tick
 		if result.CoinType == watchmarket.TypeCoin {
 			tokenId = ""
 		} else if len(result.TokenId) > 0 {
-			if coinName == coin.Ethereum().Symbol {
-				tokenId = address.EIP55Checksum(result.TokenId)
-			} else {
-				tokenId = result.TokenId
-			}
+			tokenId = normalizeTokenId(result.TokenId, coinName)
 		}
 		tickers = append(tickers, &watchmarket.Ticker{
 			CoinName: coinName,
@@ -101,6 +93,17 @@ func normalizeTicker(price cmc.Data, provider string, cmap cmc.CmcMapping) (tick
 		})
 	}
 	return
+}
+
+func normalizeTokenId(tokenId, symbol string) string {
+	switch symbol {
+	case coin.Ethereum().Symbol, coin.Classic().Symbol, coin.Poa().Symbol,
+		coin.Tomochain().Symbol, coin.Gochain().Symbol, coin.Thundertoken().Symbol,
+		coin.Callisto().Symbol, coin.Wanchain().Symbol:
+		return address.EIP55Checksum(tokenId)
+	default:
+		return tokenId
+	}
 }
 
 func normalizeTickers(prices cmc.CoinPrices, provider string, cmap cmc.CmcMapping) (tickers watchmarket.Tickers) {
