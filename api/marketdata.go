@@ -85,11 +85,12 @@ func getTickersHandler(storage storage.Market) func(c *gin.Context) {
 			exchangeRate := rate.Rate
 			percentChange := rate.PercentChange24h
 
-			coinObj, ok := coin.Coins[coinRequest.Coin]
-			if !ok {
+			coinObj, err := getCoinObj(coinRequest.Coin)
+			if err != nil {
 				logger.Warn("Requested coin does not exist", logger.Params{"coin": coinRequest.Coin})
 				continue
 			}
+
 			r, err := storage.GetTicker(coinObj.Symbol, strings.ToUpper(coinRequest.TokenId))
 			if err != nil {
 				if err == watchmarket.ErrNotFound {
@@ -160,8 +161,8 @@ func getChartsHandler(charts *market.Charts, cache *caching.Provider, db storage
 		}
 		token := c.Query("token")
 
-		coinObj, ok := coin.Coins[uint(coinId)]
-		if !ok {
+		coinObj, err := getCoinObj(uint(coinId))
+		if err != nil {
 			c.JSON(http.StatusOK, watchmarket.ChartData{})
 			return
 		}
@@ -269,4 +270,12 @@ func getCoinInfoHandler(charts *market.Charts, ac assets.AssetClient, cache *cac
 		}
 		c.JSON(http.StatusOK, chart)
 	}
+}
+
+func getCoinObj(id uint) (coin.Coin, error) {
+	c, ok := coin.Coins[id]
+	if !ok {
+		return coin.Coin{}, errors.E("no coin was found for this id")
+	}
+	return c, nil
 }
