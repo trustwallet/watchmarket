@@ -4,10 +4,12 @@ package integration
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-resty/resty/v2"
 	"github.com/stretchr/testify/assert"
+	"github.com/trustwallet/blockatlas/coin"
 	"github.com/trustwallet/watchmarket/api"
 	"github.com/trustwallet/watchmarket/internal"
 	"github.com/trustwallet/watchmarket/market"
@@ -22,6 +24,7 @@ import (
 	"strconv"
 	"strings"
 	"testing"
+	"time"
 )
 
 var (
@@ -40,6 +43,8 @@ func TestChartsCachingInit(t *testing.T) {
 	caching.SetChartsCachingDuration(300)
 	cache = caching.InitCaching(setup.Cache)
 	assert.NotNil(t, cache)
+
+	saveTicker(t, setup.Cache, nil, 60, "ETHToken", "ETH", 10)
 
 	api.Bootstrap(api.BootstrapProviders{
 		Engine: engine,
@@ -169,4 +174,35 @@ func makeRequest(t *testing.T, method string, url string, body io.Reader) *http.
 		t.Fatal(err)
 	}
 	return r
+}
+
+func saveTicker(t *testing.T, db *storage.Storage, pl storage.ProviderList, coinId uint, tokenId, coinCurrency string, coinPrice float64) {
+	coinObj, ok := coin.Coins[coinId]
+	if !ok {
+		t.Fatal(errors.New("coin does not exist"))
+	}
+	_, err := db.SaveTicker(&watchmarket.Ticker{
+		Coin:     coinObj.ID,
+		CoinName: coinObj.Symbol,
+		TokenId:  tokenId,
+		CoinType: "tbd",
+		Price: watchmarket.TickerPrice{
+			Value:     coinPrice,
+			Change24h: 0,
+			Currency:  coinCurrency,
+			Provider:  "myMockProvider",
+		},
+		LastUpdate: time.Time{},
+	}, A)
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+type mockProviderList string
+
+var A mockProviderList
+
+func (a mockProviderList) GetPriority(providerId string) int {
+	return 0
 }

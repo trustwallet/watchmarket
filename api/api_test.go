@@ -364,12 +364,13 @@ func seedDb(t *testing.T, db *storage.Storage) {
 	}
 
 	db.SaveRates(rates, mockProviderList)
-	saveTicker(t, db, mockProviderList, 60, "USD", ETHPrice)
-	saveTicker(t, db, mockProviderList, 60, "ETH", ETHPrice)
-	saveTicker(t, db, mockProviderList, 714, "BNB", ETHPrice)
+	saveTicker(t, db, mockProviderList, 60, "", "USD", ETHPrice)
+	saveTicker(t, db, mockProviderList, 60, "", "ETH", ETHPrice)
+	saveTicker(t, db, mockProviderList, 714, "", "BNB", ETHPrice)
+	saveTicker(t, db, mockProviderList, 60, "ETHToken", "ETH", ETHPrice)
 }
 
-func saveTicker(t *testing.T, db *storage.Storage, pl storage.ProviderList, coinId uint, coinCurrency string, coinPrice float64) {
+func saveTicker(t *testing.T, db *storage.Storage, pl storage.ProviderList, coinId uint, tokenId, coinCurrency string, coinPrice float64) {
 	coinObj, ok := coin.Coins[coinId]
 	if !ok {
 		t.Fatal(errors.New("coin does not exist"))
@@ -377,7 +378,7 @@ func saveTicker(t *testing.T, db *storage.Storage, pl storage.ProviderList, coin
 	_, err := db.SaveTicker(&watchmarket.Ticker{
 		Coin:     coinObj.ID,
 		CoinName: coinObj.Symbol,
-		TokenId:  "",
+		TokenId:  tokenId,
 		CoinType: "tbd",
 		Price: watchmarket.TickerPrice{
 			Value:     coinPrice,

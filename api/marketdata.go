@@ -44,7 +44,7 @@ func SetupMarketAPI(router gin.IRouter, provider BootstrapProviders) {
 	router.POST("/ticker",
 		middleware.CacheControl(time.Minute, getTickersHandler(provider.Market)))
 	router.GET("/charts",
-		middleware.CacheControl(time.Minute*10, getChartsHandler(provider.Charts, provider.Cache)))
+		middleware.CacheControl(time.Minute*10, getChartsHandler(provider.Charts, provider.Cache, provider.Market)))
 	router.GET("/info",
 		middleware.CacheControl(time.Minute*10, getCoinInfoHandler(provider.Charts, provider.Ac, provider.Cache)))
 }
@@ -85,11 +85,12 @@ func getTickersHandler(storage storage.Market) func(c *gin.Context) {
 			exchangeRate := rate.Rate
 			percentChange := rate.PercentChange24h
 
-			coinObj, ok := coin.Coins[coinRequest.Coin]
-			if !ok {
+			coinObj, err := getCoinObj(coinRequest.Coin)
+			if err != nil {
 				logger.Warn("Requested coin does not exist", logger.Params{"coin": coinRequest.Coin})
 				continue
 			}
+
 			r, err := storage.GetTicker(coinObj.Symbol, strings.ToUpper(coinRequest.TokenId))
 			if err != nil {
 				if err == watchmarket.ErrNotFound {
@@ -136,7 +137,7 @@ func getTickersHandler(storage storage.Market) func(c *gin.Context) {
 // @Param currency query string false "The currency to show charts" default(USD)
 // @Success 200 {object} watchmarket.ChartData
 // @Router /v1/market/charts [get]
-func getChartsHandler(charts *market.Charts, cache *caching.Provider) func(c *gin.Context) {
+func getChartsHandler(charts *market.Charts, cache *caching.Provider, db storage.Market) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		coinQuery := c.Query("coin")
 		if len(coinQuery) == 0 {
@@ -159,6 +160,18 @@ func getChartsHandler(charts *market.Charts, cache *caching.Provider) func(c *gi
 			}
 		}
 		token := c.Query("token")
+
+		coinObj, err := getCoinObj(uint(coinId))
+		if err != nil {
+			c.JSON(http.StatusOK, watchmarket.ChartData{})
+			return
+		}
+
+		r, err := db.GetTicker(coinObj.Symbol, strings.ToUpper(token))
+		if r == nil || r.Price.Value == 0 || err != nil {
+			c.JSON(http.StatusOK, watchmarket.ChartData{})
+			return
+		}
 
 		maxItemsRaw := c.Query("max_items")
 		maxItems, err := strconv.Atoi(maxItemsRaw)
@@ -257,4 +270,12 @@ func getCoinInfoHandler(charts *market.Charts, ac assets.AssetClient, cache *cac
 		}
 		c.JSON(http.StatusOK, chart)
 	}
+}
+
+func getCoinObj(id uint) (coin.Coin, error) {
+	c, ok := coin.Coins[id]
+	if !ok {
+		return coin.Coin{}, errors.E("no coin was found for this id")
+	}
+	return c, nil
 }
