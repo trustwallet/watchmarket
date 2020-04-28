@@ -44,7 +44,7 @@ func SetupMarketAPI(router gin.IRouter, provider BootstrapProviders) {
 	router.POST("/ticker",
 		middleware.CacheControl(time.Minute, getTickersHandler(provider.Market)))
 	router.GET("/charts",
-		middleware.CacheControl(time.Minute*10, getChartsHandler(provider.Charts, provider.Cache)))
+		middleware.CacheControl(time.Minute*10, getChartsHandler(provider.Charts, provider.Cache, provider.Market)))
 	router.GET("/info",
 		middleware.CacheControl(time.Minute*10, getCoinInfoHandler(provider.Charts, provider.Ac, provider.Cache)))
 }
@@ -136,7 +136,7 @@ func getTickersHandler(storage storage.Market) func(c *gin.Context) {
 // @Param currency query string false "The currency to show charts" default(USD)
 // @Success 200 {object} watchmarket.ChartData
 // @Router /v1/market/charts [get]
-func getChartsHandler(charts *market.Charts, cache *caching.Provider) func(c *gin.Context) {
+func getChartsHandler(charts *market.Charts, cache *caching.Provider, db storage.Market) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		coinQuery := c.Query("coin")
 		if len(coinQuery) == 0 {
@@ -159,6 +159,18 @@ func getChartsHandler(charts *market.Charts, cache *caching.Provider) func(c *gi
 			}
 		}
 		token := c.Query("token")
+
+		coinObj, ok := coin.Coins[uint(coinId)]
+		if !ok {
+			c.JSON(http.StatusOK, watchmarket.ChartData{})
+			return
+		}
+
+		r, err := db.GetTicker(coinObj.Symbol, strings.ToUpper(token))
+		if r == nil || r.Price.Value == 0 || err != nil {
+			c.JSON(http.StatusOK, watchmarket.ChartData{})
+			return
+		}
 
 		maxItemsRaw := c.Query("max_items")
 		maxItems, err := strconv.Atoi(maxItemsRaw)
