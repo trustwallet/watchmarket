@@ -14,14 +14,6 @@ func InitTickers(storage storage.Market, providers *ticker.Providers) *cron.Cron
 	return scheduleTickers(storage, tickerProviders)
 }
 
-func scheduleTickers(storage storage.Market, ps ticker.Providers) *cron.Cron {
-	c := cron.New()
-	for _, p := range ps {
-		scheduleTasks(storage, p, c)
-	}
-	return c
-}
-
 func runTicker(storage storage.Market, p ticker.TickerProvider) {
 	data, err := p.GetData()
 	if err != nil {
@@ -38,4 +30,12 @@ func runTicker(storage storage.Market, p ticker.TickerProvider) {
 	}
 
 	logger.Info("Market data result", logger.Params{"markets": len(data), "provider": p.GetId(), "results": results})
+}
+
+func scheduleTickers(storage storage.Market, ps ticker.Providers) *cron.Cron {
+	c := cron.New()
+	for _, p := range ps {
+		scheduleTasks(storage, p, c)
+	}
+	return c
 }
