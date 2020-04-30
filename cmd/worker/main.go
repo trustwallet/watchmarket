@@ -12,9 +12,9 @@ import (
 	rateCoingecko "github.com/trustwallet/watchmarket/market/rate/coingecko"
 	rateFixer "github.com/trustwallet/watchmarket/market/rate/fixer"
 	"github.com/trustwallet/watchmarket/market/ticker"
+	tickerDEX "github.com/trustwallet/watchmarket/market/ticker/binance_dex"
 	tickerCMC "github.com/trustwallet/watchmarket/market/ticker/cmc"
 	tickerCoingecko "github.com/trustwallet/watchmarket/market/ticker/coingecko"
-	tickerDEX "github.com/trustwallet/watchmarket/market/ticker/dex"
 	"github.com/trustwallet/watchmarket/storage"
 	"time"
 )
@@ -68,8 +68,8 @@ func init() {
 			viper.GetString("market.quote_update_time"),
 		),
 		3: tickerDEX.InitMarket(
-			viper.GetString("market.dex.api"),
-			viper.GetString("market.dex.quote_update_time"),
+			viper.GetString("market.binance_dex.api"),
+			viper.GetString("market.binance_dex.quote_update_time"),
 		),
 	}
 }

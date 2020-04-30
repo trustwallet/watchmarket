@@ -3,7 +3,6 @@ package rate
 import (
 	"github.com/trustwallet/blockatlas/pkg/errors"
 	"github.com/trustwallet/blockatlas/pkg/logger"
-	"github.com/trustwallet/watchmarket/storage"
 )
 
 const (
@@ -13,7 +12,6 @@ const (
 type Rate struct {
 	Id         string
 	UpdateTime string
-	Storage    storage.Market
 }
 
 func (r *Rate) GetUpdateTime() string {
@@ -28,16 +26,13 @@ func (r *Rate) GetLogType() string {
 	return "market-rate"
 }
 
-func (r *Rate) Init(storage storage.Market) error {
+func (r *Rate) Init(updateTime string) error {
 	logger.Info("Init Market Rate Provider", logger.Params{"rate": r.GetId()})
 	if len(r.Id) == 0 {
 		return errors.E("Market Rate: Id cannot be empty")
 	}
 
-	if storage == nil {
-		return errors.E("Market Rate: Storage cannot be nil")
-	}
-	r.Storage = storage
+	r.UpdateTime = updateTime
 
 	if len(r.UpdateTime) == 0 {
 		r.UpdateTime = defaultUpdateTime
