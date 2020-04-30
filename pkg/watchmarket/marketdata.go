@@ -30,8 +30,9 @@ type Ticker struct {
 }
 
 type ChartData struct {
-	Prices []ChartPrice `json:"prices,omitempty"`
-	Error  string       `json:"error,omitempty"`
+	Provider string       `json:"provider"`
+	Prices   []ChartPrice `json:"prices,omitempty"`
+	Error    string       `json:"error,omitempty"`
 }
 
 type ChartPrice struct {
@@ -44,6 +45,7 @@ type ChartCoinInfo struct {
 	MarketCap         float64   `json:"market_cap"`
 	CirculatingSupply float64   `json:"circulating_supply"`
 	TotalSupply       float64   `json:"total_supply"`
+	Provider          string    `json:"provider"`
 	Info              *CoinInfo `json:"info,omitempty"`
 }
 
@@ -67,7 +69,6 @@ type SocialLink struct {
 func (t *Ticker) SetCoinId(coinId uint) {
 	t.Coin = coinId
 	t.CoinName = ""
-	t.Price.Provider = ""
 	t.Price.Currency = ""
 }
 
