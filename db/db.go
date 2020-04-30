@@ -3,7 +3,6 @@ package db
 import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
-	"github.com/trustwallet/blockatlas/pkg/errors"
 	"github.com/trustwallet/watchmarket/db/models"
 )
 
@@ -24,12 +23,4 @@ func New(uri string) (*Instance, error) {
 	i := &Instance{Gorm: g}
 
 	return i, nil
-}
-
-func ConvertToError(errorsList []error) error {
-	var errorsInfo string
-	for _, e := range errorsList {
-		errorsInfo += " " + e.Error()
-	}
-	return errors.E(errorsInfo)
 }

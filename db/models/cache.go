@@ -1,6 +1,9 @@
 package models
 
-import "github.com/jinzhu/gorm"
+import (
+	"github.com/jinzhu/gorm"
+	"time"
+)
 
 type Cache struct {
 	gorm.Model
@@ -10,7 +13,7 @@ type Cache struct {
 
 type CachingInterval struct {
 	gorm.Model
-	Timestamp int64
+	Timestamp time.Time
 	Duration  int64
 	Key       string `gorm:"unique_index, type:varchar(64)"`
 }
