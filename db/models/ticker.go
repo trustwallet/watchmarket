@@ -8,5 +8,5 @@ import (
 type Ticker struct {
 	gorm.Model
 	watchmarket.Ticker
-	Provider string
+	Provider string `gorm:"type:varchar(64)"`
 }
