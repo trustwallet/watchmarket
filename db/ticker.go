@@ -4,7 +4,6 @@ import (
 	"github.com/trustwallet/watchmarket/db/models"
 	"github.com/trustwallet/watchmarket/market"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
-	"strconv"
 )
 
 func (i *Instance) AddTickers(tickers []watchmarket.Ticker, provider market.Provider) error {
@@ -28,15 +27,10 @@ func (i *Instance) AddTickers(tickers []watchmarket.Ticker, provider market.Prov
 	return nil
 }
 
-func (i *Instance) GetTickers(coin, token string) ([]watchmarket.Ticker, error) {
+func (i *Instance) GetTickers(coin uint, token string) ([]watchmarket.Ticker, error) {
 	var ticker []watchmarket.Ticker
 
-	coinID, err := strconv.Atoi(coin)
-	if err != nil {
-		return ticker, err
-	}
-
-	err = i.Gorm.Where("coin = ? AND token = ?", coinID, token).Find(&ticker).Error
+	err := i.Gorm.Where("coin = ? AND token = ?", coin, token).Find(&ticker).Error
 	if err != nil {
 		return ticker, err
 	}
