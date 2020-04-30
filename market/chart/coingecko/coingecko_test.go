@@ -29,6 +29,7 @@ func Test_normalizeInfo(t *testing.T) {
 				},
 			},
 			watchmarket.ChartCoinInfo{
+				Provider:          id,
 				Vol24:             444,
 				MarketCap:         555,
 				CirculatingSupply: 111,
@@ -69,6 +70,7 @@ func Test_normalizeCharts(t *testing.T) {
 				},
 			},
 			watchmarket.ChartData{
+				Provider: id,
 				Prices: []watchmarket.ChartPrice{
 					{
 						Price: 222,

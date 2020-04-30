@@ -67,7 +67,7 @@ func TestWithAlreadySetupedCache(t *testing.T) {
 	timeFirst := 1574483028
 	url, key := buildUrlAndKey(timeFirst)
 	SetCachedData(*cache, key, rawData, "oZGj-pQpMkoKoxDLy07SEb1XwH4=", int64(timeFirst))
-	makeRequestAndTestIt(t, url, `{"prices":[{"price":100000,"date":0},{"price":100000,"date":0}]}`)
+	makeRequestAndTestIt(t, url, `{"prices":[{"price":100000,"date":0},{"price":100000,"date":0}],"provider":""}`)
 }
 
 func TestWithThatCacheResetsWithTimeBefore(t *testing.T) {
@@ -81,7 +81,7 @@ func TestWithThatCacheResetsWithTimeBefore(t *testing.T) {
 	url, key := buildUrlAndKey(timeBeforeFirst)
 	SetCachedData(*cache, key, rawData, "oZGj-pQpMkoKoxDLy07SEb1XwH4=", int64(timeBeforeFirst+1))
 
-	makeRequestAndTestIt(t, url, `{"prices":[{"price":10,"date":0},{"price":10,"date":0}]}`)
+	makeRequestAndTestIt(t, url, `{"prices":[{"price":10,"date":0},{"price":10,"date":0}],"provider":""}`)
 }
 
 func TestWithThatCacheIsNotDisplayedIfOutdated(t *testing.T) {
@@ -95,7 +95,7 @@ func TestWithThatCacheIsNotDisplayedIfOutdated(t *testing.T) {
 	url, key := buildUrlAndKey(timeWithInvalidPeriod)
 	SetCachedData(*cache, key, rawData, "oZGj-pQpMkoKoxDLy07SEb1XwH4=", int64(timeWithInvalidPeriod+100000))
 
-	makeRequestAndTestIt(t, url, `{"prices":[{"price":10,"date":0},{"price":10,"date":0}]}`)
+	makeRequestAndTestIt(t, url, `{"prices":[{"price":10,"date":0},{"price":10,"date":0}],"provider":""}`)
 
 }
 
