@@ -86,7 +86,9 @@ func getCoinObj(cache *coingecko.SymbolsCache, coinId uint, token string) (coing
 }
 
 func normalizeCharts(charts coingecko.Charts) watchmarket.ChartData {
-	chartsData := watchmarket.ChartData{}
+	chartsData := watchmarket.ChartData{
+		Provider: id,
+	}
 	prices := make([]watchmarket.ChartPrice, 0)
 	for _, quote := range charts.Prices {
 		if len(quote) != chartDataSize {
@@ -111,5 +113,6 @@ func normalizeInfo(data coingecko.CoinPrice) watchmarket.ChartCoinInfo {
 		MarketCap:         data.MarketCap,
 		CirculatingSupply: data.CirculatingSupply,
 		TotalSupply:       data.TotalSupply,
+		Provider:          id,
 	}
 }

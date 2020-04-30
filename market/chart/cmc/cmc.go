@@ -75,7 +75,9 @@ func (c *Chart) GetCoinData(coin uint, token, currency string) (watchmarket.Char
 }
 
 func normalizeCharts(currency string, charts cmc.Charts) watchmarket.ChartData {
-	chartsData := watchmarket.ChartData{}
+	chartsData := watchmarket.ChartData{
+		Provider: id,
+	}
 	prices := make([]watchmarket.ChartPrice, 0)
 	for dateSrt, q := range charts.Data {
 		date, err := time.Parse(time.RFC3339, dateSrt)
@@ -114,6 +116,7 @@ func normalizeInfo(currency string, cmcCoin uint, data cmc.ChartInfo) (watchmark
 		MarketCap:         quote.MarketCap,
 		CirculatingSupply: data.Data.CirculatingSupply,
 		TotalSupply:       data.Data.TotalSupply,
+		Provider:          id,
 	}, nil
 }
 

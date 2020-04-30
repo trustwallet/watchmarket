@@ -92,7 +92,7 @@ func testTickers(t *testing.T, server *httptest.Server) {
 			requestMethod:  "POST",
 			requestBody:    "{\"currency\":\"ETH\",\"assets\":[{\"type\":\"coin\",\"coin\":60}]}",
 			expectedStatus: 200,
-			expectedBody: fmt.Sprintf("{\"currency\":\"ETH\",\"docs\":[{\"coin\":60,\"type\":\"tbd\",\"price\":{\"value\":%d,\"change_24h\":0},\"last_update\":\"0001-01-01T00:00:00Z\"}]}",
+			expectedBody: fmt.Sprintf("{\"currency\":\"ETH\",\"docs\":[{\"coin\":60,\"type\":\"tbd\",\"price\":{\"value\":%d,\"change_24h\":0,\"provider\":\"myMockProvider\"},\"last_update\":\"0001-01-01T00:00:00Z\"}]}",
 				ETHPrice),
 		},
 		{
@@ -101,7 +101,7 @@ func testTickers(t *testing.T, server *httptest.Server) {
 			requestMethod:  "POST",
 			requestBody:    "{\"currency\":\"USD\",\"assets\":[{\"type\":\"coin\",\"coin\":60}]}",
 			expectedStatus: 200,
-			expectedBody: fmt.Sprintf("{\"currency\":\"USD\",\"docs\":[{\"coin\":60,\"type\":\"tbd\",\"price\":{\"value\":%d,\"change_24h\":0},\"last_update\":\"0001-01-01T00:00:00Z\"}]}",
+			expectedBody: fmt.Sprintf("{\"currency\":\"USD\",\"docs\":[{\"coin\":60,\"type\":\"tbd\",\"price\":{\"value\":%d,\"change_24h\":0,\"provider\":\"myMockProvider\"},\"last_update\":\"0001-01-01T00:00:00Z\"}]}",
 				ETHToUSDRate*ETHPrice),
 		},
 		{
@@ -110,7 +110,7 @@ func testTickers(t *testing.T, server *httptest.Server) {
 			requestMethod:  "POST",
 			requestBody:    "{\"currency\":\"USD\",\"assets\":[{\"type\":\"coin\",\"coin\":714}]}",
 			expectedStatus: 200,
-			expectedBody: fmt.Sprintf("{\"currency\":\"USD\",\"docs\":[{\"coin\":714,\"type\":\"tbd\",\"price\":{\"value\":%d,\"change_24h\":0},\"last_update\":\"0001-01-01T00:00:00Z\"}]}",
+			expectedBody: fmt.Sprintf("{\"currency\":\"USD\",\"docs\":[{\"coin\":714,\"type\":\"tbd\",\"price\":{\"value\":%d,\"change_24h\":0,\"provider\":\"myMockProvider\"},\"last_update\":\"0001-01-01T00:00:00Z\"}]}",
 				ETHToUSDRate*ETHPrice),
 		},
 	}
@@ -155,7 +155,7 @@ func testCharts(t *testing.T, server *httptest.Server) {
 			requestMethod:  "GET",
 			requestBody:    "",
 			expectedStatus: 200,
-			expectedBody:   `{"prices":[{"price":10,"date":1583712036}]}`,
+			expectedBody:   `{"provider":"","prices":[{"price":10,"date":1583712036}]}`,
 		},
 		{
 			name:           "test invalid coin provided",
@@ -187,7 +187,7 @@ func testCharts(t *testing.T, server *httptest.Server) {
 			requestMethod:  "GET",
 			requestBody:    "",
 			expectedStatus: 200,
-			expectedBody:   `{"prices":[{"price":10,"date":1583712036}]}`,
+			expectedBody:   `{"provider":"","prices":[{"price":10,"date":1583712036}]}`,
 		},
 	}
 	for _, tt := range tests {
@@ -240,7 +240,7 @@ func testCoinInfo(t *testing.T, server *httptest.Server) {
 			requestMethod:  "GET",
 			requestBody:    "",
 			expectedStatus: 200,
-			expectedBody:   "{\"circulating_supply\": 0, \"info\": {}, \"market_cap\": 0, \"total_supply\": 0, \"volume_24\": 0}",
+			expectedBody:   "{\"circulating_supply\": 0, \"info\": {}, \"market_cap\": 0, \"total_supply\": 0, \"volume_24\": 0, \"provider\": \"\"}",
 		},
 		{
 			name:           "test coin info not found",
@@ -248,7 +248,7 @@ func testCoinInfo(t *testing.T, server *httptest.Server) {
 			requestMethod:  "GET",
 			requestBody:    "",
 			expectedStatus: 200,
-			expectedBody:   "{\"circulating_supply\": 0, \"info\": {}, \"market_cap\": 0, \"total_supply\": 0, \"volume_24\": 0}",
+			expectedBody:   "{\"circulating_supply\": 0, \"info\": {}, \"market_cap\": 0, \"total_supply\": 0, \"volume_24\": 0, \"provider\": \"\"}",
 		},
 		{
 			name:           "test coin assets not found",
@@ -256,7 +256,7 @@ func testCoinInfo(t *testing.T, server *httptest.Server) {
 			requestMethod:  "GET",
 			requestBody:    "",
 			expectedStatus: 200,
-			expectedBody:   `{"circulating_supply": 0, "market_cap": 0, "total_supply": 0, "volume_24": 0}`,
+			expectedBody:   `{"circulating_supply": 0, "market_cap": 0, "total_supply": 0, "volume_24": 0, "provider": ""}`,
 		},
 	}
 	for _, tt := range tests {
