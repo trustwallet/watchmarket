@@ -11,6 +11,7 @@ require (
 	github.com/go-redis/redis v6.15.7+incompatible
 	github.com/go-resty/resty/v2 v2.2.0
 	github.com/jarcoal/httpmock v1.0.5
+	github.com/jinzhu/gorm v1.9.12
 	github.com/kataras/iris/v12 v12.0.1
 	github.com/magiconair/properties v1.8.1
 	github.com/ory/dockertest v3.3.5+incompatible
