@@ -8,5 +8,5 @@ import (
 type Rate struct {
 	gorm.Model
 	watchmarket.Rate
-	Provider string
+	Provider string `gorm:"type:varchar(128)"`
 }
