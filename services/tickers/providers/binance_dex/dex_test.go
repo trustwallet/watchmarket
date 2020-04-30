@@ -1,4 +1,4 @@
-package dex
+package binance_dex
 
 import (
 	"github.com/stretchr/testify/assert"
@@ -19,7 +19,7 @@ func Test_normalizeTickers(t *testing.T) {
 		wantTickers watchmarket.Tickers
 	}{
 		{
-			"test normalize dex quote",
+			"test normalize binance_dex quote",
 			args{prices: []*CoinPrice{
 				{
 					BaseAssetName:      "RAVEN-F66",
@@ -40,14 +40,14 @@ func Test_normalizeTickers(t *testing.T) {
 					PriceChangePercent: "5.2700",
 				},
 			},
-				provider: "dex"},
+				provider: "binance_dex"},
 			watchmarket.Tickers{
 				&watchmarket.Ticker{CoinName: "BNB", TokenId: "RAVEN-F66", CoinType: watchmarket.TypeToken, LastUpdate: time.Now(),
 					Price: watchmarket.TickerPrice{
 						Value:     0.00001082,
 						Change24h: -2.2500,
 						Currency:  "BNB",
-						Provider:  "dex",
+						Provider:  "binance_dex",
 					},
 				},
 				&watchmarket.Ticker{CoinName: "BNB", TokenId: "SLV-986", CoinType: watchmarket.TypeToken, LastUpdate: time.Now(),
@@ -55,7 +55,7 @@ func Test_normalizeTickers(t *testing.T) {
 						Value:     0.0449451,
 						Change24h: -5.3700,
 						Currency:  "BNB",
-						Provider:  "dex",
+						Provider:  "binance_dex",
 					},
 				},
 			},

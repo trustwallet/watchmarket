@@ -9,7 +9,7 @@ import (
 )
 
 func Test_normalizeRates(t *testing.T) {
-	provider := "dex"
+	provider := "binance_dex"
 	tests := []struct {
 		name      string
 		latest    Latest

@@ -1,4 +1,4 @@
-package dex
+package binance_dex
 
 import (
 	"github.com/trustwallet/blockatlas/coin"
@@ -13,7 +13,7 @@ import (
 )
 
 var (
-	id       = "dex"
+	id       = "binance_dex"
 	BNBAsset = coin.Binance().Symbol
 )
 
