@@ -9,10 +9,10 @@ type (
 
 	Subscription struct {
 		gorm.Model
-		Coin  uint
-		Token string `gorm:"type:varchar(128)"`
 		Condition
-		SubscriptionId uint `gorm:"unique_index"`
+		Coin           uint
+		Token          string `gorm:"type:varchar(128)"`
+		SubscriptionId uint   `gorm:"unique_index"`
 		Price          float64
 	}
 )

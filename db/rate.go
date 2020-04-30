@@ -6,13 +6,13 @@ import (
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 )
 
-func (i *Instance) AddRates(rates []watchmarket.Rate, provider market.Provider) error {
+func (i *Instance) AddRates(rates []watchmarket.Rate, provider string) []error {
 	var errorsList []error
 
 	for _, rate := range rates {
 		r := models.Rate{
 			Rate:     rate,
-			Provider: provider.GetId(),
+			Provider: provider,
 		}
 
 		err := i.Gorm.Set("gorm:insert_option", "ON CONFLICT (id) DO NOTHING").Create(&r).Error
@@ -22,7 +22,7 @@ func (i *Instance) AddRates(rates []watchmarket.Rate, provider market.Provider) 
 	}
 
 	if len(errorsList) > 0 {
-		return ConvertToError(errorsList)
+		return errorsList
 	}
 	return nil
 }
