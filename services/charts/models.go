@@ -1,25 +1,25 @@
-package model
+package chart
 
 type (
-	ChartData struct {
-		Prices []ChartPrice `json:"prices,omitempty"`
-		Error  string       `json:"error,omitempty"`
+	Data struct {
+		Prices []Price `json:"prices,omitempty"`
+		Error  string  `json:"error,omitempty"`
 	}
 
-	ChartPrice struct {
+	Price struct {
 		Price float64 `json:"price"`
 		Date  int64   `json:"date"`
 	}
 
-	ChartCoinInfo struct {
-		Vol24             float64   `json:"volume_24"`
-		MarketCap         float64   `json:"market_cap"`
-		CirculatingSupply float64   `json:"circulating_supply"`
-		TotalSupply       float64   `json:"total_supply"`
-		Info              *CoinInfo `json:"info,omitempty"`
+	CoinDetails struct {
+		Vol24             float64 `json:"volume_24"`
+		MarketCap         float64 `json:"market_cap"`
+		CirculatingSupply float64 `json:"circulating_supply"`
+		TotalSupply       float64 `json:"total_supply"`
+		Info              Info    `json:"info,omitempty"`
 	}
 
-	CoinInfo struct {
+	Info struct {
 		Name             string       `json:"name,omitempty"`
 		Website          string       `json:"website,omitempty"`
 		SourceCode       string       `json:"source_code,omitempty"`
@@ -37,10 +37,10 @@ type (
 	}
 )
 
-func (d ChartData) IsEmpty() bool {
+func (d Data) IsEmpty() bool {
 	return len(d.Prices) == 0
 }
 
-func (i ChartCoinInfo) IsEmpty() bool {
-	return i.Info == nil || i.Info.Name == ""
+func (i CoinDetails) IsEmpty() bool {
+	return i.Info.Name == ""
 }

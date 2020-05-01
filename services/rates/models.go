@@ -1,4 +1,4 @@
-package model
+package rate
 
 import "math/big"
 

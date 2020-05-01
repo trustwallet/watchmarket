@@ -1,4 +1,4 @@
-package model
+package chart
 
 import (
 	"github.com/stretchr/testify/assert"
@@ -6,23 +6,23 @@ import (
 )
 
 func TestPrices_IsEmpty(t *testing.T) {
-	price := ChartPrice{
+	price := Price{
 		Price: 0,
 		Date:  0,
 	}
 
-	prices := make([]ChartPrice, 0)
+	prices := make([]Price, 0)
 	prices = append(prices, price)
 	prices = append(prices, price)
 	prices = append(prices, price)
 	prices = append(prices, price)
 
-	notEmptyChartData := ChartData{
+	notEmptyChartData := Data{
 		Prices: prices,
 		Error:  "",
 	}
 
-	emptyChartData := ChartData{
+	emptyChartData := Data{
 		Prices: nil,
 		Error:  "",
 	}
