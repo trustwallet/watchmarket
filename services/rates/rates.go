@@ -9,24 +9,24 @@ const (
 	defaultUpdateTime = "5m"
 )
 
-type Rate struct {
+type Market struct {
 	Id         string
 	UpdateTime string
 }
 
-func (r *Rate) GetUpdateTime() string {
+func (r *Market) GetUpdateTime() string {
 	return r.UpdateTime
 }
 
-func (r *Rate) GetId() string {
+func (r *Market) GetId() string {
 	return r.Id
 }
 
-func (r *Rate) GetLogType() string {
+func (r *Market) GetLogType() string {
 	return "market-rate"
 }
 
-func (r *Rate) Init(updateTime string) error {
+func (r *Market) Init(updateTime string) error {
 	logger.Info("Init Market Rate Provider", logger.Params{"rate": r.GetId()})
 	if len(r.Id) == 0 {
 		return errors.E("Market Rate: Id cannot be empty")
