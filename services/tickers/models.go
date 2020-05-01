@@ -31,3 +31,8 @@ type (
 
 	Tickers []*Ticker
 )
+
+const (
+	Coin  CoinType = "coin"
+	Token CoinType = "token"
+)
