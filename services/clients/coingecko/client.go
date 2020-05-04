@@ -19,7 +19,7 @@ type Client struct {
 	blockatlas.Request
 }
 
-func NewClient(api string) *Client {
+func NewClient(api string) Client {
 	c := Client{
 		Request: blockatlas.InitClient(api),
 	}
