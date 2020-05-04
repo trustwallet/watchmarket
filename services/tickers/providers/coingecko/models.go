@@ -41,3 +41,11 @@ type (
 
 	Platforms map[string]string
 )
+
+func (coins GeckoCoins) coinIds() []string {
+	coinIds := make([]string, 0)
+	for _, coin := range coins {
+		coinIds = append(coinIds, coin.Id)
+	}
+	return coinIds
+}
