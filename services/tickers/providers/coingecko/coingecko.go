@@ -1,16 +1,14 @@
 package coingecko
 
 import (
-	"github.com/trustwallet/watchmarket/services/clients/coingecko"
+	"github.com/trustwallet/blockatlas/pkg/errors"
 	ticker "github.com/trustwallet/watchmarket/services/tickers"
 	"strings"
 )
 
 const (
-	id                   = "coingecko"
-	minimalTradingVolume = 5000
-	minimalMarketCap     = 5000
-	bucketSize           = 500
+	id         = "coingecko"
+	bucketSize = 500
 )
 
 type Parser struct {
@@ -18,13 +16,12 @@ type Parser struct {
 	client       Client
 }
 
-func InitMarket(api, currency string) Parser {
-	p := &Parser{
+func InitParser(api, currency string) Parser {
+	return Parser{
 		ID:       id,
 		currency: currency,
-		client:   *NewClient(api),
+		client:   NewClient(api),
 	}
-	return *p
 }
 
 func (m *Parser) GetData() (ticker.Tickers, error) {
@@ -35,19 +32,34 @@ func (m *Parser) GetData() (ticker.Tickers, error) {
 	}
 
 	rates := m.client.FetchLatestRates(coins, m.currency, bucketSize)
-	tickers = m.normalizeTickers(rates, m.ID)
+	tickers = m.normalizeTickers(rates, coins, m.ID, m.currency)
 	return tickers, nil
 }
 
-func (m *Parser) normalizeTicker(price CoinPrice, provider string) ticker.Tickers {
-	var tickers = make(ticker.Tickers, 0)
-	tokenId := ""
-	coinName := strings.ToUpper(price.Symbol)
-	coinType := ticker.Coin
+func (m *Parser) normalizeTickers(prices CoinPrices, coins GeckoCoins, provider, currency string) ticker.Tickers {
+	var (
+		tickers    = make(ticker.Tickers, 0)
+		cgCoinsMap = createCgCoinsMap(coins)
+	)
 
-	coins, err := m.cache.GetCoinsById(price.Id)
+	for _, price := range prices {
+		t := m.normalizeTicker(price, cgCoinsMap, provider, currency)
+		tickers = append(tickers, t...)
+	}
+	return tickers
+}
+
+func (m *Parser) normalizeTicker(price CoinPrice, coinsMap map[string][]CoinResult, provider, currency string) ticker.Tickers {
+	var (
+		tickers  = make(ticker.Tickers, 0)
+		tokenId  = ""
+		coinName = strings.ToUpper(price.Symbol)
+		coinType = ticker.Coin
+	)
+
+	coins, err := getCgCoinsById(coinsMap, price.Id)
 	if err != nil {
-		t := createTicker(price, coinType, coinName, tokenId, provider)
+		t := createTicker(price, coinType, coinName, tokenId, provider, currency)
 		tickers = append(tickers, &t)
 		return tickers
 	}
@@ -60,13 +72,58 @@ func (m *Parser) normalizeTicker(price CoinPrice, provider string) ticker.Ticker
 			tokenId = cg.TokenId
 		}
 
-		t := createTicker(price, cg.CoinType, coinName, tokenId, provider)
+		t := createTicker(price, cg.CoinType, coinName, tokenId, provider, currency)
 		tickers = append(tickers, &t)
 	}
 	return tickers
 }
 
-func createTicker(price CoinPrice, coinType ticker.CoinType, coinName, tokenId, provider string) ticker.Ticker {
+func getCgCoinsById(coinsMap map[string][]CoinResult, id string) ([]CoinResult, error) {
+	coins, ok := coinsMap[id]
+	if !ok {
+		return nil, errors.E("No coin found by id", errors.Params{"id": id})
+	}
+	return coins, nil
+}
+
+func createCgCoinsMap(coins GeckoCoins) map[string][]CoinResult {
+	var (
+		coinsMap   = getCoinsMap(coins)
+		cgCoinsMap = make(map[string][]CoinResult, 0)
+	)
+
+	for _, coin := range coins {
+		for platform, addr := range coin.Platforms {
+			platformCoin, ok := coinsMap[platform]
+			if !ok {
+				continue
+			}
+
+			_, ok = cgCoinsMap[coin.Id]
+			if !ok {
+				cgCoinsMap[coin.Id] = make([]CoinResult, 0)
+			}
+
+			cgCoinsMap[coin.Id] = append(cgCoinsMap[coin.Id], CoinResult{
+				Symbol:   platformCoin.Symbol,
+				TokenId:  strings.ToLower(addr),
+				CoinType: ticker.Token,
+			})
+		}
+	}
+
+	return cgCoinsMap
+}
+
+func getCoinsMap(coins GeckoCoins) map[string]GeckoCoin {
+	coinsMap := make(map[string]GeckoCoin)
+	for _, coin := range coins {
+		coinsMap[coin.Id] = coin
+	}
+	return coinsMap
+}
+
+func createTicker(price CoinPrice, coinType ticker.CoinType, coinName, tokenId, provider, currency string) ticker.Ticker {
 	var t = ticker.Ticker{
 		CoinName: coinName,
 		CoinType: coinType,
@@ -74,36 +131,14 @@ func createTicker(price CoinPrice, coinType ticker.CoinType, coinName, tokenId, 
 		Price: ticker.Price{
 			Value:     price.CurrentPrice,
 			Change24h: price.PriceChangePercentage24h,
-			Currency:  watchmarket.DefaultCurrency,
+			Currency:  currency,
 			Provider:  provider,
 		},
 		LastUpdate: price.LastUpdated,
 	}
 
-	if isRespectableTradingVolume(price.TotalVolume) && isRespectableMarketCap(price.MarketCap) {
-		t.Price.Change24h = price.PriceChangePercentage24h
-		t.Price.Value = price.CurrentPrice
-	} else {
-		t.Price.Change24h = 0
-		t.Price.Value = 0
-	}
+	t.Price.Change24h = price.PriceChangePercentage24h
+	t.Price.Value = price.CurrentPrice
 
 	return t
-}
-
-func isRespectableTradingVolume(targetTradingVolume float64) bool {
-	return targetTradingVolume >= minimalTradingVolume
-}
-
-func isRespectableMarketCap(targetMarketCap float64) bool {
-	return targetMarketCap >= minimalMarketCap
-}
-
-func (m *Parser) normalizeTickers(prices CoinPrices, provider string) ticker.Tickers {
-	var tickers = make(ticker.Tickers, 0)
-	for _, price := range prices {
-		t := m.normalizeTicker(price, provider)
-		tickers = append(tickers, t...)
-	}
-	return tickers
 }
