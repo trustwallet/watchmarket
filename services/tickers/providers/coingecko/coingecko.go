@@ -1,9 +1,8 @@
 package coingecko
 
 import (
-	"github.com/trustwallet/watchmarket/market/clients/coingecko"
-	"github.com/trustwallet/watchmarket/market/ticker"
-	"github.com/trustwallet/watchmarket/pkg/watchmarket"
+	"github.com/trustwallet/watchmarket/services/clients/coingecko"
+	ticker "github.com/trustwallet/watchmarket/services/tickers"
 	"strings"
 )
 
@@ -13,41 +12,37 @@ const (
 	minimalMarketCap     = 5000
 )
 
-type Market struct {
-	client *coingecko.Client
-	cache  *coingecko.Cache
-	ticker.Market
+type Parser struct {
+	ID, currency string
+	client       Client
 }
 
-func InitMarket(api, updateTime string) ticker.TickerProvider {
-	m := &Market{
-		client: coingecko.NewClient(api),
-		Market: ticker.Market{
-			Id:         id,
-			UpdateTime: updateTime,
-		},
+func InitMarket(api, currency string) Parser {
+	p := &Parser{
+		ID:       id,
+		currency: currency,
+		client:   *NewClient(api),
 	}
-	return m
+	return *p
 }
 
-func (m *Market) GetData() (watchmarket.Tickers, error) {
-	var tickers = make(watchmarket.Tickers, 0)
+func (m *Parser) GetData() (ticker.Tickers, error) {
+	var tickers = make(ticker.Tickers, 0)
 	coins, err := m.client.FetchCoinsList()
 	if err != nil {
 		return tickers, err
 	}
-	m.cache = coingecko.NewCache(coins)
 
-	rates := m.client.FetchLatestRates(coins, watchmarket.DefaultCurrency)
-	tickers = m.normalizeTickers(rates, m.GetId())
+	rates := m.client.FetchLatestRates(coins, m.currency)
+	tickers = m.normalizeTickers(rates, m.ID)
 	return tickers, nil
 }
 
-func (m *Market) normalizeTicker(price coingecko.CoinPrice, provider string) watchmarket.Tickers {
-	var tickers = make(watchmarket.Tickers, 0)
+func (m *Parser) normalizeTicker(price coingecko.CoinPrice, provider string) ticker.Tickers {
+	var tickers = make(ticker.Tickers, 0)
 	tokenId := ""
 	coinName := strings.ToUpper(price.Symbol)
-	coinType := watchmarket.TypeCoin
+	coinType := ticker.Coin
 
 	coins, err := m.cache.GetCoinsById(price.Id)
 	if err != nil {
@@ -58,7 +53,7 @@ func (m *Market) normalizeTicker(price coingecko.CoinPrice, provider string) wat
 
 	for _, cg := range coins {
 		coinName = strings.ToUpper(cg.Symbol)
-		if cg.CoinType == watchmarket.TypeCoin {
+		if cg.CoinType == ticker.Coin {
 			tokenId = ""
 		} else if len(cg.TokenId) > 0 {
 			tokenId = cg.TokenId
@@ -70,12 +65,12 @@ func (m *Market) normalizeTicker(price coingecko.CoinPrice, provider string) wat
 	return tickers
 }
 
-func createTicker(price coingecko.CoinPrice, coinType watchmarket.CoinType, coinName, tokenId, provider string) watchmarket.Ticker {
-	var t = watchmarket.Ticker{
+func createTicker(price coingecko.CoinPrice, coinType ticker.CoinType, coinName, tokenId, provider string) ticker.Ticker {
+	var t = ticker.Ticker{
 		CoinName: coinName,
 		CoinType: coinType,
 		TokenId:  tokenId,
-		Price: watchmarket.TickerPrice{
+		Price: ticker.Price{
 			Value:     price.CurrentPrice,
 			Change24h: price.PriceChangePercentage24h,
 			Currency:  watchmarket.DefaultCurrency,
@@ -103,8 +98,8 @@ func isRespectableMarketCap(targetMarketCap float64) bool {
 	return targetMarketCap >= minimalMarketCap
 }
 
-func (m *Market) normalizeTickers(prices coingecko.CoinPrices, provider string) watchmarket.Tickers {
-	var tickers = make(watchmarket.Tickers, 0)
+func (m *Parser) normalizeTickers(prices coingecko.CoinPrices, provider string) ticker.Tickers {
+	var tickers = make(ticker.Tickers, 0)
 	for _, price := range prices {
 		t := m.normalizeTicker(price, provider)
 		tickers = append(tickers, t...)
