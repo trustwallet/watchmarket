@@ -13,11 +13,10 @@ type Client struct {
 	blockatlas.Request
 }
 
-func NewClient(api string) *Client {
-	c := Client{
+func NewClient(api string) Client {
+	return Client{
 		Request: blockatlas.InitClient(api),
 	}
-	return &c
 }
 
 func (c *Client) FetchLatestRates(coins GeckoCoins, currency string, bucketSize int) (prices CoinPrices) {
