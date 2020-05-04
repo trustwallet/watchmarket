@@ -10,6 +10,7 @@ const (
 	id                   = "coingecko"
 	minimalTradingVolume = 5000
 	minimalMarketCap     = 5000
+	bucketSize           = 500
 )
 
 type Parser struct {
@@ -33,12 +34,12 @@ func (m *Parser) GetData() (ticker.Tickers, error) {
 		return tickers, err
 	}
 
-	rates := m.client.FetchLatestRates(coins, m.currency)
+	rates := m.client.FetchLatestRates(coins, m.currency, bucketSize)
 	tickers = m.normalizeTickers(rates, m.ID)
 	return tickers, nil
 }
 
-func (m *Parser) normalizeTicker(price coingecko.CoinPrice, provider string) ticker.Tickers {
+func (m *Parser) normalizeTicker(price CoinPrice, provider string) ticker.Tickers {
 	var tickers = make(ticker.Tickers, 0)
 	tokenId := ""
 	coinName := strings.ToUpper(price.Symbol)
@@ -65,7 +66,7 @@ func (m *Parser) normalizeTicker(price coingecko.CoinPrice, provider string) tic
 	return tickers
 }
 
-func createTicker(price coingecko.CoinPrice, coinType ticker.CoinType, coinName, tokenId, provider string) ticker.Ticker {
+func createTicker(price CoinPrice, coinType ticker.CoinType, coinName, tokenId, provider string) ticker.Ticker {
 	var t = ticker.Ticker{
 		CoinName: coinName,
 		CoinType: coinType,
@@ -98,7 +99,7 @@ func isRespectableMarketCap(targetMarketCap float64) bool {
 	return targetMarketCap >= minimalMarketCap
 }
 
-func (m *Parser) normalizeTickers(prices coingecko.CoinPrices, provider string) ticker.Tickers {
+func (m *Parser) normalizeTickers(prices CoinPrices, provider string) ticker.Tickers {
 	var tickers = make(ticker.Tickers, 0)
 	for _, price := range prices {
 		t := m.normalizeTicker(price, provider)

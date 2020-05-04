@@ -3,8 +3,10 @@ package coingecko
 import (
 	"github.com/trustwallet/blockatlas/pkg/blockatlas"
 	"github.com/trustwallet/blockatlas/pkg/logger"
+	"net/url"
 	"strings"
 	"sync"
+	"time"
 )
 
 type Client struct {
@@ -18,7 +20,7 @@ func NewClient(api string) *Client {
 	return &c
 }
 
-func (c *Client) FetchLatestRates(coins GeckoCoins, currency string) (prices CoinPrices) {
+func (c *Client) FetchLatestRates(coins GeckoCoins, currency string, bucketSize int) (prices CoinPrices) {
 	ci := coins.coinIds()
 
 	i := 0
@@ -55,5 +57,24 @@ func (c *Client) FetchLatestRates(coins GeckoCoins, currency string) (prices Coi
 		prices = append(prices, bucket...)
 	}
 
+	return
+}
+
+func (c *Client) FetchCoinsMarkets(currency, ids string) (cp CoinPrices, err error) {
+	values := url.Values{
+		"vs_currency": {currency},
+		"sparkline":   {"false"},
+		"ids":         {ids},
+	}
+
+	err = c.Get(&cp, "v3/coins/markets", values)
+	return
+}
+
+func (c *Client) FetchCoinsList() (coins GeckoCoins, err error) {
+	values := url.Values{
+		"include_platform": {"true"},
+	}
+	err = c.GetWithCache(&coins, "v3/coins/list", values, time.Hour)
 	return
 }
