@@ -49,7 +49,7 @@ func normalizeTicker(price Data, provider, currency string) ticker.Tickers {
 		}
 	}
 
-	tickers = append(tickers, &ticker.Ticker{
+	tickers = append(tickers, ticker.Ticker{
 		CoinName: coinName,
 		CoinType: coinType,
 		TokenId:  tokenId,

@@ -60,7 +60,7 @@ func (m *Parser) normalizeTicker(price CoinPrice, coinsMap map[string][]CoinResu
 	coins, err := getCgCoinsById(coinsMap, price.Id)
 	if err != nil {
 		t := createTicker(price, coinType, coinName, tokenId, provider, currency)
-		tickers = append(tickers, &t)
+		tickers = append(tickers, t)
 		return tickers
 	}
 
@@ -73,7 +73,7 @@ func (m *Parser) normalizeTicker(price CoinPrice, coinsMap map[string][]CoinResu
 		}
 
 		t := createTicker(price, cg.CoinType, coinName, tokenId, provider, currency)
-		tickers = append(tickers, &t)
+		tickers = append(tickers, t)
 	}
 	return tickers
 }

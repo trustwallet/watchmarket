@@ -29,7 +29,7 @@ type (
 		Provider  string  `json:"provider,omitempty"`
 	}
 
-	Tickers []*Ticker
+	Tickers []Ticker
 )
 
 const (
