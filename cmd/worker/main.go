@@ -8,13 +8,13 @@ import (
 	"github.com/trustwallet/watchmarket/market"
 	"github.com/trustwallet/watchmarket/market/clients/cmc"
 	"github.com/trustwallet/watchmarket/market/rate"
-	rateCMC "github.com/trustwallet/watchmarket/market/rate/cmc"
 	rateCoingecko "github.com/trustwallet/watchmarket/market/rate/coingecko"
+	rateCMC "github.com/trustwallet/watchmarket/market/rate/coinnmarketcap"
 	rateFixer "github.com/trustwallet/watchmarket/market/rate/fixer"
 	"github.com/trustwallet/watchmarket/market/ticker"
-	tickerDEX "github.com/trustwallet/watchmarket/market/ticker/binance_dex"
-	tickerCMC "github.com/trustwallet/watchmarket/market/ticker/cmc"
+	tickerDEX "github.com/trustwallet/watchmarket/market/ticker/binancedex"
 	tickerCoingecko "github.com/trustwallet/watchmarket/market/ticker/coingecko"
+	tickerCMC "github.com/trustwallet/watchmarket/market/ticker/coinnmarketcap"
 	"github.com/trustwallet/watchmarket/storage"
 	"time"
 )
@@ -38,11 +38,11 @@ func init() {
 	redisHost := viper.GetString("storage.redis")
 	cache = internal.InitRedis(redisHost)
 
-	cmcClient := cmc.NewClient(viper.GetString("market.cmc.api"), viper.GetString("market.cmc.api_key"), viper.GetDuration("market.cmc.caching_duration"))
+	cmcClient := cmc.NewClient(viper.GetString("market.coinnmarketcap.api"), viper.GetString("market.coinnmarketcap.api_key"), viper.GetDuration("market.coinnmarketcap.caching_duration"))
 
 	rateProviders = &rate.Providers{
 		0: rateCMC.InitRate(
-			viper.GetString("market.cmc.map_url"),
+			viper.GetString("market.coinnmarketcap.map_url"),
 			viper.GetString("market.rate_update_time"),
 			cmcClient,
 		),
@@ -59,7 +59,7 @@ func init() {
 
 	tickerProviders = &ticker.Providers{
 		0: tickerCMC.InitMarket(
-			viper.GetString("market.cmc.map_url"),
+			viper.GetString("market.coinnmarketcap.map_url"),
 			viper.GetString("market.quote_update_time"),
 			cmcClient,
 		),
@@ -68,8 +68,8 @@ func init() {
 			viper.GetString("market.quote_update_time"),
 		),
 		3: tickerDEX.InitMarket(
-			viper.GetString("market.binance_dex.api"),
-			viper.GetString("market.binance_dex.quote_update_time"),
+			viper.GetString("market.binancedex.api"),
+			viper.GetString("market.binancedex.quote_update_time"),
 		),
 	}
 }

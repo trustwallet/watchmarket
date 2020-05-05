@@ -22,7 +22,7 @@ func Test_normalizeInfo(t *testing.T) {
 		wantInfo watchmarket.ChartCoinInfo
 	}{
 		{
-			"test normalize cmc chart info 1",
+			"test normalize coinnmarketcap chart info 1",
 			args{
 				currency: "USD",
 				cmcCoin:  1,
@@ -46,7 +46,7 @@ func Test_normalizeInfo(t *testing.T) {
 			},
 		},
 		{
-			"test normalize cmc chart info 2",
+			"test normalize coinnmarketcap chart info 2",
 			args{
 				currency: "EUR",
 				cmcCoin:  2,
@@ -96,7 +96,7 @@ func Test_normalizeCharts(t *testing.T) {
 		wantInfo watchmarket.ChartData
 	}{
 		{
-			"test normalize cmc chart 1",
+			"test normalize coinnmarketcap chart 1",
 			args{
 				currency: "USD",
 				symbol:   "BTC",
@@ -119,7 +119,7 @@ func Test_normalizeCharts(t *testing.T) {
 			},
 		},
 		{
-			"test normalize cmc chart 2",
+			"test normalize coinnmarketcap chart 2",
 			args{
 				currency: "EUR",
 				symbol:   "BTC",

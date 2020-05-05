@@ -1,4 +1,4 @@
-package binance_dex
+package binancedex
 
 //func Test_normalizeTickers(t *testing.T) {
 //	type args struct {
@@ -11,7 +11,7 @@ package binance_dex
 //		wantTickers watchmarket.Tickers
 //	}{
 //		{
-//			"test normalize binance_dex quote",
+//			"test normalize binancedex quote",
 //			args{prices: []*CoinPrice{
 //				{
 //					BaseAssetName:      "RAVEN-F66",
@@ -32,14 +32,14 @@ package binance_dex
 //					PriceChangePercent: "5.2700",
 //				},
 //			},
-//				provider: "binance_dex"},
+//				provider: "binancedex"},
 //			watchmarket.Tickers{
 //				&watchmarket.Ticker{CoinName: "BNB", TokenId: "RAVEN-F66", CoinType: watchmarket.TypeToken, LastUpdate: time.Now(),
 //					Price: watchmarket.TickerPrice{
 //						Value:     0.00001082,
 //						Change24h: -2.2500,
 //						Currency:  "BNB",
-//						Provider:  "binance_dex",
+//						Provider:  "binancedex",
 //					},
 //				},
 //				&watchmarket.Ticker{CoinName: "BNB", TokenId: "SLV-986", CoinType: watchmarket.TypeToken, LastUpdate: time.Now(),
@@ -47,7 +47,7 @@ package binance_dex
 //						Value:     0.0449451,
 //						Change24h: -5.3700,
 //						Currency:  "BNB",
-//						Provider:  "binance_dex",
+//						Provider:  "binancedex",
 //					},
 //				},
 //			},

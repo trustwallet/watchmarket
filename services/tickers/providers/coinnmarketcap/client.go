@@ -1,4 +1,4 @@
-package cmc
+package coinnmarketcap
 
 import (
 	"github.com/trustwallet/blockatlas/pkg/blockatlas"

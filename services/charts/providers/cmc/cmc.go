@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	id            = "cmc"
+	id            = "coinnmarketcap"
 	chartDataSize = 3
 )
 
