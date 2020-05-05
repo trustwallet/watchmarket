@@ -1,4 +1,4 @@
-package binance_dex
+package binancedex
 
 type CoinPrice struct {
 	BaseAssetName      string `json:"baseAssetName"`

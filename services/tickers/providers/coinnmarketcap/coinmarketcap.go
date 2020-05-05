@@ -1,4 +1,4 @@
-package cmc
+package coinnmarketcap
 
 import (
 	ticker "github.com/trustwallet/watchmarket/services/tickers"
@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	id = "cmc"
+	id = "coinnmarketcap"
 )
 
 type Parser struct {

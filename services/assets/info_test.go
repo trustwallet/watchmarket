@@ -46,7 +46,7 @@ func Test_GetCoinInfo(t *testing.T) {
 		wantErr  error
 		wantInfo watchmarket.CoinInfo
 	}{
-		{"test bad response from cmc", args{coin.Bitcoin(), ""}, errors.New("Failed to unmarshal invalid character 'B' looking for beginning of value"), watchmarket.CoinInfo{}},
+		{"test bad response from coinnmarketcap", args{coin.Bitcoin(), ""}, errors.New("Failed to unmarshal invalid character 'B' looking for beginning of value"), watchmarket.CoinInfo{}},
 		{"test nominal", args{coin.Ethereum(), ""}, nil, mockEthCoinInfo},
 		{"test not found", args{coin.Binance(), ""}, watchmarket.ErrNotFound, watchmarket.CoinInfo{}},
 		{"test not found", args{coin.Vechain(), ""}, errors.New("Request to https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/vechain/info/info.json failed with HTTP 400: Boom!"), watchmarket.CoinInfo{}},

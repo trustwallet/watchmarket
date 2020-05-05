@@ -1,4 +1,4 @@
-package binance_dex
+package binancedex
 
 import (
 	"github.com/trustwallet/blockatlas/pkg/blockatlas"
