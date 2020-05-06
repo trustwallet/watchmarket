@@ -7,24 +7,25 @@ import (
 )
 
 const (
-	id              = "coinnmarketcap"
-	defaultCurrency = "USD"
+	id = "coinnmarketcap"
 )
 
 type Parser struct {
-	ID     string
-	client tickersClient.Client
+	ID       string
+	client   tickersClient.Client
+	currency string
 }
 
-func InitParser(api, key string) Parser {
+func InitParser(api, key, currency string) Parser {
 	return Parser{
-		ID:     id,
-		client: tickersClient.NewClient(api, key),
+		ID:       id,
+		client:   tickersClient.NewClient(api, key),
+		currency: currency,
 	}
 }
 
-func (p Parser) FetchLatestRates() (rates rates.Rates, err error) {
-	prices, err := p.client.GetData(defaultCurrency)
+func (p Parser) GetData() (rates rates.Rates, err error) {
+	prices, err := p.client.GetData(p.currency)
 	if err != nil {
 		return
 	}
@@ -43,7 +44,7 @@ func normalizeRates(prices tickersClient.CoinPrices, provider string) rates.Rate
 			Currency:         price.Symbol,
 			Rate:             1.0 / price.Quote.USD.Price,
 			Timestamp:        price.LastUpdated.Unix(),
-			PercentChange24h: big.NewFloat(price.Quote.USD.PercentChange24h),
+			PercentChange24h: *big.NewFloat(price.Quote.USD.PercentChange24h),
 			Provider:         provider,
 		})
 	}

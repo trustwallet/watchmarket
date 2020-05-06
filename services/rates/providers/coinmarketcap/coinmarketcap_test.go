@@ -1,15 +1,5 @@
 package coinmarketcap
 
-import (
-	"github.com/stretchr/testify/assert"
-	"github.com/trustwallet/watchmarket/market/clients/cmc"
-	"github.com/trustwallet/watchmarket/pkg/watchmarket"
-	"math/big"
-	"sort"
-	"testing"
-	"time"
-)
-
 //func Test_normalizeRates(t *testing.T) {
 //	provider := "coinnmarketcap"
 //	tests := []struct {

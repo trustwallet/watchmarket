@@ -1,50 +1,40 @@
 package fixer
 
 import (
-	"github.com/trustwallet/blockatlas/pkg/blockatlas"
-	"github.com/trustwallet/watchmarket/market/rate"
-	"github.com/trustwallet/watchmarket/pkg/watchmarket"
-	"net/url"
+	"github.com/trustwallet/watchmarket/services/rates"
 )
 
 const (
 	id = "fixer"
 )
 
-type Fixer struct {
-	rate.Rate
-	APIKey string
-	blockatlas.Request
+type Parser struct {
+	ID, currency string
+	client       Client
 }
 
-func InitRate(api, apiKey, updateTime string) rate.RateProvider {
-	return &Fixer{
-		Rate: rate.Rate{
-			Id:         id,
-			UpdateTime: updateTime,
-		},
-		Request: blockatlas.InitClient(api),
-		APIKey:  apiKey,
+func InitParser(api, key, currency string) Parser {
+	return Parser{
+		ID:       id,
+		currency: currency,
+		client:   NewClient(api, key, currency),
 	}
 }
 
-func (f *Fixer) FetchLatestRates() (rates watchmarket.Rates, err error) {
-	values := url.Values{
-		"access_key": {f.APIKey},
-		"base":       {watchmarket.DefaultCurrency}, // Base USD supported only in paid api
-	}
-	var latest Latest
-	err = f.Get(&latest, "latest", values)
+func (p Parser) GetData() (rates.Rates, error) {
+	var result rates.Rates
+	rawRates, err := p.client.FetchRates()
 	if err != nil {
-		return
+		return result, err
 	}
-	rates = normalizeRates(latest, f.GetId())
-	return
+	result = normalizeRates(rawRates, p.ID)
+	return result, nil
 }
 
-func normalizeRates(latest Latest, provider string) (rates watchmarket.Rates) {
-	for currency, rate := range latest.Rates {
-		rates = append(rates, watchmarket.Rate{Currency: currency, Rate: rate, Timestamp: latest.Timestamp, Provider: provider})
+func normalizeRates(rawRate Rate, provider string) rates.Rates {
+	var result rates.Rates
+	for currency, rate := range rawRate.Rates {
+		result = append(result, rates.Rate{Currency: currency, Rate: rate, Timestamp: rawRate.Timestamp, Provider: provider})
 	}
-	return
+	return result
 }
