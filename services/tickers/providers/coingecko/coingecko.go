@@ -26,17 +26,17 @@ func InitParser(api, currency string) Parser {
 
 func (m *Parser) GetData() (ticker.Tickers, error) {
 	var tickers = make(ticker.Tickers, 0)
-	coins, err := m.client.FetchCoinsList()
+	coins, err := m.client.FetchCoins()
 	if err != nil {
 		return tickers, err
 	}
 
-	rates := m.client.FetchLatestRates(coins, m.currency, bucketSize)
+	rates := m.client.FetchRates(coins, m.currency, bucketSize)
 	tickers = m.normalizeTickers(rates, coins, m.ID, m.currency)
 	return tickers, nil
 }
 
-func (m *Parser) normalizeTickers(prices CoinPrices, coins GeckoCoins, provider, currency string) ticker.Tickers {
+func (m *Parser) normalizeTickers(prices CoinPrices, coins Coins, provider, currency string) ticker.Tickers {
 	var (
 		tickers    = make(ticker.Tickers, 0)
 		cgCoinsMap = createCgCoinsMap(coins)
@@ -86,7 +86,7 @@ func getCgCoinsById(coinsMap map[string][]CoinResult, id string) ([]CoinResult, 
 	return coins, nil
 }
 
-func createCgCoinsMap(coins GeckoCoins) map[string][]CoinResult {
+func createCgCoinsMap(coins Coins) map[string][]CoinResult {
 	var (
 		coinsMap   = getCoinsMap(coins)
 		cgCoinsMap = make(map[string][]CoinResult, 0)
@@ -115,8 +115,8 @@ func createCgCoinsMap(coins GeckoCoins) map[string][]CoinResult {
 	return cgCoinsMap
 }
 
-func getCoinsMap(coins GeckoCoins) map[string]GeckoCoin {
-	coinsMap := make(map[string]GeckoCoin)
+func getCoinsMap(coins Coins) map[string]Coin {
+	coinsMap := make(map[string]Coin)
 	for _, coin := range coins {
 		coinsMap[coin.Id] = coin
 	}

@@ -3,20 +3,20 @@ package coingecko
 import ()
 
 //func Test_normalizeTickers(t *testing.T) {
-//	coins := coingecko.GeckoCoins{
-//		coingecko.GeckoCoin{
+//	coins := coingecko.Coins{
+//		coingecko.Coin{
 //			Id:        "ethtereum",
 //			Symbol:    "eth",
 //			Name:      "eth",
 //			Platforms: nil,
 //		},
-//		coingecko.GeckoCoin{
+//		coingecko.Coin{
 //			Id:        "bitcoin",
 //			Symbol:    "btc",
 //			Name:      "btc",
 //			Platforms: nil,
 //		},
-//		coingecko.GeckoCoin{
+//		coingecko.Coin{
 //			Id:     "cREP",
 //			Symbol: "cREP",
 //			Name:   "cREP",
@@ -24,7 +24,7 @@ import ()
 //				"ethtereum": "0x158079ee67fce2f58472a96584a73c7ab9ac95c1",
 //			},
 //		},
-//		coingecko.GeckoCoin{
+//		coingecko.Coin{
 //			Id:     "cUSDC",
 //			Symbol: "cUSDC",
 //			Name:   "cUSDC",

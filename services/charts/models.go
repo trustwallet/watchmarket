@@ -1,6 +1,16 @@
 package charts
 
 type (
+	Charts struct {
+		Prices     []ChartVolume `json:"prices"`
+		MarketCaps []ChartVolume `json:"market_caps"`
+		Volumes    []ChartVolume `json:"total_volumes"`
+	}
+
+	ChartVolume []float64
+
+	CoinType string
+
 	Data struct {
 		Prices []Price `json:"prices,omitempty"`
 		Error  string  `json:"error,omitempty"`
@@ -44,3 +54,8 @@ func (d Data) IsEmpty() bool {
 func (i CoinDetails) IsEmpty() bool {
 	return i.Info.Name == ""
 }
+
+const (
+	Token CoinType = "token"
+	Coin  CoinType = "coin"
+)
