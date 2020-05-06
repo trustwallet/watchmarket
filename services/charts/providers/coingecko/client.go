@@ -1,9 +1,12 @@
 package coingecko
 
 import (
+	"fmt"
 	"github.com/trustwallet/blockatlas/pkg/blockatlas"
 	"github.com/trustwallet/blockatlas/pkg/logger"
+	"github.com/trustwallet/watchmarket/services/charts"
 	"net/url"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -17,6 +20,34 @@ func NewClient(api string) Client {
 	return Client{
 		Request: blockatlas.InitClient(api),
 	}
+}
+
+func (c Client) FetchCoins() (Coins, error) {
+	var (
+		result Coins
+		values = url.Values{"include_platform": {"true"}}
+	)
+	err := c.GetWithCache(&result, "v3/coins/list", values, time.Hour)
+	if err != nil {
+		return result, err
+	}
+	return result, nil
+}
+
+func (c Client) FetchCharts(id, currency string, timeStart, timeEnd int64) (charts.Charts, error) {
+	var (
+		result charts.Charts
+		values = url.Values{
+			"vs_currency": {currency},
+			"from":        {strconv.FormatInt(timeStart, 10)},
+			"to":          {strconv.FormatInt(timeEnd, 10)},
+		}
+	)
+	err := c.Get(&result, fmt.Sprintf("v3/coins/%s/market_chart/range", id), values)
+	if err != nil {
+		return result, err
+	}
+	return result, nil
 }
 
 func (c Client) FetchRates(coins Coins, currency string, bucketSize int) (prices CoinPrices) {
@@ -67,13 +98,5 @@ func (c Client) FetchMarkets(currency, ids string) (cp CoinPrices, err error) {
 	}
 
 	err = c.Get(&cp, "v3/coins/markets", values)
-	return
-}
-
-func (c Client) FetchCoins() (coins Coins, err error) {
-	values := url.Values{
-		"include_platform": {"true"},
-	}
-	err = c.GetWithCache(&coins, "v3/coins/list", values, time.Hour)
 	return
 }

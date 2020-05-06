@@ -1,15 +1,25 @@
 package coingecko
 
 import (
-	ticker "github.com/trustwallet/watchmarket/services/tickers"
+	"github.com/trustwallet/watchmarket/services/charts"
 	"time"
 )
 
 type (
+	Platforms map[string]string
+
+	Coin struct {
+		Id        string    `json:"id"`
+		Symbol    string    `json:"symbol"`
+		Name      string    `json:"name"`
+		Platforms Platforms `json:"platforms"`
+	}
+	Coins []Coin
+
 	CoinResult struct {
 		Symbol   string
 		TokenId  string
-		CoinType ticker.CoinType
+		CoinType charts.CoinType
 	}
 
 	CoinPrices []CoinPrice
@@ -29,17 +39,6 @@ type (
 		TotalSupply                  float64   `json:"total_supply"`
 		LastUpdated                  time.Time `json:"last_updated"`
 	}
-
-	Coins []Coin
-
-	Coin struct {
-		Id        string    `json:"id"`
-		Symbol    string    `json:"symbol"`
-		Name      string    `json:"name"`
-		Platforms Platforms `json:"platforms"`
-	}
-
-	Platforms map[string]string
 )
 
 func (coins Coins) coinIds() []string {
