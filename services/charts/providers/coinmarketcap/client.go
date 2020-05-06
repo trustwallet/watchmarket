@@ -1,4 +1,4 @@
-package cmc
+package coinmarketcap
 
 import (
 	"fmt"
@@ -12,14 +12,13 @@ type WebClient struct {
 	blockatlas.Request
 }
 
-func NewWebClient(api string) *WebClient {
-	c := WebClient{
+func NewWebClient(api string) WebClient {
+	return WebClient{
 		Request: blockatlas.InitClient(api),
 	}
-	return &c
 }
 
-func (c *WebClient) GetChartsData(id uint, currency string, timeStart int64, timeEnd int64, interval string) (charts Charts, err error) {
+func (c WebClient) GetChartsData(id uint, currency string, timeStart int64, timeEnd int64, interval string) (charts Charts, err error) {
 	values := url.Values{
 		"convert":    {currency},
 		"format":     {"chart_crypto_details"},
@@ -36,14 +35,13 @@ type WidgetClient struct {
 	blockatlas.Request
 }
 
-func NewWidgetClient(api string) *WidgetClient {
-	c := WidgetClient{
+func NewWidgetClient(api string) WidgetClient {
+	return WidgetClient{
 		Request: blockatlas.InitClient(api),
 	}
-	return &c
 }
 
-func (c *WidgetClient) GetCoinData(id uint, currency string) (charts ChartInfo, err error) {
+func (c WidgetClient) GetCoinData(id uint, currency string) (charts ChartInfo, err error) {
 	values := url.Values{
 		"convert": {currency},
 		"ref":     {"widget"},

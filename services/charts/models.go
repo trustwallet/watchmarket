@@ -1,4 +1,4 @@
-package chart
+package charts
 
 type (
 	Data struct {
