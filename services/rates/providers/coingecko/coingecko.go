@@ -1,54 +1,53 @@
 package coingecko
 
 import (
-	"github.com/trustwallet/watchmarket/market/clients/coingecko"
-	"github.com/trustwallet/watchmarket/market/rate"
-	"github.com/trustwallet/watchmarket/pkg/watchmarket"
+	"github.com/trustwallet/watchmarket/services/rates"
 	"strings"
 )
 
 const (
-	id = "coingecko"
+	id         = "coingecko"
+	bucketSize = 500
 )
 
-type Coingecko struct {
-	client *coingecko.Client
-	rate.Rate
+type Parser struct {
+	ID       string
+	client   Client
+	currency string
 }
 
-func InitRate(api, updateTime string) rate.RateProvider {
-	return &Coingecko{
-		client: coingecko.NewClient(api),
-		Rate: rate.Rate{
-			Id:         id,
-			UpdateTime: updateTime,
-		},
+func InitParser(api, key, currency string) Parser {
+	return Parser{
+		ID:       id,
+		client:   NewClient(api, key, bucketSize),
+		currency: currency,
 	}
 }
 
-func (c *Coingecko) FetchLatestRates() (rates watchmarket.Rates, err error) {
-	coins, err := c.client.FetchCoinsList()
+func (p Parser) FetchLatestRates() (rates.Rates, error) {
+	coins, err := p.client.FetchCoinsList()
 	if err != nil {
-		return
+		return rates.Rates{}, err
 	}
-	prices := c.client.FetchLatestRates(coins, watchmarket.DefaultCurrency)
+	prices := p.client.FetchLatestRates(coins, p.currency)
 
-	rates = normalizeRates(prices, c.GetId())
-	return
+	return normalizeRates(prices, p.ID), nil
 }
 
-func normalizeRates(coinPrices coingecko.CoinPrices, provider string) (rates watchmarket.Rates) {
-	for _, price := range coinPrices {
+func normalizeRates(prices Prices, provider string) rates.Rates {
+	var result rates.Rates
+
+	for _, price := range prices {
 		r := 0.0
 		if price.CurrentPrice != 0 {
 			r = 1.0 / price.CurrentPrice
 		}
-		rates = append(rates, watchmarket.Rate{
+		result = append(result, rates.Rate{
 			Currency:  strings.ToUpper(price.Symbol),
 			Rate:      r,
 			Timestamp: price.LastUpdated.Unix(),
 			Provider:  provider,
 		})
 	}
-	return
+	return result
 }
