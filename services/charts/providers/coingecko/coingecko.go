@@ -38,12 +38,12 @@ func (p Provider) GetChartData(coinId uint, token string, currency string, timeS
 
 	timeEndDate := time.Now().Unix()
 
-	charts, err := p.client.FetchCharts(coinResult.Id, currency, timeStart, timeEndDate)
+	c, err := p.client.FetchCharts(coinResult.Id, currency, timeStart, timeEndDate)
 	if err != nil {
 		return chartsData, err
 	}
 
-	return normalizeCharts(charts), nil
+	return normalizeCharts(c), nil
 }
 
 func (p Provider) GetCoinData(coinId uint, token string, currency string) (charts.CoinDetails, error) {
@@ -73,11 +73,11 @@ func createSymbolsMap(coins Coins) map[string]Coin {
 		coinsMap   = createCoinsMap(coins)
 	)
 
-	for _, coin := range coins {
-		if len(coin.Platforms) == 0 {
-			symbolsMap[createID(coin.Symbol, "")] = coin
+	for _, c := range coins {
+		if len(c.Platforms) == 0 {
+			symbolsMap[createID(c.Symbol, "")] = c
 		}
-		for platform, addr := range coin.Platforms {
+		for platform, addr := range c.Platforms {
 			if len(platform) == 0 || len(addr) == 0 {
 				continue
 			}
@@ -86,9 +86,9 @@ func createSymbolsMap(coins Coins) map[string]Coin {
 				continue
 			}
 			if strings.EqualFold(platformCoin.Symbol, addr) {
-				symbolsMap[createID(platformCoin.Symbol, "")] = coin
+				symbolsMap[createID(platformCoin.Symbol, "")] = c
 			}
-			symbolsMap[createID(platformCoin.Symbol, addr)] = coin
+			symbolsMap[createID(platformCoin.Symbol, addr)] = c
 		}
 	}
 
@@ -97,8 +97,8 @@ func createSymbolsMap(coins Coins) map[string]Coin {
 
 func createCoinsMap(coins Coins) map[string]Coin {
 	coinsMap := make(map[string]Coin)
-	for _, coin := range coins {
-		coinsMap[coin.Id] = coin
+	for _, c := range coins {
+		coinsMap[c.Id] = c
 	}
 	return coinsMap
 }
@@ -120,11 +120,11 @@ func getCoinByID(coinMap map[string]Coin, coinId uint, token string) (Coin, erro
 
 
 func getCoinBySymbol(coinMap map[string]Coin, symbol, token string) (Coin, error) {
-	coin, ok := coinMap[createID(symbol, token)]
+	c, ok := coinMap[createID(symbol, token)]
 	if !ok {
-		return coin, errors.E("No coin found by symbol", errors.Params{"symbol": symbol, "token": token})
+		return c, errors.E("No coin found by symbol", errors.Params{"symbol": symbol, "token": token})
 	}
-	return coin, nil
+	return c, nil
 }
 
 func createID(symbol, token string) string {
