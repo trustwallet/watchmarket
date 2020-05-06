@@ -1,4 +1,4 @@
-package chart
+package charts
 
 import (
 	"github.com/stretchr/testify/assert"

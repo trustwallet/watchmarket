@@ -1,10 +1,10 @@
-package cmc
+package coinmarketcap
 
 import (
 	"github.com/trustwallet/blockatlas/pkg/errors"
-	"github.com/trustwallet/watchmarket/market/chart"
-	"github.com/trustwallet/watchmarket/market/clients/cmc"
-	"github.com/trustwallet/watchmarket/pkg/watchmarket"
+	"github.com/trustwallet/watchmarket/services/charts"
+	"github.com/trustwallet/watchmarket/services/clients/cmc"
+
 	"time"
 )
 
@@ -13,28 +13,23 @@ const (
 	chartDataSize = 3
 )
 
-type Chart struct {
-	chart.Chart
+type Provider struct {
 	mapApi       string
-	webClient    *cmc.WebClient
-	widgetClient *cmc.WidgetClient
+	webClient    WebClient
+	widgetClient WidgetClient
 }
 
-func InitChart(webApi string, widgetApi string, mapApi string) chart.ChartProvider {
-	m := &Chart{
-		Chart: chart.Chart{
-			Id: id,
-		},
+func InitProvider(webApi string, widgetApi string, mapApi string) Provider {
+	return Provider{
 		mapApi:       mapApi,
-		webClient:    cmc.NewWebClient(webApi),
-		widgetClient: cmc.NewWidgetClient(widgetApi),
+		webClient:    NewWebClient(webApi),
+		widgetClient: NewWidgetClient(widgetApi),
 	}
-	return m
 }
 
-func (c *Chart) GetChartData(coin uint, token string, currency string, timeStart int64) (watchmarket.ChartData, error) {
-	chartsData := watchmarket.ChartData{}
-	cmap, err := cmc.GetCoinMap(c.mapApi)
+func (p Provider) GetChartData(coin uint, token string, currency string, timeStart int64) (charts.Data, error) {
+	chartsData := charts.Data{}
+	cmap, err := cmc.GetCoinMap(p.mapApi)
 	if err != nil {
 		return chartsData, err
 	}
@@ -46,18 +41,17 @@ func (c *Chart) GetChartData(coin uint, token string, currency string, timeStart
 	timeStartDate := time.Unix(timeStart, 0)
 	days := int(time.Since(timeStartDate).Hours() / 24)
 	timeEnd := time.Now().Unix()
-	charts, err := c.webClient.GetChartsData(coinObj.Id, currency, timeStart, timeEnd, getInterval(days))
+	c, err := p.webClient.GetChartsData(coinObj.Id, currency, timeStart, timeEnd, getInterval(days))
 	if err != nil {
 		return chartsData, err
 	}
 
-	return normalizeCharts(currency, charts), nil
+	return normalizeCharts(currency, c), nil
 }
 
-func (c *Chart) GetCoinData(coin uint, token, currency string) (watchmarket.ChartCoinInfo, error) {
-	info := watchmarket.ChartCoinInfo{}
-
-	cmap, err := cmc.GetCoinMap(c.mapApi)
+func (p Provider) GetCoinData(coin uint, token, currency string) (charts.CoinDetails, error) {
+	info := charts.CoinDetails{}
+	cmap, err := cmc.GetCoinMap(p.mapApi)
 	if err != nil {
 		return info, err
 	}
@@ -66,7 +60,7 @@ func (c *Chart) GetCoinData(coin uint, token, currency string) (watchmarket.Char
 		return info, err
 	}
 
-	data, err := c.widgetClient.GetCoinData(coinObj.Id, currency)
+	data, err := p.widgetClient.GetCoinData(coinObj.Id, currency)
 	if err != nil {
 		return info, err
 	}
@@ -74,12 +68,12 @@ func (c *Chart) GetCoinData(coin uint, token, currency string) (watchmarket.Char
 	return normalizeInfo(currency, coinObj.Id, data)
 }
 
-func normalizeCharts(currency string, charts cmc.Charts) watchmarket.ChartData {
-	chartsData := watchmarket.ChartData{
-		Provider: id,
-	}
-	prices := make([]watchmarket.ChartPrice, 0)
-	for dateSrt, q := range charts.Data {
+
+
+func normalizeCharts(currency string, c Charts) charts.Data {
+	chartsData := charts.Data{}
+	prices := make([]charts.Price, 0)
+	for dateSrt, q := range c.Data {
 		date, err := time.Parse(time.RFC3339, dateSrt)
 		if err != nil {
 			continue
@@ -93,7 +87,7 @@ func normalizeCharts(currency string, charts cmc.Charts) watchmarket.ChartData {
 		if len(quote) < chartDataSize {
 			continue
 		}
-		prices = append(prices, watchmarket.ChartPrice{
+		prices = append(prices, charts.Price{
 			Price: quote[0],
 			Date:  date.Unix(),
 		})
@@ -104,14 +98,14 @@ func normalizeCharts(currency string, charts cmc.Charts) watchmarket.ChartData {
 	return chartsData
 }
 
-func normalizeInfo(currency string, cmcCoin uint, data cmc.ChartInfo) (watchmarket.ChartCoinInfo, error) {
-	info := watchmarket.ChartCoinInfo{}
+func normalizeInfo(currency string, cmcCoin uint, data ChartInfo) (charts.CoinDetails, error) {
+	info := charts.CoinDetails{}
 	quote, ok := data.Data.Quotes[currency]
 	if !ok {
 		return info, errors.E("Cant get coin info", errors.Params{"cmcCoin": cmcCoin, "currency": currency})
 	}
 
-	return watchmarket.ChartCoinInfo{
+	return charts.CoinDetails{
 		Vol24:             quote.Volume24,
 		MarketCap:         quote.MarketCap,
 		CirculatingSupply: data.Data.CirculatingSupply,
