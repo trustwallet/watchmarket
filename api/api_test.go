@@ -20,7 +20,7 @@ import (
 	mocks "github.com/trustwallet/watchmarket/mocks/storage"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"github.com/trustwallet/watchmarket/services/assets"
-	"github.com/trustwallet/watchmarket/services/caching"
+	"github.com/trustwallet/watchmarket/services/cache"
 	"github.com/trustwallet/watchmarket/storage"
 	"io"
 	"io/ioutil"
@@ -51,7 +51,7 @@ func TestRoutes(t *testing.T) {
 		Market: db,
 		Charts: getChartsMock(),
 		Ac:     getAssetClientMock(),
-		Cache:  caching.InitCaching(db),
+		Cache:  cache.InitCaching(db),
 	})
 	server := httptest.NewServer(engine)
 	defer server.Close()

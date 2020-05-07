@@ -3,8 +3,6 @@ package coinmarketcap
 import (
 	"github.com/trustwallet/blockatlas/pkg/errors"
 	"github.com/trustwallet/watchmarket/services/charts"
-	"github.com/trustwallet/watchmarket/services/clients/cmc"
-
 	"time"
 )
 
@@ -14,22 +12,17 @@ const (
 )
 
 type Provider struct {
-	mapApi       string
-	webClient    WebClient
-	widgetClient WidgetClient
+	ID     string
+	client Client
 }
 
 func InitProvider(webApi string, widgetApi string, mapApi string) Provider {
-	return Provider{
-		mapApi:       mapApi,
-		webClient:    NewWebClient(webApi),
-		widgetClient: NewWidgetClient(widgetApi),
-	}
+	return Provider{ID: id, client: NewClient(webApi, widgetApi, mapApi)}
 }
 
 func (p Provider) GetChartData(coin uint, token string, currency string, timeStart int64) (charts.Data, error) {
 	chartsData := charts.Data{}
-	cmap, err := cmc.GetCoinMap(p.mapApi)
+	cmap, err := p.client.GetCoinMap()
 	if err != nil {
 		return chartsData, err
 	}
@@ -41,7 +34,7 @@ func (p Provider) GetChartData(coin uint, token string, currency string, timeSta
 	timeStartDate := time.Unix(timeStart, 0)
 	days := int(time.Since(timeStartDate).Hours() / 24)
 	timeEnd := time.Now().Unix()
-	c, err := p.webClient.GetChartsData(coinObj.Id, currency, timeStart, timeEnd, getInterval(days))
+	c, err := p.client.GetChartsData(coinObj.Id, currency, timeStart, timeEnd, getInterval(days))
 	if err != nil {
 		return chartsData, err
 	}
@@ -51,7 +44,11 @@ func (p Provider) GetChartData(coin uint, token string, currency string, timeSta
 
 func (p Provider) GetCoinData(coin uint, token, currency string) (charts.CoinDetails, error) {
 	info := charts.CoinDetails{}
-	cmap, err := cmc.GetCoinMap(p.mapApi)
+	
+
+
+	cmap, err := p.client.GetCoinMap()
+
 	if err != nil {
 		return info, err
 	}
@@ -60,7 +57,7 @@ func (p Provider) GetCoinData(coin uint, token, currency string) (charts.CoinDet
 		return info, err
 	}
 
-	data, err := p.widgetClient.GetCoinData(coinObj.Id, currency)
+	data, err := p.client.GetCoinData(coinObj.Id, currency)
 	if err != nil {
 		return info, err
 	}

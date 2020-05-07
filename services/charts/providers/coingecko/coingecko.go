@@ -14,11 +14,12 @@ const (
 )
 
 type Provider struct {
+	ID     string
 	client Client
 }
 
 func InitProvider(api string) Provider {
-	return Provider{client: NewClient(api)}
+	return Provider{ID: id, client: NewClient(api)}
 }
 
 func (p Provider) GetChartData(coinId uint, token string, currency string, timeStart int64) (charts.Data, error) {

@@ -6,7 +6,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/trustwallet/watchmarket/market"
 	"github.com/trustwallet/watchmarket/services/assets"
-	"github.com/trustwallet/watchmarket/services/caching"
+	"github.com/trustwallet/watchmarket/services/cache"
 	"github.com/trustwallet/watchmarket/storage"
 	"net/http"
 )
@@ -16,7 +16,7 @@ type BootstrapProviders struct {
 	Market storage.Market
 	Charts *market.Charts
 	Ac     assets.AssetClient
-	Cache  *caching.Provider
+	Cache  *cache.Provider
 }
 
 func Bootstrap(providers BootstrapProviders) {

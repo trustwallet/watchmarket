@@ -9,7 +9,7 @@ import (
 	"github.com/trustwallet/blockatlas/pkg/logger"
 	"github.com/trustwallet/watchmarket/api/middleware"
 	"github.com/trustwallet/watchmarket/services/assets"
-	"github.com/trustwallet/watchmarket/services/caching"
+	"github.com/trustwallet/watchmarket/services/cache"
 	"math/big"
 	"net/http"
 	"strconv"
@@ -134,7 +134,7 @@ func getTickersHandler(storage storage.Market) func(c *gin.Context) {
 // @Param currency query string false "The currency to show charts" default(USD)
 // @Success 200 {object} watchmarket.ChartData
 // @Router /v1/market/charts [get]
-func getChartsHandler(charts *market.Charts, cache *caching.Provider, db storage.Market) func(c *gin.Context) {
+func getChartsHandler(charts *market.Charts, cache *cache.Provider, db storage.Market) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		coinQuery := c.Query("coin")
 		if len(coinQuery) == 0 {
@@ -216,7 +216,7 @@ func getChartsHandler(charts *market.Charts, cache *caching.Provider, db storage
 // @Param currency query string false "The currency to show coin info in" default(USD)
 // @Success 200 {object} watchmarket.ChartCoinInfo
 // @Router /v1/market/info [get]
-func getCoinInfoHandler(charts *market.Charts, ac assets.AssetClient, cache *caching.Provider) func(c *gin.Context) {
+func getCoinInfoHandler(charts *market.Charts, ac assets.AssetClient, cache *cache.Provider) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		coinQuery := c.Query("coin")
 		if len(coinQuery) == 0 {
