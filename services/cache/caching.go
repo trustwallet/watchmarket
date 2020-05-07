@@ -1,4 +1,4 @@
-package caching
+package cache
 
 import (
 	"crypto/sha1"
@@ -22,19 +22,19 @@ var (
 
 func SetChartsCachingDuration(duration int64) {
 	if duration >= 0 {
-		logger.Info("Setting charts caching duration (seconds)", logger.Params{"duration": duration})
+		logger.Info("Setting charts cache duration (seconds)", logger.Params{"duration": duration})
 		ChartsCachingDuration = duration
 	}
 }
 
 func SetChartsCachingInfoDuration(duration int64) {
 	if duration >= 0 {
-		logger.Info("Setting charts caching INFO duration (seconds)", logger.Params{"duration": duration})
+		logger.Info("Setting charts cache INFO duration (seconds)", logger.Params{"duration": duration})
 		ChartsCachingInfoDuration = duration
 	}
 }
 
-func InitCaching(db *storage.Storage) *Provider {
+func InitCaching(db *storage.Storage) Provider {
 	if ChartsCachingDuration == 0 {
 		logger.Warn("Caching only the absolutely same response", logger.Params{"caching_duration": 0})
 	}
@@ -44,12 +44,12 @@ func InitCaching(db *storage.Storage) *Provider {
 	return &Provider{DB: db}
 }
 
-func (p *Provider) GenerateKey(data string) string {
+func (p Provider) GenerateKey(data string) string {
 	hash := sha1.Sum([]byte(data))
 	return base64.URLEncoding.EncodeToString(hash[:])
 }
 
-func (p *Provider) SaveCoinInfoCache(key string, data watchmarket.ChartCoinInfo, timeStart int64) error {
+func (p Provider) SaveCoinInfoCache(key string, data watchmarket.ChartCoinInfo, timeStart int64) error {
 	if data.IsEmpty() {
 		return errors.New("data is empty")
 	}
@@ -77,7 +77,7 @@ func (p *Provider) SaveCoinInfoCache(key string, data watchmarket.ChartCoinInfo,
 	return nil
 }
 
-func (p *Provider) GetCoinInfoCache(key string, timeStart int64) (watchmarket.ChartCoinInfo, error) {
+func (p Provider) GetCoinInfoCache(key string, timeStart int64) (watchmarket.ChartCoinInfo, error) {
 	var (
 		keyInterval string
 		data        watchmarket.ChartCoinInfo
@@ -106,7 +106,7 @@ func (p *Provider) GetCoinInfoCache(key string, timeStart int64) (watchmarket.Ch
 	return watchmarket.ChartCoinInfo{}, errors.New("cache is not valid")
 }
 
-func (p *Provider) SaveChartsCache(key string, data watchmarket.ChartData, timeStart int64) error {
+func (p Provider) SaveChartsCache(key string, data watchmarket.ChartData, timeStart int64) error {
 	if data.IsEmpty() {
 		return errors.New("data is empty")
 	}
@@ -134,7 +134,7 @@ func (p *Provider) SaveChartsCache(key string, data watchmarket.ChartData, timeS
 	return nil
 }
 
-func (p *Provider) GetChartsCache(key string, timeStart int64) (watchmarket.ChartData, error) {
+func (p Provider) GetChartsCache(key string, timeStart int64) (watchmarket.ChartData, error) {
 	var (
 		keyInterval string
 		data        watchmarket.ChartData

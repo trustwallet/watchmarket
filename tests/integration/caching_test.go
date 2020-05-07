@@ -15,7 +15,7 @@ import (
 	"github.com/trustwallet/watchmarket/market"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"github.com/trustwallet/watchmarket/services/assets"
-	"github.com/trustwallet/watchmarket/services/caching"
+	"github.com/trustwallet/watchmarket/services/cache"
 	"github.com/trustwallet/watchmarket/storage"
 	"github.com/trustwallet/watchmarket/tests/integration/setup"
 	"io"
@@ -28,7 +28,7 @@ import (
 )
 
 var (
-	cache *caching.Provider
+	cache *cache.Provider
 )
 
 func TestChartsCachingInit(t *testing.T) {
@@ -40,8 +40,8 @@ func TestChartsCachingInit(t *testing.T) {
 	engine := gin.New()
 	assert.NotNil(t, engine)
 
-	caching.SetChartsCachingDuration(300)
-	cache = caching.InitCaching(setup.Cache)
+	cache.SetChartsCachingDuration(300)
+	cache = cache.InitCaching(setup.Cache)
 	assert.NotNil(t, cache)
 
 	saveTicker(t, setup.Cache, nil, 60, "ETHToken", "ETH", 10)
@@ -147,7 +147,7 @@ func makeRequestAndTestIt(t *testing.T, url, wantRes string) {
 	assert.Equal(t, parseJson(t, []byte(wantRes)), parseJson(t, responseBytes))
 }
 
-func SetCachedData(cache caching.Provider, key string, rawData []byte, keyTwo string, timestamp int64) {
+func SetCachedData(cache cache.Provider, key string, rawData []byte, keyTwo string, timestamp int64) {
 	cache.DB.Set(keyTwo, rawData)
 	cache.DB.UpdateInterval(key, storage.CachedInterval{
 		Timestamp: timestamp,

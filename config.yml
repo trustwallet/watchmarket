@@ -14,6 +14,8 @@ market:
   caching:
     charts: 5m
     info: 2h
+  assets:
+    api: https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/
   dex:
     quote_update_time: 5m
     api: https://dex.binance.org/api

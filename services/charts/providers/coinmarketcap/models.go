@@ -1,6 +1,11 @@
 package coinmarketcap
 
-import "time"
+import (
+	"fmt"
+	"github.com/trustwallet/blockatlas/pkg/errors"
+	"strings"
+	"time"
+)
 
 type (
 	Charts struct {
@@ -62,4 +67,35 @@ type (
 		Price            float64 `json:"price"`
 		PercentChange24h float64 `json:"percent_change_24h"`
 	}
+
+	CoinMap struct {
+		Coin    uint   `json:"coin"`
+		Id      uint   `json:"id"`
+		Type    string `json:"type"`
+		TokenId string `json:"token_id"`
+	}
+
+	CmcSlice    []CoinMap
+	CoinMapping map[string]CoinMap
 )
+
+func (c *CmcSlice) coinToCmcMap() (m CoinMapping) {
+	m = make(map[string]CoinMap)
+	for _, cm := range *c {
+		m[createID(cm.Coin, cm.TokenId)] = cm
+	}
+	return
+}
+
+func createID(id uint, token string) string {
+	return strings.ToLower(fmt.Sprintf("%d:%s", id, token))
+}
+
+func (cm CoinMapping) GetCoinByContract(coinId uint, contract string) (c CoinMap, err error) {
+	c, ok := cm[createID(coinId, contract)]
+	if !ok {
+		err = errors.E("No coin found", errors.Params{"coin": coinId, "token": contract})
+	}
+
+	return
+}
