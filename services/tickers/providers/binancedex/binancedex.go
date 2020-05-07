@@ -28,7 +28,7 @@ func InitProvider(api string) Provider {
 }
 
 func (p Provider) GetData() (tickers.Tickers, error) {
-	prices, err := p.client.getPrices()
+	prices, err := p.client.fetchPrices()
 	if err != nil {
 		return nil, err
 	}

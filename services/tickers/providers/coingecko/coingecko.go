@@ -2,7 +2,7 @@ package coingecko
 
 import (
 	"github.com/trustwallet/blockatlas/pkg/errors"
-	ticker "github.com/trustwallet/watchmarket/services/tickers"
+	"github.com/trustwallet/watchmarket/services/tickers"
 	"strings"
 )
 
@@ -17,65 +17,60 @@ type Provider struct {
 }
 
 func InitProvider(api, currency string) Provider {
-	return Provider{
-		ID:       id,
-		currency: currency,
-		client:   NewClient(api),
-	}
+	return Provider{ID: id, currency: currency, client: NewClient(api)}
 }
 
-func (m *Provider) GetData() (ticker.Tickers, error) {
-	var tickers = make(ticker.Tickers, 0)
-	coins, err := m.client.FetchCoins()
+func (m Provider) GetData() (tickers.Tickers, error) {
+	coins, err := m.client.fetchCoins()
 	if err != nil {
-		return tickers, err
+		return tickers.Tickers{}, err
 	}
 
-	rates := m.client.FetchRates(coins, m.currency, bucketSize)
-	tickers = m.normalizeTickers(rates, coins, m.ID, m.currency)
-	return tickers, nil
+	rates := m.client.fetchRates(coins, m.currency, bucketSize)
+	tickersList := m.normalizeTickers(rates, coins, m.ID, m.currency)
+	return tickersList, nil
 }
 
-func (m *Provider) normalizeTickers(prices CoinPrices, coins Coins, provider, currency string) ticker.Tickers {
+func (m Provider) normalizeTickers(prices CoinPrices, coins Coins, provider, currency string) tickers.Tickers {
 	var (
-		tickers    = make(ticker.Tickers, 0)
-		cgCoinsMap = createCgCoinsMap(coins)
+		tickersList = make(tickers.Tickers, 0)
+		cgCoinsMap  = createCgCoinsMap(coins)
 	)
 
 	for _, price := range prices {
 		t := m.normalizeTicker(price, cgCoinsMap, provider, currency)
-		tickers = append(tickers, t...)
+		tickersList = append(tickersList, t...)
 	}
-	return tickers
+	return tickersList
 }
 
-func (m *Provider) normalizeTicker(price CoinPrice, coinsMap map[string][]CoinResult, provider, currency string) ticker.Tickers {
+func (m Provider) normalizeTicker(price CoinPrice, coinsMap map[string][]CoinResult, provider, currency string) tickers.Tickers {
 	var (
-		tickers  = make(ticker.Tickers, 0)
-		tokenId  = ""
-		coinName = strings.ToUpper(price.Symbol)
-		coinType = ticker.Coin
+		tickersList = make(tickers.Tickers, 0)
+		tokenId     = ""
+		coinName    = strings.ToUpper(price.Symbol)
+		coinType    = tickers.Coin
 	)
 
 	coins, err := getCgCoinsById(coinsMap, price.Id)
 	if err != nil {
 		t := createTicker(price, coinType, coinName, tokenId, provider, currency)
-		tickers = append(tickers, t)
-		return tickers
+		tickersList = append(tickersList, t)
+		return tickersList
 	}
 
 	for _, cg := range coins {
 		coinName = strings.ToUpper(cg.Symbol)
-		if cg.CoinType == ticker.Coin {
+		if cg.CoinType == tickers.Coin {
 			tokenId = ""
 		} else if len(cg.TokenId) > 0 {
 			tokenId = cg.TokenId
 		}
 
 		t := createTicker(price, cg.CoinType, coinName, tokenId, provider, currency)
-		tickers = append(tickers, t)
+		tickersList = append(tickersList, t)
 	}
-	return tickers
+	return tickersList
 }
 
 func getCgCoinsById(coinsMap map[string][]CoinResult, id string) ([]CoinResult, error) {
@@ -107,7 +102,7 @@ func createCgCoinsMap(coins Coins) map[string][]CoinResult {
 			cgCoinsMap[coin.Id] = append(cgCoinsMap[coin.Id], CoinResult{
 				Symbol:   platformCoin.Symbol,
 				TokenId:  strings.ToLower(addr),
-				CoinType: ticker.Token,
+				CoinType: tickers.Token,
 			})
 		}
 	}
@@ -123,12 +118,12 @@ func getCoinsMap(coins Coins) map[string]Coin {
 	return coinsMap
 }
 
-func createTicker(price CoinPrice, coinType ticker.CoinType, coinName, tokenId, provider, currency string) ticker.Ticker {
-	var t = ticker.Ticker{
+func createTicker(price CoinPrice, coinType tickers.CoinType, coinName, tokenId, provider, currency string) tickers.Ticker {
+	return tickers.Ticker{
 		CoinName: coinName,
 		CoinType: coinType,
 		TokenId:  tokenId,
-		Price: ticker.Price{
+		Price: tickers.Price{
 			Value:     price.CurrentPrice,
 			Change24h: price.PriceChangePercentage24h,
 			Currency:  currency,
@@ -136,9 +131,4 @@ func createTicker(price CoinPrice, coinType ticker.CoinType, coinName, tokenId, 
 		},
 		LastUpdate: price.LastUpdated,
 	}
-
-	t.Price.Change24h = price.PriceChangePercentage24h
-	t.Price.Value = price.CurrentPrice
-
-	return t
 }
