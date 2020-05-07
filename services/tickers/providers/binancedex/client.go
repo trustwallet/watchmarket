@@ -15,7 +15,7 @@ func NewClient(api string) Client {
 	}
 }
 
-func (c Client) GetPrices() ([]CoinPrice, error) {
+func (c Client) getPrices() ([]CoinPrice, error) {
 	var prices []CoinPrice
 	err := c.Get(&prices, "v1/ticker/24hr", url.Values{"limit": {"1000"}})
 	if err != nil {

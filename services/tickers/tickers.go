@@ -1,1 +1,1 @@
-package ticker
+package tickers
