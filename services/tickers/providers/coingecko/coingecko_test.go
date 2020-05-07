@@ -268,7 +268,7 @@ func Test_createTicker(t *testing.T) {
 	wantedTickers = append(wantedTickers, normalTicker)
 
 	for i, price := range prices {
-		ticker := createTicker(price, tickers.Token, unkownCoinID, "shitcoin", "shitcoinID", "coingecko", "USD")
+		ticker := createTicker(price, tickers.Token, unknownCoinID, "shitcoin", "shitcoinID", "coingecko", "USD")
 
 		assert.Equal(t, ticker.Price.Value, wantedTickers[i].Price.Value)
 		assert.Equal(t, ticker.Price.Change24h, wantedTickers[i].Price.Change24h)

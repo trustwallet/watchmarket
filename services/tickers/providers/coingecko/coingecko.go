@@ -8,9 +8,9 @@ import (
 )
 
 const (
-	id           = "coingecko"
-	bucketSize   = 500
-	unkownCoinID = 111111
+	id            = "coingecko"
+	bucketSize    = 500
+	unknownCoinID = 111111
 )
 
 type Provider struct {
@@ -60,7 +60,7 @@ func (m Provider) normalizeTicker(price CoinPrice, coinsMap map[string][]CoinRes
 
 	coins, err := getCgCoinsById(coinsMap, price.Id)
 	if err != nil {
-		t := createTicker(price, coinType, unkownCoinID, coinName, tokenId, provider, currency)
+		t := createTicker(price, coinType, unknownCoinID, coinName, tokenId, provider, currency)
 		tickersList = append(tickersList, t)
 		return tickersList
 	}
@@ -192,7 +192,7 @@ func getCoinId(platformName string) uint {
 		return coin.Icon().ID
 	}
 
-	return unkownCoinID
+	return unknownCoinID
 }
 
 func isBasicCoin(symbol string) bool {
