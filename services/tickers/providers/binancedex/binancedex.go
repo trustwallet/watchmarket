@@ -13,13 +13,13 @@ var (
 	BNBAsset = coin.Binance().Symbol
 )
 
-type Parser struct {
+type Provider struct {
 	ID, currency string
 	client       Client
 }
 
-func InitParser(api, currency string) Parser {
-	m := Parser{
+func InitProvider(api, currency string) Provider {
+	m := Provider{
 		ID:       id,
 		currency: currency,
 		client:   NewClient(api),
@@ -27,7 +27,7 @@ func InitParser(api, currency string) Parser {
 	return m
 }
 
-func (p Parser) GetData() (ticker.Tickers, error) {
+func (p Provider) GetData() (ticker.Tickers, error) {
 	prices, err := p.client.GetPrices()
 	if err != nil {
 		return nil, err

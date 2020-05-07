@@ -10,21 +10,21 @@ const (
 	id = "coinnmarketcap"
 )
 
-type Parser struct {
+type Provider struct {
 	ID       string
 	client   tickersClient.Client
 	currency string
 }
 
-func InitParser(api, key, currency string) Parser {
-	return Parser{
+func InitProvider(api, key, currency string) Provider {
+	return Provider{
 		ID:       id,
 		client:   tickersClient.NewClient(api, key),
 		currency: currency,
 	}
 }
 
-func (p Parser) GetData() (rates rates.Rates, err error) {
+func (p Provider) GetData() (rates rates.Rates, err error) {
 	prices, err := p.client.GetData(p.currency)
 	if err != nil {
 		return

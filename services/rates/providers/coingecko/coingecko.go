@@ -10,21 +10,21 @@ const (
 	bucketSize = 500
 )
 
-type Parser struct {
+type Provider struct {
 	ID       string
 	client   Client
 	currency string
 }
 
-func InitParser(api, key, currency string) Parser {
-	return Parser{
+func InitProvider(api, key, currency string) Provider {
+	return Provider{
 		ID:       id,
 		client:   NewClient(api, key, bucketSize),
 		currency: currency,
 	}
 }
 
-func (p Parser) FetchLatestRates() (rates.Rates, error) {
+func (p Provider) FetchLatestRates() (rates.Rates, error) {
 	coins, err := p.client.FetchCoinsList()
 	if err != nil {
 		return rates.Rates{}, err
