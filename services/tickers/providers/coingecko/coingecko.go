@@ -40,6 +40,10 @@ func (m Provider) normalizeTickers(prices CoinPrices, coins Coins, provider, cur
 	)
 
 	for _, price := range prices {
+		_, ok := cgCoinsMap[price.Id]
+		if !ok {
+			continue
+		}
 		t := m.normalizeTicker(price, cgCoinsMap, provider, currency)
 		tickersList = append(tickersList, t...)
 	}
@@ -89,16 +93,31 @@ func createCgCoinsMap(coins Coins) map[string][]CoinResult {
 		cgCoinsMap = make(map[string][]CoinResult, 0)
 	)
 
-	for _, coin := range coins {
-		for platform, addr := range coin.Platforms {
+	for _, c := range coins {
+		if isBasicCoin(c.Symbol) {
+			cr := CoinResult{
+				Symbol:          c.Symbol,
+				TokenId:         "",
+				CoinType:        tickers.Coin,
+				PotentialCoinID: getCoinBySymbol(c.Symbol).ID,
+			}
+			cgCoinsMap[c.Id] = []CoinResult{cr}
+			continue
+		}
+
+		for platform, addr := range c.Platforms {
+			if len(platform) == 0 || len(addr) == 0 {
+				continue
+			}
+
 			platformCoin, ok := coinsMap[platform]
 			if !ok {
 				continue
 			}
 
-			_, ok = cgCoinsMap[coin.Id]
+			_, ok = cgCoinsMap[c.Id]
 			if !ok {
-				cgCoinsMap[coin.Id] = make([]CoinResult, 0)
+				cgCoinsMap[c.Id] = make([]CoinResult, 0)
 			}
 
 			cr := CoinResult{
@@ -108,7 +127,7 @@ func createCgCoinsMap(coins Coins) map[string][]CoinResult {
 				PotentialCoinID: getCoinId(platform),
 			}
 
-			cgCoinsMap[coin.Id] = []CoinResult{cr}
+			cgCoinsMap[c.Id] = []CoinResult{cr}
 		}
 	}
 
@@ -174,4 +193,22 @@ func getCoinId(platformName string) uint {
 	}
 
 	return unkownCoinID
+}
+
+func isBasicCoin(symbol string) bool {
+	for _, c := range coin.Coins {
+		if strings.ToLower(c.Symbol) == strings.ToLower(symbol) {
+			return true
+		}
+	}
+	return false
+}
+
+func getCoinBySymbol(symbol string) coin.Coin {
+	for _, c := range coin.Coins {
+		if strings.ToLower(c.Symbol) == strings.ToLower(symbol) {
+			return c
+		}
+	}
+	return coin.Coin{}
 }
