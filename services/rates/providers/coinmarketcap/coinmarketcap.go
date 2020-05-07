@@ -25,7 +25,7 @@ func InitProvider(api, key, currency string) Provider {
 }
 
 func (p Provider) GetData() (rates rates.Rates, err error) {
-	prices, err := p.client.GetData(p.currency)
+	prices, err := p.client.FetchPrices(p.currency)
 	if err != nil {
 		return
 	}

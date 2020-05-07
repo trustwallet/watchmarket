@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	id = "coinnmarketcap"
+	id = "coinmarketcap"
 )
 
 type Provider struct {
@@ -24,7 +24,7 @@ func InitProvider(api, key, currency string) Provider {
 }
 
 func (m *Provider) GetData() (ticker.Tickers, error) {
-	prices, err := m.client.GetData(m.currency)
+	prices, err := m.client.FetchPrices(m.currency)
 	if err != nil {
 		return nil, err
 	}
@@ -38,9 +38,11 @@ func normalizeTicker(price Data, provider, currency string) ticker.Tickers {
 
 		coinName = price.Symbol
 		coinType = ticker.Coin
+
+		emptyPlatform = Platform{}
 	)
 
-	if price.Platform != nil {
+	if price.Platform != emptyPlatform {
 		tokenId = strings.ToLower(price.Platform.TokenAddress)
 		coinType = ticker.Token
 		coinName = price.Platform.Symbol

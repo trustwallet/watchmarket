@@ -18,7 +18,7 @@ func NewClient(api, key string) Client {
 	return c
 }
 
-func (c *Client) GetData(currency string) (CoinPrices, error) {
+func (c *Client) FetchPrices(currency string) (CoinPrices, error) {
 	var (
 		prices CoinPrices
 		path   = "v1/cryptocurrency/listings/latest"

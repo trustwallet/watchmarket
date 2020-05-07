@@ -26,7 +26,7 @@ type (
 	Data struct {
 		Coin
 		LastUpdated time.Time `json:"last_updated"`
-		Platform    *Platform `json:"platform"`
+		Platform    Platform  `json:"platform"`
 		Quote       Quote     `json:"quote"`
 	}
 
