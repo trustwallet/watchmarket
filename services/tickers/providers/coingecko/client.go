@@ -14,12 +14,10 @@ type Client struct {
 }
 
 func NewClient(api string) Client {
-	return Client{
-		Request: blockatlas.InitClient(api),
-	}
+	return Client{Request: blockatlas.InitClient(api)}
 }
 
-func (c Client) FetchRates(coins Coins, currency string, bucketSize int) (prices CoinPrices) {
+func (c Client) fetchRates(coins Coins, currency string, bucketSize int) (prices CoinPrices) {
 	ci := coins.coinIds()
 
 	i := 0
@@ -36,7 +34,7 @@ func (c Client) FetchRates(coins Coins, currency string, bucketSize int) (prices
 			bucket := ci[i:end]
 			ids := strings.Join(bucket[:], ",")
 
-			cp, err := c.FetchMarkets(currency, ids)
+			cp, err := c.fetchMarkets(currency, ids)
 			if err != nil {
 				logger.Error(err)
 				return
@@ -59,18 +57,20 @@ func (c Client) FetchRates(coins Coins, currency string, bucketSize int) (prices
 	return
 }
 
-func (c Client) FetchMarkets(currency, ids string) (cp CoinPrices, err error) {
-	values := url.Values{
-		"vs_currency": {currency},
-		"sparkline":   {"false"},
-		"ids":         {ids},
-	}
+func (c Client) fetchMarkets(currency, ids string) (CoinPrices, error) {
+	var (
+		result CoinPrices
+		values = url.Values{"vs_currency": {currency}, "sparkline": {"false"}, "ids": {ids}}
+	)
 
-	err = c.Get(&cp, "v3/coins/markets", values)
-	return
+	err := c.Get(&result, "v3/coins/markets", values)
+	if err != nil {
+		return result, err
+	}
+	return result, nil
 }
 
-func (c Client) FetchCoins() (coins Coins, err error) {
+func (c Client) fetchCoins() (coins Coins, err error) {
 	values := url.Values{
 		"include_platform": {"true"},
 	}
