@@ -1,14 +1,16 @@
 package coingecko
 
 import (
+	"github.com/trustwallet/blockatlas/coin"
 	"github.com/trustwallet/blockatlas/pkg/errors"
 	"github.com/trustwallet/watchmarket/services/tickers"
 	"strings"
 )
 
 const (
-	id         = "coingecko"
-	bucketSize = 500
+	id           = "coingecko"
+	bucketSize   = 500
+	unkownCoinID = 111111
 )
 
 type Provider struct {
@@ -54,7 +56,7 @@ func (m Provider) normalizeTicker(price CoinPrice, coinsMap map[string][]CoinRes
 
 	coins, err := getCgCoinsById(coinsMap, price.Id)
 	if err != nil {
-		t := createTicker(price, coinType, coinName, tokenId, provider, currency)
+		t := createTicker(price, coinType, unkownCoinID, coinName, tokenId, provider, currency)
 		tickersList = append(tickersList, t)
 		return tickersList
 	}
@@ -67,7 +69,7 @@ func (m Provider) normalizeTicker(price CoinPrice, coinsMap map[string][]CoinRes
 			tokenId = cg.TokenId
 		}
 
-		t := createTicker(price, cg.CoinType, coinName, tokenId, provider, currency)
+		t := createTicker(price, cg.CoinType, cg.PotentialCoinID, coinName, tokenId, provider, currency)
 		tickersList = append(tickersList, t)
 	}
 	return tickersList
@@ -99,11 +101,14 @@ func createCgCoinsMap(coins Coins) map[string][]CoinResult {
 				cgCoinsMap[coin.Id] = make([]CoinResult, 0)
 			}
 
-			cgCoinsMap[coin.Id] = append(cgCoinsMap[coin.Id], CoinResult{
-				Symbol:   platformCoin.Symbol,
-				TokenId:  strings.ToLower(addr),
-				CoinType: tickers.Token,
-			})
+			cr := CoinResult{
+				Symbol:          platformCoin.Symbol,
+				TokenId:         strings.ToLower(addr),
+				CoinType:        tickers.Token,
+				PotentialCoinID: getCoinId(platform),
+			}
+
+			cgCoinsMap[coin.Id] = []CoinResult{cr}
 		}
 	}
 
@@ -112,14 +117,15 @@ func createCgCoinsMap(coins Coins) map[string][]CoinResult {
 
 func getCoinsMap(coins Coins) map[string]Coin {
 	coinsMap := make(map[string]Coin)
-	for _, coin := range coins {
-		coinsMap[coin.Id] = coin
+	for _, c := range coins {
+		coinsMap[c.Id] = c
 	}
 	return coinsMap
 }
 
-func createTicker(price CoinPrice, coinType tickers.CoinType, coinName, tokenId, provider, currency string) tickers.Ticker {
+func createTicker(price CoinPrice, coinType tickers.CoinType, coinID uint, coinName, tokenId, provider, currency string) tickers.Ticker {
 	return tickers.Ticker{
+		Coin:     coinID,
 		CoinName: coinName,
 		CoinType: coinType,
 		TokenId:  tokenId,
@@ -131,4 +137,41 @@ func createTicker(price CoinPrice, coinType tickers.CoinType, coinName, tokenId,
 		},
 		LastUpdate: price.LastUpdated,
 	}
+}
+
+func getCoinId(platformName string) uint {
+	switch strings.ToLower(platformName) {
+	case "binancecoin":
+		return coin.Binance().ID
+	case "bitcoin-cash":
+		return coin.Bitcoincash().ID
+	case "ethereum-classic":
+		return coin.Classic().ID
+	case strings.ToLower(coin.Cosmos().Handle):
+		return coin.Cosmos().ID
+	case strings.ToLower(coin.Dash().Handle):
+		return coin.Dash().ID
+	case strings.ToLower(coin.Ethereum().Handle):
+		return coin.Ethereum().ID
+	case strings.ToLower(coin.Ontology().Handle):
+		return coin.Ontology().ID
+	case strings.ToLower(coin.Qtum().Handle):
+		return coin.Qtum().ID
+	case strings.ToLower(coin.Stellar().Handle):
+		return coin.Stellar().ID
+	case strings.ToLower(coin.Vechain().Handle):
+		return coin.Vechain().ID
+	case strings.ToLower(coin.Waves().Handle):
+		return coin.Waves().ID
+	case strings.ToLower(coin.Tron().Handle):
+		return coin.Tron().ID
+	case strings.ToLower(coin.Classic().Handle):
+		return coin.Tron().ID
+	case strings.ToLower(coin.Gochain().Handle):
+		return coin.Gochain().ID
+	case strings.ToLower(coin.Icon().Handle):
+		return coin.Icon().ID
+	}
+
+	return unkownCoinID
 }

@@ -7,9 +7,10 @@ import (
 
 type (
 	CoinResult struct {
-		Symbol   string
-		TokenId  string
-		CoinType ticker.CoinType
+		Symbol          string
+		TokenId         string
+		CoinType        ticker.CoinType
+		PotentialCoinID uint
 	}
 
 	CoinPrices []CoinPrice
