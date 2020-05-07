@@ -6,7 +6,6 @@ import (
 	"net/url"
 	"strings"
 	"sync"
-	"time"
 )
 
 type Client struct {
@@ -74,6 +73,6 @@ func (c Client) fetchCoins() (coins Coins, err error) {
 	values := url.Values{
 		"include_platform": {"true"},
 	}
-	err = c.GetWithCache(&coins, "v3/coins/list", values, time.Hour)
+	err = c.Get(&coins, "v3/coins/list", values)
 	return
 }
