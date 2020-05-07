@@ -3,7 +3,8 @@ package binancedex
 import (
 	"github.com/trustwallet/blockatlas/coin"
 	"github.com/trustwallet/blockatlas/pkg/errors"
-	ticker "github.com/trustwallet/watchmarket/services/tickers"
+	"github.com/trustwallet/blockatlas/pkg/logger"
+	"github.com/trustwallet/watchmarket/services/tickers"
 	"strconv"
 	"time"
 )
@@ -14,41 +15,41 @@ var (
 )
 
 type Provider struct {
-	ID, currency string
-	client       Client
+	ID     string
+	client Client
 }
 
-func InitProvider(api, currency string) Provider {
+func InitProvider(api string) Provider {
 	m := Provider{
-		ID:       id,
-		currency: currency,
-		client:   NewClient(api),
+		ID:     id,
+		client: NewClient(api),
 	}
 	return m
 }
 
-func (p Provider) GetData() (ticker.Tickers, error) {
-	prices, err := p.client.GetPrices()
+func (p Provider) GetData() (tickers.Tickers, error) {
+	prices, err := p.client.getPrices()
 	if err != nil {
 		return nil, err
 	}
-	return normalizeTickers(prices, p.ID, p.currency), nil
+	return normalizeTickers(prices, p.ID), nil
 }
 
-func normalizeTickers(prices []CoinPrice, provider, currency string) ticker.Tickers {
-	tickers := make(ticker.Tickers, 0)
+func normalizeTickers(prices []CoinPrice, provider string) tickers.Tickers {
+	tickersList := make(tickers.Tickers, 0)
 	for _, price := range prices {
-		t, err := normalizeTicker(price, provider, currency)
+		t, err := normalizeTicker(price, provider)
 		if err != nil {
+			logger.Error(err)
 			continue
 		}
-		tickers = append(tickers, t)
+		tickersList = append(tickersList, t)
 	}
-	return tickers
+	return tickersList
 }
 
-func normalizeTicker(price CoinPrice, provider, currency string) (ticker.Ticker, error) {
-	var t ticker.Ticker
+func normalizeTicker(price CoinPrice, provider string) (tickers.Ticker, error) {
+	var t tickers.Ticker
 
 	if price.QuoteAssetName != BNBAsset && price.BaseAssetName != BNBAsset {
 		return t, errors.E("invalid quote/base asset",
@@ -73,14 +74,15 @@ func normalizeTicker(price CoinPrice, provider, currency string) (ticker.Ticker,
 		value = 1.0 / value
 	}
 
-	t = ticker.Ticker{
+	t = tickers.Ticker{
+		Coin:     coin.BNB,
 		CoinName: BNBAsset,
-		CoinType: ticker.Token,
+		CoinType: tickers.Token,
 		TokenId:  tokenId,
-		Price: ticker.Price{
+		Price: tickers.Price{
 			Value:     value,
 			Change24h: value24h,
-			Currency:  currency,
+			Currency:  BNBAsset,
 			Provider:  provider,
 		},
 		LastUpdate: time.Now(),
