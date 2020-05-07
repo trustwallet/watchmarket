@@ -8,20 +8,20 @@ const (
 	id = "fixer"
 )
 
-type Parser struct {
+type Provider struct {
 	ID, currency string
 	client       Client
 }
 
-func InitParser(api, key, currency string) Parser {
-	return Parser{
+func InitProvider(api, key, currency string) Provider {
+	return Provider{
 		ID:       id,
 		currency: currency,
 		client:   NewClient(api, key, currency),
 	}
 }
 
-func (p Parser) GetData() (rates.Rates, error) {
+func (p Provider) GetData() (rates.Rates, error) {
 	var result rates.Rates
 	rawRates, err := p.client.FetchRates()
 	if err != nil {

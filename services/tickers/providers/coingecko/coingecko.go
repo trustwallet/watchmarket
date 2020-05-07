@@ -11,20 +11,20 @@ const (
 	bucketSize = 500
 )
 
-type Parser struct {
+type Provider struct {
 	ID, currency string
 	client       Client
 }
 
-func InitParser(api, currency string) Parser {
-	return Parser{
+func InitProvider(api, currency string) Provider {
+	return Provider{
 		ID:       id,
 		currency: currency,
 		client:   NewClient(api),
 	}
 }
 
-func (m *Parser) GetData() (ticker.Tickers, error) {
+func (m *Provider) GetData() (ticker.Tickers, error) {
 	var tickers = make(ticker.Tickers, 0)
 	coins, err := m.client.FetchCoins()
 	if err != nil {
@@ -36,7 +36,7 @@ func (m *Parser) GetData() (ticker.Tickers, error) {
 	return tickers, nil
 }
 
-func (m *Parser) normalizeTickers(prices CoinPrices, coins Coins, provider, currency string) ticker.Tickers {
+func (m *Provider) normalizeTickers(prices CoinPrices, coins Coins, provider, currency string) ticker.Tickers {
 	var (
 		tickers    = make(ticker.Tickers, 0)
 		cgCoinsMap = createCgCoinsMap(coins)
@@ -49,7 +49,7 @@ func (m *Parser) normalizeTickers(prices CoinPrices, coins Coins, provider, curr
 	return tickers
 }
 
-func (m *Parser) normalizeTicker(price CoinPrice, coinsMap map[string][]CoinResult, provider, currency string) ticker.Tickers {
+func (m *Provider) normalizeTicker(price CoinPrice, coinsMap map[string][]CoinResult, provider, currency string) ticker.Tickers {
 	var (
 		tickers  = make(ticker.Tickers, 0)
 		tokenId  = ""
