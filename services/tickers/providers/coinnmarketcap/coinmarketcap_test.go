@@ -34,8 +34,10 @@ func TestProvider_GetData(t *testing.T) {
 	server := httptest.NewServer(createMockedAPI())
 	defer server.Close()
 	provider := InitProvider(server.URL, server.URL, "demo.key", "USD")
-	data, _ := provider.GetData()
-	rawData, _ := json.Marshal(data)
+	data, err := provider.GetData()
+	assert.Nil(t, err)
+	rawData, err := json.Marshal(data)
+	assert.Nil(t, err)
 	assert.Equal(t, wantedTickers, string(rawData))
 }
 

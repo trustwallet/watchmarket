@@ -11,8 +11,8 @@ import (
 
 type Client struct {
 	blockatlas.Request
-	key, currency string
-	bucketSize    int
+	currency   string
+	bucketSize int
 }
 
 func NewClient(api, currency string, bucketSize int) Client {
@@ -23,7 +23,7 @@ func NewClient(api, currency string, bucketSize int) Client {
 	}
 }
 
-func (c Client) FetchCoinsList() (Coins, error) {
+func (c Client) fetchCoinsList() (Coins, error) {
 	var (
 		result Coins
 		values = url.Values{"include_platform": {"true"}}
@@ -35,7 +35,7 @@ func (c Client) FetchCoinsList() (Coins, error) {
 	return result, nil
 }
 
-func (c Client) FetchLatestRates(coins Coins, currency string) Prices {
+func (c Client) fetchLatestRates(coins Coins, currency string) Prices {
 	var (
 		ci     = coins.getCoinsID()
 		i      = 0
@@ -55,7 +55,7 @@ func (c Client) FetchLatestRates(coins Coins, currency string) Prices {
 			bucket := ci[i:end]
 			ids := strings.Join(bucket[:], ",")
 
-			cp, err := c.FetchCoinsMarkets(currency, ids)
+			cp, err := c.fetchCoinsMarkets(currency, ids)
 			if err != nil {
 				logger.Error(err)
 				return
@@ -78,15 +78,15 @@ func (c Client) FetchLatestRates(coins Coins, currency string) Prices {
 	return prices
 }
 
-func (c Client) FetchCoinsMarkets(currency, ids string) (Prices, error) {
+func (c Client) fetchCoinsMarkets(currency, ids string) (Prices, error) {
 	var (
 		values = url.Values{"vs_currency": {currency}, "sparkline": {"false"}, "ids": {ids}}
-		prices Prices
+		result Prices
 	)
 
-	err := c.Get(&prices, "v3/coins/markets", values)
+	err := c.Get(&result, "v3/coins/markets", values)
 	if err != nil {
-		return prices, err
+		return result, err
 	}
-	return prices, nil
+	return result, nil
 }
