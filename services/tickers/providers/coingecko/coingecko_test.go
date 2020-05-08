@@ -135,7 +135,7 @@ func createMockedAPI() http.Handler {
 func Test_normalizeTickers(t *testing.T) {
 	coinsList := Coins{
 		Coin{
-			Id:        "ethtereum",
+			Id:        "ethereum",
 			Symbol:    "eth",
 			Name:      "eth",
 			Platforms: nil,
@@ -151,7 +151,7 @@ func Test_normalizeTickers(t *testing.T) {
 			Symbol: "cREP",
 			Name:   "cREP",
 			Platforms: Platforms{
-				"ethtereum": "0x158079ee67fce2f58472a96584a73c7ab9ac95c1",
+				"ethereum": "0x158079ee67fce2f58472a96584a73c7ab9ac95c1",
 			},
 		},
 		Coin{
@@ -159,7 +159,7 @@ func Test_normalizeTickers(t *testing.T) {
 			Symbol: "cUSDC",
 			Name:   "cUSDC",
 			Platforms: Platforms{
-				"ethtereum": "0x39aa39c021dfbae8fac545936693ac917d5e7563",
+				"ethereum": "0x39aa39c021dfbae8fac545936693ac917d5e7563",
 			},
 		},
 	}
@@ -194,14 +194,14 @@ func Test_normalizeTickers(t *testing.T) {
 				},
 			}, provider: id},
 			tickers.Tickers{
-				tickers.Ticker{CoinName: "ETH", TokenId: "0x39aa39c021dfbae8fac545936693ac917d5e7563", CoinType: tickers.Token, LastUpdate: time.Unix(222, 0),
+				tickers.Ticker{Coin: 60, CoinName: "ETH", TokenId: "0x39aa39c021dfbae8fac545936693ac917d5e7563", CoinType: tickers.Token, LastUpdate: time.Unix(222, 0),
 					Price: tickers.Price{
 						Value:    0.0021,
 						Currency: "USD",
 						Provider: id,
 					},
 				},
-				tickers.Ticker{CoinName: "ETH", TokenId: "0x158079ee67fce2f58472a96584a73c7ab9ac95c1", CoinType: tickers.Token, LastUpdate: time.Unix(444, 0),
+				tickers.Ticker{Coin: 60, CoinName: "ETH", TokenId: "0x158079ee67fce2f58472a96584a73c7ab9ac95c1", CoinType: tickers.Token, LastUpdate: time.Unix(444, 0),
 					Price: tickers.Price{
 						Value:    0.02,
 						Currency: "USD",

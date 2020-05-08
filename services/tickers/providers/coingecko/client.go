@@ -69,10 +69,11 @@ func (c Client) fetchMarkets(currency, ids string) (CoinPrices, error) {
 	return result, nil
 }
 
-func (c Client) fetchCoins() (coins Coins, err error) {
-	values := url.Values{
-		"include_platform": {"true"},
+func (c Client) fetchCoins() (Coins, error) {
+	var result Coins
+	err := c.Get(&result, "v3/coins/list", url.Values{"include_platform": {"true"}})
+	if err != nil {
+		return result, err
 	}
-	err = c.Get(&coins, "v3/coins/list", values)
-	return
+	return result, nil
 }
