@@ -6,33 +6,41 @@ import (
 )
 
 type Client struct {
-	blockatlas.Request
+	api    blockatlas.Request
+	assets blockatlas.Request
 }
 
-func NewClient(api, key string) Client {
+func NewClient(proApi, assetsApi, key string) Client {
 	c := Client{
-		Request: blockatlas.InitClient(api),
+		api:    blockatlas.InitClient(proApi),
+		assets: blockatlas.InitClient(assetsApi),
 	}
-	c.Headers["X-CMC_PRO_API_KEY"] = key
-
+	c.api.Headers["X-CMC_PRO_API_KEY"] = key
 	return c
 }
 
-func (c *Client) FetchPrices(currency string) (CoinPrices, error) {
+func (c Client) FetchPrices(currency string) (CoinPrices, error) {
 	var (
-		prices CoinPrices
+		result CoinPrices
 		path   = "v1/cryptocurrency/listings/latest"
 	)
 
-	request := blockatlas.Request{
-		BaseUrl:      c.BaseUrl,
-		Headers:      c.Headers,
-		HttpClient:   blockatlas.DefaultClient,
-		ErrorHandler: blockatlas.DefaultErrorHandler,
-	}
-	err := request.Get(&prices, path, url.Values{"limit": {"5000"}, "convert": {currency}})
+	err := c.api.Get(&result, path, url.Values{"limit": {"5000"}, "convert": {currency}})
 	if err != nil {
-		return prices, err
+		return result, err
 	}
-	return prices, nil
+	return result, nil
+}
+
+func (c Client) FetchCoinMap() ([]CoinMap, error) {
+	var (
+		result []CoinMap
+		path   = "mapping.json"
+	)
+
+	err := c.assets.Get(&result, path, nil)
+	if err != nil {
+		return result, err
+	}
+	return result, nil
 }

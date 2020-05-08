@@ -12,17 +12,19 @@ import (
 )
 
 func TestNewClient(t *testing.T) {
-	client := NewClient("demo.api", "demo.key")
+	client := NewClient("demo.api", "assets.api", "demo.key")
 	assert.NotNil(t, client)
-	assert.Equal(t, "demo.api", client.BaseUrl)
-	assert.Equal(t, "demo.key", client.Headers["X-CMC_PRO_API_KEY"])
+	assert.Equal(t, "demo.api", client.api.BaseUrl)
+	assert.Equal(t, "assets.api", client.assets.BaseUrl)
+	assert.Equal(t, "demo.key", client.api.Headers["X-CMC_PRO_API_KEY"])
 }
 
 func TestInitProvider(t *testing.T) {
-	provider := InitProvider("demo.api", "demo.key", "USD")
+	provider := InitProvider("demo.api", "assets.api", "demo.key", "USD")
 	assert.NotNil(t, provider)
-	assert.Equal(t, "demo.api", provider.client.BaseUrl)
-	assert.Equal(t, "demo.key", provider.client.Headers["X-CMC_PRO_API_KEY"])
+	assert.Equal(t, "demo.api", provider.client.api.BaseUrl)
+	assert.Equal(t, "assets.api", provider.client.assets.BaseUrl)
+	assert.Equal(t, "demo.key", provider.client.api.Headers["X-CMC_PRO_API_KEY"])
 	assert.Equal(t, "coinmarketcap", provider.ID)
 	assert.Equal(t, "USD", provider.currency)
 }
@@ -31,7 +33,7 @@ func TestProvider_GetData(t *testing.T) {
 	server := httptest.NewServer(createMockedAPI())
 	defer server.Close()
 
-	provider := InitProvider(server.URL, "demo.key", "USD")
+	provider := InitProvider(server.URL, "", "demo.key", "USD")
 	data, _ := provider.GetData()
 	assert.True(t, verifyTickers(t, data, data))
 }
@@ -72,6 +74,12 @@ func createMockedAPI() http.Handler {
 }
 
 func Test_normalizeTickers(t *testing.T) {
+	coinMap := CoinMap{
+		Coin:    1023,
+		Id:      666,
+		Type:    "coin",
+		TokenId: "",
+	}
 	type args struct {
 		prices   CoinPrices
 		provider string
@@ -91,6 +99,9 @@ func Test_normalizeTickers(t *testing.T) {
 				{Coin: Coin{Symbol: "SWP", Id: 6969}, LastUpdated: time.Unix(444, 0), Quote: Quote{
 					USD: USD{Price: 463.22, PercentChange24h: -3}},
 					Platform: Platform{Coin: Coin{Symbol: "ETH"}, TokenAddress: "0x8ce9137d39326ad0cd6491fb5cc0cba0e089b6a9"}},
+				{Coin: Coin{Symbol: "ONE", Id: 666}, LastUpdated: time.Unix(555, 0), Quote: Quote{
+					USD: USD{Price: 123.09, PercentChange24h: -1.4}},
+					Platform: Platform{Coin: Coin{Symbol: "BNB"}, TokenAddress: "0x8ce9137d39326ad0cd6491fb5cc0cba0e089b6a9"}},
 			}}, provider: "coinnmarketcap"},
 			tickers.Tickers{
 				tickers.Ticker{CoinName: "BTC", CoinType: tickers.Coin, LastUpdate: time.Unix(111, 0),
@@ -117,12 +128,20 @@ func Test_normalizeTickers(t *testing.T) {
 						Provider:  "coinnmarketcap",
 					},
 				},
+				tickers.Ticker{Coin: 1023, CoinName: "ONE", CoinType: tickers.Coin, LastUpdate: time.Unix(555, 0),
+					Price: tickers.Price{
+						Value:     123.09,
+						Change24h: -1.4,
+						Currency:  "USD",
+						Provider:  "coinnmarketcap",
+					},
+				},
 			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			gotTickers := normalizeTickers(tt.args.prices, tt.args.provider, "USD")
+			gotTickers := normalizeTickers(tt.args.prices, []CoinMap{coinMap}, tt.args.provider, "USD")
 			sort.SliceStable(gotTickers, func(i, j int) bool {
 				return gotTickers[i].LastUpdate.Unix() < gotTickers[j].LastUpdate.Unix()
 			})
