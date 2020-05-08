@@ -53,7 +53,7 @@ func verifyTickers(t *testing.T, wantedTickers, givenTickers tickers.Tickers) bo
 			}
 		}
 	}
-	if counter == len(givenTickers)-1 {
+	if counter == len(givenTickers) {
 		return true
 	}
 	return false
@@ -310,7 +310,7 @@ var (
 		{
 			Coin:     714,
 			CoinName: "BNB",
-			TokenId:  "bnb",
+			TokenId:  "",
 			CoinType: tickers.Coin,
 			Price: tickers.Price{
 				Value:     16.76,
