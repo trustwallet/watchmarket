@@ -16,20 +16,20 @@ type Provider struct {
 	currency string
 }
 
-func InitProvider(api, key, currency string) Provider {
+func InitProvider(api, currency string) Provider {
 	return Provider{
 		ID:       id,
-		client:   NewClient(api, key, bucketSize),
+		client:   NewClient(api, currency, bucketSize),
 		currency: currency,
 	}
 }
 
-func (p Provider) FetchLatestRates() (rates.Rates, error) {
-	coins, err := p.client.FetchCoinsList()
+func (p Provider) GetData() (rates.Rates, error) {
+	coins, err := p.client.fetchCoinsList()
 	if err != nil {
 		return rates.Rates{}, err
 	}
-	prices := p.client.FetchLatestRates(coins, p.currency)
+	prices := p.client.fetchLatestRates(coins, p.currency)
 
 	return normalizeRates(prices, p.ID), nil
 }
@@ -38,13 +38,9 @@ func normalizeRates(prices Prices, provider string) rates.Rates {
 	var result rates.Rates
 
 	for _, price := range prices {
-		r := 0.0
-		if price.CurrentPrice != 0 {
-			r = 1.0 / price.CurrentPrice
-		}
 		result = append(result, rates.Rate{
 			Currency:  strings.ToUpper(price.Symbol),
-			Rate:      r,
+			Rate:      price.CurrentPrice,
 			Timestamp: price.LastUpdated.Unix(),
 			Provider:  provider,
 		})
