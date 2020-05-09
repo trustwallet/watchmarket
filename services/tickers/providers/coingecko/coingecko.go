@@ -23,12 +23,12 @@ func InitProvider(api, currency string) Provider {
 }
 
 func (m Provider) GetData() (tickers.Tickers, error) {
-	coins, err := m.client.fetchCoins()
+	coins, err := m.client.FetchCoins()
 	if err != nil {
 		return tickers.Tickers{}, err
 	}
 
-	rates := m.client.fetchRates(coins, m.currency, bucketSize)
+	rates := m.client.FetchRates(coins, m.currency, bucketSize)
 	tickersList := m.normalizeTickers(rates, coins, m.ID, m.currency)
 	return tickersList, nil
 }
