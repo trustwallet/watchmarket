@@ -1,14 +1,6 @@
 package charts
 
 type (
-	Charts struct {
-		Prices     []ChartVolume `json:"prices"`
-		MarketCaps []ChartVolume `json:"market_caps"`
-		Volumes    []ChartVolume `json:"total_volumes"`
-	}
-
-	ChartVolume []float64
-
 	CoinType string
 
 	Data struct {

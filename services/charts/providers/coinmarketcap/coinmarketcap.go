@@ -22,11 +22,11 @@ type Provider struct {
 	info   info.Client
 }
 
-func InitProvider(webApi string, widgetApi string, mapApi string, infoApi string) Provider {
+func InitProvider(webApi, widgetApi, mapApi, infoApi string) Provider {
 	return Provider{ID: id, client: NewClient(webApi, widgetApi, mapApi), info: info.NewClient(infoApi)}
 }
 
-func (p Provider) GetChartData(coin uint, token string, currency string, timeStart int64) (charts.Data, error) {
+func (p Provider) GetChartData(coin uint, token, currency string, timeStart int64) (charts.Data, error) {
 	chartsData := charts.Data{}
 	coinsFromCmc, err := p.client.fetchCoinMap()
 	if err != nil {
