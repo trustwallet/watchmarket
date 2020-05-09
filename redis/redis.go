@@ -1,0 +1,71 @@
+package redis
+
+import (
+	"github.com/go-redis/redis"
+	"github.com/trustwallet/blockatlas/pkg/errors"
+	"time"
+)
+
+type Redis struct {
+	client redis.Client
+}
+
+func Init(host string) (redis.Client, error) {
+	options, err := redis.ParseURL(host)
+	if err != nil {
+		return redis.Client{}, err
+	}
+	client := redis.NewClient(options)
+	if err := client.Ping().Err(); err != nil {
+		return redis.Client{}, err
+	}
+
+	return *client, nil
+}
+
+func (db Redis) Get(key string) ([]byte, error) {
+	cmd := db.client.Get(key)
+	if cmd.Err() == redis.Nil {
+		return nil, errors.E("Not found", errors.Params{"key": key})
+	} else if cmd.Err() != nil {
+		return nil, cmd.Err()
+	}
+
+	return []byte(cmd.Val()), nil
+}
+
+func (db Redis) Set(key string, value []byte, expiration time.Duration) error {
+	cmd := db.client.Set(key, value, expiration)
+	if cmd.Err() != nil {
+		return cmd.Err()
+	}
+	return nil
+}
+
+func (db Redis) Delete(key string) error {
+	cmd := db.client.Del(key)
+	if cmd.Err() != nil {
+		return cmd.Err()
+	}
+	return nil
+}
+
+func (db Redis) IsAvailable() bool {
+	return db.client.Ping().Err() == nil
+}
+
+func (db Redis) Reconnect(host string) bool {
+	options, err := redis.ParseURL(host)
+	if err != nil {
+		return false
+	}
+	client := redis.NewClient(options)
+	if err := client.Ping().Err(); err != nil {
+		return false
+	}
+	db.client = *client
+	if err := db.client.Ping().Err(); err != nil {
+		return false
+	}
+	return true
+}
