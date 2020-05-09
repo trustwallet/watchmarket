@@ -39,6 +39,14 @@ type (
 		TotalSupply                  float64   `json:"total_supply"`
 		LastUpdated                  time.Time `json:"last_updated"`
 	}
+
+	Charts struct {
+		Prices     []Volume `json:"prices"`
+		MarketCaps []Volume `json:"market_caps"`
+		Volumes    []Volume `json:"total_volumes"`
+	}
+
+	Volume []float64
 )
 
 func (coins Coins) coinIds() []string {

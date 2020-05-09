@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/trustwallet/blockatlas/pkg/blockatlas"
 	"github.com/trustwallet/blockatlas/pkg/logger"
-	"github.com/trustwallet/watchmarket/services/charts"
 	"net/url"
 	"strconv"
 	"strings"
@@ -22,7 +21,7 @@ func NewClient(api string) Client {
 	}
 }
 
-func (c Client) FetchCoins() (Coins, error) {
+func (c Client) fetchCoins() (Coins, error) {
 	var (
 		result Coins
 		values = url.Values{"include_platform": {"true"}}
@@ -34,9 +33,9 @@ func (c Client) FetchCoins() (Coins, error) {
 	return result, nil
 }
 
-func (c Client) FetchCharts(id, currency string, timeStart, timeEnd int64) (charts.Charts, error) {
+func (c Client) fetchCharts(id, currency string, timeStart, timeEnd int64) (Charts, error) {
 	var (
-		result charts.Charts
+		result Charts
 		values = url.Values{
 			"vs_currency": {currency},
 			"from":        {strconv.FormatInt(timeStart, 10)},
@@ -50,7 +49,7 @@ func (c Client) FetchCharts(id, currency string, timeStart, timeEnd int64) (char
 	return result, nil
 }
 
-func (c Client) FetchRates(coins Coins, currency string, bucketSize int) (prices CoinPrices) {
+func (c Client) fetchRates(coins Coins, currency string, bucketSize int) (prices CoinPrices) {
 	ci := coins.coinIds()
 
 	i := 0
@@ -67,7 +66,7 @@ func (c Client) FetchRates(coins Coins, currency string, bucketSize int) (prices
 			bucket := ci[i:end]
 			ids := strings.Join(bucket[:], ",")
 
-			cp, err := c.FetchMarkets(currency, ids)
+			cp, err := c.fetchMarkets(currency, ids)
 			if err != nil {
 				logger.Error(err)
 				return
@@ -90,7 +89,7 @@ func (c Client) FetchRates(coins Coins, currency string, bucketSize int) (prices
 	return
 }
 
-func (c Client) FetchMarkets(currency, ids string) (cp CoinPrices, err error) {
+func (c Client) fetchMarkets(currency, ids string) (cp CoinPrices, err error) {
 	values := url.Values{
 		"vs_currency": {currency},
 		"sparkline":   {"false"},

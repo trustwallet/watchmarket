@@ -4,6 +4,8 @@ import (
 	"github.com/trustwallet/blockatlas/coin"
 	"github.com/trustwallet/blockatlas/pkg/errors"
 	"github.com/trustwallet/watchmarket/services/charts"
+	"github.com/trustwallet/watchmarket/services/charts/info"
+	"sort"
 	"strings"
 	"time"
 )
@@ -16,16 +18,17 @@ const (
 type Provider struct {
 	ID     string
 	client Client
+	info   info.Client
 }
 
-func InitProvider(api string) Provider {
-	return Provider{ID: id, client: NewClient(api)}
+func InitProvider(webApi, infoApi string) Provider {
+	return Provider{ID: id, client: NewClient(webApi), info: info.NewClient(infoApi)}
 }
 
-func (p Provider) GetChartData(coinId uint, token string, currency string, timeStart int64) (charts.Data, error) {
+func (p Provider) GetChartData(coinId uint, token, currency string, timeStart int64) (charts.Data, error) {
 	chartsData := charts.Data{}
 
-	coins, err := p.client.FetchCoins()
+	coins, err := p.client.fetchCoins()
 	if err != nil {
 		return chartsData, err
 	}
@@ -39,7 +42,7 @@ func (p Provider) GetChartData(coinId uint, token string, currency string, timeS
 
 	timeEndDate := time.Now().Unix()
 
-	c, err := p.client.FetchCharts(coinResult.Id, currency, timeStart, timeEndDate)
+	c, err := p.client.fetchCharts(coinResult.Id, currency, timeStart, timeEndDate)
 	if err != nil {
 		return chartsData, err
 	}
@@ -47,8 +50,8 @@ func (p Provider) GetChartData(coinId uint, token string, currency string, timeS
 	return normalizeCharts(c), nil
 }
 
-func (p Provider) GetCoinData(coinId uint, token string, currency string) (charts.CoinDetails, error) {
-	coins, err := p.client.FetchCoins()
+func (p Provider) GetCoinData(coinId uint, token, currency string) (charts.CoinDetails, error) {
+	coins, err := p.client.fetchCoins()
 	if err != nil {
 		return charts.CoinDetails{}, err
 	}
@@ -60,7 +63,7 @@ func (p Provider) GetCoinData(coinId uint, token string, currency string) (chart
 		return charts.CoinDetails{}, err
 	}
 
-	data := p.client.FetchRates(coins, currency, 500)
+	data := p.client.fetchRates(coins, currency, 500)
 	if len(data) == 0 {
 		return charts.CoinDetails{}, errors.E("No rates found", errors.Params{"id": coinResult.Id})
 	}
@@ -134,7 +137,7 @@ func getCoinBySymbol(coinMap map[string]Coin, symbol, token string) (Coin, error
 	return c, nil
 }
 
-func normalizeCharts(c charts.Charts) charts.Data {
+func normalizeCharts(c Charts) charts.Data {
 	chartsData := charts.Data{}
 	prices := make([]charts.Price, 0)
 	for _, quote := range c.Prices {
@@ -148,6 +151,9 @@ func normalizeCharts(c charts.Charts) charts.Data {
 			Date:  date.Unix(),
 		})
 	}
+	sort.Slice(prices, func(i, j int) bool {
+		return prices[i].Date < prices[j].Date
+	})
 
 	chartsData.Prices = prices
 
