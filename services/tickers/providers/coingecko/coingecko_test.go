@@ -13,9 +13,11 @@ import (
 )
 
 func TestNewClient(t *testing.T) {
-	client := NewClient("demo.api")
+	client := NewClient("demo.api", "USD", 500)
 	assert.NotNil(t, client)
 	assert.Equal(t, "demo.api", client.BaseUrl)
+	assert.Equal(t, "USD", client.currency)
+	assert.Equal(t, 500, client.bucketSize)
 }
 
 func TestInitProvider(t *testing.T) {
