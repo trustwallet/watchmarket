@@ -90,7 +90,7 @@ func normalizeCharts(currency string, c Charts) charts.Data {
 			Date:  date.Unix(),
 		})
 	}
-	sort.SliceStable(prices, func(i, j int) bool {
+	sort.Slice(prices, func(i, j int) bool {
 		return prices[i].Date < prices[j].Date
 	})
 	chartsData.Prices = prices
