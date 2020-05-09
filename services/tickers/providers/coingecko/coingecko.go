@@ -28,7 +28,7 @@ func (m Provider) GetData() (tickers.Tickers, error) {
 		return tickers.Tickers{}, err
 	}
 
-	rates := m.client.FetchRates(coins)
+	rates := m.client.fetchRates(coins)
 	tickersList := m.normalizeTickers(rates, coins, m.ID, m.currency)
 	return tickersList, nil
 }
