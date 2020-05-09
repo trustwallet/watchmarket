@@ -47,14 +47,14 @@ func (p Provider) GetChartData(coin uint, token, currency string, timeStart int6
 	return normalizeCharts(currency, c), nil
 }
 
-func (p Provider) GetCoinData(coin uint, token, currency string) (charts.CoinDetails, error) {
+func (p Provider) GetCoinData(coinID uint, token, currency string) (charts.CoinDetails, error) {
 	details := charts.CoinDetails{}
 	coinsFromCmc, err := p.client.fetchCoinMap()
 	if err != nil {
 		return details, err
 	}
 	coinsFromCmcMap := coinsFromCmc.coinToCmcMap()
-	coinObj, err := coinsFromCmcMap.getCoinByContract(coin, token)
+	coinObj, err := coinsFromCmcMap.getCoinByContract(coinID, token)
 	if err != nil {
 		return details, err
 	}
@@ -62,9 +62,9 @@ func (p Provider) GetCoinData(coin uint, token, currency string) (charts.CoinDet
 	if err != nil {
 		return details, err
 	}
-	assetsData, err := p.info.GetCoinInfo(coin, token)
+	assetsData, err := p.info.GetCoinInfo(coinID, token)
 	if err != nil {
-		logger.Warn("No assets info about that coin", logger.Params{"coin": coin, "token": token})
+		logger.Warn("No assets info about that coinID", logger.Params{"coinID": coinID, "token": token})
 	}
 
 	return normalizeInfo(currency, coinObj.Id, priceData, assetsData)

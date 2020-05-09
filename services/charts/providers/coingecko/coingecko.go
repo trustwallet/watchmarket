@@ -3,6 +3,7 @@ package coingecko
 import (
 	"github.com/trustwallet/blockatlas/coin"
 	"github.com/trustwallet/blockatlas/pkg/errors"
+	"github.com/trustwallet/blockatlas/pkg/logger"
 	"github.com/trustwallet/watchmarket/services/charts"
 	"github.com/trustwallet/watchmarket/services/charts/info"
 	"sort"
@@ -50,7 +51,7 @@ func (p Provider) GetChartData(coinId uint, token, currency string, timeStart in
 	return normalizeCharts(c), nil
 }
 
-func (p Provider) GetCoinData(coinId uint, token, currency string) (charts.CoinDetails, error) {
+func (p Provider) GetCoinData(coinID uint, token, currency string) (charts.CoinDetails, error) {
 	coins, err := p.client.fetchCoins()
 	if err != nil {
 		return charts.CoinDetails{}, err
@@ -58,17 +59,21 @@ func (p Provider) GetCoinData(coinId uint, token, currency string) (charts.CoinD
 
 	symbolsMap := createSymbolsMap(coins)
 
-	coinResult, err := getCoinByID(symbolsMap, coinId, token)
+	coinResult, err := getCoinByID(symbolsMap, coinID, token)
 	if err != nil {
 		return charts.CoinDetails{}, err
 	}
 
-	data := p.client.fetchRates(coins, currency, 500)
-	if len(data) == 0 {
+	ratesData := p.client.fetchRates(coins, currency, 500)
+	if len(ratesData) == 0 {
 		return charts.CoinDetails{}, errors.E("No rates found", errors.Params{"id": coinResult.Id})
 	}
 
-	return normalizeInfo(data[0]), nil
+	infoData, err := p.info.GetCoinInfo(coinID, token)
+	if err != nil {
+		logger.Warn("No assets info about that coin", logger.Params{"coin": coinID, "token": token})
+	}
+	return normalizeInfo(ratesData[0], infoData), nil
 }
 
 func createSymbolsMap(coins Coins) map[string]Coin {
@@ -89,9 +94,6 @@ func createSymbolsMap(coins Coins) map[string]Coin {
 			if !ok {
 				continue
 			}
-			if strings.EqualFold(platformCoin.Symbol, addr) {
-				symbolsMap[createID(platformCoin.Symbol, "")] = c
-			}
 			symbolsMap[createID(platformCoin.Symbol, addr)] = c
 		}
 	}
@@ -108,8 +110,8 @@ func createCoinsMap(coins Coins) map[string]Coin {
 }
 
 func createID(symbol, token string) string {
-	if len(token) > 0 {
-		strings.ToLower(symbol + token)
+	if token != "" {
+		return strings.ToLower(symbol + token)
 	}
 	return strings.ToLower(symbol)
 }
@@ -160,11 +162,12 @@ func normalizeCharts(c Charts) charts.Data {
 	return chartsData
 }
 
-func normalizeInfo(data CoinPrice) charts.CoinDetails {
+func normalizeInfo(data CoinPrice, info charts.Info) charts.CoinDetails {
 	return charts.CoinDetails{
 		Vol24:             data.TotalVolume,
 		MarketCap:         data.MarketCap,
 		CirculatingSupply: data.CirculatingSupply,
 		TotalSupply:       data.TotalSupply,
+		Info:              info,
 	}
 }
