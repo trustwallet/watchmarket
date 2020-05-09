@@ -104,6 +104,13 @@ func createCoinsMap(coins Coins) map[string]Coin {
 	return coinsMap
 }
 
+func createID(symbol, token string) string {
+	if len(token) > 0 {
+		strings.ToLower(symbol + token)
+	}
+	return strings.ToLower(symbol)
+}
+
 func getCoinByID(coinMap map[string]Coin, coinId uint, token string) (Coin, error) {
 	c := Coin{}
 	coinObj, ok := coin.Coins[coinId]
@@ -125,13 +132,6 @@ func getCoinBySymbol(coinMap map[string]Coin, symbol, token string) (Coin, error
 		return c, errors.E("No coin found by symbol", errors.Params{"symbol": symbol, "token": token})
 	}
 	return c, nil
-}
-
-func createID(symbol, token string) string {
-	if len(token) > 0 {
-		strings.ToLower(symbol + token)
-	}
-	return strings.ToLower(symbol)
 }
 
 func normalizeCharts(c charts.Charts) charts.Data {

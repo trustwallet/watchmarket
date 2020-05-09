@@ -318,19 +318,19 @@ func getAssetClientMock() assets.AssetClient {
 
 func getChartsMock() *market.Charts {
 	mockChartProvider := mockchartprovider.ChartProvider{}
-	mockChartProvider.On("GetCoinData", uint(60), "ETHToken", watchmarket.DefaultCurrency).Return(watchmarket.ChartCoinInfo{
+	mockChartProvider.On("fetchCoinData", uint(60), "ETHToken", watchmarket.DefaultCurrency).Return(watchmarket.ChartCoinInfo{
 		Vol24:             0,
 		MarketCap:         0,
 		CirculatingSupply: 0,
 		TotalSupply:       0,
 	}, nil)
-	mockChartProvider.On("GetCoinData", uint(1000), "ETHToken", watchmarket.DefaultCurrency).Return(watchmarket.ChartCoinInfo{
+	mockChartProvider.On("fetchCoinData", uint(1000), "ETHToken", watchmarket.DefaultCurrency).Return(watchmarket.ChartCoinInfo{
 		Vol24:             0,
 		MarketCap:         0,
 		CirculatingSupply: 0,
 		TotalSupply:       0,
 	}, nil)
-	mockChartProvider.On("GetCoinData", uint(500), "ETHToken", watchmarket.DefaultCurrency).Return(watchmarket.ChartCoinInfo{}, watchmarket.ErrNotFound)
+	mockChartProvider.On("fetchCoinData", uint(500), "ETHToken", watchmarket.DefaultCurrency).Return(watchmarket.ChartCoinInfo{}, watchmarket.ErrNotFound)
 
 	mockChartProvider.On("GetChartData", uint(60), "ETHToken", watchmarket.DefaultCurrency, mock.AnythingOfType("int64")).Return(watchmarket.ChartData{
 		Prices: []watchmarket.ChartPrice{
