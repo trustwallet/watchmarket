@@ -34,7 +34,7 @@ func TestProvider_GetData(t *testing.T) {
 	defer server.Close()
 	provider := InitProvider(server.URL, "", "USD")
 	data, err := provider.GetData()
-	sort.SliceStable(data, func(i, j int) bool {
+	sort.Slice(data, func(i, j int) bool {
 		return data[i].Currency < data[j].Currency
 	})
 	assert.Nil(t, err)
