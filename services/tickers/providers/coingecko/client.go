@@ -18,7 +18,7 @@ func NewClient(api, currency string, bucketSize int) Client {
 	return Client{Request: blockatlas.InitClient(api), currency: currency, bucketSize: bucketSize}
 }
 
-func (c Client) FetchRates(coins Coins) (prices CoinPrices) {
+func (c Client) fetchRates(coins Coins) (prices CoinPrices) {
 	ci := coins.coinIds()
 
 	i := 0
@@ -35,7 +35,7 @@ func (c Client) FetchRates(coins Coins) (prices CoinPrices) {
 			bucket := ci[i:end]
 			ids := strings.Join(bucket[:], ",")
 
-			cp, err := c.FetchMarkets(ids)
+			cp, err := c.fetchMarkets(ids)
 			if err != nil {
 				logger.Error(err)
 				return
@@ -58,7 +58,7 @@ func (c Client) FetchRates(coins Coins) (prices CoinPrices) {
 	return
 }
 
-func (c Client) FetchMarkets(ids string) (CoinPrices, error) {
+func (c Client) fetchMarkets(ids string) (CoinPrices, error) {
 	var (
 		result CoinPrices
 		values = url.Values{"vs_currency": {c.currency}, "sparkline": {"false"}, "ids": {ids}}
