@@ -6,6 +6,7 @@ import (
 	"github.com/trustwallet/blockatlas/pkg/logger"
 	"github.com/trustwallet/watchmarket/services/charts"
 	"github.com/trustwallet/watchmarket/services/charts/info"
+	"sort"
 	"strings"
 	"time"
 )
@@ -89,6 +90,9 @@ func normalizeCharts(currency string, c Charts) charts.Data {
 			Date:  date.Unix(),
 		})
 	}
+	sort.SliceStable(prices, func(i, j int) bool {
+		return prices[i].Date < prices[j].Date
+	})
 	chartsData.Prices = prices
 	return chartsData
 }
