@@ -36,7 +36,6 @@ func TestProvider_GetData(t *testing.T) {
 	assert.Nil(t, err)
 	rawData, err := json.Marshal(data)
 	assert.Nil(t, err)
-	fmt.Println(string(rawData))
 	assert.Equal(t, wantedRates, string(rawData))
 }
 
