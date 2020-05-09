@@ -9,10 +9,6 @@ import (
 	"net/url"
 )
 
-const (
-	AssetsURL = "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/"
-)
-
 type Client struct {
 	blockatlas.Request
 }
@@ -21,8 +17,8 @@ func NewClient(api string) Client {
 	return Client{blockatlas.InitClient(api)}
 }
 
-func (c Client) GetCoinInfo(coinId int, token string) (charts.Info, error) {
-	coinObject, ok := coin.Coins[uint(coinId)]
+func (c Client) GetCoinInfo(coinId uint, token string) (charts.Info, error) {
+	coinObject, ok := coin.Coins[coinId]
 	if !ok {
 		return charts.Info{}, errors.E("coin not found", errors.Params{"coin": coinObject.Handle, "token": token})
 	}
@@ -42,7 +38,7 @@ func (c Client) GetCoinInfo(coinId int, token string) (charts.Info, error) {
 
 func getPathForCoin(c coin.Coin, token string) string {
 	if len(token) == 0 {
-		return AssetsURL + c.Handle + "/info"
+		return c.Handle + "/info"
 	}
-	return AssetsURL + c.Handle + "/assets/" + token
+	return c.Handle + "/assets/" + token
 }
