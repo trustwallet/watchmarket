@@ -19,7 +19,7 @@ type Provider struct {
 }
 
 func InitProvider(api, currency string) Provider {
-	return Provider{ID: id, currency: currency, client: NewClient(api)}
+	return Provider{ID: id, currency: currency, client: NewClient(api, currency, bucketSize)}
 }
 
 func (m Provider) GetData() (tickers.Tickers, error) {
@@ -28,7 +28,7 @@ func (m Provider) GetData() (tickers.Tickers, error) {
 		return tickers.Tickers{}, err
 	}
 
-	rates := m.client.FetchRates(coins, m.currency, bucketSize)
+	rates := m.client.FetchRates(coins)
 	tickersList := m.normalizeTickers(rates, coins, m.ID, m.currency)
 	return tickersList, nil
 }
