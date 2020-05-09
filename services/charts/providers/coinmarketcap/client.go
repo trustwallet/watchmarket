@@ -22,7 +22,7 @@ func NewClient(webApi, widgetApi, assetsApi string) Client {
 	}
 }
 
-func (c Client) GetChartsData(id uint, currency string, timeStart int64, timeEnd int64, interval string) (charts Charts, err error) {
+func (c Client) fetchChartsData(id uint, currency string, timeStart int64, timeEnd int64, interval string) (charts Charts, err error) {
 	values := url.Values{
 		"convert":    {currency},
 		"format":     {"chart_crypto_details"},
@@ -35,7 +35,7 @@ func (c Client) GetChartsData(id uint, currency string, timeStart int64, timeEnd
 	return
 }
 
-func (c Client) GetCoinData(id uint, currency string) (charts ChartInfo, err error) {
+func (c Client) fetchCoinData(id uint, currency string) (charts ChartInfo, err error) {
 	values := url.Values{
 		"convert": {currency},
 		"ref":     {"widget"},
@@ -44,11 +44,11 @@ func (c Client) GetCoinData(id uint, currency string) (charts ChartInfo, err err
 	return
 }
 
-func (c Client) GetCoinMap() (CoinMapping, error) {
+func (c Client) fetchCoinMap() (CmcSlice, error) {
 	var results CmcSlice
 	err := c.assets.GetWithCache(&results, "mapping.json", nil, time.Hour*1)
 	if err != nil {
 		return nil, err
 	}
-	return results.coinToCmcMap(), nil
+	return results, nil
 }

@@ -1,8 +1,10 @@
 package coinmarketcap
 
 import (
+	"fmt"
 	"github.com/trustwallet/blockatlas/pkg/errors"
 	"github.com/trustwallet/watchmarket/services/charts"
+	"strings"
 	"time"
 )
 
@@ -22,46 +24,45 @@ func InitProvider(webApi string, widgetApi string, mapApi string) Provider {
 
 func (p Provider) GetChartData(coin uint, token string, currency string, timeStart int64) (charts.Data, error) {
 	chartsData := charts.Data{}
-	cmap, err := p.client.GetCoinMap()
+	coinsFromCmc, err := p.client.fetchCoinMap()
 	if err != nil {
 		return chartsData, err
 	}
-	coinObj, err := cmap.GetCoinByContract(coin, token)
+	coinsFromCmcMap := coinsFromCmc.coinToCmcMap()
+	coinObj, err := coinsFromCmcMap.getCoinByContract(coin, token)
 	if err != nil {
 		return chartsData, err
 	}
-
 	timeStartDate := time.Unix(timeStart, 0)
 	days := int(time.Since(timeStartDate).Hours() / 24)
 	timeEnd := time.Now().Unix()
-	c, err := p.client.GetChartsData(coinObj.Id, currency, timeStart, timeEnd, getInterval(days))
+	c, err := p.client.fetchChartsData(coinObj.Id, currency, timeStart, timeEnd, getInterval(days))
 	if err != nil {
 		return chartsData, err
 	}
-
 	return normalizeCharts(currency, c), nil
 }
 
 func (p Provider) GetCoinData(coin uint, token, currency string) (charts.CoinDetails, error) {
 	info := charts.CoinDetails{}
+
+
 	
 
-
-	cmap, err := p.client.GetCoinMap()
+	coinsFromCmc, err := p.client.fetchCoinMap()
 
 	if err != nil {
 		return info, err
 	}
-	coinObj, err := cmap.GetCoinByContract(coin, token)
+	coinsFromCmcMap := coinsFromCmc.coinToCmcMap()
+	coinObj, err := coinsFromCmcMap.getCoinByContract(coin, token)
 	if err != nil {
 		return info, err
 	}
-
-	data, err := p.client.GetCoinData(coinObj.Id, currency)
+	data, err := p.client.fetchCoinData(coinObj.Id, currency)
 	if err != nil {
 		return info, err
 	}
-
 	return normalizeInfo(currency, coinObj.Id, data)
 }
 
@@ -75,12 +76,10 @@ func normalizeCharts(currency string, c Charts) charts.Data {
 		if err != nil {
 			continue
 		}
-
 		quote, ok := q[currency]
 		if !ok {
 			continue
 		}
-
 		if len(quote) < chartDataSize {
 			continue
 		}
@@ -89,9 +88,7 @@ func normalizeCharts(currency string, c Charts) charts.Data {
 			Date:  date.Unix(),
 		})
 	}
-
 	chartsData.Prices = prices
-
 	return chartsData
 }
 
@@ -101,7 +98,6 @@ func normalizeInfo(currency string, cmcCoin uint, data ChartInfo) (charts.CoinDe
 	if !ok {
 		return info, errors.E("Cant get coin info", errors.Params{"cmcCoin": cmcCoin, "currency": currency})
 	}
-
 	return charts.CoinDetails{
 		Vol24:             quote.Volume24,
 		MarketCap:         quote.MarketCap,
@@ -109,6 +105,27 @@ func normalizeInfo(currency string, cmcCoin uint, data ChartInfo) (charts.CoinDe
 		TotalSupply:       data.Data.TotalSupply,
 		Provider:          id,
 	}, nil
+}
+
+func (c CmcSlice) coinToCmcMap() (m CoinMapping) {
+	m = make(map[string]CoinMap)
+	for _, cm := range c {
+		m[createID(cm.Coin, cm.TokenId)] = cm
+	}
+	return
+}
+
+func (cm CoinMapping) getCoinByContract(coinId uint, contract string) (c CoinMap, err error) {
+	c, ok := cm[createID(coinId, contract)]
+	if !ok {
+		err = errors.E("No coin found", errors.Params{"coin": coinId, "token": contract})
+	}
+
+	return
+}
+
+func createID(id uint, token string) string {
+	return strings.ToLower(fmt.Sprintf("%d:%s", id, token))
 }
 
 func getInterval(days int) string {
