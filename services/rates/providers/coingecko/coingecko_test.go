@@ -137,8 +137,8 @@ func Test_normalizeRates(t *testing.T) {
 				},
 			},
 			rates.Rates{
-				rates.Rate{Currency: "CUSDC", Rate: 1 / 0.0021, Timestamp: 333, Provider: id},
-				rates.Rate{Currency: "CREP", Rate: 1 / 0.02, Timestamp: 333, Provider: id},
+				rates.Rate{Currency: "CUSDC", Rate: 0.0021, Timestamp: 333, Provider: id},
+				rates.Rate{Currency: "CREP", Rate: 0.02, Timestamp: 333, Provider: id},
 			},
 		},
 		{
@@ -154,8 +154,8 @@ func Test_normalizeRates(t *testing.T) {
 				},
 			},
 			rates.Rates{
-				rates.Rate{Currency: "CUSDC", Rate: 1 / 110.0021, Timestamp: 123, Provider: id},
-				rates.Rate{Currency: "CREP", Rate: 1 / 110.02, Timestamp: 123, Provider: id},
+				rates.Rate{Currency: "CUSDC", Rate: 110.0021, Timestamp: 123, Provider: id},
+				rates.Rate{Currency: "CREP", Rate: 110.02, Timestamp: 123, Provider: id},
 			},
 		},
 		{
@@ -172,7 +172,7 @@ func Test_normalizeRates(t *testing.T) {
 			},
 			rates.Rates{
 				rates.Rate{Currency: "CUSDC", Rate: 0.0, Timestamp: 123, Provider: id},
-				rates.Rate{Currency: "CREP", Rate: 1 / 110.02, Timestamp: 123, Provider: id},
+				rates.Rate{Currency: "CREP", Rate: 110.02, Timestamp: 123, Provider: id},
 			},
 		},
 		{
@@ -188,8 +188,8 @@ func Test_normalizeRates(t *testing.T) {
 				},
 			},
 			rates.Rates{
-				rates.Rate{Currency: "CUSDC", Rate: 1 / -5.0, Timestamp: 123, Provider: id},
-				rates.Rate{Currency: "CREP", Rate: 1 / 110.02, Timestamp: 123, Provider: id},
+				rates.Rate{Currency: "CUSDC", Rate: -5.0, Timestamp: 123, Provider: id},
+				rates.Rate{Currency: "CREP", Rate: 110.02, Timestamp: 123, Provider: id},
 			},
 		},
 	}

@@ -1,4 +1,4 @@
-package coinnmarketcap
+package coinmarketcap
 
 import (
 	"github.com/trustwallet/blockatlas/coin"

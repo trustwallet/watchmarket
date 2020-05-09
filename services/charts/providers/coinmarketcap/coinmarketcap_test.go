@@ -12,7 +12,7 @@ package coinmarketcap
 //		wantInfo watchmarket.ChartCoinInfo
 //	}{
 //		{
-//			"test normalize coinnmarketcap chart info 1",
+//			"test normalize coinmarketcap chart info 1",
 //			args{
 //				currency: "USD",
 //				cmcCoin:  1,
@@ -35,7 +35,7 @@ package coinmarketcap
 //			},
 //		},
 //		{
-//			"test normalize coinnmarketcap chart info 2",
+//			"test normalize coinmarketcap chart info 2",
 //			args{
 //				currency: "EUR",
 //				cmcCoin:  2,
@@ -84,7 +84,7 @@ package coinmarketcap
 //		wantInfo watchmarket.ChartData
 //	}{
 //		{
-//			"test normalize coinnmarketcap chart 1",
+//			"test normalize coinmarketcap chart 1",
 //			args{
 //				currency: "USD",
 //				symbol:   "BTC",
@@ -106,7 +106,7 @@ package coinmarketcap
 //			},
 //		},
 //		{
-//			"test normalize coinnmarketcap chart 2",
+//			"test normalize coinmarketcap chart 2",
 //			args{
 //				currency: "EUR",
 //				symbol:   "BTC",

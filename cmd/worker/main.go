@@ -9,12 +9,12 @@ import (
 	"github.com/trustwallet/watchmarket/market/clients/cmc"
 	"github.com/trustwallet/watchmarket/market/rate"
 	rateCoingecko "github.com/trustwallet/watchmarket/market/rate/coingecko"
-	rateCMC "github.com/trustwallet/watchmarket/market/rate/coinnmarketcap"
+	rateCMC "github.com/trustwallet/watchmarket/market/rate/coinmarketcap"
 	rateFixer "github.com/trustwallet/watchmarket/market/rate/fixer"
 	"github.com/trustwallet/watchmarket/market/ticker"
 	tickerDEX "github.com/trustwallet/watchmarket/market/ticker/binancedex"
 	tickerCoingecko "github.com/trustwallet/watchmarket/market/ticker/coingecko"
-	tickerCMC "github.com/trustwallet/watchmarket/market/ticker/coinnmarketcap"
+	tickerCMC "github.com/trustwallet/watchmarket/market/ticker/coinmarketcap"
 	"github.com/trustwallet/watchmarket/storage"
 	"time"
 )
@@ -38,11 +38,11 @@ func init() {
 	redisHost := viper.GetString("storage.redis")
 	cache = internal.InitRedis(redisHost)
 
-	cmcClient := cmc.NewClient(viper.GetString("market.coinnmarketcap.api"), viper.GetString("market.coinnmarketcap.api_key"), viper.GetDuration("market.coinnmarketcap.caching_duration"))
+	cmcClient := cmc.NewClient(viper.GetString("market.coinmarketcap.api"), viper.GetString("market.coinmarketcap.api_key"), viper.GetDuration("market.coinmarketcap.caching_duration"))
 
 	rateProviders = &rate.Providers{
 		0: rateCMC.InitRate(
-			viper.GetString("market.coinnmarketcap.map_url"),
+			viper.GetString("market.coinmarketcap.map_url"),
 			viper.GetString("market.rate_update_time"),
 			cmcClient,
 		),
@@ -59,7 +59,7 @@ func init() {
 
 	tickerProviders = &ticker.Providers{
 		0: tickerCMC.InitMarket(
-			viper.GetString("market.coinnmarketcap.map_url"),
+			viper.GetString("market.coinmarketcap.map_url"),
 			viper.GetString("market.quote_update_time"),
 			cmcClient,
 		),

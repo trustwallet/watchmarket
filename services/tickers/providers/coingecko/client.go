@@ -10,13 +10,15 @@ import (
 
 type Client struct {
 	blockatlas.Request
+	currency   string
+	bucketSize int
 }
 
-func NewClient(api string) Client {
-	return Client{Request: blockatlas.InitClient(api)}
+func NewClient(api, currency string, bucketSize int) Client {
+	return Client{Request: blockatlas.InitClient(api), currency: currency, bucketSize: bucketSize}
 }
 
-func (c Client) fetchRates(coins Coins, currency string, bucketSize int) (prices CoinPrices) {
+func (c Client) FetchRates(coins Coins) (prices CoinPrices) {
 	ci := coins.coinIds()
 
 	i := 0
@@ -27,13 +29,13 @@ func (c Client) fetchRates(coins Coins, currency string, bucketSize int) (prices
 		go func(i int) {
 			defer wg.Done()
 			var end = len(ci)
-			if len(ci) > i+bucketSize {
-				end = i + bucketSize
+			if len(ci) > i+c.bucketSize {
+				end = i + c.bucketSize
 			}
 			bucket := ci[i:end]
 			ids := strings.Join(bucket[:], ",")
 
-			cp, err := c.fetchMarkets(currency, ids)
+			cp, err := c.FetchMarkets(ids)
 			if err != nil {
 				logger.Error(err)
 				return
@@ -41,7 +43,7 @@ func (c Client) fetchRates(coins Coins, currency string, bucketSize int) (prices
 			prChan <- cp
 		}(i)
 
-		i += bucketSize
+		i += c.bucketSize
 	}
 
 	go func() {
@@ -56,10 +58,10 @@ func (c Client) fetchRates(coins Coins, currency string, bucketSize int) (prices
 	return
 }
 
-func (c Client) fetchMarkets(currency, ids string) (CoinPrices, error) {
+func (c Client) FetchMarkets(ids string) (CoinPrices, error) {
 	var (
 		result CoinPrices
-		values = url.Values{"vs_currency": {currency}, "sparkline": {"false"}, "ids": {ids}}
+		values = url.Values{"vs_currency": {c.currency}, "sparkline": {"false"}, "ids": {ids}}
 	)
 
 	err := c.Get(&result, "v3/coins/markets", values)
@@ -69,7 +71,7 @@ func (c Client) fetchMarkets(currency, ids string) (CoinPrices, error) {
 	return result, nil
 }
 
-func (c Client) fetchCoins() (Coins, error) {
+func (c Client) FetchCoins() (Coins, error) {
 	var result Coins
 	err := c.Get(&result, "v3/coins/list", url.Values{"include_platform": {"true"}})
 	if err != nil {

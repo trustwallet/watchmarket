@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	id            = "coinnmarketcap"
+	id            = "coinmarketcap"
 	chartDataSize = 3
 )
 

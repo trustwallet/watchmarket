@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	id = "coinnmarketcap"
+	id = "coinmarketcap"
 )
 
 type Chart struct {
