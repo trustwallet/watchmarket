@@ -3,7 +3,9 @@ package coinmarketcap
 import (
 	"fmt"
 	"github.com/trustwallet/blockatlas/pkg/errors"
+	"github.com/trustwallet/blockatlas/pkg/logger"
 	"github.com/trustwallet/watchmarket/services/charts"
+	"github.com/trustwallet/watchmarket/services/charts/info"
 	"strings"
 	"time"
 )
@@ -16,10 +18,11 @@ const (
 type Provider struct {
 	ID     string
 	client Client
+	info   info.Client
 }
 
-func InitProvider(webApi string, widgetApi string, mapApi string) Provider {
-	return Provider{ID: id, client: NewClient(webApi, widgetApi, mapApi)}
+func InitProvider(webApi string, widgetApi string, mapApi string, infoApi string) Provider {
+	return Provider{ID: id, client: NewClient(webApi, widgetApi, mapApi), info: info.NewClient(infoApi)}
 }
 
 func (p Provider) GetChartData(coin uint, token string, currency string, timeStart int64) (charts.Data, error) {
@@ -49,21 +52,27 @@ func (p Provider) GetCoinData(coin uint, token, currency string) (charts.CoinDet
 
 	
 
+	details := charts.CoinDetails{}
 	coinsFromCmc, err := p.client.fetchCoinMap()
 
 	if err != nil {
-		return info, err
+		return details, err
 	}
 	coinsFromCmcMap := coinsFromCmc.coinToCmcMap()
 	coinObj, err := coinsFromCmcMap.getCoinByContract(coin, token)
 	if err != nil {
-		return info, err
+		return details, err
 	}
-	data, err := p.client.fetchCoinData(coinObj.Id, currency)
+	priceData, err := p.client.fetchCoinData(coinObj.Id, currency)
 	if err != nil {
-		return info, err
+		return details, err
 	}
-	return normalizeInfo(currency, coinObj.Id, data)
+	assetsData, err := p.info.GetCoinInfo(coin, token)
+	if err != nil {
+		logger.Warn("No assets info about that coin", logger.Params{"coin": coin, "token": token})
+	}
+
+	return normalizeInfo(currency, coinObj.Id, priceData, assetsData)
 }
 
 
@@ -92,11 +101,11 @@ func normalizeCharts(currency string, c Charts) charts.Data {
 	return chartsData
 }
 
-func normalizeInfo(currency string, cmcCoin uint, data ChartInfo) (charts.CoinDetails, error) {
-	info := charts.CoinDetails{}
-	quote, ok := data.Data.Quotes[currency]
+func normalizeInfo(currency string, cmcCoin uint, priceData ChartInfo, assetsData charts.Info) (charts.CoinDetails, error) {
+	details := charts.CoinDetails{}
+	quote, ok := priceData.Data.Quotes[currency]
 	if !ok {
-		return info, errors.E("Cant get coin info", errors.Params{"cmcCoin": cmcCoin, "currency": currency})
+		return details, errors.E("Cant get coin details", errors.Params{"cmcCoin": cmcCoin, "currency": currency})
 	}
 	return charts.CoinDetails{
 		Vol24:             quote.Volume24,
@@ -104,6 +113,9 @@ func normalizeInfo(currency string, cmcCoin uint, data ChartInfo) (charts.CoinDe
 		CirculatingSupply: data.Data.CirculatingSupply,
 		TotalSupply:       data.Data.TotalSupply,
 		Provider:          id,
+		CirculatingSupply: priceData.Data.CirculatingSupply,
+		TotalSupply:       priceData.Data.TotalSupply,
+		Info:              assetsData,
 	}, nil
 }
 
