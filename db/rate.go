@@ -2,38 +2,19 @@ package db
 
 import (
 	"github.com/trustwallet/watchmarket/db/models"
-	"github.com/trustwallet/watchmarket/market"
-	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 )
 
-func (i *Instance) AddRates(rates []watchmarket.Rate, provider string) []error {
-	var errorsList []error
-
-	for _, rate := range rates {
-		r := models.Rate{
-			Rate:     rate,
-			Provider: provider,
-		}
-
-		err := i.Gorm.Set("gorm:insert_option", "ON CONFLICT (id) DO NOTHING").Create(&r).Error
-		if err != nil {
-			errorsList = append(errorsList, err)
-		}
-	}
-
-	if len(errorsList) > 0 {
-		return errorsList
-	}
-	return nil
+func (i *Instance) AddRates(rates []models.Rate) error {
+	// TODO: Upsert
+	db := i.Gorm.Set("gorm:insert_option", "ON CONFLICT (subscription_id) DO UPDATE SET subscription_id = excluded.subscription_id")
+	return BulkInsert(db, rates)
 }
 
-func (i *Instance) GetRates(coin uint, token string) ([]watchmarket.Rate, error) {
-	var ticker []watchmarket.Rate
-
-	err := i.Gorm.Where("coin = ? AND token = ?", coin, token).Find(&ticker).Error
-	if err != nil {
-		return ticker, err
+func (i *Instance) GetRates(currency, provider string) ([]models.Rate, error) {
+	var rates []models.Rate
+	if err := i.Gorm.Where("currency = ? AND provider = ?", currency, provider).
+		Find(&rates).Error; err != nil {
+		return nil, err
 	}
-
-	return ticker, nil
+	return rates, nil
 }

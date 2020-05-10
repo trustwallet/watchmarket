@@ -2,38 +2,31 @@ package db
 
 import (
 	"github.com/trustwallet/watchmarket/db/models"
-	"github.com/trustwallet/watchmarket/market"
-	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 )
 
-func (i *Instance) AddTickers(tickers []watchmarket.Ticker, provider string) []error {
-	var errorsList []error
-
-	for _, ticker := range tickers {
-		t := models.Ticker{
-			Ticker:   ticker,
-			Provider: provider,
-		}
-
-		err := i.Gorm.Set("gorm:insert_option", "ON CONFLICT (id) DO NOTHING").Create(&t).Error
-		if err != nil {
-			errorsList = append(errorsList, err)
-		}
-	}
-
-	if len(errorsList) > 0 {
-		return errorsList
-	}
-	return nil
+func (i *Instance) AddTickers(tickers []models.Ticker) error {
+	// TODO: Upsert
+	db := i.Gorm.Set("gorm:insert_option", "ON CONFLICT (coin,coin_name,coin_type,token_id,currency,provider) DO UPDATE SET value = excluded.value, change24h = excluded.change24h")
+	return BulkInsert(db, tickers)
 }
 
-func (i *Instance) GetTickers(coin uint, token string) ([]watchmarket.Ticker, error) {
-	var ticker []watchmarket.Ticker
-
-	err := i.Gorm.Where("coin = ? AND token = ?", coin, token).Find(&ticker).Error
-	if err != nil {
-		return ticker, err
+func (i *Instance) GetTickersByMap(tickersMap map[string]string) ([]models.Ticker, error) {
+	var ticker []models.Ticker
+	db := i.Gorm
+	for coin, tokenId := range tickersMap {
+		db = db.Or("coin = ? AND token_id = ?", coin, tokenId)
 	}
+	if err := db.Find(&ticker).Error; err != nil {
+		return nil, err
+	}
+	return ticker, nil
+}
 
+func (i *Instance) GetTickers(coin uint, tokenId string) ([]models.Ticker, error) {
+	var ticker []models.Ticker
+	if err := i.Gorm.Where("coin = ? AND token_id = ?", coin, tokenId).
+		Find(&ticker).Error; err != nil {
+		return nil, err
+	}
 	return ticker, nil
 }
