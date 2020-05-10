@@ -29,5 +29,6 @@ require (
 	github.com/stretchr/testify v1.5.1
 	github.com/swaggo/gin-swagger v1.2.0
 	github.com/swaggo/swag v1.6.5
+	github.com/t-tiger/gorm-bulk-insert v1.3.0
 	github.com/trustwallet/blockatlas v1.0.38-0.20200413004732-b14ce93925b8
 )

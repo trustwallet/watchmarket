@@ -1,12 +1,10 @@
 package models
 
-import (
-	"github.com/jinzhu/gorm"
-	"github.com/trustwallet/watchmarket/pkg/watchmarket"
-)
-
 type Rate struct {
-	gorm.Model
-	watchmarket.Rate
-	Provider string `gorm:"type:varchar(128)"`
+	BasicTimeModel
+	Currency         string `gorm:"primary_key;"sql:"index"`
+	PercentChange24h float64
+	Provider         string `gorm:"primary_key;"sql:"index"`
+	Rate             float64
+	Timestamp        int64
 }
