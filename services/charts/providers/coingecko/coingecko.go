@@ -26,7 +26,7 @@ func InitProvider(webApi, infoApi string) Provider {
 	return Provider{ID: id, client: NewClient(webApi), info: info.NewClient(infoApi)}
 }
 
-func (p Provider) GetChartData(coinId uint, token, currency string, timeStart int64) (charts.Data, error) {
+func (p Provider) GetChartData(coinID uint, token, currency string, timeStart int64) (charts.Data, error) {
 	chartsData := charts.Data{}
 
 	coins, err := p.client.fetchCoins()
@@ -36,7 +36,7 @@ func (p Provider) GetChartData(coinId uint, token, currency string, timeStart in
 
 	symbolsMap := createSymbolsMap(coins)
 
-	coinResult, err := getCoinByID(symbolsMap, coinId, token)
+	coinResult, err := getCoinByID(symbolsMap, coinID, token)
 	if err != nil {
 		return chartsData, err
 	}
