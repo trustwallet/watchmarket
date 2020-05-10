@@ -26,14 +26,14 @@ func InitProvider(webApi, widgetApi, mapApi, infoApi string) Provider {
 	return Provider{ID: id, client: NewClient(webApi, widgetApi, mapApi), info: info.NewClient(infoApi)}
 }
 
-func (p Provider) GetChartData(coin uint, token, currency string, timeStart int64) (charts.Data, error) {
+func (p Provider) GetChartData(coinID uint, token, currency string, timeStart int64) (charts.Data, error) {
 	chartsData := charts.Data{}
 	coinsFromCmc, err := p.client.fetchCoinMap()
 	if err != nil {
 		return chartsData, err
 	}
 	coinsFromCmcMap := coinsFromCmc.coinToCmcMap()
-	coinObj, err := coinsFromCmcMap.getCoinByContract(coin, token)
+	coinObj, err := coinsFromCmcMap.getCoinByContract(coinID, token)
 	if err != nil {
 		return chartsData, err
 	}
