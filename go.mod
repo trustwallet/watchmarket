@@ -3,6 +3,7 @@ module github.com/trustwallet/watchmarket
 go 1.14
 
 require (
+	github.com/DATA-DOG/go-sqlmock v1.4.1
 	github.com/Nvveen/Gotty v0.0.0-20120604004816-cd527374f1e5 // indirect
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
 	github.com/alicebob/miniredis/v2 v2.11.4
