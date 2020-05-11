@@ -4,14 +4,14 @@ import (
 	"github.com/trustwallet/blockatlas/coin"
 	"github.com/trustwallet/blockatlas/pkg/errors"
 	"github.com/trustwallet/blockatlas/pkg/logger"
-	"github.com/trustwallet/watchmarket/services/charts"
+	"github.com/trustwallet/watchmarket/services/markets"
 	"sort"
 	"strings"
 	"time"
 )
 
-func (p Provider) GetChartData(coinID uint, token, currency string, timeStart int64) (charts.Data, error) {
-	chartsData := charts.Data{}
+func (p Provider) GetChartData(coinID uint, token, currency string, timeStart int64) (markets.Data, error) {
+	chartsData := markets.Data{}
 
 	coins, err := p.client.fetchCoins()
 	if err != nil {
@@ -35,22 +35,22 @@ func (p Provider) GetChartData(coinID uint, token, currency string, timeStart in
 	return normalizeCharts(c), nil
 }
 
-func (p Provider) GetCoinData(coinID uint, token, currency string) (charts.CoinDetails, error) {
+func (p Provider) GetCoinData(coinID uint, token, currency string) (markets.CoinDetails, error) {
 	coins, err := p.client.fetchCoins()
 	if err != nil {
-		return charts.CoinDetails{}, err
+		return markets.CoinDetails{}, err
 	}
 
 	symbolsMap := createSymbolsMap(coins)
 
 	coinResult, err := getCoinByID(symbolsMap, coinID, token)
 	if err != nil {
-		return charts.CoinDetails{}, err
+		return markets.CoinDetails{}, err
 	}
 
 	ratesData := p.client.fetchRates(coins)
 	if len(ratesData) == 0 {
-		return charts.CoinDetails{}, errors.E("No rates found", errors.Params{"id": coinResult.Id})
+		return markets.CoinDetails{}, errors.E("No rates found", errors.Params{"id": coinResult.Id})
 	}
 
 	infoData, err := p.info.GetCoinInfo(coinID, token)
@@ -123,16 +123,16 @@ func getCoinByParams(coinMap map[string]Coin, symbol, token string) (Coin, error
 	return c, nil
 }
 
-func normalizeCharts(c Charts) charts.Data {
-	chartsData := charts.Data{}
-	prices := make([]charts.Price, 0)
+func normalizeCharts(c Charts) markets.Data {
+	chartsData := markets.Data{}
+	prices := make([]markets.ChartsPrice, 0)
 	for _, quote := range c.Prices {
 		if len(quote) != chartDataSize {
 			continue
 		}
 
 		date := time.Unix(int64(quote[0])/1000, 0)
-		prices = append(prices, charts.Price{
+		prices = append(prices, markets.ChartsPrice{
 			Price: quote[1],
 			Date:  date.Unix(),
 		})
@@ -146,8 +146,8 @@ func normalizeCharts(c Charts) charts.Data {
 	return chartsData
 }
 
-func normalizeInfo(data CoinPrice, info charts.Info) charts.CoinDetails {
-	return charts.CoinDetails{
+func normalizeInfo(data CoinPrice, info markets.Info) markets.CoinDetails {
+	return markets.CoinDetails{
 		Vol24:             data.TotalVolume,
 		MarketCap:         data.MarketCap,
 		CirculatingSupply: data.CirculatingSupply,

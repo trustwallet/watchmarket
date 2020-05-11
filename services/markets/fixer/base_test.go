@@ -1,24 +1,11 @@
 package fixer
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/stretchr/testify/assert"
-	"github.com/trustwallet/watchmarket/services/rates"
 	"net/http"
-	"net/http/httptest"
-	"sort"
 	"testing"
-	"time"
 )
-
-func TestNewClient(t *testing.T) {
-	client := NewClient("demo.api", "key", "USD")
-	assert.NotNil(t, client)
-	assert.Equal(t, "demo.api", client.BaseUrl)
-	assert.Equal(t, "key", client.key)
-	assert.Equal(t, "USD", client.currency)
-}
 
 func TestInitProvider(t *testing.T) {
 	provider := InitProvider("demo.api", "key", "USD")
@@ -27,20 +14,6 @@ func TestInitProvider(t *testing.T) {
 	assert.Equal(t, "key", provider.client.key)
 	assert.Equal(t, "fixer", provider.ID)
 	assert.Equal(t, "USD", provider.currency)
-}
-
-func TestProvider_GetData(t *testing.T) {
-	server := httptest.NewServer(createMockedAPI())
-	defer server.Close()
-	provider := InitProvider(server.URL, "", "USD")
-	data, err := provider.GetData()
-	sort.Slice(data, func(i, j int) bool {
-		return data[i].Currency < data[j].Currency
-	})
-	assert.Nil(t, err)
-	rawData, err := json.Marshal(data)
-	assert.Nil(t, err)
-	assert.Equal(t, wantedRates, string(rawData))
 }
 
 func createMockedAPI() http.Handler {
@@ -54,53 +27,6 @@ func createMockedAPI() http.Handler {
 	})
 
 	return r
-}
-
-func Test_normalizeRates(t *testing.T) {
-	provider := "binancedex"
-	tests := []struct {
-		name      string
-		latest    Rate
-		wantRates rates.Rates
-	}{
-		{
-			"test normalize fixer rate 1",
-			Rate{
-				Timestamp: 123,
-				Rates:     map[string]float64{"USD": 22.111, "BRL": 33.2, "BTC": 44.99},
-				UpdatedAt: time.Now(),
-			},
-			rates.Rates{
-				rates.Rate{Currency: "USD", Rate: 22.111, Timestamp: 123, Provider: provider},
-				rates.Rate{Currency: "BRL", Rate: 33.2, Timestamp: 123, Provider: provider},
-				rates.Rate{Currency: "BTC", Rate: 44.99, Timestamp: 123, Provider: provider},
-			},
-		},
-		{
-			"test normalize fixer rate 2",
-			Rate{
-				Timestamp: 333,
-				Rates:     map[string]float64{"LSK": 123.321, "IFC": 34.973, "DUO": 998.3},
-				UpdatedAt: time.Now(),
-			},
-			rates.Rates{
-				rates.Rate{Currency: "IFC", Rate: 34.973, Timestamp: 333, Provider: provider},
-				rates.Rate{Currency: "LSK", Rate: 123.321, Timestamp: 333, Provider: provider},
-				rates.Rate{Currency: "DUO", Rate: 998.3, Timestamp: 333, Provider: provider},
-			},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			gotRates := normalizeRates(tt.latest, provider)
-			sort.SliceStable(gotRates, func(i, j int) bool {
-				return gotRates[i].Rate < gotRates[j].Rate
-			})
-			if !assert.ObjectsAreEqualValues(gotRates, tt.wantRates) {
-				t.Errorf("normalizeRates() = %v, want %v", gotRates, tt.wantRates)
-			}
-		})
-	}
 }
 
 var (

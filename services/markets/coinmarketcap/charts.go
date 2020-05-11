@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/trustwallet/blockatlas/pkg/errors"
 	"github.com/trustwallet/blockatlas/pkg/logger"
-	"github.com/trustwallet/watchmarket/services/charts"
+	"github.com/trustwallet/watchmarket/services/markets"
 	"sort"
 	"strings"
 	"time"
@@ -12,8 +12,8 @@ import (
 
 const chartDataSize = 3
 
-func (p Provider) GetChartData(coinID uint, token, currency string, timeStart int64) (charts.Data, error) {
-	chartsData := charts.Data{}
+func (p Provider) GetChartData(coinID uint, token, currency string, timeStart int64) (markets.Data, error) {
+	chartsData := markets.Data{}
 	coinsFromCmc, err := p.client.fetchCoinMap()
 	if err != nil {
 		return chartsData, err
@@ -33,8 +33,8 @@ func (p Provider) GetChartData(coinID uint, token, currency string, timeStart in
 	return normalizeCharts(currency, c), nil
 }
 
-func (p Provider) GetCoinData(coinID uint, token, currency string) (charts.CoinDetails, error) {
-	details := charts.CoinDetails{}
+func (p Provider) GetCoinData(coinID uint, token, currency string) (markets.CoinDetails, error) {
+	details := markets.CoinDetails{}
 	coinsFromCmc, err := p.client.fetchCoinMap()
 	if err != nil {
 		return details, err
@@ -56,9 +56,9 @@ func (p Provider) GetCoinData(coinID uint, token, currency string) (charts.CoinD
 	return normalizeInfo(currency, coinObj.Id, priceData, assetsData)
 }
 
-func normalizeCharts(currency string, c Charts) charts.Data {
-	chartsData := charts.Data{}
-	prices := make([]charts.Price, 0)
+func normalizeCharts(currency string, c Charts) markets.Data {
+	chartsData := markets.Data{}
+	prices := make([]markets.ChartsPrice, 0)
 	for dateSrt, q := range c.Data {
 		date, err := time.Parse(time.RFC3339, dateSrt)
 		if err != nil {
@@ -71,7 +71,7 @@ func normalizeCharts(currency string, c Charts) charts.Data {
 		if len(quote) < chartDataSize {
 			continue
 		}
-		prices = append(prices, charts.Price{
+		prices = append(prices, markets.ChartsPrice{
 			Price: quote[0],
 			Date:  date.Unix(),
 		})
@@ -83,13 +83,13 @@ func normalizeCharts(currency string, c Charts) charts.Data {
 	return chartsData
 }
 
-func normalizeInfo(currency string, cmcCoin uint, priceData ChartInfo, assetsData charts.Info) (charts.CoinDetails, error) {
-	details := charts.CoinDetails{}
+func normalizeInfo(currency string, cmcCoin uint, priceData ChartInfo, assetsData markets.Info) (markets.CoinDetails, error) {
+	details := markets.CoinDetails{}
 	quote, ok := priceData.Data.Quotes[currency]
 	if !ok {
 		return details, errors.E("Cant get coin details", errors.Params{"cmcCoin": cmcCoin, "currency": currency})
 	}
-	return charts.CoinDetails{
+	return markets.CoinDetails{
 		Vol24:             quote.Volume24,
 		MarketCap:         quote.MarketCap,
 		CirculatingSupply: priceData.Data.CirculatingSupply,

@@ -3,11 +3,11 @@ package coinmarketcap
 import (
 	"github.com/trustwallet/blockatlas/coin"
 	"github.com/trustwallet/blockatlas/pkg/errors"
-	"github.com/trustwallet/watchmarket/services/tickers"
+	"github.com/trustwallet/watchmarket/services/markets"
 	"strings"
 )
 
-func (p Provider) GetTickers() (tickers.Tickers, error) {
+func (p Provider) GetTickers() (markets.Tickers, error) {
 	prices, err := p.client.fetchPrices(p.currency)
 	if err != nil {
 		return nil, err
@@ -21,8 +21,8 @@ func (p Provider) GetTickers() (tickers.Tickers, error) {
 	return normalizeTickers(prices, coinsMap, p.ID, p.currency), nil
 }
 
-func normalizeTickers(prices CoinPrices, coinsMap []CoinMap, provider, currency string) tickers.Tickers {
-	var tickersList tickers.Tickers
+func normalizeTickers(prices CoinPrices, coinsMap []CoinMap, provider, currency string) markets.Tickers {
+	var tickersList markets.Tickers
 	for _, price := range prices.Data {
 		t := normalizeTicker(price, coinsMap, provider, currency)
 		tickersList = append(tickersList, t...)
@@ -30,18 +30,18 @@ func normalizeTickers(prices CoinPrices, coinsMap []CoinMap, provider, currency 
 	return tickersList
 }
 
-func normalizeTicker(price Data, coinsMap []CoinMap, provider, currency string) tickers.Tickers {
+func normalizeTicker(price Data, coinsMap []CoinMap, provider, currency string) markets.Tickers {
 	var (
 		tokenId       string
-		tickersList   tickers.Tickers
+		tickersList   markets.Tickers
 		coinName      = price.Symbol
-		coinType      = tickers.Coin
+		coinType      = markets.Coin
 		emptyPlatform = Platform{}
 	)
 
 	if price.Platform != emptyPlatform {
 		tokenId = strings.ToLower(price.Platform.TokenAddress)
-		coinType = tickers.Token
+		coinType = markets.Token
 		coinName = price.Platform.Symbol
 		if len(tokenId) == 0 {
 			tokenId = price.Symbol
@@ -50,11 +50,11 @@ func normalizeTicker(price Data, coinsMap []CoinMap, provider, currency string) 
 
 	mappedCmcCoins, err := findCoin(coinsMap, price.Id)
 	if err != nil {
-		tickersList = append(tickersList, tickers.Ticker{
+		tickersList = append(tickersList, markets.Ticker{
 			CoinName: coinName,
 			CoinType: coinType,
 			TokenId:  tokenId,
-			Price: tickers.Price{
+			Price: markets.Price{
 				Value:     price.Quote.USD.Price,
 				Change24h: price.Quote.USD.PercentChange24h,
 				Currency:  currency,
@@ -66,17 +66,17 @@ func normalizeTicker(price Data, coinsMap []CoinMap, provider, currency string) 
 	}
 	for _, mappedCmcCoin := range mappedCmcCoins {
 		coinName = mappedCmcCoin.Coin.Symbol
-		if mappedCmcCoin.CoinType == tickers.Coin {
+		if mappedCmcCoin.CoinType == markets.Coin {
 			tokenId = ""
 		} else if len(mappedCmcCoin.TokenId) > 0 {
 			tokenId = strings.ToLower(mappedCmcCoin.TokenId)
 		}
-		tickersList = append(tickersList, tickers.Ticker{
+		tickersList = append(tickersList, markets.Ticker{
 			Coin:     mappedCmcCoin.Coin.ID,
 			CoinName: coinName,
 			CoinType: mappedCmcCoin.CoinType,
 			TokenId:  tokenId,
-			Price: tickers.Price{
+			Price: markets.Price{
 				Value:     price.Quote.USD.Price,
 				Change24h: price.Quote.USD.PercentChange24h,
 				Currency:  currency,
@@ -110,7 +110,7 @@ func findCoin(rawCoins []CoinMap, coinId uint) ([]CoinResult, error) {
 		if !ok {
 			continue
 		}
-		result = append(result, CoinResult{Coin: atlasCoin, Id: mappedCoin.Id, TokenId: mappedCoin.TokenId, CoinType: tickers.CoinType(mappedCoin.Type)})
+		result = append(result, CoinResult{Coin: atlasCoin, Id: mappedCoin.Id, TokenId: mappedCoin.TokenId, CoinType: markets.CoinType(mappedCoin.Type)})
 	}
 	return result, nil
 }

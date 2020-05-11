@@ -2,18 +2,19 @@ package charts
 
 import (
 	"github.com/trustwallet/watchmarket/services/charts"
+	"github.com/trustwallet/watchmarket/services/markets"
 )
 
 type Resolver struct {
-	providers charts.Providers
+	providers markets.Providers
 	priority  map[uint]string
 }
 
-func Init(providers charts.Providers, priority map[uint]string) Resolver {
+func Init(providers markets.Providers, priority map[uint]string) Resolver {
 	return Resolver{providers: providers, priority: priority}
 }
 
-func (r Resolver) HandleChartsRequest(coinID uint, token, currency string, timeStart int64) charts.Data {
+func (r Resolver) HandleChartsRequest(coinID uint, token, currency string, timeStart int64) markets.Data {
 	p, _ := r.getProvider(0)
 	result, err := p.GetChartData(coinID, token, currency, timeStart)
 	if err != nil {
@@ -23,7 +24,7 @@ func (r Resolver) HandleChartsRequest(coinID uint, token, currency string, timeS
 	return result
 }
 
-func (r Resolver) getProvider(currentProvider uint) (charts.Provider, error) {
+func (r Resolver) getProvider(currentProvider uint) (markets.Provider, error) {
 	bestProvider, _ := r.providers[r.priority[currentProvider]]
 	return bestProvider, nil
 }

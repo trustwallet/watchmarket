@@ -2,7 +2,7 @@ package coingecko
 
 import (
 	"github.com/stretchr/testify/assert"
-	"github.com/trustwallet/watchmarket/services/tickers"
+	"github.com/trustwallet/watchmarket/services/markets"
 	"net/http/httptest"
 	"sort"
 	"testing"
@@ -61,7 +61,7 @@ func Test_normalizeTickers(t *testing.T) {
 	tests := []struct {
 		name        string
 		args        args
-		wantTickers tickers.Tickers
+		wantTickers markets.Tickers
 	}{
 		{
 			"test normalize coingecko quote",
@@ -81,16 +81,16 @@ func Test_normalizeTickers(t *testing.T) {
 					TotalVolume:  5000,
 				},
 			}, provider: id},
-			tickers.Tickers{
-				tickers.Ticker{Coin: 60, CoinName: "ETH", TokenId: "0x39aa39c021dfbae8fac545936693ac917d5e7563", CoinType: tickers.Token, LastUpdate: time.Unix(222, 0),
-					Price: tickers.Price{
+			markets.Tickers{
+				markets.Ticker{Coin: 60, CoinName: "ETH", TokenId: "0x39aa39c021dfbae8fac545936693ac917d5e7563", CoinType: markets.Token, LastUpdate: time.Unix(222, 0),
+					Price: markets.Price{
 						Value:    0.0021,
 						Currency: "USD",
 						Provider: id,
 					},
 				},
-				tickers.Ticker{Coin: 60, CoinName: "ETH", TokenId: "0x158079ee67fce2f58472a96584a73c7ab9ac95c1", CoinType: tickers.Token, LastUpdate: time.Unix(444, 0),
-					Price: tickers.Price{
+				markets.Ticker{Coin: 60, CoinName: "ETH", TokenId: "0x158079ee67fce2f58472a96584a73c7ab9ac95c1", CoinType: markets.Token, LastUpdate: time.Unix(444, 0),
+					Price: markets.Price{
 						Value:    0.02,
 						Currency: "USD",
 						Provider: id,
@@ -137,26 +137,26 @@ func Test_createTicker(t *testing.T) {
 		TotalVolume:              5000,
 	})
 
-	emptyTicker := tickers.Ticker{
-		Price: tickers.Price{
+	emptyTicker := markets.Ticker{
+		Price: markets.Price{
 			Value:     0.00000001,
 			Change24h: 1,
 		},
 	}
 
-	normalTicker := tickers.Ticker{
-		Price: tickers.Price{
+	normalTicker := markets.Ticker{
+		Price: markets.Price{
 			Value:     0.00000001,
 			Change24h: 1,
 		},
 	}
 
-	wantedTickers := make(tickers.Tickers, 0)
+	wantedTickers := make(markets.Tickers, 0)
 	wantedTickers = append(wantedTickers, emptyTicker)
 	wantedTickers = append(wantedTickers, normalTicker)
 
 	for i, price := range prices {
-		ticker := createTicker(price, tickers.Token, unknownCoinID, "shitcoin", "shitcoinID", "coingecko", "USD")
+		ticker := createTicker(price, markets.Token, unknownCoinID, "shitcoin", "shitcoinID", "coingecko", "USD")
 
 		assert.Equal(t, ticker.Price.Value, wantedTickers[i].Price.Value)
 		assert.Equal(t, ticker.Price.Change24h, wantedTickers[i].Price.Change24h)

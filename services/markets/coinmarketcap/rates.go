@@ -1,11 +1,11 @@
 package coinmarketcap
 
 import (
-	"github.com/trustwallet/watchmarket/services/rates"
+	"github.com/trustwallet/watchmarket/services/markets"
 	"math/big"
 )
 
-func (p Provider) GetRates() (rates rates.Rates, err error) {
+func (p Provider) GetRates() (rates markets.Rates, err error) {
 	prices, err := p.client.fetchPrices(p.currency)
 	if err != nil {
 		return
@@ -14,9 +14,9 @@ func (p Provider) GetRates() (rates rates.Rates, err error) {
 	return
 }
 
-func normalizeRates(prices CoinPrices, provider string) rates.Rates {
+func normalizeRates(prices CoinPrices, provider string) markets.Rates {
 	var (
-		res           rates.Rates
+		res           markets.Rates
 		emptyPlatform Platform
 	)
 
@@ -24,7 +24,7 @@ func normalizeRates(prices CoinPrices, provider string) rates.Rates {
 		if price.Platform != emptyPlatform {
 			continue
 		}
-		res = append(res, rates.Rate{
+		res = append(res, markets.Rate{
 			Currency:         price.Symbol,
 			Rate:             price.Quote.USD.Price,
 			Timestamp:        price.LastUpdated.Unix(),

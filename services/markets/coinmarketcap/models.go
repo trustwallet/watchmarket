@@ -2,7 +2,7 @@ package coinmarketcap
 
 import (
 	"github.com/trustwallet/blockatlas/coin"
-	ticker "github.com/trustwallet/watchmarket/services/tickers"
+	"github.com/trustwallet/watchmarket/services/markets"
 	"time"
 )
 
@@ -55,7 +55,7 @@ type (
 		Id       uint
 		Coin     coin.Coin
 		TokenId  string
-		CoinType ticker.CoinType
+		CoinType markets.CoinType
 	}
 
 	Charts struct {
