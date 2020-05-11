@@ -3,7 +3,7 @@ package coingecko
 import (
 	"encoding/json"
 	"github.com/stretchr/testify/assert"
-	"github.com/trustwallet/watchmarket/services/markets"
+	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"net/http/httptest"
 	"sort"
 	"testing"
@@ -29,7 +29,7 @@ func Test_normalizeRates(t *testing.T) {
 	tests := []struct {
 		name      string
 		prices    CoinPrices
-		wantRates markets.Rates
+		wantRates watchmarket.Rates
 	}{
 		{
 			"test normalize coingecko rate 1",
@@ -43,9 +43,9 @@ func Test_normalizeRates(t *testing.T) {
 					CurrentPrice: 0.02,
 				},
 			},
-			markets.Rates{
-				markets.Rate{Currency: "CUSDC", Rate: 0.0021, Timestamp: 333, Provider: id},
-				markets.Rate{Currency: "CREP", Rate: 0.02, Timestamp: 333, Provider: id},
+			watchmarket.Rates{
+				watchmarket.Rate{Currency: "CUSDC", Rate: 0.0021, Timestamp: 333, Provider: id},
+				watchmarket.Rate{Currency: "CREP", Rate: 0.02, Timestamp: 333, Provider: id},
 			},
 		},
 		{
@@ -60,9 +60,9 @@ func Test_normalizeRates(t *testing.T) {
 					CurrentPrice: 110.02,
 				},
 			},
-			markets.Rates{
-				markets.Rate{Currency: "CUSDC", Rate: 110.0021, Timestamp: 123, Provider: id},
-				markets.Rate{Currency: "CREP", Rate: 110.02, Timestamp: 123, Provider: id},
+			watchmarket.Rates{
+				watchmarket.Rate{Currency: "CUSDC", Rate: 110.0021, Timestamp: 123, Provider: id},
+				watchmarket.Rate{Currency: "CREP", Rate: 110.02, Timestamp: 123, Provider: id},
 			},
 		},
 		{
@@ -77,9 +77,9 @@ func Test_normalizeRates(t *testing.T) {
 					CurrentPrice: 110.02,
 				},
 			},
-			markets.Rates{
-				markets.Rate{Currency: "CUSDC", Rate: 0.0, Timestamp: 123, Provider: id},
-				markets.Rate{Currency: "CREP", Rate: 110.02, Timestamp: 123, Provider: id},
+			watchmarket.Rates{
+				watchmarket.Rate{Currency: "CUSDC", Rate: 0.0, Timestamp: 123, Provider: id},
+				watchmarket.Rate{Currency: "CREP", Rate: 110.02, Timestamp: 123, Provider: id},
 			},
 		},
 		{
@@ -94,9 +94,9 @@ func Test_normalizeRates(t *testing.T) {
 					CurrentPrice: 110.02,
 				},
 			},
-			markets.Rates{
-				markets.Rate{Currency: "CUSDC", Rate: -5.0, Timestamp: 123, Provider: id},
-				markets.Rate{Currency: "CREP", Rate: 110.02, Timestamp: 123, Provider: id},
+			watchmarket.Rates{
+				watchmarket.Rate{Currency: "CUSDC", Rate: -5.0, Timestamp: 123, Provider: id},
+				watchmarket.Rate{Currency: "CREP", Rate: 110.02, Timestamp: 123, Provider: id},
 			},
 		},
 	}

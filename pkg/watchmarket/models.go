@@ -1,4 +1,4 @@
-package markets
+package watchmarket
 
 import (
 	"math/big"
@@ -57,7 +57,7 @@ type (
 		MarketCap         float64 `json:"market_cap"`
 		CirculatingSupply float64 `json:"circulating_supply"`
 		TotalSupply       float64 `json:"total_supply"`
-		Info              Info    `json:"info,omitempty"`
+		Info              Info    `json:"assets,omitempty"`
 	}
 
 	Info struct {

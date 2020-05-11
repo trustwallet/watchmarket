@@ -12,12 +12,11 @@ import (
 
 type Client struct {
 	blockatlas.Request
-	currency   string
 	bucketSize int
 }
 
-func NewClient(api, currency string, bucketSize int) Client {
-	return Client{Request: blockatlas.InitClient(api), currency: currency, bucketSize: bucketSize}
+func NewClient(api string, bucketSize int) Client {
+	return Client{Request: blockatlas.InitClient(api), bucketSize: bucketSize}
 }
 
 func (c Client) fetchCharts(id, currency string, timeStart, timeEnd int64) (Charts, error) {
@@ -36,7 +35,7 @@ func (c Client) fetchCharts(id, currency string, timeStart, timeEnd int64) (Char
 	return result, nil
 }
 
-func (c Client) fetchRates(coins Coins) (prices CoinPrices) {
+func (c Client) fetchRates(coins Coins, currency string) (prices CoinPrices) {
 	ci := coins.coinIds()
 
 	i := 0
@@ -53,7 +52,7 @@ func (c Client) fetchRates(coins Coins) (prices CoinPrices) {
 			bucket := ci[i:end]
 			ids := strings.Join(bucket[:], ",")
 
-			cp, err := c.fetchMarkets(ids)
+			cp, err := c.fetchMarkets(ids, currency)
 			if err != nil {
 				logger.Error(err)
 				return
@@ -76,10 +75,10 @@ func (c Client) fetchRates(coins Coins) (prices CoinPrices) {
 	return
 }
 
-func (c Client) fetchMarkets(ids string) (CoinPrices, error) {
+func (c Client) fetchMarkets(ids, currency string) (CoinPrices, error) {
 	var (
 		result CoinPrices
-		values = url.Values{"vs_currency": {c.currency}, "sparkline": {"false"}, "ids": {ids}}
+		values = url.Values{"vs_currency": {currency}, "sparkline": {"false"}, "ids": {ids}}
 	)
 
 	err := c.Get(&result, "v3/coins/markets", values)

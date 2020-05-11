@@ -11,19 +11,12 @@ type Client struct {
 }
 
 func NewClient(api, key, currency string) Client {
-	return Client{
-		Request:  blockatlas.InitClient(api),
-		key:      key,
-		currency: currency,
-	}
+	return Client{Request: blockatlas.InitClient(api), key: key, currency: currency}
 }
 
 func (c Client) FetchRates() (Rate, error) {
 	var (
-		values = url.Values{
-			"access_key": {c.key},
-			"base":       {c.currency}, // Base USD supported only in paid api
-		}
+		values  = url.Values{"access_key": {c.key}, "base": {c.currency}} // Base USD supported only in paid api}
 		rawRate Rate
 	)
 	err := c.Get(&rawRate, "latest", values)

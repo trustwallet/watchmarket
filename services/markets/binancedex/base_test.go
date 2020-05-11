@@ -11,7 +11,12 @@ func TestInitProvider(t *testing.T) {
 	provider := InitProvider("demo.api")
 	assert.NotNil(t, provider)
 	assert.Equal(t, "demo.api", provider.client.BaseUrl)
-	assert.Equal(t, "binancedex", provider.ID)
+	assert.Equal(t, "binancedex", provider.id)
+}
+
+func TestProvider_GetProvider(t *testing.T) {
+	provider := InitProvider("demo.api")
+	assert.Equal(t, "binancedex", provider.GetProvider())
 }
 
 func createMockedAPI() http.Handler {

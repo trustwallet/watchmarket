@@ -38,7 +38,7 @@ func init() {
 	redisHost := viper.GetString("storage.redis")
 	db = internal.InitRedis(redisHost)
 	engine = internal.InitEngine(sg, viper.GetString("gin.mode"))
-	cache = internal.InitCaching(db, viper.GetString("market.cache.charts"), viper.GetString("market.cache.info"))
+	cache = internal.InitCaching(db, viper.GetString("market.cache.charts"), viper.GetString("market.cache.assets"))
 }
 
 func main() {

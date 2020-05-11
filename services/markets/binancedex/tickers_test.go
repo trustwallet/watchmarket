@@ -2,7 +2,7 @@ package binancedex
 
 import (
 	"github.com/stretchr/testify/assert"
-	"github.com/trustwallet/watchmarket/services/markets"
+	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"net/http/httptest"
 	"sort"
 	"testing"
@@ -19,8 +19,8 @@ func TestProvider_GetTickers(t *testing.T) {
 	assert.NotNil(t, data)
 	assert.Equal(t, "BNB", data[0].CoinName)
 	assert.Equal(t, uint(714), data[0].Coin)
-	assert.Equal(t, markets.Price{Value: 123, Change24h: 10, Currency: "BNB", Provider: "binancedex"}, data[0].Price)
-	assert.Equal(t, markets.CoinType("token"), data[0].CoinType)
+	assert.Equal(t, watchmarket.Price{Value: 123, Change24h: 10, Currency: "BNB", Provider: "binancedex"}, data[0].Price)
+	assert.Equal(t, watchmarket.CoinType("token"), data[0].CoinType)
 	assert.Equal(t, "", data[0].Error)
 	assert.LessOrEqual(t, data[0].LastUpdate.Unix(), time.Now().Unix())
 }
@@ -33,7 +33,7 @@ func Test_normalizeTickers(t *testing.T) {
 	tests := []struct {
 		name        string
 		args        args
-		wantTickers markets.Tickers
+		wantTickers watchmarket.Tickers
 	}{
 		{
 			"test normalize binancedex quote",
@@ -58,17 +58,17 @@ func Test_normalizeTickers(t *testing.T) {
 				},
 			},
 				provider: "binancedex"},
-			markets.Tickers{
-				markets.Ticker{Coin: uint(714), CoinName: "BNB", TokenId: "RAVEN-F66", CoinType: markets.Token, LastUpdate: time.Now(),
-					Price: markets.Price{
+			watchmarket.Tickers{
+				watchmarket.Ticker{Coin: uint(714), CoinName: "BNB", TokenId: "RAVEN-F66", CoinType: watchmarket.Token, LastUpdate: time.Now(),
+					Price: watchmarket.Price{
 						Value:     0.00001082,
 						Change24h: -2.2500,
 						Currency:  "BNB",
 						Provider:  "binancedex",
 					},
 				},
-				markets.Ticker{Coin: uint(714), CoinName: "BNB", TokenId: "SLV-986", CoinType: markets.Token, LastUpdate: time.Now(),
-					Price: markets.Price{
+				watchmarket.Ticker{Coin: uint(714), CoinName: "BNB", TokenId: "SLV-986", CoinType: watchmarket.Token, LastUpdate: time.Now(),
+					Price: watchmarket.Price{
 						Value:     0.0449451,
 						Change24h: -5.3700,
 						Currency:  "BNB",
