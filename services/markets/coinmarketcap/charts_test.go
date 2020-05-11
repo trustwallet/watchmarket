@@ -3,7 +3,7 @@ package coinmarketcap
 import (
 	"encoding/json"
 	"github.com/stretchr/testify/assert"
-	"github.com/trustwallet/watchmarket/services/charts"
+	"github.com/trustwallet/watchmarket/services/markets"
 	"net/http/httptest"
 	"reflect"
 	"sort"
@@ -44,7 +44,7 @@ func Test_normalizeInfo(t *testing.T) {
 	tests := []struct {
 		name     string
 		args     args
-		wantInfo charts.CoinDetails
+		wantInfo markets.CoinDetails
 	}{
 		{
 			"test normalize coinmarketcap chart info 1",
@@ -62,7 +62,7 @@ func Test_normalizeInfo(t *testing.T) {
 					},
 				},
 			},
-			charts.CoinDetails{
+			markets.CoinDetails{
 				Vol24:             444,
 				MarketCap:         555,
 				CirculatingSupply: 111,
@@ -85,7 +85,7 @@ func Test_normalizeInfo(t *testing.T) {
 					},
 				},
 			},
-			charts.CoinDetails{
+			markets.CoinDetails{
 				Vol24:             444,
 				MarketCap:         555,
 				CirculatingSupply: 111,
@@ -95,7 +95,7 @@ func Test_normalizeInfo(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			gotInfo, err := normalizeInfo(tt.args.currency, tt.args.cmcCoin, tt.args.data, charts.Info{})
+			gotInfo, err := normalizeInfo(tt.args.currency, tt.args.cmcCoin, tt.args.data, markets.Info{})
 			assert.Nil(t, err)
 			assert.True(t, reflect.DeepEqual(tt.wantInfo, gotInfo))
 		})
@@ -116,7 +116,7 @@ func Test_normalizeCharts(t *testing.T) {
 	tests := []struct {
 		name     string
 		args     args
-		wantInfo charts.Data
+		wantInfo markets.Data
 	}{
 		{
 			"test normalize coinmarketcap chart 1",
@@ -131,8 +131,8 @@ func Test_normalizeCharts(t *testing.T) {
 					},
 				},
 			},
-			charts.Data{
-				Prices: []charts.Price{
+			markets.Data{
+				Prices: []markets.ChartsPrice{
 					{
 						Price: 111,
 						Date:  d1.Unix(),
@@ -156,8 +156,8 @@ func Test_normalizeCharts(t *testing.T) {
 					},
 				},
 			},
-			charts.Data{
-				Prices: []charts.Price{
+			markets.Data{
+				Prices: []markets.ChartsPrice{
 					{
 						Price: 333,
 						Date:  d1.Unix(),

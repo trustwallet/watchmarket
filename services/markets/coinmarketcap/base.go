@@ -1,6 +1,6 @@
 package coinmarketcap
 
-import "github.com/trustwallet/watchmarket/services/charts/info"
+import "github.com/trustwallet/watchmarket/services/markets/info"
 
 const (
 	id = "coinmarketcap"

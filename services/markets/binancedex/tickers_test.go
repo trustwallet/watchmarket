@@ -1,60 +1,28 @@
 package binancedex
 
 import (
-	"encoding/json"
 	"github.com/stretchr/testify/assert"
-	"github.com/trustwallet/watchmarket/services/tickers"
-	"net/http"
+	"github.com/trustwallet/watchmarket/services/markets"
 	"net/http/httptest"
 	"sort"
 	"testing"
 	"time"
 )
 
-func TestNewClient(t *testing.T) {
-	client := NewClient("demo.api")
-	assert.NotNil(t, client)
-	assert.Equal(t, "demo.api", client.BaseUrl)
-}
-
-func TestInitProvider(t *testing.T) {
-	provider := InitProvider("demo.api")
-	assert.NotNil(t, provider)
-	assert.Equal(t, "demo.api", provider.client.BaseUrl)
-	assert.Equal(t, "binancedex", provider.ID)
-}
-
-func TestProvider_GetData(t *testing.T) {
+func TestProvider_GetTickers(t *testing.T) {
 	server := httptest.NewServer(createMockedAPI())
 	defer server.Close()
 
 	provider := InitProvider(server.URL)
-	data, err := provider.GetData()
+	data, err := provider.GetTickers()
 	assert.Nil(t, err)
 	assert.NotNil(t, data)
 	assert.Equal(t, "BNB", data[0].CoinName)
 	assert.Equal(t, uint(714), data[0].Coin)
-	assert.Equal(t, tickers.Price{Value: 123, Change24h: 10, Currency: "BNB", Provider: "binancedex"}, data[0].Price)
-	assert.Equal(t, tickers.CoinType("token"), data[0].CoinType)
+	assert.Equal(t, markets.Price{Value: 123, Change24h: 10, Currency: "BNB", Provider: "binancedex"}, data[0].Price)
+	assert.Equal(t, markets.CoinType("token"), data[0].CoinType)
 	assert.Equal(t, "", data[0].Error)
 	assert.LessOrEqual(t, data[0].LastUpdate.Unix(), time.Now().Unix())
-}
-
-func createMockedAPI() http.Handler {
-	r := http.NewServeMux()
-	r.HandleFunc("/v1/ticker/24hr", func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-		p := CoinPrice{BaseAssetName: "BaseName", QuoteAssetName: BNBAsset, PriceChangePercent: "10", LastPrice: "123"}
-		rawBytes, err := json.Marshal([]CoinPrice{p})
-		if err != nil {
-			panic(err)
-		}
-		if _, err := w.Write(rawBytes); err != nil {
-			panic(err)
-		}
-	})
-
-	return r
 }
 
 func Test_normalizeTickers(t *testing.T) {
@@ -65,7 +33,7 @@ func Test_normalizeTickers(t *testing.T) {
 	tests := []struct {
 		name        string
 		args        args
-		wantTickers tickers.Tickers
+		wantTickers markets.Tickers
 	}{
 		{
 			"test normalize binancedex quote",
@@ -90,17 +58,17 @@ func Test_normalizeTickers(t *testing.T) {
 				},
 			},
 				provider: "binancedex"},
-			tickers.Tickers{
-				tickers.Ticker{Coin: uint(714), CoinName: "BNB", TokenId: "RAVEN-F66", CoinType: tickers.Token, LastUpdate: time.Now(),
-					Price: tickers.Price{
+			markets.Tickers{
+				markets.Ticker{Coin: uint(714), CoinName: "BNB", TokenId: "RAVEN-F66", CoinType: markets.Token, LastUpdate: time.Now(),
+					Price: markets.Price{
 						Value:     0.00001082,
 						Change24h: -2.2500,
 						Currency:  "BNB",
 						Provider:  "binancedex",
 					},
 				},
-				tickers.Ticker{Coin: uint(714), CoinName: "BNB", TokenId: "SLV-986", CoinType: tickers.Token, LastUpdate: time.Now(),
-					Price: tickers.Price{
+				markets.Ticker{Coin: uint(714), CoinName: "BNB", TokenId: "SLV-986", CoinType: markets.Token, LastUpdate: time.Now(),
+					Price: markets.Price{
 						Value:     0.0449451,
 						Change24h: -5.3700,
 						Currency:  "BNB",

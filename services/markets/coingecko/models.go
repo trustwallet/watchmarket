@@ -1,7 +1,7 @@
 package coingecko
 
 import (
-	ticker "github.com/trustwallet/watchmarket/services/tickers"
+	"github.com/trustwallet/watchmarket/services/markets"
 	"time"
 )
 
@@ -17,7 +17,7 @@ type (
 	CoinResult struct {
 		Symbol          string
 		TokenId         string
-		CoinType        ticker.CoinType
+		CoinType        markets.CoinType
 		PotentialCoinID uint
 	}
 

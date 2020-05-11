@@ -3,14 +3,14 @@ package coingecko
 import (
 	"github.com/trustwallet/blockatlas/coin"
 	"github.com/trustwallet/blockatlas/pkg/errors"
-	"github.com/trustwallet/watchmarket/services/tickers"
+	"github.com/trustwallet/watchmarket/services/markets"
 	"strings"
 )
 
-func (m Provider) GetTickers() (tickers.Tickers, error) {
+func (m Provider) GetTickers() (markets.Tickers, error) {
 	coins, err := m.client.fetchCoins()
 	if err != nil {
-		return tickers.Tickers{}, err
+		return markets.Tickers{}, err
 	}
 
 	rates := m.client.fetchRates(coins)
@@ -18,9 +18,9 @@ func (m Provider) GetTickers() (tickers.Tickers, error) {
 	return tickersList, nil
 }
 
-func (m Provider) normalizeTickers(prices CoinPrices, coins Coins, provider, currency string) tickers.Tickers {
+func (m Provider) normalizeTickers(prices CoinPrices, coins Coins, provider, currency string) markets.Tickers {
 	var (
-		tickersList = make(tickers.Tickers, 0)
+		tickersList = make(markets.Tickers, 0)
 		cgCoinsMap  = createCgCoinsMap(coins)
 	)
 
@@ -35,12 +35,12 @@ func (m Provider) normalizeTickers(prices CoinPrices, coins Coins, provider, cur
 	return tickersList
 }
 
-func (m Provider) normalizeTicker(price CoinPrice, coinsMap map[string][]CoinResult, provider, currency string) tickers.Tickers {
+func (m Provider) normalizeTicker(price CoinPrice, coinsMap map[string][]CoinResult, provider, currency string) markets.Tickers {
 	var (
-		tickersList = make(tickers.Tickers, 0)
+		tickersList = make(markets.Tickers, 0)
 		tokenId     = ""
 		coinName    = strings.ToUpper(price.Symbol)
-		coinType    = tickers.Coin
+		coinType    = markets.Coin
 	)
 
 	coins, err := getCgCoinsById(coinsMap, price.Id)
@@ -52,7 +52,7 @@ func (m Provider) normalizeTicker(price CoinPrice, coinsMap map[string][]CoinRes
 
 	for _, cg := range coins {
 		coinName = strings.ToUpper(cg.Symbol)
-		if cg.CoinType == tickers.Coin {
+		if cg.CoinType == markets.Coin {
 			tokenId = ""
 		} else if len(cg.TokenId) > 0 {
 			tokenId = cg.TokenId
@@ -83,7 +83,7 @@ func createCgCoinsMap(coins Coins) map[string][]CoinResult {
 			cr := CoinResult{
 				Symbol:          c.Symbol,
 				TokenId:         "",
-				CoinType:        tickers.Coin,
+				CoinType:        markets.Coin,
 				PotentialCoinID: getCoinBySymbol(c.Symbol).ID,
 			}
 			cgCoinsMap[c.Id] = []CoinResult{cr}
@@ -108,7 +108,7 @@ func createCgCoinsMap(coins Coins) map[string][]CoinResult {
 			cr := CoinResult{
 				Symbol:          platformCoin.Symbol,
 				TokenId:         strings.ToLower(addr),
-				CoinType:        tickers.Token,
+				CoinType:        markets.Token,
 				PotentialCoinID: getCoinId(platform),
 			}
 
@@ -127,13 +127,13 @@ func getCoinsMap(coins Coins) map[string]Coin {
 	return coinsMap
 }
 
-func createTicker(price CoinPrice, coinType tickers.CoinType, coinID uint, coinName, tokenId, provider, currency string) tickers.Ticker {
-	return tickers.Ticker{
+func createTicker(price CoinPrice, coinType markets.CoinType, coinID uint, coinName, tokenId, provider, currency string) markets.Ticker {
+	return markets.Ticker{
 		Coin:     coinID,
 		CoinName: coinName,
 		CoinType: coinType,
 		TokenId:  tokenId,
-		Price: tickers.Price{
+		Price: markets.Price{
 			Value:     price.CurrentPrice,
 			Change24h: price.PriceChangePercentage24h,
 			Currency:  currency,

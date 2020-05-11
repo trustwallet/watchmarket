@@ -3,7 +3,7 @@ package coinmarketcap
 import (
 	"encoding/json"
 	"github.com/stretchr/testify/assert"
-	"github.com/trustwallet/watchmarket/services/rates"
+	"github.com/trustwallet/watchmarket/services/markets"
 	"math/big"
 	"net/http/httptest"
 	"sort"
@@ -27,7 +27,7 @@ func Test_normalizeRates(t *testing.T) {
 	tests := []struct {
 		name      string
 		prices    CoinPrices
-		wantRates rates.Rates
+		wantRates markets.Rates
 	}{
 		{
 			"test normalize coinmarketcap rate 1",
@@ -59,9 +59,9 @@ func Test_normalizeRates(t *testing.T) {
 					},
 				},
 			},
-			rates.Rates{
-				rates.Rate{Currency: "ETH", Rate: 11.11, Timestamp: 333, Provider: provider, PercentChange24h: *big.NewFloat(-1.22)},
-				rates.Rate{Currency: "BTC", Rate: 223.5, Timestamp: 333, Provider: provider, PercentChange24h: *big.NewFloat(0.33)},
+			markets.Rates{
+				markets.Rate{Currency: "ETH", Rate: 11.11, Timestamp: 333, Provider: provider, PercentChange24h: *big.NewFloat(-1.22)},
+				markets.Rate{Currency: "BTC", Rate: 223.5, Timestamp: 333, Provider: provider, PercentChange24h: *big.NewFloat(0.33)},
 			},
 		},
 		{
@@ -93,9 +93,9 @@ func Test_normalizeRates(t *testing.T) {
 					},
 				},
 			},
-			rates.Rates{
-				rates.Rate{Currency: "XRP", Rate: 0.4687, Timestamp: 123, Provider: provider, PercentChange24h: *big.NewFloat(0)},
-				rates.Rate{Currency: "BNB", Rate: 30.333, Timestamp: 123, Provider: provider, PercentChange24h: *big.NewFloat(2.1)},
+			markets.Rates{
+				markets.Rate{Currency: "XRP", Rate: 0.4687, Timestamp: 123, Provider: provider, PercentChange24h: *big.NewFloat(0)},
+				markets.Rate{Currency: "BNB", Rate: 30.333, Timestamp: 123, Provider: provider, PercentChange24h: *big.NewFloat(2.1)},
 			},
 		},
 	}

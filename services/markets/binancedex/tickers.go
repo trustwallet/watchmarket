@@ -4,7 +4,7 @@ import (
 	"github.com/trustwallet/blockatlas/coin"
 	"github.com/trustwallet/blockatlas/pkg/errors"
 	"github.com/trustwallet/blockatlas/pkg/logger"
-	"github.com/trustwallet/watchmarket/services/tickers"
+	"github.com/trustwallet/watchmarket/services/markets"
 	"strconv"
 	"time"
 )
@@ -14,20 +14,7 @@ var (
 	BNBAsset = coin.Binance().Symbol
 )
 
-type Provider struct {
-	ID     string
-	client Client
-}
-
-func InitProvider(api string) Provider {
-	m := Provider{
-		ID:     id,
-		client: NewClient(api),
-	}
-	return m
-}
-
-func (p Provider) GetData() (tickers.Tickers, error) {
+func (p Provider) GetTickers() (markets.Tickers, error) {
 	prices, err := p.client.fetchPrices()
 	if err != nil {
 		return nil, err
@@ -35,8 +22,8 @@ func (p Provider) GetData() (tickers.Tickers, error) {
 	return normalizeTickers(prices, p.ID), nil
 }
 
-func normalizeTickers(prices []CoinPrice, provider string) tickers.Tickers {
-	tickersList := make(tickers.Tickers, 0)
+func normalizeTickers(prices []CoinPrice, provider string) markets.Tickers {
+	tickersList := make(markets.Tickers, 0)
 	for _, price := range prices {
 		t, err := normalizeTicker(price, provider)
 		if err != nil {
@@ -48,8 +35,8 @@ func normalizeTickers(prices []CoinPrice, provider string) tickers.Tickers {
 	return tickersList
 }
 
-func normalizeTicker(price CoinPrice, provider string) (tickers.Ticker, error) {
-	var t tickers.Ticker
+func normalizeTicker(price CoinPrice, provider string) (markets.Ticker, error) {
+	var t markets.Ticker
 
 	if price.QuoteAssetName != BNBAsset && price.BaseAssetName != BNBAsset {
 		return t, errors.E("invalid quote/base asset",
@@ -74,12 +61,12 @@ func normalizeTicker(price CoinPrice, provider string) (tickers.Ticker, error) {
 		value = 1.0 / value
 	}
 
-	t = tickers.Ticker{
+	t = markets.Ticker{
 		Coin:     coin.BNB,
 		CoinName: BNBAsset,
-		CoinType: tickers.Token,
+		CoinType: markets.Token,
 		TokenId:  tokenId,
-		Price: tickers.Price{
+		Price: markets.Price{
 			Value:     value,
 			Change24h: value24h,
 			Currency:  BNBAsset,
