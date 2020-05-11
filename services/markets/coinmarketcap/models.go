@@ -57,4 +57,33 @@ type (
 		TokenId  string
 		CoinType ticker.CoinType
 	}
+
+	Charts struct {
+		Data ChartQuotes `json:"data"`
+	}
+
+	ChartQuotes map[string]ChartQuoteValues
+
+	ChartQuoteValues map[string][]float64
+
+	ChartInfo struct {
+		Data ChartInfoData `json:"data"`
+	}
+
+	ChartInfoData struct {
+		Rank              uint32                    `json:"rank"`
+		CirculatingSupply float64                   `json:"circulating_supply"`
+		TotalSupply       float64                   `json:"total_supply"`
+		Quotes            map[string]ChartInfoQuote `json:"quotes"`
+	}
+
+	ChartInfoQuote struct {
+		Price     float64 `json:"price"`
+		Volume24  float64 `json:"volume_24h"`
+		MarketCap float64 `json:"market_cap"`
+	}
+
+	CmcSlice []CoinMap
+
+	CoinMapping map[string]CoinMap
 )

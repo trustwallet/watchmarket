@@ -7,26 +7,13 @@ import (
 	"strings"
 )
 
-const (
-	id = "coinmarketcap"
-)
-
-type Provider struct {
-	ID, currency string
-	client       Client
-}
-
-func InitProvider(proApi, assetsApi, key, currency string) Provider {
-	return Provider{ID: id, currency: currency, client: NewClient(proApi, assetsApi, key)}
-}
-
-func (p Provider) GetData() (tickers.Tickers, error) {
-	prices, err := p.client.FetchPrices(p.currency)
+func (p Provider) GetTickers() (tickers.Tickers, error) {
+	prices, err := p.client.fetchPrices(p.currency)
 	if err != nil {
 		return nil, err
 	}
 
-	coinsMap, err := p.client.FetchCoinMap()
+	coinsMap, err := p.client.fetchCoinMap()
 	if err != nil {
 		return nil, err
 	}

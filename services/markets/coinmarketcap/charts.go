@@ -5,26 +5,12 @@ import (
 	"github.com/trustwallet/blockatlas/pkg/errors"
 	"github.com/trustwallet/blockatlas/pkg/logger"
 	"github.com/trustwallet/watchmarket/services/charts"
-	"github.com/trustwallet/watchmarket/services/charts/info"
 	"sort"
 	"strings"
 	"time"
 )
 
-const (
-	id            = "coinmarketcap"
-	chartDataSize = 3
-)
-
-type Provider struct {
-	ID     string
-	client Client
-	info   info.Client
-}
-
-func InitProvider(webApi, widgetApi, mapApi, infoApi string) Provider {
-	return Provider{ID: id, client: NewClient(webApi, widgetApi, mapApi), info: info.NewClient(infoApi)}
-}
+const chartDataSize = 3
 
 func (p Provider) GetChartData(coinID uint, token, currency string, timeStart int64) (charts.Data, error) {
 	chartsData := charts.Data{}
@@ -32,7 +18,7 @@ func (p Provider) GetChartData(coinID uint, token, currency string, timeStart in
 	if err != nil {
 		return chartsData, err
 	}
-	coinsFromCmcMap := coinsFromCmc.coinToCmcMap()
+	coinsFromCmcMap := CmcSlice(coinsFromCmc).coinToCmcMap()
 	coinObj, err := coinsFromCmcMap.getCoinByContract(coinID, token)
 	if err != nil {
 		return chartsData, err
@@ -53,7 +39,7 @@ func (p Provider) GetCoinData(coinID uint, token, currency string) (charts.CoinD
 	if err != nil {
 		return details, err
 	}
-	coinsFromCmcMap := coinsFromCmc.coinToCmcMap()
+	coinsFromCmcMap := CmcSlice(coinsFromCmc).coinToCmcMap()
 	coinObj, err := coinsFromCmcMap.getCoinByContract(coinID, token)
 	if err != nil {
 		return details, err
