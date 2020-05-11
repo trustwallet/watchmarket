@@ -1,6 +1,6 @@
 package coingecko
 
-import "github.com/trustwallet/watchmarket/services/markets/info"
+import "github.com/trustwallet/watchmarket/services/assets"
 
 const (
 	id            = "coingecko"
@@ -10,11 +10,15 @@ const (
 )
 
 type Provider struct {
-	ID, currency string
+	id, currency string
 	client       Client
-	info         info.Client
+	info         assets.Client
 }
 
 func InitProvider(api, infoApi, currency string) Provider {
-	return Provider{ID: id, currency: currency, client: NewClient(api, currency, bucketSize), info: info.NewClient(infoApi)}
+	return Provider{id: id, currency: currency, client: NewClient(api, bucketSize), info: assets.NewClient(infoApi)}
+}
+
+func (p Provider) GetProvider() string {
+	return p.id
 }

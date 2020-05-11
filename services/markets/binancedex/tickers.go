@@ -4,7 +4,7 @@ import (
 	"github.com/trustwallet/blockatlas/coin"
 	"github.com/trustwallet/blockatlas/pkg/errors"
 	"github.com/trustwallet/blockatlas/pkg/logger"
-	"github.com/trustwallet/watchmarket/services/markets"
+	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"strconv"
 	"time"
 )
@@ -14,16 +14,16 @@ var (
 	BNBAsset = coin.Binance().Symbol
 )
 
-func (p Provider) GetTickers() (markets.Tickers, error) {
+func (p Provider) GetTickers() (watchmarket.Tickers, error) {
 	prices, err := p.client.fetchPrices()
 	if err != nil {
 		return nil, err
 	}
-	return normalizeTickers(prices, p.ID), nil
+	return normalizeTickers(prices, p.id), nil
 }
 
-func normalizeTickers(prices []CoinPrice, provider string) markets.Tickers {
-	tickersList := make(markets.Tickers, 0)
+func normalizeTickers(prices []CoinPrice, provider string) watchmarket.Tickers {
+	tickersList := make(watchmarket.Tickers, 0)
 	for _, price := range prices {
 		t, err := normalizeTicker(price, provider)
 		if err != nil {
@@ -35,8 +35,8 @@ func normalizeTickers(prices []CoinPrice, provider string) markets.Tickers {
 	return tickersList
 }
 
-func normalizeTicker(price CoinPrice, provider string) (markets.Ticker, error) {
-	var t markets.Ticker
+func normalizeTicker(price CoinPrice, provider string) (watchmarket.Ticker, error) {
+	var t watchmarket.Ticker
 
 	if price.QuoteAssetName != BNBAsset && price.BaseAssetName != BNBAsset {
 		return t, errors.E("invalid quote/base asset",
@@ -61,12 +61,12 @@ func normalizeTicker(price CoinPrice, provider string) (markets.Ticker, error) {
 		value = 1.0 / value
 	}
 
-	t = markets.Ticker{
+	t = watchmarket.Ticker{
 		Coin:     coin.BNB,
 		CoinName: BNBAsset,
-		CoinType: markets.Token,
+		CoinType: watchmarket.Token,
 		TokenId:  tokenId,
-		Price: markets.Price{
+		Price: watchmarket.Price{
 			Value:     value,
 			Change24h: value24h,
 			Currency:  BNBAsset,

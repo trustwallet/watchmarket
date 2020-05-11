@@ -42,7 +42,7 @@ func SetupMarketAPI(router gin.IRouter, provider BootstrapProviders) {
 		middleware.CacheControl(time.Minute, getTickersHandler(provider.Market)))
 	router.GET("/charts",
 		middleware.CacheControl(time.Minute*10, getChartsHandler(provider.Charts, provider.Cache, provider.Market)))
-	router.GET("/info",
+	router.GET("/assets",
 		middleware.CacheControl(time.Minute*10, getCoinInfoHandler(provider.Charts, provider.Ac, provider.Cache)))
 }
 
@@ -127,8 +127,8 @@ func getTickersHandler(storage storage.Market) func(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Tags Market
-// @Param coin query int true "Coin ID" default(60)
-// @Param token query string false "Token ID"
+// @Param coin query int true "Coin id" default(60)
+// @Param token query string false "Token id"
 // @Param time_start query int false "Start timestamp" default(1574483028)
 // @Param max_items query int false "Max number of items in result prices array" default(64)
 // @Param currency query string false "The currency to show charts" default(USD)
@@ -205,17 +205,17 @@ func getChartsHandler(charts *market.Charts, cache *cache.Provider, db storage.M
 	}
 }
 
-// @Summary Get charts coin info data for a specific coin
+// @Summary Get charts coin assets data for a specific coin
 // @Id get_charts_coin_info
-// @Description Get the charts coin info data from an market and coin/contract
+// @Description Get the charts coin assets data from an market and coin/contract
 // @Accept json
 // @Produce json
 // @Tags Market
-// @Param coin query int true "Coin ID" default(60)
-// @Param token query string false "Token ID"
-// @Param currency query string false "The currency to show coin info in" default(USD)
+// @Param coin query int true "Coin id" default(60)
+// @Param token query string false "Token id"
+// @Param currency query string false "The currency to show coin assets in" default(USD)
 // @Success 200 {object} watchmarket.ChartCoinInfo
-// @Router /v1/market/info [get]
+// @Router /v1/market/assets [get]
 func getCoinInfoHandler(charts *market.Charts, ac assets.AssetClient, cache *cache.Provider) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		coinQuery := c.Query("coin")
@@ -245,9 +245,9 @@ func getCoinInfoHandler(charts *market.Charts, ac assets.AssetClient, cache *cac
 
 		chart, err = charts.GetCoinInfo(uint(coinId), token, currency)
 		if err == watchmarket.ErrNotFound {
-			logger.Info(fmt.Sprintf("Coin info for coin id %d (token: %s, currency: %s) not found", coinId, token, currency))
+			logger.Info(fmt.Sprintf("Coin assets for coin id %d (token: %s, currency: %s) not found", coinId, token, currency))
 		} else if err != nil {
-			logger.Info(err, "Failed to retrieve coin info", logger.Params{"coinId": coinId, "token": token, "currency": currency})
+			logger.Info(err, "Failed to retrieve coin assets", logger.Params{"coinId": coinId, "token": token, "currency": currency})
 		}
 
 		chart.Info, err = ac.GetCoinInfo(coinId, token)
@@ -263,7 +263,7 @@ func getCoinInfoHandler(charts *market.Charts, ac assets.AssetClient, cache *cac
 
 		err = cache.SaveCoinInfoCache(key, chart, timeStart)
 		if err != nil {
-			logger.Error(err, "Failed to save cache info chart", logger.Params{"coin": coinId, "currency": currency, "token": token, "time_start": timeStart, "key": key, "err": err})
+			logger.Error(err, "Failed to save cache assets chart", logger.Params{"coin": coinId, "currency": currency, "token": token, "time_start": timeStart, "key": key, "err": err})
 		}
 		c.JSON(http.StatusOK, chart)
 	}

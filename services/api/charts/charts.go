@@ -1,7 +1,7 @@
 package charts
 
 import (
-	"github.com/trustwallet/watchmarket/services/charts"
+	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"github.com/trustwallet/watchmarket/services/markets"
 )
 
@@ -14,7 +14,7 @@ func Init(providers markets.Providers, priority map[uint]string) Resolver {
 	return Resolver{providers: providers, priority: priority}
 }
 
-func (r Resolver) HandleChartsRequest(coinID uint, token, currency string, timeStart int64) markets.Data {
+func (r Resolver) HandleChartsRequest(coinID uint, token, currency string, timeStart int64) watchmarket.Data {
 	p, _ := r.getProvider(0)
 	result, err := p.GetChartData(coinID, token, currency, timeStart)
 	if err != nil {

@@ -220,7 +220,7 @@ func testCoinInfo(t *testing.T, server *httptest.Server) {
 	}{
 		{
 			name:           "test no coin provided",
-			requestUrl:     fmt.Sprintf("%s/v1/market/info", server.URL),
+			requestUrl:     fmt.Sprintf("%s/v1/market/assets", server.URL),
 			requestMethod:  "GET",
 			requestBody:    "",
 			expectedStatus: 400,
@@ -228,7 +228,7 @@ func testCoinInfo(t *testing.T, server *httptest.Server) {
 		},
 		{
 			name:           "test invalid coin provided",
-			requestUrl:     fmt.Sprintf("%s/v1/market/info?coin=invalid", server.URL),
+			requestUrl:     fmt.Sprintf("%s/v1/market/assets?coin=invalid", server.URL),
 			requestMethod:  "GET",
 			requestBody:    "",
 			expectedStatus: 400,
@@ -236,23 +236,15 @@ func testCoinInfo(t *testing.T, server *httptest.Server) {
 		},
 		{
 			name:           "test nominal",
-			requestUrl:     fmt.Sprintf("%s/v1/market/info?coin=60&token=ETHToken", server.URL),
+			requestUrl:     fmt.Sprintf("%s/v1/market/assets?coin=60&token=ETHToken", server.URL),
 			requestMethod:  "GET",
 			requestBody:    "",
 			expectedStatus: 200,
-			expectedBody:   "{\"circulating_supply\": 0, \"info\": {}, \"market_cap\": 0, \"total_supply\": 0, \"volume_24\": 0, \"provider\": \"\"}",
-		},
-		{
-			name:           "test coin info not found",
-			requestUrl:     fmt.Sprintf("%s/v1/market/info?coin=500&token=ETHToken", server.URL),
-			requestMethod:  "GET",
-			requestBody:    "",
-			expectedStatus: 200,
-			expectedBody:   "{\"circulating_supply\": 0, \"info\": {}, \"market_cap\": 0, \"total_supply\": 0, \"volume_24\": 0, \"provider\": \"\"}",
+
 		},
 		{
 			name:           "test coin assets not found",
-			requestUrl:     fmt.Sprintf("%s/v1/market/info?coin=1000&token=ETHToken", server.URL),
+			requestUrl:     fmt.Sprintf("%s/v1/market/assets?coin=1000&token=ETHToken", server.URL),
 			requestMethod:  "GET",
 			requestBody:    "",
 			expectedStatus: 200,

@@ -3,7 +3,7 @@ package coinmarketcap
 import (
 	"encoding/json"
 	"github.com/stretchr/testify/assert"
-	"github.com/trustwallet/watchmarket/services/markets"
+	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"net/http/httptest"
 	"reflect"
 	"sort"
@@ -44,10 +44,10 @@ func Test_normalizeInfo(t *testing.T) {
 	tests := []struct {
 		name     string
 		args     args
-		wantInfo markets.CoinDetails
+		wantInfo watchmarket.CoinDetails
 	}{
 		{
-			"test normalize coinmarketcap chart info 1",
+			"test normalize coinmarketcap chart assets 1",
 			args{
 				currency: "USD",
 				cmcCoin:  1,
@@ -62,7 +62,7 @@ func Test_normalizeInfo(t *testing.T) {
 					},
 				},
 			},
-			markets.CoinDetails{
+			watchmarket.CoinDetails{
 				Vol24:             444,
 				MarketCap:         555,
 				CirculatingSupply: 111,
@@ -70,7 +70,7 @@ func Test_normalizeInfo(t *testing.T) {
 			},
 		},
 		{
-			"test normalize coinmarketcap chart info 2",
+			"test normalize coinmarketcap chart assets 2",
 			args{
 				currency: "EUR",
 				cmcCoin:  2,
@@ -85,7 +85,7 @@ func Test_normalizeInfo(t *testing.T) {
 					},
 				},
 			},
-			markets.CoinDetails{
+			watchmarket.CoinDetails{
 				Vol24:             444,
 				MarketCap:         555,
 				CirculatingSupply: 111,
@@ -95,7 +95,7 @@ func Test_normalizeInfo(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			gotInfo, err := normalizeInfo(tt.args.currency, tt.args.cmcCoin, tt.args.data, markets.Info{})
+			gotInfo, err := normalizeInfo(tt.args.currency, tt.args.cmcCoin, tt.args.data, watchmarket.Info{})
 			assert.Nil(t, err)
 			assert.True(t, reflect.DeepEqual(tt.wantInfo, gotInfo))
 		})
@@ -116,7 +116,7 @@ func Test_normalizeCharts(t *testing.T) {
 	tests := []struct {
 		name     string
 		args     args
-		wantInfo markets.Data
+		wantInfo watchmarket.Data
 	}{
 		{
 			"test normalize coinmarketcap chart 1",
@@ -131,8 +131,8 @@ func Test_normalizeCharts(t *testing.T) {
 					},
 				},
 			},
-			markets.Data{
-				Prices: []markets.ChartsPrice{
+			watchmarket.Data{
+				Prices: []watchmarket.ChartsPrice{
 					{
 						Price: 111,
 						Date:  d1.Unix(),
@@ -156,8 +156,8 @@ func Test_normalizeCharts(t *testing.T) {
 					},
 				},
 			},
-			markets.Data{
-				Prices: []markets.ChartsPrice{
+			watchmarket.Data{
+				Prices: []watchmarket.ChartsPrice{
 					{
 						Price: 333,
 						Date:  d1.Unix(),

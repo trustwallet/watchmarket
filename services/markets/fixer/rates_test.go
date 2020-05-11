@@ -3,7 +3,7 @@ package fixer
 import (
 	"encoding/json"
 	"github.com/stretchr/testify/assert"
-	"github.com/trustwallet/watchmarket/services/markets"
+	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"net/http/httptest"
 	"sort"
 	"testing"
@@ -29,7 +29,7 @@ func Test_normalizeRates(t *testing.T) {
 	tests := []struct {
 		name      string
 		latest    Rate
-		wantRates markets.Rates
+		wantRates watchmarket.Rates
 	}{
 		{
 			"test normalize fixer rate 1",
@@ -38,10 +38,10 @@ func Test_normalizeRates(t *testing.T) {
 				Rates:     map[string]float64{"USD": 22.111, "BRL": 33.2, "BTC": 44.99},
 				UpdatedAt: time.Now(),
 			},
-			markets.Rates{
-				markets.Rate{Currency: "USD", Rate: 22.111, Timestamp: 123, Provider: provider},
-				markets.Rate{Currency: "BRL", Rate: 33.2, Timestamp: 123, Provider: provider},
-				markets.Rate{Currency: "BTC", Rate: 44.99, Timestamp: 123, Provider: provider},
+			watchmarket.Rates{
+				watchmarket.Rate{Currency: "USD", Rate: 22.111, Timestamp: 123, Provider: provider},
+				watchmarket.Rate{Currency: "BRL", Rate: 33.2, Timestamp: 123, Provider: provider},
+				watchmarket.Rate{Currency: "BTC", Rate: 44.99, Timestamp: 123, Provider: provider},
 			},
 		},
 		{
@@ -51,10 +51,10 @@ func Test_normalizeRates(t *testing.T) {
 				Rates:     map[string]float64{"LSK": 123.321, "IFC": 34.973, "DUO": 998.3},
 				UpdatedAt: time.Now(),
 			},
-			markets.Rates{
-				markets.Rate{Currency: "IFC", Rate: 34.973, Timestamp: 333, Provider: provider},
-				markets.Rate{Currency: "LSK", Rate: 123.321, Timestamp: 333, Provider: provider},
-				markets.Rate{Currency: "DUO", Rate: 998.3, Timestamp: 333, Provider: provider},
+			watchmarket.Rates{
+				watchmarket.Rate{Currency: "IFC", Rate: 34.973, Timestamp: 333, Provider: provider},
+				watchmarket.Rate{Currency: "LSK", Rate: 123.321, Timestamp: 333, Provider: provider},
+				watchmarket.Rate{Currency: "DUO", Rate: 998.3, Timestamp: 333, Provider: provider},
 			},
 		},
 	}

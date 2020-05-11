@@ -3,7 +3,7 @@ package coinmarketcap
 import (
 	"encoding/json"
 	"github.com/stretchr/testify/assert"
-	"github.com/trustwallet/watchmarket/services/markets"
+	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"net/http/httptest"
 	"sort"
 	"testing"
@@ -35,7 +35,7 @@ func Test_normalizeTickers(t *testing.T) {
 	tests := []struct {
 		name        string
 		args        args
-		wantTickers markets.Tickers
+		wantTickers watchmarket.Tickers
 	}{
 		{
 			"test normalize coinmarketcap quote",
@@ -51,33 +51,33 @@ func Test_normalizeTickers(t *testing.T) {
 					USD: USD{Price: 123.09, PercentChange24h: -1.4}},
 					Platform: Platform{Coin: Coin{Symbol: "BNB"}, TokenAddress: "0x8ce9137d39326ad0cd6491fb5cc0cba0e089b6a9"}},
 			}}, provider: "coinmarketcap"},
-			markets.Tickers{
-				markets.Ticker{CoinName: "BTC", CoinType: markets.Coin, LastUpdate: time.Unix(111, 0),
-					Price: markets.Price{
+			watchmarket.Tickers{
+				watchmarket.Ticker{CoinName: "BTC", CoinType: watchmarket.Coin, LastUpdate: time.Unix(111, 0),
+					Price: watchmarket.Price{
 						Value:     223.55,
 						Change24h: 10,
 						Currency:  "USD",
 						Provider:  "coinmarketcap",
 					},
 				},
-				markets.Ticker{CoinName: "ETH", CoinType: markets.Coin, LastUpdate: time.Unix(333, 0),
-					Price: markets.Price{
+				watchmarket.Ticker{CoinName: "ETH", CoinType: watchmarket.Coin, LastUpdate: time.Unix(333, 0),
+					Price: watchmarket.Price{
 						Value:     11.11,
 						Change24h: 20,
 						Currency:  "USD",
 						Provider:  "coinmarketcap",
 					},
 				},
-				markets.Ticker{CoinName: "ETH", TokenId: "0x8ce9137d39326ad0cd6491fb5cc0cba0e089b6a9", CoinType: markets.Token, LastUpdate: time.Unix(444, 0),
-					Price: markets.Price{
+				watchmarket.Ticker{CoinName: "ETH", TokenId: "0x8ce9137d39326ad0cd6491fb5cc0cba0e089b6a9", CoinType: watchmarket.Token, LastUpdate: time.Unix(444, 0),
+					Price: watchmarket.Price{
 						Value:     463.22,
 						Change24h: -3,
 						Currency:  "USD",
 						Provider:  "coinmarketcap",
 					},
 				},
-				markets.Ticker{Coin: 1023, CoinName: "ONE", CoinType: markets.Coin, LastUpdate: time.Unix(555, 0),
-					Price: markets.Price{
+				watchmarket.Ticker{Coin: 1023, CoinName: "ONE", CoinType: watchmarket.Coin, LastUpdate: time.Unix(555, 0),
+					Price: watchmarket.Price{
 						Value:     123.09,
 						Change24h: -1.4,
 						Currency:  "USD",

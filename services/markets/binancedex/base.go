@@ -1,14 +1,18 @@
 package binancedex
 
 type Provider struct {
-	ID     string
+	id     string
 	client Client
 }
 
 func InitProvider(api string) Provider {
 	m := Provider{
-		ID:     id,
+		id:     id,
 		client: NewClient(api),
 	}
 	return m
+}
+
+func (p Provider) GetProvider() string {
+	return p.id
 }
