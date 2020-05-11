@@ -1,37 +1,23 @@
-# Gin is the web framework
-gin:
-  # Possible values: "debug", "release"
-  mode: release
-  # App running behind a reverse proxy?
-  # If set, HTTP Forwarded headers will be respected
-  reverse_proxy: false
+mode: release # Possible values: "debug", "release"
+redis: redis://localhost:6379 # Redis host here
+cache: # Cache padurationrams for REST API
+  charts: 5m
+  info: 2h
+assets: https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ # Assets url - details about TW tokens
+dex:
+  quote_update_time: 5m
+  api: https://dex.binance.org/api
+cmc:
+  api: https://pro-api.coinmarketcap.com
+  webapi: https://web-api.coinmarketcap.com
+  widgetapi: https://widgets.coinmarketcap.com
+  key: # YOUR_API_KEY
+  map_url: https://raw.githubusercontent.com/trustwallet/assets/master/pricing/coinmarketcap
+  caching_duration: 1m
+fixer:
+  rate_update_time: 1h
+  api: https://data.fixer.io/api
+  key: # YOUR_API_KEY
+coingecko:
+  api: https://api.coingecko.com/api
 
-# The market watcher
-market:
-  enabled: true
-  quote_update_time: 20m
-  rate_update_time: 20m
-  caching:
-    charts: 5m
-    info: 2h
-  assets:
-    api: https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/
-  dex:
-    quote_update_time: 5m
-    api: https://dex.binance.org/api
-  cmc:
-    api: https://pro-api.coinmarketcap.com
-    webapi: https://web-api.coinmarketcap.com
-    widgetapi: https://widgets.coinmarketcap.com
-    api_key: # YOUR_API_KEY
-    map_url: https://raw.githubusercontent.com/trustwallet/assets/master/pricing/coinmarketcap
-    caching_duration: 1m
-  fixer:
-    rate_update_time: 1h
-    api: https://data.fixer.io/api
-    api_key: # YOUR_API_KEY
-  coingecko:
-    api: https://api.coingecko.com/api
-
-storage:
-  redis: redis://localhost:6379
