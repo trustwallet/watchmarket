@@ -125,14 +125,14 @@ func getCoinByParams(coinMap map[string]Coin, symbol, token string) (Coin, error
 
 func normalizeCharts(c Charts) watchmarket.Chart {
 	chartsData := watchmarket.Chart{}
-	prices := make([]watchmarket.ChartsPrice, 0)
+	prices := make([]watchmarket.ChartPrice, 0)
 	for _, quote := range c.Prices {
 		if len(quote) != chartDataSize {
 			continue
 		}
 
 		date := time.Unix(int64(quote[0])/1000, 0)
-		prices = append(prices, watchmarket.ChartsPrice{
+		prices = append(prices, watchmarket.ChartPrice{
 			Price: quote[1],
 			Date:  date.Unix(),
 		})

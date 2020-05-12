@@ -4,10 +4,7 @@ import (
 	"flag"
 	"github.com/gin-gonic/gin"
 	"github.com/trustwallet/blockatlas/api/middleware"
-	"github.com/trustwallet/blockatlas/pkg/logger"
-	"github.com/trustwallet/watchmarket/config"
 	"net/http"
-	"path/filepath"
 )
 
 func ParseArgs(defaultPort, defaultConfigPath string) (string, string) {
@@ -31,14 +28,14 @@ func ParseArgs(defaultPort, defaultConfigPath string) (string, string) {
 //	return cache
 //}
 
-func InitConfig(confPath string) {
-	confPath, err := filepath.Abs(confPath)
-	if err != nil {
-		logger.Fatal(err)
-	}
-
-	config.LoadConfig(confPath)
-}
+//func InitConfig(confPath string) {
+//	confPath, err := filepath.Abs(confPath)
+//	if err != nil {
+//		logger.Fatal(err)
+//	}
+//
+//	config.LoadConfig(confPath)
+//}
 
 func InitEngine(handler *gin.HandlerFunc, ginMode string) *gin.Engine {
 	gin.SetMode(ginMode)

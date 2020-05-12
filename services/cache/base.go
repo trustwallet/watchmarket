@@ -2,15 +2,16 @@ package cache
 
 import (
 	"github.com/trustwallet/watchmarket/redis"
+	"time"
 )
 
 type Instance struct {
-	cachingDuration uint
-	redis           redis.Redis
+	chartsCaching time.Duration
+	redis         redis.Redis
 }
 
-func Init(redis redis.Redis) Instance {
-	return Instance{redis: redis}
+func Init(redis redis.Redis, chartsCaching time.Duration) Instance {
+	return Instance{redis: redis, chartsCaching: chartsCaching}
 }
 
 func (i Instance) GetTickers() {

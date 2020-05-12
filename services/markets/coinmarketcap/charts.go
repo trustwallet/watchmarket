@@ -58,7 +58,7 @@ func (p Provider) GetCoinData(coinID uint, token, currency string) (watchmarket.
 
 func normalizeCharts(currency string, c Charts) watchmarket.Chart {
 	chartsData := watchmarket.Chart{}
-	prices := make([]watchmarket.ChartsPrice, 0)
+	prices := make([]watchmarket.ChartPrice, 0)
 	for dateSrt, q := range c.Data {
 		date, err := time.Parse(time.RFC3339, dateSrt)
 		if err != nil {
@@ -71,7 +71,7 @@ func normalizeCharts(currency string, c Charts) watchmarket.Chart {
 		if len(quote) < chartDataSize {
 			continue
 		}
-		prices = append(prices, watchmarket.ChartsPrice{
+		prices = append(prices, watchmarket.ChartPrice{
 			Price: quote[0],
 			Date:  date.Unix(),
 		})
