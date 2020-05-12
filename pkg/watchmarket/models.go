@@ -86,3 +86,7 @@ const (
 func (d Chart) IsEmpty() bool {
 	return len(d.Prices) == 0
 }
+
+func (i CoinDetails) IsEmpty() bool {
+	return i.Info.Name == ""
+}

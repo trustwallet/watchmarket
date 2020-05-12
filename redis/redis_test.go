@@ -10,7 +10,9 @@ import (
 )
 
 func TestInit(t *testing.T) {
-	redisInit(t)
+	i, err := redisInit(t)
+	assert.Nil(t, err)
+	assert.NotNil(t, i)
 }
 
 func TestRedis_Set(t *testing.T) {
@@ -111,5 +113,5 @@ func redisInit(t *testing.T) (Redis, error) {
 	assert.Nil(t, err)
 	assert.NotNil(t, c)
 
-	return Redis{c}, nil
+	return c, nil
 }
