@@ -2,15 +2,12 @@ package internal
 
 import (
 	"flag"
-	"github.com/btcsuite/goleveldb/leveldb/storage"
 	"github.com/gin-gonic/gin"
 	"github.com/trustwallet/blockatlas/api/middleware"
 	"github.com/trustwallet/blockatlas/pkg/logger"
 	"github.com/trustwallet/watchmarket/config"
-	"github.com/trustwallet/watchmarket/services/cache"
 	"net/http"
 	"path/filepath"
-	"time"
 )
 
 func ParseArgs(defaultPort, defaultConfigPath string) (string, string) {
@@ -61,18 +58,18 @@ func InitEngine(handler *gin.HandlerFunc, ginMode string) *gin.Engine {
 	return engine
 }
 
-func InitCaching(db *storage.Storage, chartsDuration string, chartsInfoDuration string) *cache.Provider {
-	chartsCachingDuration, err := time.ParseDuration(chartsDuration)
-	if err != nil {
-		logger.Warn("Failed to parse charts duration from config, using default value")
-	} else {
-		cache.SetChartsCachingDuration(int64(chartsCachingDuration.Seconds()))
-	}
-	chartsInfoCachingDuration, err := time.ParseDuration(chartsInfoDuration)
-	if err != nil {
-		logger.Warn("Failed to parse charts INFO duration from config, using default value")
-	} else {
-		cache.SetChartsCachingInfoDuration(int64(chartsInfoCachingDuration.Seconds()))
-	}
-	return cache.InitCaching(db)
-}
+//func InitCaching(db *storage.Storage, chartsDuration string, chartsInfoDuration string) *cache.Provider {
+//	chartsCachingDuration, err := time.ParseDuration(chartsDuration)
+//	if err != nil {
+//		logger.Warn("Failed to parse charts duration from config, using default value")
+//	} else {
+//		cache.SetChartsCachingDuration(int64(chartsCachingDuration.Seconds()))
+//	}
+//	chartsInfoCachingDuration, err := time.ParseDuration(chartsInfoDuration)
+//	if err != nil {
+//		logger.Warn("Failed to parse charts INFO duration from config, using default value")
+//	} else {
+//		cache.SetChartsCachingInfoDuration(int64(chartsInfoCachingDuration.Seconds()))
+//	}
+//	return cache.InitCaching(db)
+//}
