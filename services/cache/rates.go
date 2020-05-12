@@ -6,12 +6,12 @@ import (
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 )
 
-func (i Instance) GetTickers(key string) (watchmarket.Tickers, error) {
+func (i Instance) GetRates(key string) (watchmarket.Rates, error) {
 	raw, err := i.redis.Get(key)
 	if err != nil {
 		return nil, err
 	}
-	var result watchmarket.Tickers
+	var result watchmarket.Rates
 	err = json.Unmarshal(raw, &result)
 	if err != nil {
 		return nil, err
@@ -19,9 +19,9 @@ func (i Instance) GetTickers(key string) (watchmarket.Tickers, error) {
 	return result, nil
 }
 
-func (i Instance) SaveTickers(key string, tickers watchmarket.Tickers) error {
+func (i Instance) SaveRates(key string, tickers watchmarket.Rates) error {
 	if len(tickers) == 0 {
-		return errors.E("Tickers are empty")
+		return errors.E("Rates are empty")
 	}
 
 	raw, err := json.Marshal(tickers)
@@ -29,7 +29,7 @@ func (i Instance) SaveTickers(key string, tickers watchmarket.Tickers) error {
 		return err
 	}
 
-	err = i.redis.Set(key, raw, i.tickersCaching)
+	err = i.redis.Set(key, raw, i.ratesCaching)
 	if err != nil {
 		return err
 	}

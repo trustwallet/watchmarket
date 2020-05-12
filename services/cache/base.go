@@ -23,7 +23,3 @@ func GenerateKey(data string) string {
 	hash := sha1.Sum([]byte(data))
 	return base64.URLEncoding.EncodeToString(hash[:])
 }
-
-func (i Instance) GetRates() {
-
-}
