@@ -14,11 +14,14 @@ func TestInit(t *testing.T) {
 
 	r, err := redis.Init(fmt.Sprintf("redis://%s", s.Addr()))
 	assert.Nil(t, err)
-	i := Init(r, time.Minute)
+	i := Init(r, time.Minute, time.Minute, time.Minute, time.Minute)
 
 	assert.NotNil(t, i)
 	assert.True(t, i.redis.IsAvailable())
 	assert.Equal(t, i.chartsCaching, time.Minute)
+	assert.Equal(t, i.tickersCaching, time.Minute)
+	assert.Equal(t, i.ratesCaching, time.Minute)
+	assert.Equal(t, i.detailsCaching, time.Minute)
 }
 
 func TestGenerateKey(t *testing.T) {
