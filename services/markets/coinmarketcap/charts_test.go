@@ -132,7 +132,7 @@ func Test_normalizeCharts(t *testing.T) {
 				},
 			},
 			watchmarket.Chart{
-				Prices: []watchmarket.ChartsPrice{
+				Prices: []watchmarket.ChartPrice{
 					{
 						Price: 111,
 						Date:  d1.Unix(),
@@ -157,7 +157,7 @@ func Test_normalizeCharts(t *testing.T) {
 				},
 			},
 			watchmarket.Chart{
-				Prices: []watchmarket.ChartsPrice{
+				Prices: []watchmarket.ChartPrice{
 					{
 						Price: 333,
 						Date:  d1.Unix(),

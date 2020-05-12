@@ -10,17 +10,17 @@ type Redis struct {
 	client redis.Client
 }
 
-func Init(host string) (redis.Client, error) {
+func Init(host string) (Redis, error) {
 	options, err := redis.ParseURL(host)
 	if err != nil {
-		return redis.Client{}, err
+		return Redis{}, err
 	}
 	client := redis.NewClient(options)
 	if err := client.Ping().Err(); err != nil {
-		return redis.Client{}, err
+		return Redis{}, err
 	}
 
-	return *client, nil
+	return Redis{client: *client}, nil
 }
 
 func (db Redis) Get(key string) ([]byte, error) {

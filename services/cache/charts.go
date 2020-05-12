@@ -51,7 +51,7 @@ func (i Instance) SaveChartsCache(key string, data watchmarket.Chart, timeStart 
 	cachingKey := i.GenerateKey(key + strconv.Itoa(int(timeStart)))
 	interval := CachedInterval{
 		Timestamp: timeStart,
-		Duration:  int64(i.cachingDuration),
+		Duration:  int64(DurationToUnix(i.chartsCaching)),
 		Key:       cachingKey,
 	}
 
@@ -60,7 +60,7 @@ func (i Instance) SaveChartsCache(key string, data watchmarket.Chart, timeStart 
 		return err
 	}
 
-	err = i.redis.Set(cachingKey, rawData, time.Minute)
+	err = i.redis.Set(cachingKey, rawData, i.chartsCaching)
 	if err != nil {
 		return err
 	}
@@ -129,9 +129,17 @@ func (i Instance) updateInterval(key string, interval CachedInterval) error {
 		return err
 	}
 
-	err = i.redis.Set(key, rawNewIntervalsRaw, time.Minute)
+	err = i.redis.Set(key, rawNewIntervalsRaw, i.chartsCaching)
 	if err != nil {
 		return err
 	}
 	return nil
+}
+
+func UnixToDuration(unixTime uint) time.Duration {
+	return time.Duration(unixTime * 1000000000)
+}
+
+func DurationToUnix(duration time.Duration) uint {
+	return uint(duration.Seconds())
 }
