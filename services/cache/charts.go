@@ -1,8 +1,6 @@
 package cache
 
 import (
-	"crypto/sha1"
-	"encoding/base64"
 	"encoding/json"
 	"github.com/trustwallet/blockatlas/pkg/errors"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
@@ -39,7 +37,7 @@ func (i Instance) GetCharts(key string, timeStart int64) (watchmarket.Chart, err
 	return watchmarket.Chart{}, errors.E("cache is not valid")
 }
 
-func (i Instance) SaveChartsCache(key string, data watchmarket.Chart, timeStart int64) error {
+func (i Instance) SaveCharts(key string, data watchmarket.Chart, timeStart int64) error {
 	if data.IsEmpty() {
 		return errors.E("data is empty")
 	}
@@ -48,7 +46,7 @@ func (i Instance) SaveChartsCache(key string, data watchmarket.Chart, timeStart 
 	if err != nil {
 		return err
 	}
-	cachingKey := i.GenerateKey(key + strconv.Itoa(int(timeStart)))
+	cachingKey := GenerateKey(key + strconv.Itoa(int(timeStart)))
 	interval := CachedInterval{
 		Timestamp: timeStart,
 		Duration:  int64(DurationToUnix(i.chartsCaching)),
@@ -65,11 +63,6 @@ func (i Instance) SaveChartsCache(key string, data watchmarket.Chart, timeStart 
 		return err
 	}
 	return nil
-}
-
-func (i Instance) GenerateKey(data string) string {
-	hash := sha1.Sum([]byte(data))
-	return base64.URLEncoding.EncodeToString(hash[:])
 }
 
 func (i Instance) getIntervalKey(key string, time int64) (string, error) {
@@ -106,13 +99,15 @@ func (i Instance) updateInterval(key string, interval CachedInterval) error {
 	var currentIntervals []CachedInterval
 
 	rawIntervals, err := i.redis.Get(key)
-	if err != nil {
+	if err != nil && err.Error() != "Not found" {
 		return err
 	}
 
-	err = json.Unmarshal(rawIntervals, &currentIntervals)
-	if err != nil {
-		return err
+	if err == nil {
+		err = json.Unmarshal(rawIntervals, &currentIntervals)
+		if err != nil {
+			return err
+		}
 	}
 
 	var newCurrentIntervals []CachedInterval
