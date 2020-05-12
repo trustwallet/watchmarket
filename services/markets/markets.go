@@ -19,7 +19,7 @@ type (
 
 	ChartsAPI interface {
 		Provider
-		GetChartData(coinID uint, token, currency string, timeStart int64) (watchmarket.Data, error)
+		GetChartData(coinID uint, token, currency string, timeStart int64) (watchmarket.Chart, error)
 		GetCoinData(coinID uint, token, currency string) (watchmarket.CoinDetails, error)
 	}
 
