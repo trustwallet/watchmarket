@@ -17,7 +17,7 @@ func TestInstance_GetCoinDetails(t *testing.T) {
 	r, err := redis.Init(fmt.Sprintf("redis://%s", s.Addr()))
 	assert.Nil(t, err)
 
-	i := Init(r, time.Second*1000)
+	i := Init(r, time.Second*1000, time.Second*1000, time.Second*1000, time.Second*1000)
 	assert.NotNil(t, i)
 	seedDbChartsInfo(t, i)
 
@@ -34,7 +34,7 @@ func TestProvider_GetCoinInfoCache_Expired(t *testing.T) {
 	r, err := redis.Init(fmt.Sprintf("redis://%s", s.Addr()))
 	assert.Nil(t, err)
 
-	i := Init(r, time.Second*1000)
+	i := Init(r, time.Second*1000, time.Second*1000, time.Second*1000, time.Second*1000)
 	assert.NotNil(t, i)
 	seedDbChartsInfo(t, i)
 
@@ -51,7 +51,7 @@ func TestProvider_GetCoinInfoCache_Mixed(t *testing.T) {
 	r, err := redis.Init(fmt.Sprintf("redis://%s", s.Addr()))
 	assert.Nil(t, err)
 
-	i := Init(r, time.Second*1000)
+	i := Init(r, time.Second*1000, time.Second*1000, time.Second*1000, time.Second*1000)
 	assert.NotNil(t, i)
 	seedDbChartsInfo(t, i)
 
@@ -73,7 +73,7 @@ func TestInstance_SaveCoinDetails(t *testing.T) {
 	r, err := redis.Init(fmt.Sprintf("redis://%s", s.Addr()))
 	assert.Nil(t, err)
 
-	i := Init(r, time.Second*1000)
+	i := Init(r, time.Second*1000, time.Second*1000, time.Second*1000, time.Second*1000)
 	assert.NotNil(t, i)
 
 	err = i.SaveCoinDetails("testKEY", watchmarket.CoinDetails{}, 0)

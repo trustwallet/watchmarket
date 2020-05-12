@@ -19,7 +19,7 @@ func (i Instance) SaveCoinDetails(key string, data watchmarket.CoinDetails, time
 	cachingKey := GenerateKey(key + strconv.Itoa(int(timeStart)))
 	interval := CachedInterval{
 		Timestamp: timeStart,
-		Duration:  int64(DurationToUnix(i.chartsCaching)),
+		Duration:  int64(DurationToUnix(i.detailsCaching)),
 		Key:       cachingKey,
 	}
 
@@ -28,7 +28,7 @@ func (i Instance) SaveCoinDetails(key string, data watchmarket.CoinDetails, time
 		return err
 	}
 
-	err = i.redis.Set(cachingKey, rawData, i.chartsCaching)
+	err = i.redis.Set(cachingKey, rawData, i.detailsCaching)
 	if err != nil {
 		return err
 	}

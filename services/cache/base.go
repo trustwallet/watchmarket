@@ -8,12 +8,15 @@ import (
 )
 
 type Instance struct {
-	chartsCaching time.Duration
-	redis         redis.Redis
+	redis          redis.Redis
+	chartsCaching  time.Duration
+	tickersCaching time.Duration
+	ratesCaching   time.Duration
+	detailsCaching time.Duration
 }
 
-func Init(redis redis.Redis, chartsCaching time.Duration) Instance {
-	return Instance{redis: redis, chartsCaching: chartsCaching}
+func Init(redis redis.Redis, chartsCaching, tickersCaching, ratesCaching, detailsCaching time.Duration) Instance {
+	return Instance{redis, chartsCaching, tickersCaching, ratesCaching, detailsCaching}
 }
 
 func GenerateKey(data string) string {
