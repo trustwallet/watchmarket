@@ -1,23 +1,38 @@
-mode: release # Possible values: "debug", "release"
-redis: redis://localhost:6379 # Redis host here
-cache: # Cache padurationrams for REST API
-  charts: 5m
-  info: 2h
-assets: https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ # Assets url - details about TW tokens
-dex:
-  quote_update_time: 5m
-  api: https://dex.binance.org/api
-cmc:
-  api: https://pro-api.coinmarketcap.com
-  webapi: https://web-api.coinmarketcap.com
-  widgetapi: https://widgets.coinmarketcap.com
-  key: # YOUR_API_KEY
-  map_url: https://raw.githubusercontent.com/trustwallet/assets/master/pricing/coinmarketcap
-  caching_duration: 1m
-fixer:
-  rate_update_time: 1h
-  api: https://data.fixer.io/api
-  key: # YOUR_API_KEY
-coingecko:
-  api: https://api.coingecko.com/api
+markets:
+  priority: # for each data type: [first in queue, next, ...]
+    charts: [coinmarketcap, coingecko]
+    coin_info: [coinmarketcap, coingecko]
+    tickers: [coinmarketcap, coingecko]
+    rates: [fixer, coinmarketcap, coingecko]
+
+  binancedex:
+    api: https://dex.binance.org/api
+
+  coinmarketcap:
+    api: https://pro-api.coinmarketcap.com
+    key: # YOUR_API_KEY
+    web_api: https://web-api.coinmarketcap.com
+    widget_api: https://widgets.coinmarketcap.com
+    map_api: https://raw.githubusercontent.com/trustwallet/assets/master/pricing/coinmarketcap
+
+  coingecko:
+    api: https://api.coingecko.com/api
+
+  fixer:
+    api: https://data.fixer.io/api
+    key: # YOUR_API_KEY
+
+  assets: https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ # Assets url - details about TW tokens
+
+storage:
+  redis: redis://localhost:6379
+  postgres: postgresql://user:pass@localhost/my_db?sslmode=disable
+
+rest_api:
+  mode: release # Possible values: "debug", "release"
+  port: 8420 # Possible values: "debug", "release"
+  cache: # Cache padurationrams for REST API
+    charts: 5m
+    info: 2h
+
 
