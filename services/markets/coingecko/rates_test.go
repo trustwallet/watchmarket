@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/stretchr/testify/assert"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
+	"github.com/trustwallet/watchmarket/services/assets"
 	"net/http/httptest"
 	"sort"
 	"testing"
@@ -13,7 +14,7 @@ import (
 func TestProvider_GetRates(t *testing.T) {
 	server := httptest.NewServer(createMockedAPI())
 	defer server.Close()
-	provider := InitProvider(server.URL, server.URL, "USD")
+	provider := InitProvider(server.URL, server.URL, "USD", assets.NewClient("assets.api"))
 	data, err := provider.GetRates()
 	assert.Nil(t, err)
 	rawData, err := json.Marshal(data)

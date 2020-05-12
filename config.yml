@@ -22,7 +22,7 @@ markets:
     api: https://data.fixer.io/api
     key: # YOUR_API_KEY
 
-  assets: https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ # Assets url - details about TW tokens
+  assets: https://raw.githubusercontent.com/trustwallet/assets/master/blockchains # Assets url - details about TW tokens
 
 storage:
   redis: redis://localhost:6379

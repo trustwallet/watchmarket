@@ -5,13 +5,14 @@ import (
 	"fmt"
 	"github.com/stretchr/testify/assert"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
+	"github.com/trustwallet/watchmarket/services/assets"
 	"net/http"
 	"testing"
 	"time"
 )
 
 func TestInitProvider(t *testing.T) {
-	provider := InitProvider("web.api", "assets.api", "USD")
+	provider := InitProvider("web.api", "assets.api", "USD", assets.NewClient("assets.api"))
 	assert.NotNil(t, provider)
 	assert.Equal(t, "web.api", provider.client.BaseUrl)
 	assert.Equal(t, "assets.api", provider.info.BaseUrl)
@@ -20,7 +21,7 @@ func TestInitProvider(t *testing.T) {
 }
 
 func TestProvider_GetProvider(t *testing.T) {
-	provider := InitProvider("web.api", "assets.api", "USD")
+	provider := InitProvider("web.api", "assets.api", "USD", assets.NewClient("assets.api"))
 	assert.Equal(t, "coingecko", provider.GetProvider())
 }
 
@@ -122,7 +123,7 @@ func createMockedAPI() http.Handler {
 			panic(err)
 		}
 	})
-	r.HandleFunc("/ethereum/assets/assets.json", func(w http.ResponseWriter, r *http.Request) {
+	r.HandleFunc("/ethereum/info/info.json", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		if _, err := fmt.Fprintf(w, mockedInfoResponse); err != nil {
 			panic(err)

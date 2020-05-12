@@ -3,12 +3,13 @@ package coinmarketcap
 import (
 	"fmt"
 	"github.com/stretchr/testify/assert"
+	"github.com/trustwallet/watchmarket/services/assets"
 	"net/http"
 	"testing"
 )
 
 func TestInitProvider(t *testing.T) {
-	provider := InitProvider("pro.api", "assets.api", "web.api", "widget.api", "assets.api", "key", "USD")
+	provider := InitProvider("pro.api", "assets.api", "web.api", "widget.api", "assets.api", "key", "USD", assets.NewClient("assets.api"))
 	assert.NotNil(t, provider)
 	assert.Equal(t, "pro.api", provider.client.api.BaseUrl)
 	assert.Equal(t, "web.api", provider.client.web.BaseUrl)
@@ -20,7 +21,7 @@ func TestInitProvider(t *testing.T) {
 }
 
 func TestProvider_GetProvider(t *testing.T) {
-	provider := InitProvider("pro.api", "assets.api", "web.api", "widget.api", "assets.api", "key", "USD")
+	provider := InitProvider("pro.api", "assets.api", "web.api", "widget.api", "assets.api", "key", "USD", assets.NewClient("assets.api"))
 	assert.Equal(t, "coinmarketcap", provider.GetProvider())
 }
 
@@ -48,7 +49,7 @@ func createMockedAPI() http.Handler {
 		}
 	})
 
-	r.HandleFunc("/ethereum/assets/assets.json", func(w http.ResponseWriter, r *http.Request) {
+	r.HandleFunc("/ethereum/info/info.json", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		if _, err := fmt.Fprintf(w, mockedInfoResponse); err != nil {
 			panic(err)

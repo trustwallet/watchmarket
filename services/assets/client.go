@@ -6,7 +6,6 @@ import (
 	"github.com/trustwallet/blockatlas/pkg/blockatlas"
 	"github.com/trustwallet/blockatlas/pkg/errors"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
-	"net/url"
 )
 
 type Client struct {
@@ -24,11 +23,11 @@ func (c Client) GetCoinInfo(coinId uint, token string) (watchmarket.Info, error)
 	}
 
 	var (
-		path   = fmt.Sprintf("%s/assets.json", getPathForCoin(coinObject, token))
+		path   = fmt.Sprintf("%s/info.json", getPathForCoin(coinObject, token))
 		result watchmarket.Info
 	)
 
-	err := c.Get(&result, path, url.Values{})
+	err := c.Get(&result, path, nil)
 	if err != nil {
 		return result, err
 	}
@@ -38,7 +37,7 @@ func (c Client) GetCoinInfo(coinId uint, token string) (watchmarket.Info, error)
 
 func getPathForCoin(c coin.Coin, token string) string {
 	if len(token) == 0 {
-		return c.Handle + "/assets"
+		return c.Handle + "/info"
 	}
-	return c.Handle + "/assets/" + token
+	return c.Handle + "/info/" + token
 }

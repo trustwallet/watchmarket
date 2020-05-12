@@ -12,8 +12,8 @@ type Provider struct {
 	info         assets.Client
 }
 
-func InitProvider(proApi, assetsApi, webApi, widgetApi, infoApi, key, currency string) Provider {
-	return Provider{id: id, currency: currency, client: NewClient(proApi, assetsApi, webApi, widgetApi, key), info: assets.NewClient(infoApi)}
+func InitProvider(proApi, assetsApi, webApi, widgetApi, infoApi, key, currency string, info assets.Client) Provider {
+	return Provider{id: id, currency: currency, client: NewClient(proApi, assetsApi, webApi, widgetApi, key), info: info}
 }
 
 func (p Provider) GetProvider() string {
