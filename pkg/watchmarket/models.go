@@ -42,7 +42,7 @@ type (
 
 	Tickers []Ticker
 
-	Data struct {
+	Chart struct {
 		Prices []ChartsPrice `json:"prices,omitempty"`
 		Error  string        `json:"error,omitempty"`
 	}
@@ -82,3 +82,11 @@ const (
 	Coin  CoinType = "coin"
 	Token CoinType = "token"
 )
+
+func (d Chart) IsEmpty() bool {
+	return len(d.Prices) == 0
+}
+
+func (i Chart) IsEmpty() bool {
+	return i.Info == nil || i.Info.Name == ""
+}

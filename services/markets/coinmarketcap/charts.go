@@ -12,8 +12,8 @@ import (
 
 const chartDataSize = 3
 
-func (p Provider) GetChartData(coinID uint, token, currency string, timeStart int64) (watchmarket.Data, error) {
-	chartsData := watchmarket.Data{}
+func (p Provider) GetChartData(coinID uint, token, currency string, timeStart int64) (watchmarket.Chart, error) {
+	chartsData := watchmarket.Chart{}
 	coinsFromCmc, err := p.client.fetchCoinMap()
 	if err != nil {
 		return chartsData, err
@@ -56,8 +56,8 @@ func (p Provider) GetCoinData(coinID uint, token, currency string) (watchmarket.
 	return normalizeInfo(currency, coinObj.Id, priceData, assetsData)
 }
 
-func normalizeCharts(currency string, c Charts) watchmarket.Data {
-	chartsData := watchmarket.Data{}
+func normalizeCharts(currency string, c Charts) watchmarket.Chart {
+	chartsData := watchmarket.Chart{}
 	prices := make([]watchmarket.ChartsPrice, 0)
 	for dateSrt, q := range c.Data {
 		date, err := time.Parse(time.RFC3339, dateSrt)

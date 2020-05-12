@@ -116,7 +116,7 @@ func Test_normalizeCharts(t *testing.T) {
 	tests := []struct {
 		name     string
 		args     args
-		wantInfo watchmarket.Data
+		wantInfo watchmarket.Chart
 	}{
 		{
 			"test normalize coinmarketcap chart 1",
@@ -131,7 +131,7 @@ func Test_normalizeCharts(t *testing.T) {
 					},
 				},
 			},
-			watchmarket.Data{
+			watchmarket.Chart{
 				Prices: []watchmarket.ChartsPrice{
 					{
 						Price: 111,
@@ -156,7 +156,7 @@ func Test_normalizeCharts(t *testing.T) {
 					},
 				},
 			},
-			watchmarket.Data{
+			watchmarket.Chart{
 				Prices: []watchmarket.ChartsPrice{
 					{
 						Price: 333,

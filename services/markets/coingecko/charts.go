@@ -10,8 +10,8 @@ import (
 	"time"
 )
 
-func (p Provider) GetChartData(coinID uint, token, currency string, timeStart int64) (watchmarket.Data, error) {
-	chartsData := watchmarket.Data{}
+func (p Provider) GetChartData(coinID uint, token, currency string, timeStart int64) (watchmarket.Chart, error) {
+	chartsData := watchmarket.Chart{}
 
 	coins, err := p.client.fetchCoins()
 	if err != nil {
@@ -123,8 +123,8 @@ func getCoinByParams(coinMap map[string]Coin, symbol, token string) (Coin, error
 	return c, nil
 }
 
-func normalizeCharts(c Charts) watchmarket.Data {
-	chartsData := watchmarket.Data{}
+func normalizeCharts(c Charts) watchmarket.Chart {
+	chartsData := watchmarket.Chart{}
 	prices := make([]watchmarket.ChartsPrice, 0)
 	for _, quote := range c.Prices {
 		if len(quote) != chartDataSize {
