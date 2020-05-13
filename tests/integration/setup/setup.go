@@ -1,11 +1,11 @@
 package setup
 
 import (
-	"github.com/trustwallet/watchmarket/db"
+	"github.com/trustwallet/watchmarket/db/postgres"
 	"log"
 )
 
-func RunPgContainer() *db.Instance {
+func RunPgContainer() *postgres.Instance {
 	dbConn, err := runPgContainerAndInitConnection()
 	if err != nil {
 		log.Fatal(err)
