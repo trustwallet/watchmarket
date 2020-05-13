@@ -1,16 +1,16 @@
-// +build integration
+// build integration
 
 package db_test
 
 import (
 	"github.com/stretchr/testify/assert"
-	"github.com/trustwallet/watchmarket/db"
+	"github.com/trustwallet/watchmarket/db/postgres"
 	"github.com/trustwallet/watchmarket/tests/integration/setup"
 	"os"
 	"testing"
 )
 
-var databaseInstance *db.Instance
+var databaseInstance *postgres.Instance
 
 func TestMain(m *testing.M) {
 	databaseInstance = setup.RunPgContainer()

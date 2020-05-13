@@ -8,6 +8,7 @@ import (
 	"github.com/trustwallet/blockatlas/pkg/errors"
 	"github.com/trustwallet/blockatlas/pkg/logger"
 	"github.com/trustwallet/watchmarket/api/middleware"
+	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"github.com/trustwallet/watchmarket/services/assets"
 	"github.com/trustwallet/watchmarket/services/cache"
 	"math/big"

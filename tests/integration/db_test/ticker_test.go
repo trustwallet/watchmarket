@@ -1,9 +1,10 @@
-// +build integration
+// build integration
 
 package db_test
 
 import (
 	"github.com/stretchr/testify/assert"
+	"github.com/trustwallet/watchmarket/db"
 	"github.com/trustwallet/watchmarket/db/models"
 	"github.com/trustwallet/watchmarket/tests/integration/setup"
 	"testing"
@@ -30,15 +31,17 @@ func TestAddTickers(t *testing.T) {
 		Provider:  "70",
 		Value:     70,
 	}}
-	err := databaseInstance.AddTickers(tickers)
+
+	d := db.Instance(databaseInstance)
+	err := d.AddTickers(tickers)
 	assert.Nil(t, err)
 
-	result1, err := databaseInstance.GetTickers(60, "60")
+	result1, err := d.GetTickers(60, "60")
 	assert.Nil(t, err)
 	assert.Len(t, result1, 1)
 	assert.Equal(t, uint(60), result1[0].Coin)
 
-	result2, err := databaseInstance.GetTickers(70, "70")
+	result2, err := d.GetTickers(70, "70")
 	assert.Nil(t, err)
 	assert.Len(t, result2, 1)
 	assert.Equal(t, uint(70), result2[0].Coin)
@@ -54,10 +57,10 @@ func TestAddTickers(t *testing.T) {
 		Value:     60,
 	})
 
-	err = databaseInstance.AddTickers(tickers)
+	err = d.AddTickers(tickers)
 	assert.Nil(t, err)
 
-	result1, err = databaseInstance.GetTickers(60, "60")
+	result1, err = d.GetTickers(60, "60")
 	assert.Nil(t, err)
 	assert.Len(t, result1, 2)
 
@@ -65,9 +68,9 @@ func TestAddTickers(t *testing.T) {
 	tickers[1].Value = 100500
 	tickers[1].Change24h = 666
 
-	err = databaseInstance.AddTickers(tickers)
+	err = d.AddTickers(tickers)
 	assert.Nil(t, err)
-	result2, err = databaseInstance.GetTickers(70, "70")
+	result2, err = d.GetTickers(70, "70")
 	assert.Nil(t, err)
 	assert.Len(t, result2, 1)
 	assert.Equal(t, float64(100500), result2[0].Value)
@@ -95,14 +98,15 @@ func TestGetTickersByMap(t *testing.T) {
 		Provider:  "70",
 		Value:     70,
 	}}
-	err := databaseInstance.AddTickers(tickers)
+	d := db.Instance(databaseInstance)
+	err := d.AddTickers(tickers)
 	assert.Nil(t, err)
 
 	tickersMap := map[string]string{
 		"60": "60",
 		"70": "70",
 	}
-	result, err := databaseInstance.GetTickersByMap(tickersMap)
+	result, err := d.GetTickersByMap(tickersMap)
 	assert.Nil(t, err)
 	assert.Len(t, result, 2)
 }

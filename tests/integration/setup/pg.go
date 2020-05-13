@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"github.com/jinzhu/gorm"
 	"github.com/ory/dockertest"
-	"github.com/trustwallet/watchmarket/db"
 	"github.com/trustwallet/watchmarket/db/models"
+	"github.com/trustwallet/watchmarket/db/postgres"
 
 	"log"
 )
@@ -32,14 +32,14 @@ var (
 	uri string
 )
 
-func runPgContainerAndInitConnection() (*db.Instance, error) {
+func runPgContainerAndInitConnection() (*postgres.Instance, error) {
 	pool := runPgContainer()
 	var (
-		dbConn *db.Instance
+		dbConn *postgres.Instance
 		err    error
 	)
 	if err := pool.Retry(func() error {
-		dbConn, err = db.New(uri)
+		dbConn, err = postgres.New(uri)
 		return err
 	}); err != nil {
 		return nil, err
