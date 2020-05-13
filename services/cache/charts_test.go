@@ -3,7 +3,6 @@ package cache
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/alicebob/miniredis/v2"
 	"github.com/stretchr/testify/assert"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"github.com/trustwallet/watchmarket/redis"
@@ -253,14 +252,6 @@ func TestInstance_SaveCharts_DataIsEmpty(t *testing.T) {
 	res, err := i.GetCharts("testKEY", 0)
 	assert.NotNil(t, err)
 	assert.Equal(t, watchmarket.Chart{}, res)
-}
-
-func setupRedis(t *testing.T) *miniredis.Miniredis {
-	s, err := miniredis.Run()
-	if err != nil {
-		t.Fatal(err)
-	}
-	return s
 }
 
 func seedDbCharts(t *testing.T, instance Instance) {

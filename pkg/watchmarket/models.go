@@ -79,8 +79,10 @@ type (
 )
 
 const (
-	Coin  CoinType = "coin"
-	Token CoinType = "token"
+	Coin                 CoinType = "coin"
+	Token                CoinType = "token"
+	DefaultCurrency               = "token"
+	DefaultMaxChartItems          = 64
 )
 
 func (d Chart) IsEmpty() bool {

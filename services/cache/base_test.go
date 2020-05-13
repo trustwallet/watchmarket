@@ -2,6 +2,7 @@ package cache
 
 import (
 	"fmt"
+	"github.com/alicebob/miniredis/v2"
 	"github.com/stretchr/testify/assert"
 	"github.com/trustwallet/watchmarket/redis"
 	"testing"
@@ -29,4 +30,12 @@ func TestGenerateKey(t *testing.T) {
 
 	assert.Equal(t, expected, GenerateKey("A"))
 	assert.NotEqual(t, expected, GenerateKey("a"))
+}
+
+func setupRedis(t *testing.T) *miniredis.Miniredis {
+	s, err := miniredis.Run()
+	if err != nil {
+		t.Fatal(err)
+	}
+	return s
 }

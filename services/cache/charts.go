@@ -2,6 +2,7 @@ package cache
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/trustwallet/blockatlas/pkg/errors"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"strconv"
@@ -26,6 +27,7 @@ func (i Instance) GetCharts(key string, timeStart int64) (watchmarket.Chart, err
 	err = json.Unmarshal(cacheData, &data)
 
 	if err == nil && !data.IsEmpty() {
+		fmt.Println("cached")
 		return data, nil
 	}
 

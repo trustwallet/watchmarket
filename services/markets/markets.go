@@ -48,9 +48,10 @@ func Init(config config.Configuration, assets assets.Client) (APIs, error) {
 		ratesAPIs   = make(RatesAPIs, 0)
 		tickersAPIs = make(TickersAPIs, 0)
 		chartsAPIs  = make(ChartsAPIs, 0)
+		providers   = setupProviders(config, assets)
 	)
 
-	for id, p := range setupProviders(config, assets) {
+	for id, p := range providers {
 		if t, ok := p.(RatesAPI); ok {
 			ratesAPIs[id] = t
 		}
