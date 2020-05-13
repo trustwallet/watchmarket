@@ -1,17 +1,19 @@
 package controllers
 
 import (
-	"github.com/trustwallet/watchmarket/db"
-	"github.com/trustwallet/watchmarket/redis"
 	"github.com/trustwallet/watchmarket/services/markets"
+	"github.com/trustwallet/watchmarket/services/priority"
 )
 
 type Controller struct {
-	database db.Instance
-	redis    redis.Redis
-	api      markets.APIs
+	//database db.Instance
+	chartsPriority   priority.Controller
+	coinInfoPriority priority.Controller
+	ratesPriority    priority.Controller
+	tickersPriority  priority.Controller
+	api              markets.APIs
 }
 
-func NewController(database db.Instance, redis redis.Redis, api markets.APIs) Controller {
-	return Controller{database, redis, api}
+func NewController(chartsPriority, coinInfoPriority, ratesPriority, tickersPriority priority.Controller, api markets.APIs) Controller {
+	return Controller{chartsPriority, coinInfoPriority, ratesPriority, tickersPriority, api}
 }

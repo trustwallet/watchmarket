@@ -12,7 +12,7 @@ type Provider struct {
 	info         assets.Client
 }
 
-func InitProvider(proApi, assetsApi, webApi, widgetApi, infoApi, key, currency string, info assets.Client) Provider {
+func InitProvider(proApi, assetsApi, webApi, widgetApi, key, currency string, info assets.Client) Provider {
 	return Provider{id: id, currency: currency, client: NewClient(proApi, assetsApi, webApi, widgetApi, key), info: info}
 }
 

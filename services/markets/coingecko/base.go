@@ -15,7 +15,7 @@ type Provider struct {
 	info         assets.Client
 }
 
-func InitProvider(api, infoApi, currency string, info assets.Client) Provider {
+func InitProvider(api, currency string, info assets.Client) Provider {
 	return Provider{id: id, currency: currency, client: NewClient(api, bucketSize), info: info}
 }
 

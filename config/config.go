@@ -21,22 +21,25 @@ type Configuration struct {
 		Coinmarketcap struct {
 			API       string `mapstructure:"api"`
 			Key       string `mapstructure:"key"`
+			Currency  string `mapstructure:"currency"`
 			WebAPI    string `mapstructure:"web_api"`
 			WidgetAPI string `mapstructure:"widget_api"`
 			MapAPI    string `mapstructure:"map_api"`
 		} `mapstructure:"coinmarketcap"`
 		Coingecko struct {
-			API string `mapstructure:"api"`
+			API      string `mapstructure:"api"`
+			Currency string `mapstructure:"currency"`
 		} `mapstructure:"coingecko"`
 		Fixer struct {
-			API string `mapstructure:"api"`
-			Key string `mapstructure:"key"`
+			API      string `mapstructure:"api"`
+			Currency string `mapstructure:"currency"`
+			Key      string `mapstructure:"key"`
 		} `mapstructure:"fixer"`
 		Assets string `mapstructure:"assets"`
 	} `mapstructure:"markets"`
 
 	Storage struct {
-		Redis    string `mapstructure:"storage"`
+		Redis    string `mapstructure:"redis"`
 		Postgres string `mapstructure:"postgres"`
 	} `mapstructure:"storage"`
 

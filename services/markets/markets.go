@@ -1,6 +1,14 @@
 package markets
 
-import "github.com/trustwallet/watchmarket/pkg/watchmarket"
+import (
+	"github.com/trustwallet/watchmarket/config"
+	"github.com/trustwallet/watchmarket/pkg/watchmarket"
+	"github.com/trustwallet/watchmarket/services/assets"
+	"github.com/trustwallet/watchmarket/services/markets/binancedex"
+	"github.com/trustwallet/watchmarket/services/markets/coingecko"
+	"github.com/trustwallet/watchmarket/services/markets/coinmarketcap"
+	"github.com/trustwallet/watchmarket/services/markets/fixer"
+)
 
 type (
 	Provider interface {
@@ -9,12 +17,12 @@ type (
 
 	RatesAPI interface {
 		Provider
-		GetRates() watchmarket.Rates
+		GetRates() (watchmarket.Rates, error)
 	}
 
 	TickersAPI interface {
 		Provider
-		GetTickers() watchmarket.Tickers
+		GetTickers() (watchmarket.Tickers, error)
 	}
 
 	ChartsAPI interface {
@@ -23,6 +31,7 @@ type (
 		GetCoinData(coinID uint, token, currency string) (watchmarket.CoinDetails, error)
 	}
 
+	Providers   map[string]Provider
 	RatesAPIs   map[string]RatesAPI
 	TickersAPIs map[string]TickersAPI
 	ChartsAPIs  map[string]ChartsAPI
@@ -34,8 +43,47 @@ type (
 	}
 )
 
-func Init() (APIs, error) {
-	a := APIs{}
+func Init(config config.Configuration, assets assets.Client) (APIs, error) {
+	var (
+		ratesAPIs   = make(RatesAPIs, 0)
+		tickersAPIs = make(TickersAPIs, 0)
+		chartsAPIs  = make(ChartsAPIs, 0)
+	)
 
-	return a, nil
+	for id, p := range setupProviders(config, assets) {
+		if t, ok := p.(RatesAPI); ok {
+			ratesAPIs[id] = t
+		}
+		if t, ok := p.(TickersAPI); ok {
+			tickersAPIs[id] = t
+		}
+		if t, ok := p.(ChartsAPI); ok {
+			chartsAPIs[id] = t
+		}
+	}
+
+	return APIs{ratesAPIs, tickersAPIs, chartsAPIs}, nil
+}
+
+func setupProviders(config config.Configuration, assets assets.Client) Providers {
+	b := binancedex.InitProvider(config.Markets.BinanceDex.API)
+	cmc := coinmarketcap.InitProvider(
+		config.Markets.Coinmarketcap.API,
+		config.Markets.Coinmarketcap.MapAPI,
+		config.Markets.Coinmarketcap.WebAPI,
+		config.Markets.Coinmarketcap.WidgetAPI,
+		config.Markets.Coinmarketcap.Key,
+		config.Markets.Coinmarketcap.Currency,
+		assets)
+	cg := coingecko.InitProvider(config.Markets.Coingecko.API, config.Markets.Coingecko.Currency, assets)
+	f := fixer.InitProvider(config.Markets.Fixer.API, config.Markets.Fixer.Key, config.Markets.Fixer.Currency)
+
+	ps := make(Providers, 4)
+
+	ps[b.GetProvider()] = b
+	ps[cmc.GetProvider()] = cmc
+	ps[cg.GetProvider()] = cg
+	ps[f.GetProvider()] = f
+
+	return ps
 }
