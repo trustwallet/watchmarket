@@ -4,7 +4,7 @@ import "github.com/trustwallet/watchmarket/db/models"
 
 type (
 	Instance interface {
-		GetRates(currency, provider string) ([]models.Rate, error)
+		GetRates(currency string) ([]models.Rate, error)
 		AddRates(rates []models.Rate) error
 
 		AddTickers(tickers []models.Ticker) error
