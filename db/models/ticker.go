@@ -1,5 +1,10 @@
 package models
 
+type TickerQuery struct {
+	Coin    uint
+	TokenId string
+}
+
 type Ticker struct {
 	BasicTimeModel
 	Coin      uint   `gorm:"primary_key; auto_increment:false" sql:"index"`

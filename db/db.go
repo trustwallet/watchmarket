@@ -9,6 +9,6 @@ type (
 
 		AddTickers(tickers []models.Ticker) error
 		GetTickers(coin uint, tokenId string) ([]models.Ticker, error)
-		GetTickersByMap(tickersMap map[string]string) ([]models.Ticker, error)
+		GetTickersByQueries(tickerQueries []models.TickerQuery) ([]models.Ticker, error)
 	}
 )
