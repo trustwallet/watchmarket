@@ -10,9 +10,9 @@ func (i *Instance) AddRates(rates []models.Rate) error {
 	return BulkInsert(db, rates)
 }
 
-func (i *Instance) GetRates(currency, provider string) ([]models.Rate, error) {
+func (i *Instance) GetRates(currency string) ([]models.Rate, error) {
 	var rates []models.Rate
-	if err := i.Gorm.Where("currency = ? AND provider = ?", currency, provider).
+	if err := i.Gorm.Where("currency = ?", currency).
 		Find(&rates).Error; err != nil {
 		return nil, err
 	}

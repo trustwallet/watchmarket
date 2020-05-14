@@ -21,14 +21,17 @@ func (c Controller) HandleChartsRequest(cr ChartRequest) (watchmarket.Chart, err
 		return cachedChart, nil
 	}
 
-	price, err := c.getDataWithProviders(verifiedData)
+	rawChart, err := c.getDataWithProviders(verifiedData)
 	if err != nil {
 		return watchmarket.Chart{}, err
 	}
-	if err = c.cache.SaveCharts(key, price, verifiedData.timeStart); err != nil {
+
+	chart := normalizeChart(rawChart, verifiedData.maxItems)
+
+	if err = c.cache.SaveCharts(key, chart, verifiedData.timeStart); err != nil {
 		logger.Error("Failed to save cache", logger.Params{"err": err})
 	}
-	return price, nil
+	return chart, nil
 }
 
 func verifyChartsRequestData(cr ChartRequest) (ChartsNormalizedRequest, error) {
@@ -79,4 +82,25 @@ func (c Controller) getDataWithProviders(data ChartsNormalizedRequest) (watchmar
 		}
 	}
 	return watchmarket.Chart{}, nil
+}
+
+func normalizeChart(chart watchmarket.Chart, maxItems int) watchmarket.Chart {
+	var newPrices []watchmarket.ChartPrice
+	if len(chart.Prices) > maxItems && maxItems > 0 {
+		skip := int(float64(len(chart.Prices) / maxItems))
+		i := 0
+		for i < len(chart.Prices) {
+			newPrices = append(newPrices, chart.Prices[i])
+			i += skip + 1
+		}
+		lastPrice := chart.Prices[len(chart.Prices)-1]
+		if len(newPrices) > 0 && lastPrice.Date != newPrices[len(newPrices)-1].Date {
+			newPrices = append(newPrices, lastPrice)
+		}
+	} else {
+		newPrices = chart.Prices
+	}
+
+	chart.Prices = newPrices
+	return chart
 }
