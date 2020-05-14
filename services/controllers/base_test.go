@@ -5,6 +5,7 @@ import (
 	"github.com/alicebob/miniredis/v2"
 	"github.com/stretchr/testify/assert"
 	"github.com/trustwallet/watchmarket/config"
+	"github.com/trustwallet/watchmarket/db/models"
 	"github.com/trustwallet/watchmarket/redis"
 	"github.com/trustwallet/watchmarket/services/assets"
 	"github.com/trustwallet/watchmarket/services/cache"
@@ -42,7 +43,9 @@ func TestNewController(t *testing.T) {
 	assert.Nil(t, err)
 	cacheInstance := cache.Init(r, time.Minute, time.Minute, time.Minute, time.Minute)
 
-	controller := NewController(cacheInstance, chartsPriority, coinInfoPriority, ratesPriority, tickerPriority, m)
+	db := setupDb(t)
+
+	controller := NewController(cacheInstance, db, chartsPriority, coinInfoPriority, ratesPriority, tickerPriority, m)
 	assert.NotNil(t, controller)
 
 	data, err := controller.HandleChartsRequest(ChartRequest{
@@ -71,4 +74,28 @@ func setupRedis(t *testing.T) *miniredis.Miniredis {
 		t.Fatal(err)
 	}
 	return s
+}
+
+func setupDb(t *testing.T) dbMock {
+	return dbMock("f")
+}
+
+type dbMock string
+
+func (d dbMock) GetRates(currency string) ([]models.Rate, error) {
+	return nil, nil
+}
+
+func (d dbMock) AddRates(rates []models.Rate) error {
+	return nil
+}
+
+func (d dbMock) AddTickers(tickers []models.Ticker) error {
+	return nil
+}
+func (d dbMock) GetTickers(coin uint, tokenId string) ([]models.Ticker, error) {
+	return nil, nil
+}
+func (d dbMock) GetTickersByMap(tickersMap map[string]string) ([]models.Ticker, error) {
+	return nil, nil
 }
