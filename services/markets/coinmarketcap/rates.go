@@ -3,6 +3,7 @@ package coinmarketcap
 import (
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"math/big"
+	"strings"
 )
 
 func (p Provider) GetRates() (rates watchmarket.Rates, err error) {
@@ -25,7 +26,7 @@ func normalizeRates(prices CoinPrices, provider string) watchmarket.Rates {
 			continue
 		}
 		res = append(res, watchmarket.Rate{
-			Currency:         price.Symbol,
+			Currency:         strings.ToUpper(price.Symbol),
 			Rate:             price.Quote.USD.Price,
 			Timestamp:        price.LastUpdated.Unix(),
 			PercentChange24h: *big.NewFloat(price.Quote.USD.PercentChange24h),
