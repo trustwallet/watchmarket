@@ -1,17 +1,16 @@
 package watchmarket
 
 import (
-	"math/big"
 	"time"
 )
 
 type (
 	Rate struct {
-		Currency         string    `json:"currency"`
-		PercentChange24h big.Float `json:"percent_change_24h,omitempty"`
-		Provider         string    `json:"provider,omitempty"`
-		Rate             float64   `json:"rate"`
-		Timestamp        int64     `json:"timestamp"`
+		Currency         string  `json:"currency"`
+		PercentChange24h float64 `json:"percent_change_24h,omitempty"`
+		Provider         string  `json:"provider,omitempty"`
+		Rate             float64 `json:"rate"`
+		Timestamp        int64   `json:"timestamp"`
 	}
 
 	Rates []Rate

@@ -10,11 +10,11 @@ func (i *Instance) AddTickers(tickers []models.Ticker) error {
 	return BulkInsert(db, tickers)
 }
 
-func (i *Instance) GetTickersByMap(tickersMap map[string]string) ([]models.Ticker, error) {
+func (i *Instance) GetTickersByQueries(tickerQueries []models.TickerQuery) ([]models.Ticker, error) {
 	var ticker []models.Ticker
 	db := i.Gorm
-	for coin, tokenId := range tickersMap {
-		db = db.Or("coin = ? AND token_id = ?", coin, tokenId)
+	for _, tq := range tickerQueries {
+		db = db.Or("coin = ? AND token_id = ?", tq.Coin, tq.TokenId)
 	}
 	if err := db.Find(&ticker).Error; err != nil {
 		return nil, err
