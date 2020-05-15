@@ -6,6 +6,7 @@ import (
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"strconv"
 	"strings"
+	"sync"
 )
 
 func (c Controller) HandleTickersRequest(tr TickerRequest) (watchmarket.Tickers, error) {
@@ -14,14 +15,19 @@ func (c Controller) HandleTickersRequest(tr TickerRequest) (watchmarket.Tickers,
 		return nil, err
 	}
 
-	tickers, err := c.getTickersByPriority(makeTickerQueries(tr.Assets), *watchMarketRate)
+	tickers, err := c.getTickersByPriority(makeTickerQueries(tr.Assets))
 	if err != nil {
 		return nil, err
 	}
 
 	// normalize
 
-	return nil, nil
+	return tickers, nil
+}
+
+type tickersRes struct {
+	sync.Mutex
+	tickers []models.Ticker
 }
 
 func (c Controller) getTickersByPriority(tickerQueries []models.TickerQuery) (watchmarket.Tickers, error) {
@@ -31,21 +37,53 @@ func (c Controller) getTickersByPriority(tickerQueries []models.TickerQuery) (wa
 	}
 	providers := c.tickersPriority.GetAllProviders()
 
-	tickersMap := make(map[string][]models.Ticker)
-
-	for _, dbTicker := range dbTickers {
-		rawCoin := strconv.Itoa(int(dbTicker.Coin))
-		key := rawCoin + dbTicker.TokenId
-		tickersMap[key] = append(tickersMap[key], dbTicker)
+	res := new(tickersRes)
+	wg := new(sync.WaitGroup)
+	for _, q := range tickerQueries {
+		wg.Add(1)
+		go findBestProviderForQuery(q.Coin, q.TokenId, dbTickers, providers, wg, res)
 	}
 
-	for _, p := range providers {
-		for k, v := range tickersMap {
+	wg.Wait()
 
-		}
+	sortedTickers := res.tickers
+	result := make(watchmarket.Tickers, len(sortedTickers))
+
+	for _, sr := range sortedTickers {
+		result = append(result, watchmarket.Ticker{
+			Coin:       sr.Coin,
+			CoinName:   sr.CoinName,
+			CoinType:   watchmarket.CoinType(sr.CoinType),
+			LastUpdate: sr.UpdatedAt,
+			Price: watchmarket.Price{
+				Change24h: sr.Change24h,
+				Currency:  sr.Currency,
+				Provider:  sr.Provider,
+				Value:     sr.Value,
+			},
+			TokenId: sr.TokenId,
+		})
 	}
 
 	return result, nil
+}
+
+///
+
+
+func findBestProviderForQuery(coin uint, token string, sliceToFind []models.Ticker, providers []string, wg *sync.WaitGroup, res *tickersRes) {
+	for _, p := range providers {
+	ProvidersLoop:
+		for _, t := range sliceToFind {
+			if coin == t.Coin && strings.ToLower(token) == t.TokenId && p == t.Provider {
+				res.Lock()
+				res.tickers = append(res.tickers, t)
+				res.Unlock()
+				break ProvidersLoop
+			}
+		}
+	}
+	wg.Done()
 }
 
 func (c Controller) getRateByPriority(currency string) (*watchmarket.Rate, error) {
