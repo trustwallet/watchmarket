@@ -16,6 +16,29 @@ import (
 )
 
 func TestNewController(t *testing.T) {
+
+	assert.NotNil(t, setupController(t))
+	//data, err := controller.HandleChartsRequest(ChartRequest{
+	//	coinQuery:    "60",
+	//	token:        "",
+	//	currency:     "USD",
+	//	timeStartRaw: "1577871126",
+	//	maxItems:     "64",
+	//})
+	//
+	//assert.Nil(t, err)
+	//assert.NotNil(t, data)
+	//
+	//controller.HandleChartsRequest(ChartRequest{
+	//	coinQuery:    "60",
+	//	token:        "",
+	//	currency:     "USD",
+	//	timeStartRaw: "1577871126",
+	//	maxItems:     "64",
+	//})
+}
+
+func setupController(t *testing.T) Controller {
 	c := config.Init("../../config/test.yml")
 	assert.NotNil(t, c)
 
@@ -47,25 +70,7 @@ func TestNewController(t *testing.T) {
 
 	controller := NewController(cacheInstance, db, chartsPriority, coinInfoPriority, ratesPriority, tickerPriority, m)
 	assert.NotNil(t, controller)
-
-	data, err := controller.HandleChartsRequest(ChartRequest{
-		coinQuery:    "60",
-		token:        "",
-		currency:     "USD",
-		timeStartRaw: "1577871126",
-		maxItems:     "64",
-	})
-
-	assert.Nil(t, err)
-	assert.NotNil(t, data)
-
-	controller.HandleChartsRequest(ChartRequest{
-		coinQuery:    "60",
-		token:        "",
-		currency:     "USD",
-		timeStartRaw: "1577871126",
-		maxItems:     "64",
-	})
+	return controller
 }
 
 func setupRedis(t *testing.T) *miniredis.Miniredis {
@@ -94,8 +99,88 @@ func (d dbMock) AddTickers(tickers []models.Ticker) error {
 	return nil
 }
 func (d dbMock) GetTickers(coin uint, tokenId string) ([]models.Ticker, error) {
-	return nil, nil
+	ticker60ACMC := models.Ticker{
+		Coin:      60,
+		CoinName:  "ETH",
+		TokenId:   "A",
+		Change24h: 10,
+		Currency:  "USD",
+		Provider:  "coinmarketcap",
+		Value:     100,
+	}
+
+	ticker60ACG := models.Ticker{
+		Coin:      60,
+		CoinName:  "ETH",
+		TokenId:   "A",
+		Change24h: 10,
+		Currency:  "USD",
+		Provider:  "coingecko",
+		Value:     100,
+	}
+
+	ticker714ACG := models.Ticker{
+		Coin:      714,
+		CoinName:  "BNB",
+		TokenId:   "A",
+		Change24h: 10,
+		Currency:  "USD",
+		Provider:  "coingecko",
+		Value:     100,
+	}
+
+	ticker714ABNB := models.Ticker{
+		Coin:      714,
+		CoinName:  "BNB",
+		TokenId:   "A",
+		Change24h: 10,
+		Currency:  "USD",
+		Provider:  "binancedex",
+		Value:     100,
+	}
+
+	return []models.Ticker{ticker60ACMC, ticker60ACG, ticker714ACG, ticker714ABNB}, nil
 }
-func (d dbMock) GetTickersByMap(tickersMap map[string]string) ([]models.Ticker, error) {
-	return nil, nil
+func (d dbMock) GetTickersByQueries(tickerQueries []models.TickerQuery) ([]models.Ticker, error) {
+	ticker60ACMC := models.Ticker{
+		Coin:      60,
+		CoinName:  "ETH",
+		TokenId:   "A",
+		Change24h: 10,
+		Currency:  "USD",
+		Provider:  "coinmarketcap",
+		Value:     100,
+	}
+
+	ticker60ACG := models.Ticker{
+		Coin:      60,
+		CoinName:  "ETH",
+		TokenId:   "A",
+		Change24h: 10,
+		Currency:  "USD",
+		Provider:  "coingecko",
+		Value:     100,
+	}
+
+	ticker714ACG := models.Ticker{
+		Coin:      714,
+		CoinName:  "BNB",
+		TokenId:   "A",
+		Change24h: 10,
+		Currency:  "USD",
+		Provider:  "coingecko",
+		Value:     100,
+	}
+
+	ticker714ABNB := models.Ticker{
+		Coin:      714,
+		CoinName:  "BNB",
+		TokenId:   "A",
+		Change24h: 10,
+		Currency:  "USD",
+		Provider:  "binancedex",
+		Value:     100,
+	}
+
+	return []models.Ticker{ticker60ACMC, ticker60ACG, ticker714ACG, ticker714ABNB}, nil
 }

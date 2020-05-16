@@ -23,7 +23,7 @@ func TestProvider_GetRates(t *testing.T) {
 }
 
 var (
-	wantedRates = `[{"currency":"BTC","percent_change_24h":"0","provider":"coingecko","rate":9696.96,"timestamp":1588871554},{"currency":"ETH","percent_change_24h":"0","provider":"coingecko","rate":206.55,"timestamp":1588871558},{"currency":"BNB","percent_change_24h":"0","provider":"coingecko","rate":16.76,"timestamp":1588871427},{"currency":"TRX","percent_change_24h":"0","provider":"coingecko","rate":0.01594768,"timestamp":1588871427},{"currency":"ZOC","percent_change_24h":"0","provider":"coingecko","rate":0.00135115,"timestamp":1588870632},{"currency":"O2T","percent_change_24h":"0","provider":"coingecko","rate":0.00083971,"timestamp":1577332821},{"currency":"XRP-BF2","percent_change_24h":"0","provider":"coingecko","rate":0.21726,"timestamp":1588871653},{"currency":"LVH","percent_change_24h":"0","provider":"coingecko","rate":0.00000808,"timestamp":1588871413}]`
+	wantedRates = `[{"currency":"BTC","provider":"coingecko","rate":9696.96,"timestamp":1588871554},{"currency":"ETH","provider":"coingecko","rate":206.55,"timestamp":1588871558},{"currency":"BNB","provider":"coingecko","rate":16.76,"timestamp":1588871427},{"currency":"TRX","provider":"coingecko","rate":0.01594768,"timestamp":1588871427},{"currency":"ZOC","provider":"coingecko","rate":0.00135115,"timestamp":1588870632},{"currency":"O2T","provider":"coingecko","rate":0.00083971,"timestamp":1577332821},{"currency":"XRP-BF2","provider":"coingecko","rate":0.21726,"timestamp":1588871653},{"currency":"LVH","provider":"coingecko","rate":0.00000808,"timestamp":1588871413}]`
 )
 
 func Test_normalizeRates(t *testing.T) {
