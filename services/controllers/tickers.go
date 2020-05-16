@@ -10,7 +10,7 @@ import (
 )
 
 func (c Controller) HandleTickersRequest(tr TickerRequest) (watchmarket.Tickers, error) {
-	watchMarketRate, err := c.getRateByPriority(strings.ToUpper(tr.Currency))
+	_, err := c.getRateByPriority(strings.ToUpper(tr.Currency))
 	if err != nil {
 		return nil, err
 	}
@@ -68,18 +68,14 @@ func (c Controller) getTickersByPriority(tickerQueries []models.TickerQuery) (wa
 	return result, nil
 }
 
-///
-
-
 func findBestProviderForQuery(coin uint, token string, sliceToFind []models.Ticker, providers []string, wg *sync.WaitGroup, res *tickersRes) {
 	for _, p := range providers {
-	ProvidersLoop:
 		for _, t := range sliceToFind {
 			if coin == t.Coin && strings.ToLower(token) == t.TokenId && p == t.Provider {
 				res.Lock()
 				res.tickers = append(res.tickers, t)
 				res.Unlock()
-				break ProvidersLoop
+				break
 			}
 		}
 	}
