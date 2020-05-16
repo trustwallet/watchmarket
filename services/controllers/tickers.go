@@ -47,10 +47,11 @@ func (c Controller) getTickersByPriority(tickerQueries []models.TickerQuery) (wa
 	wg.Wait()
 
 	sortedTickers := res.tickers
+
 	result := make(watchmarket.Tickers, len(sortedTickers))
 
-	for _, sr := range sortedTickers {
-		result = append(result, watchmarket.Ticker{
+	for i, sr := range sortedTickers {
+		result[i] = watchmarket.Ticker{
 			Coin:       sr.Coin,
 			CoinName:   sr.CoinName,
 			CoinType:   watchmarket.CoinType(sr.CoinType),
@@ -62,7 +63,7 @@ func (c Controller) getTickersByPriority(tickerQueries []models.TickerQuery) (wa
 				Value:     sr.Value,
 			},
 			TokenId: sr.TokenId,
-		})
+		}
 	}
 
 	return result, nil
@@ -75,7 +76,8 @@ func findBestProviderForQuery(coin uint, token string, sliceToFind []models.Tick
 				res.Lock()
 				res.tickers = append(res.tickers, t)
 				res.Unlock()
-				break
+				wg.Done()
+				return
 			}
 		}
 	}

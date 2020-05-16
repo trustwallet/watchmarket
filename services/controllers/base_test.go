@@ -88,7 +88,28 @@ func setupDb(t *testing.T) dbMock {
 type dbMock string
 
 func (d dbMock) GetRates(currency string) ([]models.Rate, error) {
-	return nil, nil
+	rate := models.Rate{
+		Currency:         "USD",
+		PercentChange24h: 1,
+		Provider:         "coinmarketcap",
+		Rate:             1,
+		Timestamp:        12,
+	}
+	rate2 := models.Rate{
+		Currency:         "USD",
+		PercentChange24h: 2,
+		Provider:         "coingecko",
+		Rate:             2,
+		Timestamp:        12,
+	}
+	rate3 := models.Rate{
+		Currency:         "USD",
+		PercentChange24h: 4,
+		Provider:         "fixer",
+		Rate:             6,
+		Timestamp:        12,
+	}
+	return []models.Rate{rate, rate2, rate3}, nil
 }
 
 func (d dbMock) AddRates(rates []models.Rate) error {
@@ -102,7 +123,7 @@ func (d dbMock) GetTickers(coin uint, tokenId string) ([]models.Ticker, error) {
 	ticker60ACMC := models.Ticker{
 		Coin:      60,
 		CoinName:  "ETH",
-		TokenId:   "A",
+		TokenId:   "a",
 		Change24h: 10,
 		Currency:  "USD",
 		Provider:  "coinmarketcap",
@@ -112,7 +133,7 @@ func (d dbMock) GetTickers(coin uint, tokenId string) ([]models.Ticker, error) {
 	ticker60ACG := models.Ticker{
 		Coin:      60,
 		CoinName:  "ETH",
-		TokenId:   "A",
+		TokenId:   "a",
 		Change24h: 10,
 		Currency:  "USD",
 		Provider:  "coingecko",
@@ -122,7 +143,7 @@ func (d dbMock) GetTickers(coin uint, tokenId string) ([]models.Ticker, error) {
 	ticker714ACG := models.Ticker{
 		Coin:      714,
 		CoinName:  "BNB",
-		TokenId:   "A",
+		TokenId:   "a",
 		Change24h: 10,
 		Currency:  "USD",
 		Provider:  "coingecko",
@@ -132,7 +153,7 @@ func (d dbMock) GetTickers(coin uint, tokenId string) ([]models.Ticker, error) {
 	ticker714ABNB := models.Ticker{
 		Coin:      714,
 		CoinName:  "BNB",
-		TokenId:   "A",
+		TokenId:   "a",
 		Change24h: 10,
 		Currency:  "USD",
 		Provider:  "binancedex",
@@ -145,7 +166,7 @@ func (d dbMock) GetTickersByQueries(tickerQueries []models.TickerQuery) ([]model
 	ticker60ACMC := models.Ticker{
 		Coin:      60,
 		CoinName:  "ETH",
-		TokenId:   "A",
+		TokenId:   "a",
 		Change24h: 10,
 		Currency:  "USD",
 		Provider:  "coinmarketcap",
@@ -155,7 +176,7 @@ func (d dbMock) GetTickersByQueries(tickerQueries []models.TickerQuery) ([]model
 	ticker60ACG := models.Ticker{
 		Coin:      60,
 		CoinName:  "ETH",
-		TokenId:   "A",
+		TokenId:   "a",
 		Change24h: 10,
 		Currency:  "USD",
 		Provider:  "coingecko",
@@ -165,7 +186,7 @@ func (d dbMock) GetTickersByQueries(tickerQueries []models.TickerQuery) ([]model
 	ticker714ACG := models.Ticker{
 		Coin:      714,
 		CoinName:  "BNB",
-		TokenId:   "A",
+		TokenId:   "a",
 		Change24h: 10,
 		Currency:  "USD",
 		Provider:  "coingecko",
@@ -175,12 +196,11 @@ func (d dbMock) GetTickersByQueries(tickerQueries []models.TickerQuery) ([]model
 	ticker714ABNB := models.Ticker{
 		Coin:      714,
 		CoinName:  "BNB",
-		TokenId:   "A",
+		TokenId:   "a",
 		Change24h: 10,
 		Currency:  "USD",
 		Provider:  "binancedex",
 		Value:     100,
 	}
-
 	return []models.Ticker{ticker60ACMC, ticker60ACG, ticker714ACG, ticker714ABNB}, nil
 }
