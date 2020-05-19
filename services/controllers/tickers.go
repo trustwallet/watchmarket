@@ -4,7 +4,6 @@ import (
 	"errors"
 	"github.com/trustwallet/watchmarket/db/models"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
-	"strconv"
 	"strings"
 	"sync"
 )
@@ -101,29 +100,6 @@ func (c Controller) normalizeTickers(tickers watchmarket.Tickers, rate watchmark
 	return result
 }
 
-func createResponse(tr TickerRequest, tickers watchmarket.Tickers) TickerResponse {
-	mergedTickers := make(watchmarket.Tickers, 0, len(tickers))
-	for _, t := range tickers {
-		newTicker, ok := foundTickerInAssets(tr.Assets, t)
-		if !ok {
-			continue
-		}
-		mergedTickers = append(mergedTickers, newTicker)
-	}
-
-	return TickerResponse{tr.Currency, mergedTickers}
-}
-
-func foundTickerInAssets(assets []Coin, t watchmarket.Ticker) (watchmarket.Ticker, bool) {
-	for _, c := range assets {
-		if c.Coin == t.Coin && strings.ToLower(c.TokenId) == t.TokenId {
-			t.TokenId = c.TokenId
-			return t, true
-		}
-	}
-	return watchmarket.Ticker{}, false
-}
-
 func (c Controller) convertRateToDefaultCurrency(t watchmarket.Ticker, rate watchmarket.Rate) (watchmarket.Rate, bool) {
 	if t.Price.Currency != watchmarket.DefaultCurrency {
 		newRate, err := c.getRateByPriority(strings.ToUpper(rate.Currency))
@@ -149,6 +125,29 @@ func applyRateToTicker(t watchmarket.Ticker, rate watchmarket.Rate) watchmarket.
 	return t
 }
 
+func createResponse(tr TickerRequest, tickers watchmarket.Tickers) TickerResponse {
+	mergedTickers := make(watchmarket.Tickers, 0, len(tickers))
+	for _, t := range tickers {
+		newTicker, ok := foundTickerInAssets(tr.Assets, t)
+		if !ok {
+			continue
+		}
+		mergedTickers = append(mergedTickers, newTicker)
+	}
+
+	return TickerResponse{tr.Currency, mergedTickers}
+}
+
+func foundTickerInAssets(assets []Coin, t watchmarket.Ticker) (watchmarket.Ticker, bool) {
+	for _, c := range assets {
+		if c.Coin == t.Coin && strings.ToLower(c.TokenId) == t.TokenId {
+			t.TokenId = c.TokenId
+			return t, true
+		}
+	}
+	return watchmarket.Ticker{}, false
+}
+
 func findBestProviderForQuery(coin uint, token string, sliceToFind []models.Ticker, providers []string, wg *sync.WaitGroup, res *sortedTickersResponse) {
 	for _, p := range providers {
 		for _, t := range sliceToFind {
@@ -165,9 +164,8 @@ func findBestProviderForQuery(coin uint, token string, sliceToFind []models.Tick
 }
 
 func normalizeRate(r models.Rate) watchmarket.Rate {
-	rateStr := strconv.FormatFloat(r.Rate, 'f', 10, 64)
 	return watchmarket.Rate{
-		Currency:         rateStr,
+		Currency:         r.Currency,
 		PercentChange24h: r.PercentChange24h,
 		Provider:         r.Provider,
 		Rate:             r.Rate,
