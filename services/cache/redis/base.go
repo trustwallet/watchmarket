@@ -1,4 +1,4 @@
-package cache
+package rediscache
 
 import (
 	"crypto/sha1"
@@ -8,6 +8,7 @@ import (
 )
 
 type Instance struct {
+	id             string
 	redis          redis.Redis
 	chartsCaching  time.Duration
 	tickersCaching time.Duration
@@ -15,11 +16,17 @@ type Instance struct {
 	detailsCaching time.Duration
 }
 
+const id = "redis"
+
 func Init(redis redis.Redis, chartsCaching, tickersCaching, ratesCaching, detailsCaching time.Duration) Instance {
-	return Instance{redis, chartsCaching, tickersCaching, ratesCaching, detailsCaching}
+	return Instance{id, redis, chartsCaching, tickersCaching, ratesCaching, detailsCaching}
 }
 
-func GenerateKey(data string) string {
+func (i Instance) GetID() string {
+	return i.id
+}
+
+func (i Instance) GenerateKey(data string) string {
 	hash := sha1.Sum([]byte(data))
 	return base64.URLEncoding.EncodeToString(hash[:])
 }

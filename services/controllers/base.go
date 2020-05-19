@@ -8,7 +8,7 @@ import (
 )
 
 type Controller struct {
-	cache            cache.Instance
+	cache            cache.Cache
 	database         db.Instance
 	chartsPriority   priority.Controller
 	coinInfoPriority priority.Controller
@@ -17,6 +17,6 @@ type Controller struct {
 	api              markets.APIs
 }
 
-func NewController(cache cache.Instance, database db.Instance, chartsPriority, coinInfoPriority, ratesPriority, tickersPriority priority.Controller, api markets.APIs) Controller {
+func NewController(cache cache.Cache, database db.Instance, chartsPriority, coinInfoPriority, ratesPriority, tickersPriority priority.Controller, api markets.APIs) Controller {
 	return Controller{cache, database, chartsPriority, coinInfoPriority, ratesPriority, tickersPriority, api}
 }

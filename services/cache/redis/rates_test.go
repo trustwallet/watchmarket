@@ -1,4 +1,4 @@
-package cache
+package rediscache
 
 import (
 	"encoding/json"
@@ -6,7 +6,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"github.com/trustwallet/watchmarket/redis"
-	"math/big"
 	"testing"
 	"time"
 )
@@ -50,7 +49,7 @@ func TestInstance_SaveRates(t *testing.T) {
 	assert.Nil(t, err)
 	rate := watchmarket.Rate{
 		Currency:         "USD",
-		PercentChange24h: big.Float{},
+		PercentChange24h: float64(0),
 		Provider:         "",
 		Rate:             0,
 		Timestamp:        0,

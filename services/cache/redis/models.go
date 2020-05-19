@@ -1,4 +1,4 @@
-package cache
+package rediscache
 
 type CachedInterval struct {
 	Timestamp int64

@@ -1,4 +1,4 @@
-package cache
+package rediscache
 
 import (
 	"encoding/json"
@@ -16,7 +16,7 @@ func (i Instance) SaveCoinDetails(key string, data watchmarket.CoinDetails, time
 	if err != nil {
 		return err
 	}
-	cachingKey := GenerateKey(key + strconv.Itoa(int(timeStart)))
+	cachingKey := i.GenerateKey(key + strconv.Itoa(int(timeStart)))
 	interval := CachedInterval{
 		Timestamp: timeStart,
 		Duration:  int64(DurationToUnix(i.detailsCaching)),

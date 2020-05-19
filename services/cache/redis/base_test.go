@@ -1,4 +1,4 @@
-package cache
+package rediscache
 
 import (
 	"fmt"
@@ -25,11 +25,31 @@ func TestInit(t *testing.T) {
 	assert.Equal(t, i.detailsCaching, time.Minute)
 }
 
-func TestGenerateKey(t *testing.T) {
+func TestInstance_GenerateKey(t *testing.T) {
+	s := setupRedis(t)
+	defer s.Close()
+
+	r, err := redis.Init(fmt.Sprintf("redis://%s", s.Addr()))
+	assert.Nil(t, err)
+	i := Init(r, time.Minute, time.Minute, time.Minute, time.Minute)
+
 	expected := "bc1M4j2I4u6VaLpUbAB8Y9kTHBs="
 
-	assert.Equal(t, expected, GenerateKey("A"))
-	assert.NotEqual(t, expected, GenerateKey("a"))
+	assert.Equal(t, expected, i.GenerateKey("A"))
+	assert.NotEqual(t, expected, i.GenerateKey("a"))
+}
+
+func TestInstance_GetID(t *testing.T) {
+	s := setupRedis(t)
+	defer s.Close()
+
+	r, err := redis.Init(fmt.Sprintf("redis://%s", s.Addr()))
+	assert.Nil(t, err)
+	i := Init(r, time.Minute, time.Minute, time.Minute, time.Minute)
+
+	assert.NotNil(t, i)
+
+	assert.Equal(t, "redis", i.GetID())
 }
 
 func setupRedis(t *testing.T) *miniredis.Miniredis {

@@ -1,4 +1,4 @@
-package cache
+package rediscache
 
 import (
 	"encoding/json"
