@@ -72,13 +72,13 @@ func TestController_HandleTickersRequest(t *testing.T) {
 		Value:     100,
 	}
 
-	db := setupDb(t)
+	db := getDbMock()
 
 	db.WantedTickersError = nil
 	db.WantedRatesError = nil
 	db.WantedRates = []models.Rate{rate, rate2, rate3}
 	db.WantedTickers = []models.Ticker{ticker60ACMC, ticker60ACG, ticker714ACG, ticker714ABNB}
-	c := setupController(t, db)
+	c := setupController(t, db, getCacheMock())
 	assert.NotNil(t, c)
 
 	tickers, err := c.HandleTickersRequest(TickerRequest{
@@ -120,10 +120,10 @@ func TestController_HandleTickersRequest(t *testing.T) {
 		}
 	}
 	assert.Equal(t, 2, counter)
-	db2 := setupDb(t)
+	db2 := getDbMock()
 	db2.WantedTickers = []models.Ticker{ticker60ACMC, ticker60ACG}
 	db2.WantedRates = []models.Rate{rate, rate2, rate3}
-	c2 := setupController(t, db2)
+	c2 := setupController(t, db2, getCacheMock())
 	tickers2, err := c2.HandleTickersRequest(TickerRequest{
 		Currency: "USD",
 		Assets:   []Coin{{Coin: 60, TokenId: "A"}},
@@ -135,11 +135,11 @@ func TestController_HandleTickersRequest(t *testing.T) {
 }
 
 func TestController_HandleTickersRequest_Negative(t *testing.T) {
-	db := setupDb(t)
+	db := getDbMock()
 
 	db.WantedTickersError = nil
 	db.WantedRatesError = errors.E("Not found")
-	c := setupController(t, db)
+	c := setupController(t, db, getCacheMock())
 	assert.NotNil(t, c)
 
 	_, err := c.HandleTickersRequest(TickerRequest{})
