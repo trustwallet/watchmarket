@@ -1,6 +1,10 @@
 package controllers
 
-import "github.com/trustwallet/watchmarket/pkg/watchmarket"
+import (
+	"github.com/trustwallet/watchmarket/db/models"
+	"github.com/trustwallet/watchmarket/pkg/watchmarket"
+	"sync"
+)
 
 type (
 	ChartRequest struct {
@@ -20,5 +24,10 @@ type (
 		token, currency string
 		timeStart       int64
 		maxItems        int
+	}
+
+	sortedTickersResponse struct {
+		sync.Mutex
+		tickers []models.Ticker
 	}
 )
