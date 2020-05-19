@@ -102,7 +102,26 @@ func (c Controller) normalizeTickers(tickers watchmarket.Tickers, rate watchmark
 }
 
 func createResponse(tr TickerRequest, tickers watchmarket.Tickers) TickerResponse {
-	return TickerResponse{}
+	mergedTickers := make(watchmarket.Tickers, 0, len(tickers))
+	for _, t := range tickers {
+		newTicker, ok := foundTickerInAssets(tr.Assets, t)
+		if !ok {
+			continue
+		}
+		mergedTickers = append(mergedTickers, newTicker)
+	}
+
+	return TickerResponse{tr.Currency, mergedTickers}
+}
+
+func foundTickerInAssets(assets []Coin, t watchmarket.Ticker) (watchmarket.Ticker, bool) {
+	for _, c := range assets {
+		if c.Coin == t.Coin && strings.ToLower(c.TokenId) == t.TokenId {
+			t.TokenId = c.TokenId
+			return t, true
+		}
+	}
+	return watchmarket.Ticker{}, false
 }
 
 func (c Controller) convertRateToDefaultCurrency(t watchmarket.Ticker, rate watchmarket.Rate) (watchmarket.Rate, bool) {
