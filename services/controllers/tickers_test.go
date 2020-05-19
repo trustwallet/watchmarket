@@ -9,7 +9,7 @@ import (
 	"testing"
 )
 
-func TestController_HandleTickersRequest(t *testing.T) {
+func TestController_getTickersByPriority(t *testing.T) {
 	rate := models.Rate{
 		Currency:         "USD",
 		PercentChange24h: 1,
@@ -81,10 +81,9 @@ func TestController_HandleTickersRequest(t *testing.T) {
 	c := setupController(t, db, getCacheMock())
 	assert.NotNil(t, c)
 
-	tickers, err := c.HandleTickersRequest(TickerRequest{
-		Currency: "USD",
-		Assets:   []Coin{{Coin: 60, TokenId: "A"}, {Coin: 714, TokenId: "A"}},
-	})
+	tickers, err := c.getTickersByPriority(makeTickerQueries(
+		[]Coin{{Coin: 60, TokenId: "A"}, {Coin: 714, TokenId: "A"}},
+	))
 	assert.Nil(t, err)
 	assert.NotNil(t, tickers)
 	assert.Equal(t, 2, len(tickers))
@@ -124,10 +123,7 @@ func TestController_HandleTickersRequest(t *testing.T) {
 	db2.WantedTickers = []models.Ticker{ticker60ACMC, ticker60ACG}
 	db2.WantedRates = []models.Rate{rate, rate2, rate3}
 	c2 := setupController(t, db2, getCacheMock())
-	tickers2, err := c2.HandleTickersRequest(TickerRequest{
-		Currency: "USD",
-		Assets:   []Coin{{Coin: 60, TokenId: "A"}},
-	})
+	tickers2, err := c2.getTickersByPriority(makeTickerQueries([]Coin{{Coin: 60, TokenId: "A"}}))
 	assert.Nil(t, err)
 	assert.NotNil(t, tickers2)
 	assert.Equal(t, 1, len(tickers2))

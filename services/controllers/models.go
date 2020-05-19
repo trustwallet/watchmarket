@@ -14,6 +14,11 @@ type (
 		Currency string `json:"currency"`
 		Assets   []Coin `json:"assets"`
 	}
+
+	TickerResponse struct {
+		Currency string              `json:"currency"`
+		Tickers  watchmarket.Tickers `json:"docs"`
+	}
 	Coin struct {
 		Coin     uint                 `json:"coin"`
 		CoinType watchmarket.CoinType `json:"type"`

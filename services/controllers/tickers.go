@@ -9,26 +9,26 @@ import (
 	"sync"
 )
 
-func (c Controller) HandleTickersRequest(tr TickerRequest) (watchmarket.Tickers, error) {
-	_, err := c.getRateByPriority(strings.ToUpper(tr.Currency))
+func (c Controller) HandleTickersRequest(tr TickerRequest) (TickerResponse, error) {
+	rate, err := c.getRateByPriority(strings.ToUpper(tr.Currency))
 	if err != nil {
-		return nil, err
+		return TickerResponse{}, err
 	}
 
 	tickers, err := c.getTickersByPriority(makeTickerQueries(tr.Assets))
 	if err != nil {
-		return nil, err
+		return TickerResponse{}, err
 	}
 
-	// normalize
+	tickers = c.normalizeTickers(tickers, rate)
 
-	return tickers, nil
+	return createResponse(tr, tickers), nil
 }
 
-func (c Controller) getRateByPriority(currency string) (*watchmarket.Rate, error) {
+func (c Controller) getRateByPriority(currency string) (watchmarket.Rate, error) {
 	rates, err := c.database.GetRates(currency)
 	if err != nil {
-		return nil, err
+		return watchmarket.Rate{}, err
 	}
 
 	providers := c.tickersPriority.GetAllProviders()
@@ -44,7 +44,7 @@ ProvidersLoop:
 		}
 	}
 	if result == nil {
-		return nil, errors.New("Not found")
+		return watchmarket.Rate{}, errors.New("Not found")
 	}
 
 	return normalizeRate(*result), nil
@@ -89,6 +89,47 @@ func (c Controller) getTickersByPriority(tickerQueries []models.TickerQuery) (wa
 	return result, nil
 }
 
+func (c Controller) normalizeTickers(tickers watchmarket.Tickers, rate watchmarket.Rate) watchmarket.Tickers {
+	result := make(watchmarket.Tickers, 0, len(tickers))
+	for _, t := range tickers {
+		r, ok := c.convertRateToDefaultCurrency(t, rate)
+		if !ok {
+			continue
+		}
+		result = append(result, applyRateToTicker(t, r))
+	}
+	return result
+}
+
+func createResponse(tr TickerRequest, tickers watchmarket.Tickers) TickerResponse {
+	return TickerResponse{}
+}
+
+func (c Controller) convertRateToDefaultCurrency(t watchmarket.Ticker, rate watchmarket.Rate) (watchmarket.Rate, bool) {
+	if t.Price.Currency != watchmarket.DefaultCurrency {
+		newRate, err := c.getRateByPriority(strings.ToUpper(rate.Currency))
+		if err != nil {
+			return watchmarket.Rate{}, false
+		}
+		rate.Rate *= newRate.Rate
+		rate.PercentChange24h = newRate.PercentChange24h
+	}
+	return rate, true
+}
+
+func applyRateToTicker(t watchmarket.Ticker, rate watchmarket.Rate) watchmarket.Ticker {
+	if t.Price.Currency == rate.Currency {
+		return t
+	}
+	t.Price.Value *= 1 / rate.Rate
+	t.Price.Currency = rate.Currency
+
+	if rate.PercentChange24h != 0 {
+		t.Price.Change24h -= rate.PercentChange24h // Look at it more detailed
+	}
+	return t
+}
+
 func findBestProviderForQuery(coin uint, token string, sliceToFind []models.Ticker, providers []string, wg *sync.WaitGroup, res *sortedTickersResponse) {
 	for _, p := range providers {
 		for _, t := range sliceToFind {
@@ -104,9 +145,9 @@ func findBestProviderForQuery(coin uint, token string, sliceToFind []models.Tick
 	wg.Done()
 }
 
-func normalizeRate(r models.Rate) *watchmarket.Rate {
+func normalizeRate(r models.Rate) watchmarket.Rate {
 	rateStr := strconv.FormatFloat(r.Rate, 'f', 10, 64)
-	return &watchmarket.Rate{
+	return watchmarket.Rate{
 		Currency:         rateStr,
 		PercentChange24h: r.PercentChange24h,
 		Provider:         r.Provider,

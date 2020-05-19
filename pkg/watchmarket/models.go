@@ -80,7 +80,7 @@ type (
 const (
 	Coin                 CoinType = "coin"
 	Token                CoinType = "token"
-	DefaultCurrency               = "token"
+	DefaultCurrency               = "USD"
 	DefaultMaxChartItems          = 64
 )
 
