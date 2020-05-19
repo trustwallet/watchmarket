@@ -1,25 +1,22 @@
 package controllers
 
 import (
-	"fmt"
-	"github.com/alicebob/miniredis/v2"
 	"github.com/stretchr/testify/assert"
 	"github.com/trustwallet/watchmarket/config"
 	"github.com/trustwallet/watchmarket/db/models"
-	"github.com/trustwallet/watchmarket/redis"
+	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"github.com/trustwallet/watchmarket/services/assets"
-	redis2 "github.com/trustwallet/watchmarket/services/cache/redis"
+	"github.com/trustwallet/watchmarket/services/cache"
 	"github.com/trustwallet/watchmarket/services/markets"
 	"github.com/trustwallet/watchmarket/services/priority"
 	"testing"
-	"time"
 )
 
 func TestNewController(t *testing.T) {
-	assert.NotNil(t, setupController(t, setupDb(t)))
+	assert.NotNil(t, setupController(t, getDbMock(), getCacheMock()))
 }
 
-func setupController(t *testing.T, mock dbMock) Controller {
+func setupController(t *testing.T, d dbMock, ch cache.Cache) Controller {
 	c := config.Init("../../config/test.yml")
 	assert.NotNil(t, c)
 
@@ -40,27 +37,12 @@ func setupController(t *testing.T, mock dbMock) Controller {
 	m, err := markets.Init(c, a)
 	assert.Nil(t, err)
 
-	s := setupRedis(t)
-	defer s.Close()
-
-	r, err := redis.Init(fmt.Sprintf("redis://%s", s.Addr()))
-	assert.Nil(t, err)
-	cacheInstance := redis2.Init(r, time.Minute, time.Minute, time.Minute, time.Minute)
-
-	controller := NewController(cacheInstance, mock, chartsPriority, coinInfoPriority, ratesPriority, tickerPriority, m)
+	controller := NewController(ch, d, chartsPriority, coinInfoPriority, ratesPriority, tickerPriority, m)
 	assert.NotNil(t, controller)
 	return controller
-}
 
-func setupRedis(t *testing.T) *miniredis.Miniredis {
-	s, err := miniredis.Run()
-	if err != nil {
-		t.Fatal(err)
-	}
-	return s
 }
-
-func setupDb(t *testing.T) dbMock {
+func getDbMock() dbMock {
 	return dbMock{}
 }
 
@@ -87,4 +69,62 @@ func (d dbMock) GetTickers(coin uint, tokenId string) ([]models.Ticker, error) {
 }
 func (d dbMock) GetTickersByQueries(tickerQueries []models.TickerQuery) ([]models.Ticker, error) {
 	return d.WantedTickers, d.WantedTickersError
+}
+
+func getCacheMock() cache.Cache {
+	i := cacheMock{}
+
+	ch := make(cache.ChartsCache, 1)
+	rh := make(cache.RatesCache, 1)
+	th := make(cache.TickersCache, 1)
+
+	ch["redis"] = i
+	rh["redis"] = i
+	th["redis"] = i
+
+	return cache.Cache{rh, th, ch}
+}
+
+type cacheMock struct {
+	res string
+}
+
+func (c cacheMock) GetID() string {
+	return ""
+}
+
+func (c cacheMock) GenerateKey(data string) string {
+	return ""
+}
+
+func (c cacheMock) GetCharts(key string, timeStart int64) (watchmarket.Chart, error) {
+	return watchmarket.Chart{}, nil
+}
+
+func (c cacheMock) SaveCharts(key string, data watchmarket.Chart, timeStart int64) error {
+	return nil
+}
+
+func (c cacheMock) SaveCoinDetails(key string, data watchmarket.CoinDetails, timeStart int64) error {
+	return nil
+}
+
+func (c cacheMock) GetCoinDetails(key string, timeStart int64) (watchmarket.CoinDetails, error) {
+	return watchmarket.CoinDetails{}, nil
+}
+
+func (c cacheMock) GetTickers(key string) (watchmarket.Tickers, error) {
+	return watchmarket.Tickers{}, nil
+}
+
+func (c cacheMock) SaveTickers(key string, tickers watchmarket.Tickers) error {
+	return nil
+}
+
+func (c cacheMock) GetRates(key string) (watchmarket.Rates, error) {
+	return watchmarket.Rates{}, nil
+}
+
+func (c cacheMock) SaveRates(key string, tickers watchmarket.Rates) error {
+	return nil
 }
