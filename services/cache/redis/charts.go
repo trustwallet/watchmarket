@@ -1,4 +1,4 @@
-package cache
+package rediscache
 
 import (
 	"encoding/json"
@@ -48,7 +48,7 @@ func (i Instance) SaveCharts(key string, data watchmarket.Chart, timeStart int64
 	if err != nil {
 		return err
 	}
-	cachingKey := GenerateKey(key + strconv.Itoa(int(timeStart)))
+	cachingKey := i.GenerateKey(key + strconv.Itoa(int(timeStart)))
 	interval := CachedInterval{
 		Timestamp: timeStart,
 		Duration:  int64(DurationToUnix(i.chartsCaching)),

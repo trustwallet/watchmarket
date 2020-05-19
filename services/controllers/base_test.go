@@ -8,7 +8,7 @@ import (
 	"github.com/trustwallet/watchmarket/db/models"
 	"github.com/trustwallet/watchmarket/redis"
 	"github.com/trustwallet/watchmarket/services/assets"
-	"github.com/trustwallet/watchmarket/services/cache"
+	redis2 "github.com/trustwallet/watchmarket/services/cache/redis"
 	"github.com/trustwallet/watchmarket/services/markets"
 	"github.com/trustwallet/watchmarket/services/priority"
 	"testing"
@@ -45,7 +45,7 @@ func setupController(t *testing.T, mock dbMock) Controller {
 
 	r, err := redis.Init(fmt.Sprintf("redis://%s", s.Addr()))
 	assert.Nil(t, err)
-	cacheInstance := cache.Init(r, time.Minute, time.Minute, time.Minute, time.Minute)
+	cacheInstance := redis2.Init(r, time.Minute, time.Minute, time.Minute, time.Minute)
 
 	controller := NewController(cacheInstance, mock, chartsPriority, coinInfoPriority, ratesPriority, tickerPriority, m)
 	assert.NotNil(t, controller)

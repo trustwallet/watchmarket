@@ -5,7 +5,6 @@ import (
 	"github.com/trustwallet/blockatlas/pkg/errors"
 	"github.com/trustwallet/blockatlas/pkg/logger"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
-	"github.com/trustwallet/watchmarket/services/cache"
 	"strconv"
 )
 
@@ -15,8 +14,8 @@ func (c Controller) HandleChartsRequest(cr ChartRequest) (watchmarket.Chart, err
 		return watchmarket.Chart{}, err
 	}
 
-	key := cache.GenerateKey(cr.coinQuery + cr.token + cr.currency + cr.maxItems)
-	cachedChart, err := c.cache.GetCharts(key, verifiedData.timeStart)
+	key := c.cache.ChartsCache["redis"].GenerateKey(cr.coinQuery + cr.token + cr.currency + cr.maxItems)
+	cachedChart, err := c.cache.ChartsCache["redis"].GetCharts(key, verifiedData.timeStart)
 	if err == nil {
 		return cachedChart, nil
 	}
@@ -28,7 +27,7 @@ func (c Controller) HandleChartsRequest(cr ChartRequest) (watchmarket.Chart, err
 
 	chart := normalizeChart(rawChart, verifiedData.maxItems)
 
-	if err = c.cache.SaveCharts(key, chart, verifiedData.timeStart); err != nil {
+	if err = c.cache.ChartsCache["redis"].SaveCharts(key, chart, verifiedData.timeStart); err != nil {
 		logger.Error("Failed to save cache", logger.Params{"err": err})
 	}
 	return chart, nil
