@@ -17,6 +17,19 @@ type Controller struct {
 	api              markets.APIs
 }
 
-func NewController(cache cache.Charts, database db.Instance, chartsPriority, coinInfoPriority, ratesPriority, tickersPriority priority.Controller, api markets.APIs) Controller {
-	return Controller{cache, database, chartsPriority, coinInfoPriority, ratesPriority, tickersPriority, api}
+func NewController(
+	cache cache.Charts,
+	database db.Instance,
+	chartsPriority, coinInfoPriority, ratesPriority, tickersPriority priority.Controller,
+	api markets.APIs,
+) Controller {
+	return Controller{
+		cache,
+		database,
+		chartsPriority,
+		coinInfoPriority,
+		ratesPriority,
+		tickersPriority,
+		api,
+	}
 }
