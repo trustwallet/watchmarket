@@ -14,8 +14,8 @@ func (c Controller) HandleChartsRequest(cr ChartRequest) (watchmarket.Chart, err
 		return watchmarket.Chart{}, err
 	}
 
-	key := c.cache.ChartsCache["redis"].GenerateKey(cr.coinQuery + cr.token + cr.currency + cr.maxItems)
-	cachedChart, err := c.cache.ChartsCache["redis"].GetCharts(key, verifiedData.timeStart)
+	key := c.chartsCache.GenerateKey(cr.coinQuery + cr.token + cr.currency + cr.maxItems)
+	cachedChart, err := c.chartsCache.GetCharts(key, verifiedData.timeStart)
 	if err == nil {
 		return cachedChart, nil
 	}
@@ -27,7 +27,7 @@ func (c Controller) HandleChartsRequest(cr ChartRequest) (watchmarket.Chart, err
 
 	chart := normalizeChart(rawChart, verifiedData.maxItems)
 
-	if err = c.cache.ChartsCache["redis"].SaveCharts(key, chart, verifiedData.timeStart); err != nil {
+	if err = c.chartsCache.SaveCharts(key, chart, verifiedData.timeStart); err != nil {
 		logger.Error("Failed to save cache", logger.Params{"err": err})
 	}
 	return chart, nil

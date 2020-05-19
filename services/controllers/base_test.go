@@ -16,7 +16,7 @@ func TestNewController(t *testing.T) {
 	assert.NotNil(t, setupController(t, getDbMock(), getCacheMock()))
 }
 
-func setupController(t *testing.T, d dbMock, ch cache.Cache) Controller {
+func setupController(t *testing.T, d dbMock, ch cache.Charts) Controller {
 	c := config.Init("../../config/test.yml")
 	assert.NotNil(t, c)
 
@@ -71,18 +71,9 @@ func (d dbMock) GetTickersByQueries(tickerQueries []models.TickerQuery) ([]model
 	return d.WantedTickers, d.WantedTickersError
 }
 
-func getCacheMock() cache.Cache {
+func getCacheMock() cache.Charts {
 	i := cacheMock{}
-
-	ch := make(cache.ChartsCache, 1)
-	rh := make(cache.RatesCache, 1)
-	th := make(cache.TickersCache, 1)
-
-	ch["redis"] = i
-	rh["redis"] = i
-	th["redis"] = i
-
-	return cache.Cache{rh, th, ch}
+	return i
 }
 
 type cacheMock struct {
