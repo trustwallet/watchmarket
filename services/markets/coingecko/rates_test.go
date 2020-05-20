@@ -14,7 +14,7 @@ import (
 func TestProvider_GetRates(t *testing.T) {
 	server := httptest.NewServer(createMockedAPI())
 	defer server.Close()
-	provider := InitProvider(server.URL, "USD", assets.NewClient("assets.api"))
+	provider := InitProvider(server.URL, "USD", assets.Init("assets.api"))
 	data, err := provider.GetRates()
 	assert.Nil(t, err)
 	rawData, err := json.Marshal(data)

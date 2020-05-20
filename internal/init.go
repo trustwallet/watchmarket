@@ -3,8 +3,19 @@ package internal
 import (
 	"flag"
 	"github.com/gin-gonic/gin"
+	"github.com/trustwallet/watchmarket/db"
+	"github.com/trustwallet/watchmarket/db/postgres"
+	"github.com/trustwallet/watchmarket/services/cache"
+	rediscache "github.com/trustwallet/watchmarket/services/cache/redis"
+	"time"
+
 	"github.com/trustwallet/blockatlas/api/middleware"
+	"github.com/trustwallet/blockatlas/pkg/logger"
+	"github.com/trustwallet/watchmarket/config"
+	"github.com/trustwallet/watchmarket/redis"
+	"github.com/trustwallet/watchmarket/services/assets"
 	"net/http"
+	"path/filepath"
 )
 
 func ParseArgs(defaultPort, defaultConfigPath string) (string, string) {
@@ -19,23 +30,51 @@ func ParseArgs(defaultPort, defaultConfigPath string) (string, string) {
 	return port, confPath
 }
 
-//func InitRedis(host string) *storage.Storage {
-//	cache := &storage.Storage{DB: &redis.Redis{}}
-//	err := cache.Init(host)
-//	if err != nil {
-//		logger.Fatal(err)
-//	}
-//	return cache
-//}
+func InitRedis(host string) *redis.Redis {
+	c, err := redis.Init(host)
+	if err != nil {
+		logger.Fatal(err)
+	}
+	return &c
+}
 
-//func InitConfig(confPath string) {
-//	confPath, err := filepath.Abs(confPath)
-//	if err != nil {
-//		logger.Fatal(err)
-//	}
-//
-//	config.LoadConfig(confPath)
-//}
+func InitAssets(assetsHost string) assets.Client {
+	return assets.Init(assetsHost)
+}
+
+func InitCache(
+	r redis.Redis,
+	chartsCaching,
+	tickersCaching,
+	ratesCaching,
+	detailsCaching time.Duration,
+) (
+	cache.Charts,
+	cache.Tickers,
+	cache.Rates,
+) {
+	i := rediscache.Init(r, chartsCaching, tickersCaching, ratesCaching, detailsCaching)
+	return cache.Charts(i),
+		cache.Tickers(i),
+		cache.Rates(i)
+}
+
+func InitDB(uri string) db.Instance {
+	pg, err := postgres.New(uri)
+	if err != nil {
+		logger.Fatal(err)
+	}
+	return pg
+}
+
+func InitConfig(confPath string) config.Configuration {
+	confPath, err := filepath.Abs(confPath)
+	if err != nil {
+		logger.Fatal(err)
+	}
+
+	return config.Init(confPath)
+}
 
 func InitEngine(handler *gin.HandlerFunc, ginMode string) *gin.Engine {
 	gin.SetMode(ginMode)

@@ -32,7 +32,7 @@ func setupController(t *testing.T, d dbMock, ch cache.Charts) Controller {
 	coinInfoPriority, err := priority.Init(c.Markets.Priority.CoinInfo)
 	assert.Nil(t, err)
 
-	a := assets.NewClient(c.Markets.Assets)
+	a := assets.Init(c.Markets.Assets)
 
 	m, err := markets.Init(c, a)
 	assert.Nil(t, err)
