@@ -149,6 +149,8 @@ func foundTickerInAssets(assets []Coin, t watchmarket.Ticker) (watchmarket.Ticke
 }
 
 func findBestProviderForQuery(coin uint, token string, sliceToFind []models.Ticker, providers []string, wg *sync.WaitGroup, res *sortedTickersResponse) {
+	defer wg.Done()
+
 	for _, p := range providers {
 		for _, t := range sliceToFind {
 			if coin == t.Coin && strings.ToLower(token) == t.TokenId && p == t.Provider {
@@ -160,7 +162,6 @@ func findBestProviderForQuery(coin uint, token string, sliceToFind []models.Tick
 			}
 		}
 	}
-	wg.Done()
 }
 
 func normalizeRate(r models.Rate) watchmarket.Rate {
