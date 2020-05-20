@@ -25,6 +25,7 @@ func New(uri string) (*Instance, error) {
 		&models.Rate{},
 		&models.Ticker{},
 	)
+	//g.LogMode(true)
 
 	i := &Instance{Gorm: g}
 
