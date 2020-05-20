@@ -17,6 +17,7 @@ require (
 	github.com/docker/go-units v0.4.0 // indirect
 	github.com/getsentry/sentry-go v0.5.1
 	github.com/gin-gonic/gin v1.6.2
+	github.com/go-logr/logr v0.1.0 // indirect
 	github.com/go-redis/redis v6.15.7+incompatible
 	github.com/go-resty/resty/v2 v2.2.0 // indirect
 	github.com/gotestyourself/gotestyourself v1.4.0 // indirect

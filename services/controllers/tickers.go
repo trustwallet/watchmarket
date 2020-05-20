@@ -2,8 +2,10 @@ package controllers
 
 import (
 	"errors"
+	"github.com/trustwallet/blockatlas/pkg/logger"
 	"github.com/trustwallet/watchmarket/db/models"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
+	"strconv"
 	"strings"
 	"sync"
 )
@@ -70,8 +72,13 @@ func (c Controller) getTickersByPriority(tickerQueries []models.TickerQuery) (wa
 	result := make(watchmarket.Tickers, len(sortedTickers))
 
 	for i, sr := range sortedTickers {
+		coin, err := strconv.Atoi(sr.Coin)
+		if err != nil {
+			logger.Error(err)
+			continue
+		}
 		result[i] = watchmarket.Ticker{
-			Coin:       sr.Coin,
+			Coin:       uint(coin),
 			CoinName:   sr.CoinName,
 			CoinType:   watchmarket.CoinType(sr.CoinType),
 			LastUpdate: sr.UpdatedAt,
@@ -153,11 +160,10 @@ func findBestProviderForQuery(coin uint, token string, sliceToFind []models.Tick
 
 	for _, p := range providers {
 		for _, t := range sliceToFind {
-			if coin == t.Coin && strings.ToLower(token) == t.TokenId && p == t.Provider {
+			if strconv.Itoa(int(coin)) == t.Coin && strings.ToLower(token) == t.TokenId && p == t.Provider {
 				res.Lock()
 				res.tickers = append(res.tickers, t)
 				res.Unlock()
-				wg.Done()
 				return
 			}
 		}

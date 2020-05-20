@@ -8,7 +8,7 @@ import (
 	"sync"
 )
 
-func (w Worker) fetchAndSaveRates() {
+func (w Worker) FetchAndSaveRates() {
 	fetchedRates := fetchRates(w.ratesApis)
 	normalizedRates := toRatesModel(fetchedRates)
 

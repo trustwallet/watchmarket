@@ -5,6 +5,7 @@ import (
 	"github.com/trustwallet/blockatlas/pkg/errors"
 	"github.com/trustwallet/watchmarket/db/models"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
+	"strconv"
 	"sync"
 	"testing"
 )
@@ -54,8 +55,9 @@ func TestController_getRateByPriority(t *testing.T) {
 }
 
 func TestController_getTickersByPriority(t *testing.T) {
+
 	ticker60ACMC := models.Ticker{
-		Coin:      60,
+		Coin:      "60",
 		CoinName:  "ETH",
 		TokenId:   "a",
 		Change24h: 10,
@@ -65,7 +67,7 @@ func TestController_getTickersByPriority(t *testing.T) {
 	}
 
 	ticker60ACG := models.Ticker{
-		Coin:      60,
+		Coin:      "60",
 		CoinName:  "ETH",
 		TokenId:   "a",
 		Change24h: 10,
@@ -75,7 +77,7 @@ func TestController_getTickersByPriority(t *testing.T) {
 	}
 
 	ticker714ACG := models.Ticker{
-		Coin:      714,
+		Coin:      "714",
 		CoinName:  "BNB",
 		TokenId:   "a",
 		Change24h: 10,
@@ -85,7 +87,7 @@ func TestController_getTickersByPriority(t *testing.T) {
 	}
 
 	ticker714ABNB := models.Ticker{
-		Coin:      714,
+		Coin:      "714",
 		CoinName:  "BNB",
 		TokenId:   "a",
 		Change24h: 10,
@@ -237,7 +239,7 @@ func Test_findBestProviderForQuery(t *testing.T) {
 	tickerQueries := []Coin{{Coin: 60, TokenId: "A"}}
 
 	ticker60ACMC := models.Ticker{
-		Coin:      60,
+		Coin:      "60",
 		CoinName:  "ETH",
 		TokenId:   "a",
 		Change24h: 10,
@@ -247,7 +249,7 @@ func Test_findBestProviderForQuery(t *testing.T) {
 	}
 
 	ticker60ACG := models.Ticker{
-		Coin:      60,
+		Coin:      "60",
 		CoinName:  "ETH",
 		TokenId:   "a",
 		Change24h: 10,
@@ -261,7 +263,7 @@ func Test_findBestProviderForQuery(t *testing.T) {
 	for i := 0; i < 10000; i++ {
 		t := ticker60ACG
 		t.Value = t.Value + float64(i)
-		t.Coin = t.Coin + uint(i)
+		t.Coin = strconv.Itoa(i)
 		dbTickers = append(dbTickers, t)
 	}
 

@@ -3,7 +3,6 @@ package binancedex
 import (
 	"github.com/trustwallet/blockatlas/coin"
 	"github.com/trustwallet/blockatlas/pkg/errors"
-	"github.com/trustwallet/blockatlas/pkg/logger"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"strconv"
 	"time"
@@ -27,7 +26,6 @@ func normalizeTickers(prices []CoinPrice, provider string) watchmarket.Tickers {
 	for _, price := range prices {
 		t, err := normalizeTicker(price, provider)
 		if err != nil {
-			logger.Error(err)
 			continue
 		}
 		tickersList = append(tickersList, t)

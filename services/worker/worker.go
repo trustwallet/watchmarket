@@ -2,7 +2,7 @@ package worker
 
 import (
 	"fmt"
-	"github.com/robfig/cron"
+	"github.com/robfig/cron/v3"
 	"github.com/trustwallet/blockatlas/pkg/logger"
 	"github.com/trustwallet/watchmarket/db"
 	"github.com/trustwallet/watchmarket/services/markets"
@@ -31,7 +31,7 @@ func Init(
 func (w Worker) AddRatesOperation(c *cron.Cron, updateTime string) *cron.Cron {
 	spec := fmt.Sprintf("@every %s", updateTime)
 
-	if err := c.AddFunc(spec, w.fetchAndSaveRates); err != nil {
+	if _, err := c.AddFunc(spec, w.FetchAndSaveRates); err != nil {
 		logger.Fatal(err)
 	}
 
@@ -41,7 +41,7 @@ func (w Worker) AddRatesOperation(c *cron.Cron, updateTime string) *cron.Cron {
 func (w Worker) AddTickersOperation(c *cron.Cron, updateTime string) *cron.Cron {
 	spec := fmt.Sprintf("@every %s", updateTime)
 
-	if err := c.AddFunc(spec, w.fetchAndSaveTickers); err != nil {
+	if _, err := c.AddFunc(spec, w.FetchAndSaveTickers); err != nil {
 		logger.Fatal(err)
 	}
 	c.Entries()

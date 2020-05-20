@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/robfig/cron"
+	"github.com/robfig/cron/v3"
 	"github.com/trustwallet/blockatlas/pkg/logger"
 	"github.com/trustwallet/watchmarket/config"
 	"github.com/trustwallet/watchmarket/db/postgres"
@@ -39,13 +39,16 @@ func init() {
 
 	w = worker.Init(m.RatesAPIs, m.TickersAPIs, database)
 
-	c = cron.New()
+	c = cron.New(cron.WithChain(cron.Recover(cron.DefaultLogger)))
 
 	logger.InitLogger()
 }
 
 func main() {
-	c = w.AddRatesOperation(c, "5m")
+	//c = w.AddRatesOperation(c, "5m")
 	c = w.AddTickersOperation(c, "5m")
-	c.Start()
+	go c.Start()
+	//go w.FetchAndSaveRates()
+	go w.FetchAndSaveTickers()
+	<-make(chan bool)
 }
