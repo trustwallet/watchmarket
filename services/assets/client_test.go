@@ -9,8 +9,8 @@ import (
 	"testing"
 )
 
-func TestNewClient(t *testing.T) {
-	c := NewClient("url")
+func TestInit(t *testing.T) {
+	c := Init("url")
 	assert.NotNil(t, c)
 	assert.Equal(t, c.BaseUrl, "url")
 }
@@ -19,7 +19,7 @@ func TestClient_GetCoinInfo(t *testing.T) {
 	server := httptest.NewServer(createMockedAPI())
 	defer server.Close()
 
-	c := NewClient(server.URL)
+	c := Init(server.URL)
 	assert.NotNil(t, c)
 
 	data, err := c.GetCoinInfo(60, "")

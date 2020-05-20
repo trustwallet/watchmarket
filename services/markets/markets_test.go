@@ -11,7 +11,7 @@ func TestInit(t *testing.T) {
 	c := config.Init("../../config/test.yml")
 	assert.NotNil(t, c)
 
-	a := assets.NewClient(c.Markets.Assets)
+	a := assets.Init(c.Markets.Assets)
 
 	apis, err := Init(c, a)
 	assert.Nil(t, err)

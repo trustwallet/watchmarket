@@ -8,31 +8,27 @@ import (
 	"github.com/trustwallet/watchmarket/services/markets"
 )
 
-type Worker struct {
-	ratesApis         markets.RatesAPIs
-	ratesUpdateTime   string
-	tickersApis       markets.TickersAPIs
-	tickersUpdateTime string
-	db                db.Instance
-}
+type (
+	Worker struct {
+		ratesApis   markets.RatesAPIs
+		tickersApis markets.TickersAPIs
+		db          db.Instance
+	}
+)
 
 func Init(
 	ratesApis markets.RatesAPIs,
-	ratesUpdateTime string,
 	tickersApis markets.TickersAPIs,
-	tickersUpdateTime string,
 	db db.Instance,
 ) Worker {
 	return Worker{
 		ratesApis,
-		ratesUpdateTime,
 		tickersApis,
-		tickersUpdateTime,
 		db,
 	}
 }
 
-func (w Worker) addRatesOperation(c *cron.Cron, updateTime string) *cron.Cron {
+func (w Worker) AddRatesOperation(c *cron.Cron, updateTime string) *cron.Cron {
 	spec := fmt.Sprintf("@every %s", updateTime)
 
 	if err := c.AddFunc(spec, w.fetchAndSaveRates); err != nil {
@@ -42,7 +38,7 @@ func (w Worker) addRatesOperation(c *cron.Cron, updateTime string) *cron.Cron {
 	return c
 }
 
-func (w Worker) addTickersOperation(c *cron.Cron, updateTime string) *cron.Cron {
+func (w Worker) AddTickersOperation(c *cron.Cron, updateTime string) *cron.Cron {
 	spec := fmt.Sprintf("@every %s", updateTime)
 
 	if err := c.AddFunc(spec, w.fetchAndSaveTickers); err != nil {

@@ -12,7 +12,7 @@ type Client struct {
 	blockatlas.Request
 }
 
-func NewClient(api string) Client {
+func Init(api string) Client {
 	return Client{blockatlas.InitClient(api)}
 }
 
