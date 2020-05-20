@@ -7,7 +7,7 @@ type TickerQuery struct {
 
 type Ticker struct {
 	BasicTimeModel
-	Coin      uint   `gorm:"primary_key; auto_increment:false" sql:"index"`
+	Coin      string `gorm:"primary_key; auto_increment:false" sql:"index"`
 	CoinName  string `gorm:"primary_key;"sql:"index"`
 	CoinType  string `gorm:"primary_key;"sql:"index"`
 	TokenId   string `gorm:"primary_key;"sql:"index"`

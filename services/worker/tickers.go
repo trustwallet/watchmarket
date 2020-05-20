@@ -5,10 +5,11 @@ import (
 	"github.com/trustwallet/watchmarket/db/models"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"github.com/trustwallet/watchmarket/services/markets"
+	"strconv"
 	"sync"
 )
 
-func (w Worker) fetchAndSaveTickers() {
+func (w Worker) FetchAndSaveTickers() {
 	fetchedTickers := fetchTickers(w.tickersApis)
 	normalizedTickers := toTickersModel(fetchedTickers)
 
@@ -21,7 +22,7 @@ func toTickersModel(tickers watchmarket.Tickers) []models.Ticker {
 	result := make([]models.Ticker, 0, len(tickers))
 	for _, t := range tickers {
 		result = append(result, models.Ticker{
-			Coin:      t.Coin,
+			Coin:      strconv.Itoa(int(t.Coin)),
 			CoinName:  t.CoinName,
 			CoinType:  string(t.CoinType),
 			TokenId:   t.TokenId,

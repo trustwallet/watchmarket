@@ -6,7 +6,7 @@ import (
 
 func (i *Instance) AddRates(rates []models.Rate) error {
 	// TODO: Upsert
-	db := i.Gorm.Set("gorm:insert_option", "ON CONFLICT (subscription_id) DO UPDATE SET subscription_id = excluded.subscription_id")
+	db := i.Gorm.Set("gorm:insert_option", "ON CONFLICT (currency,provider) DO NOTHING") //UPDATE SET rate = excluded.rate, percent_change24h = excluded.percent_change24h, timestamp = excluded.timestamp
 	return BulkInsert(db, rates)
 }
 
