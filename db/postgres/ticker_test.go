@@ -17,7 +17,7 @@ func TestInstance_AddTickers(t *testing.T) {
 	i := Instance{Gorm: db}
 
 	assert.Nil(t, i.AddTickers([]models.Ticker{{
-		Coin:      60,
+		Coin:      "60",
 		CoinName:  "60",
 		CoinType:  "60",
 		TokenId:   "60",

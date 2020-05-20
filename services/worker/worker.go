@@ -44,7 +44,6 @@ func (w Worker) AddTickersOperation(c *cron.Cron, updateTime string) *cron.Cron 
 	if _, err := c.AddFunc(spec, w.FetchAndSaveTickers); err != nil {
 		logger.Fatal(err)
 	}
-	c.Entries()
 
 	return c
 }
