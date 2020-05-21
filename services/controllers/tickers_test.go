@@ -198,7 +198,20 @@ func TestController_normalizeTickers(t *testing.T) {
 	assert.NotNil(t, c)
 
 	result := c.normalizeTickers([]watchmarket.Ticker{gotTicker1}, rate)
-	assert.NotNil(t, result)
+	wanted := watchmarket.Ticker{
+		Coin:     0,
+		CoinName: "BTC",
+		CoinType: "coin",
+		Error:    "",
+		Price: watchmarket.Price{
+			Change24h: -4.03168,
+			Currency:  "EUR",
+			Provider:  "coinmarketcap",
+			Value:     8514.78959355037,
+		},
+		TokenId: "",
+	}
+	assert.Equal(t, wanted, result[0])
 }
 
 func TestController_normalizeTickers_advanced(t *testing.T) {
@@ -263,6 +276,52 @@ func TestController_normalizeTickers_advanced(t *testing.T) {
 		MarketCap: 147.00428799936964,
 	}
 	assert.Equal(t, wanted, result[0])
+}
+
+func TestController_createResponse(t *testing.T) {
+	ticker := watchmarket.Ticker{
+		Coin:     0,
+		CoinName: "BNB",
+		CoinType: "token",
+		Error:    "",
+		Price: watchmarket.Price{
+			Change24h: -10.24,
+			Currency:  "EUR",
+			Provider:  "binancedex",
+			Value:     14.700428799936965,
+		},
+		TokenId:   "raven-f66",
+		Volume:    147.00428799936964,
+		MarketCap: 147.00428799936964,
+	}
+
+	tr := TickerRequest{
+		Currency: "EUR",
+		Assets:   []Coin{{Coin: 0, CoinType: "token", TokenId: "RAVEN-F66"}},
+	}
+
+	response := createResponse(tr, watchmarket.Tickers{ticker})
+	wantedResponse := TickerResponse{
+		Currency: "EUR",
+		Tickers: watchmarket.Tickers{
+			{
+				Coin:     0,
+				CoinName: "BNB",
+				CoinType: "token",
+				Error:    "",
+				Price: watchmarket.Price{
+					Change24h: -10.24,
+					Currency:  "EUR",
+					Provider:  "binancedex",
+					Value:     14.700428799936965,
+				},
+				TokenId:   "RAVEN-F66",
+				Volume:    147.00428799936964,
+				MarketCap: 147.00428799936964,
+			},
+		},
+	}
+	assert.Equal(t, wantedResponse, response)
 }
 
 func Test_findBestProviderForQuery(t *testing.T) {
