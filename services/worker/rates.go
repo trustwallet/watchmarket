@@ -6,6 +6,7 @@ import (
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"github.com/trustwallet/watchmarket/services/markets"
 	"sync"
+	"time"
 )
 
 func (w Worker) FetchAndSaveRates() {
@@ -25,7 +26,7 @@ func toRatesModel(rates watchmarket.Rates) []models.Rate {
 			PercentChange24h: r.PercentChange24h,
 			Provider:         r.Provider,
 			Rate:             r.Rate,
-			Timestamp:        r.Timestamp,
+			LastUpdated:      time.Unix(r.Timestamp, 0),
 		})
 	}
 	return result

@@ -3,15 +3,17 @@ package postgres
 import (
 	"fmt"
 	"github.com/jinzhu/gorm"
-	"github.com/trustwallet/blockatlas/pkg/logger"
 	"github.com/trustwallet/watchmarket/db/models"
 	"strings"
 	"time"
 )
 
+const (
+	batchLimit           = 3000
+	rawBulkTickersInsert = `INSERT INTO tickers(updated_at,created_at,coin,coin_name,coin_type,token_id,change24h,currency,provider,value,last_updated,total_supply,market_cap) VALUES %s ON CONFLICT ON CONSTRAINT tickers_pkey DO UPDATE SET value = excluded.value, change24h = excluded.change24h, updated_at = excluded.updated_at, last_updated = excluded.last_updated, total_supply = excluded.total_supply, market_cap = excluded.market_cap`
+)
+
 func (i *Instance) AddTickers(tickers []models.Ticker) error {
-	// TODO: Upsert
-	//db := i.Gorm.Set("gorm:insert_option", "ON CONFLICT DO NOTHING") // (coin,coin_name,coin_type,token_id,currency,provider) DO UPDATE SET value = excluded.value, change24h = excluded.change24h
 	batch := toTickersBatch(normalizeTickers(tickers), batchLimit)
 	for _, b := range batch {
 		err := bulkCreateTicker(i.Gorm, b)
@@ -19,7 +21,6 @@ func (i *Instance) AddTickers(tickers []models.Ticker) error {
 			return err
 		}
 	}
-	logger.Info("done")
 	return nil
 }
 
@@ -38,11 +39,6 @@ func toTickersBatch(tickers []models.Ticker, sizeUint uint) [][]models.Ticker {
 	return result
 }
 
-const (
-	batchLimit    = 2
-	rawBulkInsert = `INSERT INTO tickers(updated_at,created_at,coin,coin_name,coin_type,token_id,change24h,currency,provider,value) VALUES %s ON CONFLICT ON CONSTRAINT tickers_pkey DO UPDATE SET value = excluded.value, change24h = excluded.change24h, updated_at = excluded.updated_at`
-)
-
 func normalizeTickers(tickers []models.Ticker) []models.Ticker {
 	normalizedTickers := make([]models.Ticker, 0, len(tickers))
 	for _, t := range tickers {
@@ -50,10 +46,10 @@ func normalizeTickers(tickers []models.Ticker) []models.Ticker {
 			normalizedTickers = append(normalizedTickers, t)
 		}
 	}
-	return toUniqueModels(normalizedTickers)
+	return toUniqueTickers(normalizedTickers)
 }
 
-func toUniqueModels(sample []models.Ticker) []models.Ticker {
+func toUniqueTickers(sample []models.Ticker) []models.Ticker {
 	var unique []models.Ticker
 sampleLoop:
 	for _, v := range sample {
@@ -68,7 +64,7 @@ sampleLoop:
 	return unique
 }
 
-func isBadTicker(coin, coinName, coinType, tokenId, currency, provider string, value, change24 float64, tickers []models.Ticker) bool {
+func isBadTicker(coin uint, coinName, coinType, tokenId, currency, provider string, value, change24 float64, tickers []models.Ticker) bool {
 	for _, t := range tickers {
 		if t.Coin == coin &&
 			t.CoinName == coinName &&
@@ -89,7 +85,7 @@ func bulkCreateTicker(db *gorm.DB, dataList []models.Ticker) error {
 	)
 
 	for _, d := range dataList {
-		valueStrings = append(valueStrings, "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
+		valueStrings = append(valueStrings, "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
 
 		valueArgs = append(valueArgs, time.Now())
 		valueArgs = append(valueArgs, time.Now())
@@ -101,9 +97,12 @@ func bulkCreateTicker(db *gorm.DB, dataList []models.Ticker) error {
 		valueArgs = append(valueArgs, d.Currency)
 		valueArgs = append(valueArgs, d.Provider)
 		valueArgs = append(valueArgs, d.Value)
+		valueArgs = append(valueArgs, d.LastUpdated)
+		valueArgs = append(valueArgs, d.TotalSupply)
+		valueArgs = append(valueArgs, d.MarketCap)
 	}
 
-	smt := fmt.Sprintf(rawBulkInsert, strings.Join(valueStrings, ","))
+	smt := fmt.Sprintf(rawBulkTickersInsert, strings.Join(valueStrings, ","))
 
 	if err := db.Exec(smt, valueArgs...).Error; err != nil {
 		return err

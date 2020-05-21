@@ -10,13 +10,13 @@ func (p Provider) GetRates() (rates watchmarket.Rates, err error) {
 	if err != nil {
 		return
 	}
-	rates = normalizeRates(prices, p.id)
+	rates = normalizeRates(prices, p.id, p.currency)
 	return
 }
 
-func normalizeRates(prices CoinPrices, provider string) watchmarket.Rates {
+func normalizeRates(prices CoinPrices, provider, baseCurrency string) watchmarket.Rates {
 	var (
-		res           watchmarket.Rates
+		result        watchmarket.Rates
 		emptyPlatform Platform
 	)
 
@@ -24,13 +24,13 @@ func normalizeRates(prices CoinPrices, provider string) watchmarket.Rates {
 		if price.Platform != emptyPlatform {
 			continue
 		}
-		res = append(res, watchmarket.Rate{
+		result = append(result, watchmarket.Rate{
 			Currency:         strings.ToUpper(price.Symbol),
-			Rate:             price.Quote.USD.Price,
+			Rate:             watchmarket.TruncateWithPrecision(price.Quote.USD.Price, watchmarket.DefaultPrecision),
 			Timestamp:        price.LastUpdated.Unix(),
 			PercentChange24h: price.Quote.USD.PercentChange24h,
 			Provider:         provider,
 		})
 	}
-	return res
+	return result
 }

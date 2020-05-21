@@ -10,20 +10,6 @@ import (
 	"time"
 )
 
-func TestUnixToDuration(t *testing.T) {
-	wantedDuration := time.Second * 10
-
-	assert.Equal(t, wantedDuration, UnixToDuration(10))
-	assert.Equal(t, time.Second*0, UnixToDuration(0))
-	assert.Equal(t, time.Minute, UnixToDuration(60))
-}
-
-func TestDurationToUnix(t *testing.T) {
-	wantedUnixTime := 10
-	assert.Equal(t, uint(wantedUnixTime), DurationToUnix(time.Second*10))
-	assert.Equal(t, uint(0), DurationToUnix(time.Second*0))
-}
-
 func TestInstance_GetCharts_notOutdated(t *testing.T) {
 	s := setupRedis(t)
 	defer s.Close()
@@ -58,7 +44,7 @@ func TestInstance_GetCharts_CachingDataWasEmpty(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, res)
 
-	err = i.redis.Set("testKEY", res, UnixToDuration(1000))
+	err = i.redis.Set("testKEY", res, watchmarket.UnixToDuration(1000))
 	assert.Nil(t, err)
 
 	data, err := i.GetCharts("testKEY", 10000)
@@ -263,7 +249,7 @@ func seedDbCharts(t *testing.T, instance Instance) {
 		Duration:  1000,
 		Key:       "data_key",
 	})
-	_ = instance.redis.Set("data_key", rawData, UnixToDuration(1000))
+	_ = instance.redis.Set("data_key", rawData, watchmarket.UnixToDuration(1000))
 
 }
 

@@ -25,7 +25,7 @@ func TestProvider_GetRates(t *testing.T) {
 }
 
 func Test_normalizeRates(t *testing.T) {
-	provider := "binancedex"
+	provider := "fixer"
 	tests := []struct {
 		name      string
 		latest    Rate
@@ -35,13 +35,13 @@ func Test_normalizeRates(t *testing.T) {
 			"test normalize fixer rate 1",
 			Rate{
 				Timestamp: 123,
-				Rates:     map[string]float64{"USD": 22.111, "BRL": 33.2, "BTC": 44.99},
+				Rates:     map[string]float64{"ABC": 22.111, "BRL": 33.2, "BTC": 44.99},
 				UpdatedAt: time.Now(),
 			},
 			watchmarket.Rates{
-				watchmarket.Rate{Currency: "USD", Rate: 22.111, Timestamp: 123, Provider: provider},
-				watchmarket.Rate{Currency: "BRL", Rate: 33.2, Timestamp: 123, Provider: provider},
-				watchmarket.Rate{Currency: "BTC", Rate: 44.99, Timestamp: 123, Provider: provider},
+				watchmarket.Rate{Currency: "ABC", Rate: watchmarket.TruncateWithPrecision(1/22.111, watchmarket.DefaultPrecision), Timestamp: 123, Provider: provider},
+				watchmarket.Rate{Currency: "BRL", Rate: watchmarket.TruncateWithPrecision(1/33.2, watchmarket.DefaultPrecision), Timestamp: 123, Provider: provider},
+				watchmarket.Rate{Currency: "BTC", Rate: watchmarket.TruncateWithPrecision(1/44.99, watchmarket.DefaultPrecision), Timestamp: 123, Provider: provider},
 			},
 		},
 		{
@@ -52,17 +52,17 @@ func Test_normalizeRates(t *testing.T) {
 				UpdatedAt: time.Now(),
 			},
 			watchmarket.Rates{
-				watchmarket.Rate{Currency: "IFC", Rate: 34.973, Timestamp: 333, Provider: provider},
-				watchmarket.Rate{Currency: "LSK", Rate: 123.321, Timestamp: 333, Provider: provider},
-				watchmarket.Rate{Currency: "DUO", Rate: 998.3, Timestamp: 333, Provider: provider},
+				watchmarket.Rate{Currency: "IFC", Rate: watchmarket.TruncateWithPrecision(1/34.973, watchmarket.DefaultPrecision), Timestamp: 333, Provider: provider},
+				watchmarket.Rate{Currency: "LSK", Rate: watchmarket.TruncateWithPrecision(1/123.321, watchmarket.DefaultPrecision), Timestamp: 333, Provider: provider},
+				watchmarket.Rate{Currency: "DUO", Rate: watchmarket.TruncateWithPrecision(1/998.3, watchmarket.DefaultPrecision), Timestamp: 333, Provider: provider},
 			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			gotRates := normalizeRates(tt.latest, provider)
+			gotRates := normalizeRates(tt.latest, provider, watchmarket.DefaultCurrency)
 			sort.SliceStable(gotRates, func(i, j int) bool {
-				return gotRates[i].Rate < gotRates[j].Rate
+				return gotRates[i].Rate > gotRates[j].Rate
 			})
 			if !assert.ObjectsAreEqualValues(gotRates, tt.wantRates) {
 				t.Errorf("normalizeRates() = %v, want %v", gotRates, tt.wantRates)

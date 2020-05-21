@@ -6,7 +6,6 @@ import (
 	"github.com/trustwallet/blockatlas/pkg/errors"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"strconv"
-	"time"
 )
 
 func (i Instance) GetCharts(key string, timeStart int64) (watchmarket.Chart, error) {
@@ -51,7 +50,7 @@ func (i Instance) SaveCharts(key string, data watchmarket.Chart, timeStart int64
 	cachingKey := i.GenerateKey(key + strconv.Itoa(int(timeStart)))
 	interval := CachedInterval{
 		Timestamp: timeStart,
-		Duration:  int64(DurationToUnix(i.chartsCaching)),
+		Duration:  int64(watchmarket.DurationToUnix(i.chartsCaching)),
 		Key:       cachingKey,
 	}
 
@@ -131,12 +130,4 @@ func (i Instance) updateInterval(key string, interval CachedInterval) error {
 		return err
 	}
 	return nil
-}
-
-func UnixToDuration(unixTime uint) time.Duration {
-	return time.Duration(unixTime * 1000000000)
-}
-
-func DurationToUnix(duration time.Duration) uint {
-	return uint(duration.Seconds())
 }

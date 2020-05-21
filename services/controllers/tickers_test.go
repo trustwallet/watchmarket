@@ -16,21 +16,21 @@ func TestController_getRateByPriority(t *testing.T) {
 		PercentChange24h: 1,
 		Provider:         "coinmarketcap",
 		Rate:             1,
-		Timestamp:        12,
+		LastUpdated:      12,
 	}
 	rate2 := models.Rate{
 		Currency:         "USD",
 		PercentChange24h: 2,
 		Provider:         "coingecko",
 		Rate:             2,
-		Timestamp:        12,
+		LastUpdated:      12,
 	}
 	rate3 := models.Rate{
 		Currency:         "USD",
 		PercentChange24h: 4,
 		Provider:         "fixer",
 		Rate:             6,
-		Timestamp:        12,
+		LastUpdated:      12,
 	}
 
 	db := getDbMock()
@@ -169,14 +169,14 @@ func TestController_normalizeTickers(t *testing.T) {
 		PercentChange24h: 1,
 		Provider:         "coinmarketcap",
 		Rate:             21,
-		Timestamp:        12,
+		LastUpdated:      12,
 	}
 	modelRate2 := models.Rate{
 		Currency:         "EUR",
 		PercentChange24h: 1,
 		Provider:         "coinmarketcap",
 		Rate:             12,
-		Timestamp:        12,
+		LastUpdated:      12,
 	}
 
 	rate := watchmarket.Rate{

@@ -12,16 +12,16 @@ func (p Provider) GetRates() (watchmarket.Rates, error) {
 	}
 	prices := p.client.fetchRates(coins, p.currency)
 
-	return normalizeRates(prices, p.id), nil
+	return normalizeRates(prices, p.id, p.currency), nil
 }
 
-func normalizeRates(prices CoinPrices, provider string) watchmarket.Rates {
+func normalizeRates(prices CoinPrices, provider, baseCurrency string) watchmarket.Rates {
 	var result watchmarket.Rates
 
 	for _, price := range prices {
 		result = append(result, watchmarket.Rate{
 			Currency:  strings.ToUpper(price.Symbol),
-			Rate:      price.CurrentPrice,
+			Rate:      watchmarket.TruncateWithPrecision(price.CurrentPrice, watchmarket.DefaultPrecision),
 			Timestamp: price.LastUpdated.Unix(),
 			Provider:  provider,
 		})
