@@ -51,6 +51,7 @@ func normalizeTicker(price Data, coinsMap []CoinMap, provider, currency string) 
 	mappedCmcCoins, err := findCoin(coinsMap, price.Id)
 	if err != nil {
 		tickersList = append(tickersList, watchmarket.Ticker{
+			Coin:     watchmarket.UnknownCoinID,
 			CoinName: coinName,
 			CoinType: coinType,
 			TokenId:  tokenId,
