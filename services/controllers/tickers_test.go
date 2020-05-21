@@ -5,9 +5,9 @@ import (
 	"github.com/trustwallet/blockatlas/pkg/errors"
 	"github.com/trustwallet/watchmarket/db/models"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
-	"strconv"
 	"sync"
 	"testing"
+	"time"
 )
 
 func TestController_getRateByPriority(t *testing.T) {
@@ -16,21 +16,21 @@ func TestController_getRateByPriority(t *testing.T) {
 		PercentChange24h: 1,
 		Provider:         "coinmarketcap",
 		Rate:             1,
-		LastUpdated:      12,
+		LastUpdated:      time.Now(),
 	}
 	rate2 := models.Rate{
 		Currency:         "USD",
 		PercentChange24h: 2,
 		Provider:         "coingecko",
 		Rate:             2,
-		LastUpdated:      12,
+		LastUpdated:      time.Now(),
 	}
 	rate3 := models.Rate{
 		Currency:         "USD",
 		PercentChange24h: 4,
 		Provider:         "fixer",
 		Rate:             6,
-		LastUpdated:      12,
+		LastUpdated:      time.Now(),
 	}
 
 	db := getDbMock()
@@ -50,14 +50,14 @@ func TestController_getRateByPriority(t *testing.T) {
 		PercentChange24h: 1,
 		Provider:         "coinmarketcap",
 		Rate:             1,
-		Timestamp:        12,
+		Timestamp:        time.Now().Unix(),
 	}, r)
 }
 
 func TestController_getTickersByPriority(t *testing.T) {
 
 	ticker60ACMC := models.Ticker{
-		Coin:      "60",
+		Coin:      60,
 		CoinName:  "ETH",
 		TokenId:   "a",
 		Change24h: 10,
@@ -67,7 +67,7 @@ func TestController_getTickersByPriority(t *testing.T) {
 	}
 
 	ticker60ACG := models.Ticker{
-		Coin:      "60",
+		Coin:      60,
 		CoinName:  "ETH",
 		TokenId:   "a",
 		Change24h: 10,
@@ -77,7 +77,7 @@ func TestController_getTickersByPriority(t *testing.T) {
 	}
 
 	ticker714ACG := models.Ticker{
-		Coin:      "714",
+		Coin:      714,
 		CoinName:  "BNB",
 		TokenId:   "a",
 		Change24h: 10,
@@ -87,7 +87,7 @@ func TestController_getTickersByPriority(t *testing.T) {
 	}
 
 	ticker714ABNB := models.Ticker{
-		Coin:      "714",
+		Coin:      714,
 		CoinName:  "BNB",
 		TokenId:   "a",
 		Change24h: 10,
@@ -169,14 +169,14 @@ func TestController_normalizeTickers(t *testing.T) {
 		PercentChange24h: 1,
 		Provider:         "coinmarketcap",
 		Rate:             21,
-		LastUpdated:      12,
+		LastUpdated:      time.Now(),
 	}
 	modelRate2 := models.Rate{
 		Currency:         "EUR",
 		PercentChange24h: 1,
 		Provider:         "coinmarketcap",
 		Rate:             12,
-		LastUpdated:      12,
+		LastUpdated:      time.Now(),
 	}
 
 	rate := watchmarket.Rate{
@@ -239,7 +239,7 @@ func Test_findBestProviderForQuery(t *testing.T) {
 	tickerQueries := []Coin{{Coin: 60, TokenId: "A"}}
 
 	ticker60ACMC := models.Ticker{
-		Coin:      "60",
+		Coin:      60,
 		CoinName:  "ETH",
 		TokenId:   "a",
 		Change24h: 10,
@@ -249,7 +249,7 @@ func Test_findBestProviderForQuery(t *testing.T) {
 	}
 
 	ticker60ACG := models.Ticker{
-		Coin:      "60",
+		Coin:      60,
 		CoinName:  "ETH",
 		TokenId:   "a",
 		Change24h: 10,
@@ -263,7 +263,7 @@ func Test_findBestProviderForQuery(t *testing.T) {
 	for i := 0; i < 10000; i++ {
 		t := ticker60ACG
 		t.Value = t.Value + float64(i)
-		t.Coin = strconv.Itoa(i)
+		t.Coin = uint(i)
 		dbTickers = append(dbTickers, t)
 	}
 

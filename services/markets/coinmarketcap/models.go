@@ -40,6 +40,8 @@ type (
 	}
 
 	USD struct {
+		Volume           float64 `json:"volume_24h"`
+		MarketCap        float64 `json:"market_cap"`
 		Price            float64 `json:"price"`
 		PercentChange24h float64 `json:"percent_change_24h"`
 	}

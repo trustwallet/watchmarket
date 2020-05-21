@@ -17,7 +17,7 @@ type Ticker struct {
 	Provider    string `gorm:"primary_key;"`
 	Change24h   float64
 	Value       float64
-	TotalSupply float64
+	Volume      float64
 	MarketCap   float64
 	LastUpdated time.Time
 }

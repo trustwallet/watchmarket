@@ -61,6 +61,8 @@ func normalizeTicker(price Data, coinsMap []CoinMap, provider, currency string) 
 				Provider:  provider,
 			},
 			LastUpdate: price.LastUpdated,
+			Volume:     price.Quote.USD.Volume,
+			MarketCap:  price.Quote.USD.MarketCap,
 		})
 		return tickersList
 	}
@@ -75,7 +77,7 @@ func normalizeTicker(price Data, coinsMap []CoinMap, provider, currency string) 
 			Coin:     mappedCmcCoin.Coin.ID,
 			CoinName: coinName,
 			CoinType: mappedCmcCoin.CoinType,
-			TokenId:  tokenId,
+			TokenId:  strings.ToLower(tokenId),
 			Price: watchmarket.Price{
 				Value:     price.Quote.USD.Price,
 				Change24h: price.Quote.USD.PercentChange24h,
