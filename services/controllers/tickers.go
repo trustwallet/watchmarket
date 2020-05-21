@@ -11,12 +11,12 @@ import (
 func (c Controller) HandleTickersRequest(tr TickerRequest) (TickerResponse, error) {
 	rate, err := c.getRateByPriority(strings.ToUpper(tr.Currency))
 	if err != nil {
-		return TickerResponse{}, err
+		return TickerResponse{}, errors.New(ErrNotFound)
 	}
 
 	tickers, err := c.getTickersByPriority(makeTickerQueries(tr.Assets))
 	if err != nil {
-		return TickerResponse{}, err
+		return TickerResponse{}, errors.New(ErrInternal)
 	}
 
 	tickers = c.normalizeTickers(tickers, rate)
@@ -30,23 +30,24 @@ func (c Controller) getRateByPriority(currency string) (watchmarket.Rate, error)
 		return watchmarket.Rate{}, err
 	}
 
-	providers := c.tickersPriority.GetAllProviders()
+	providers := c.ratesPriority.GetAllProviders()
 
-	result := new(models.Rate)
+	var result models.Rate
 ProvidersLoop:
 	for _, p := range providers {
 		for _, r := range rates {
 			if p == r.Provider {
-				result = &r
+				result = r
 				break ProvidersLoop
 			}
 		}
 	}
-	if result == nil {
-		return watchmarket.Rate{}, errors.New("Not found")
+	emptyRate := models.Rate{}
+	if result == emptyRate {
+		return watchmarket.Rate{}, errors.New(ErrNotFound)
 	}
 
-	return normalizeRate(*result), nil
+	return normalizeRate(result), nil
 }
 
 func (c Controller) getTickersByPriority(tickerQueries []models.TickerQuery) (watchmarket.Tickers, error) {
