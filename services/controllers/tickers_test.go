@@ -55,7 +55,6 @@ func TestController_getRateByPriority(t *testing.T) {
 }
 
 func TestController_getTickersByPriority(t *testing.T) {
-
 	ticker60ACMC := models.Ticker{
 		Coin:      60,
 		CoinName:  "ETH",
@@ -164,74 +163,41 @@ func TestController_HandleTickersRequest_Negative(t *testing.T) {
 }
 
 func TestController_normalizeTickers(t *testing.T) {
-	modelRate := models.Rate{
-		Currency:         "BTC",
-		PercentChange24h: 1,
-		Provider:         "coinmarketcap",
-		Rate:             21,
-		LastUpdated:      time.Now(),
-	}
 	modelRate2 := models.Rate{
 		Currency:         "EUR",
-		PercentChange24h: 1,
-		Provider:         "coinmarketcap",
-		Rate:             12,
+		PercentChange24h: 0,
+		Provider:         "fixer",
+		Rate:             1.0992876616,
 		LastUpdated:      time.Now(),
 	}
 
 	rate := watchmarket.Rate{
 		Currency:         "EUR",
-		PercentChange24h: 1,
-		Provider:         "coinmarketcap",
-		Rate:             12,
+		PercentChange24h: 0,
+		Provider:         "fixer",
+		Rate:             1.0992876616,
 		Timestamp:        12,
 	}
 
-	wantedTicker1 := watchmarket.Ticker{
-		Coin:     60,
-		CoinName: "ETH",
-		CoinType: "",
+	gotTicker1 := watchmarket.Ticker{
+		Coin:     0,
+		CoinName: "BTC",
+		CoinType: "coin",
 		Price: watchmarket.Price{
-			Change24h: 10,
+			Change24h: -4.03168,
 			Currency:  "USD",
 			Provider:  "coinmarketcap",
-			Value:     100,
-		},
-		TokenId: "a",
-	}
-	wantedTicker2 := watchmarket.Ticker{
-		Coin:     714,
-		CoinName: "BNB",
-		CoinType: "",
-		Price: watchmarket.Price{
-			Change24h: 10,
-			Currency:  "USD",
-			Provider:  "coingecko",
-			Value:     100,
-		},
-		TokenId: "a",
-	}
-
-	wantedTicker3 := watchmarket.Ticker{
-		Coin:     118,
-		CoinName: "ATOM",
-		CoinType: "",
-		Price: watchmarket.Price{
-			Change24h: 10,
-			Currency:  "BTC",
-			Provider:  "coingecko",
-			Value:     0.001,
+			Value:     9360.20314131,
 		},
 		TokenId: "",
 	}
-
 	db := getDbMock()
-	db.WantedRates = []models.Rate{modelRate, modelRate2}
+	db.WantedRates = []models.Rate{modelRate2}
 
 	c := setupController(t, db, getCacheMock())
 	assert.NotNil(t, c)
 
-	result := c.normalizeTickers([]watchmarket.Ticker{wantedTicker1, wantedTicker2, wantedTicker3}, rate)
+	result := c.normalizeTickers([]watchmarket.Ticker{gotTicker1}, rate)
 	assert.NotNil(t, result)
 }
 

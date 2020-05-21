@@ -48,7 +48,7 @@ func main() {
 	//c = w.AddRatesOperation(c, "5m")
 	//c = w.AddTickersOperation(c, "5m")
 	go c.Start()
-	go w.FetchAndSaveRates()
+	//go w.FetchAndSaveRates()
 	go w.FetchAndSaveTickers()
 	<-make(chan bool)
 }

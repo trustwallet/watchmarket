@@ -53,7 +53,7 @@ func Test_normalizeTickers(t *testing.T) {
 					Platform: Platform{Coin: Coin{Symbol: "BNB"}, TokenAddress: "0x8ce9137d39326ad0cd6491fb5cc0cba0e089b6a9"}},
 			}}, provider: "coinmarketcap"},
 			watchmarket.Tickers{
-				watchmarket.Ticker{CoinName: "BTC", CoinType: watchmarket.Coin, LastUpdate: time.Unix(111, 0),
+				watchmarket.Ticker{Coin: watchmarket.UnknownCoinID, CoinName: "BTC", CoinType: watchmarket.Coin, LastUpdate: time.Unix(111, 0),
 					Price: watchmarket.Price{
 						Value:     223.55,
 						Change24h: 10,
@@ -61,7 +61,7 @@ func Test_normalizeTickers(t *testing.T) {
 						Provider:  "coinmarketcap",
 					},
 				},
-				watchmarket.Ticker{CoinName: "ETH", CoinType: watchmarket.Coin, LastUpdate: time.Unix(333, 0),
+				watchmarket.Ticker{Coin: watchmarket.UnknownCoinID, CoinName: "ETH", CoinType: watchmarket.Coin, LastUpdate: time.Unix(333, 0),
 					Price: watchmarket.Price{
 						Value:     11.11,
 						Change24h: 20,
@@ -69,7 +69,7 @@ func Test_normalizeTickers(t *testing.T) {
 						Provider:  "coinmarketcap",
 					},
 				},
-				watchmarket.Ticker{CoinName: "ETH", TokenId: "0x8ce9137d39326ad0cd6491fb5cc0cba0e089b6a9", CoinType: watchmarket.Token, LastUpdate: time.Unix(444, 0),
+				watchmarket.Ticker{Coin: watchmarket.UnknownCoinID, CoinName: "ETH", TokenId: "0x8ce9137d39326ad0cd6491fb5cc0cba0e089b6a9", CoinType: watchmarket.Token, LastUpdate: time.Unix(444, 0),
 					Price: watchmarket.Price{
 						Value:     463.22,
 						Change24h: -3,

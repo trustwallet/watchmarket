@@ -45,7 +45,7 @@ func (p Provider) normalizeTicker(price CoinPrice, coinsMap map[string][]CoinRes
 
 	coins, err := getCgCoinsById(coinsMap, price.Id)
 	if err != nil {
-		t := createTicker(price, coinType, unknownCoinID, coinName, tokenId, provider, currency)
+		t := createTicker(price, coinType, watchmarket.UnknownCoinID, coinName, tokenId, provider, currency)
 		tickersList = append(tickersList, t)
 		return tickersList
 	}
@@ -179,7 +179,7 @@ func getCoinId(platformName string) uint {
 		return coin.Icon().ID
 	}
 
-	return unknownCoinID
+	return watchmarket.UnknownCoinID
 }
 
 func isBasicCoin(symbol string) bool {

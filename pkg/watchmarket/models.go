@@ -81,6 +81,7 @@ type (
 )
 
 const (
+	UnknownCoinID                 = 111111
 	DefaultPrecision              = 10
 	Coin                 CoinType = "coin"
 	Token                CoinType = "token"
