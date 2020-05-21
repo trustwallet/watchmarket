@@ -176,7 +176,7 @@ func normalizeRate(r models.Rate) watchmarket.Rate {
 		PercentChange24h: r.PercentChange24h,
 		Provider:         r.Provider,
 		Rate:             r.Rate,
-		Timestamp:        r.Timestamp,
+		Timestamp:        r.LastUpdated,
 	}
 }
 

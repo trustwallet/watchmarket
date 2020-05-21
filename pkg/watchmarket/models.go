@@ -1,6 +1,7 @@
 package watchmarket
 
 import (
+	"math"
 	"time"
 )
 
@@ -78,6 +79,7 @@ type (
 )
 
 const (
+	DefaultPrecision              = 10
 	Coin                 CoinType = "coin"
 	Token                CoinType = "token"
 	DefaultCurrency               = "USD"
@@ -90,4 +92,21 @@ func (d Chart) IsEmpty() bool {
 
 func (i CoinDetails) IsEmpty() bool {
 	return i.Info.Name == ""
+}
+
+func round(num float64) int {
+	return int(num + math.Copysign(0.5, num))
+}
+
+func TruncateWithPrecision(num float64, precision int) float64 {
+	output := math.Pow(10, float64(precision))
+	return float64(round(num*output)) / output
+}
+
+func UnixToDuration(unixTime uint) time.Duration {
+	return time.Duration(unixTime * 1000000000)
+}
+
+func DurationToUnix(duration time.Duration) uint {
+	return uint(duration.Seconds())
 }

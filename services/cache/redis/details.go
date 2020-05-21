@@ -19,7 +19,7 @@ func (i Instance) SaveCoinDetails(key string, data watchmarket.CoinDetails, time
 	cachingKey := i.GenerateKey(key + strconv.Itoa(int(timeStart)))
 	interval := CachedInterval{
 		Timestamp: timeStart,
-		Duration:  int64(DurationToUnix(i.detailsCaching)),
+		Duration:  int64(watchmarket.DurationToUnix(i.detailsCaching)),
 		Key:       cachingKey,
 	}
 

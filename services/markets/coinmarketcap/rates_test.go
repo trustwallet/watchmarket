@@ -14,7 +14,7 @@ import (
 func TestProvider_GetRates(t *testing.T) {
 	server := httptest.NewServer(createMockedAPI())
 	defer server.Close()
-	provider := InitProvider(server.URL, server.URL, server.URL, server.URL, server.URL, "", assets.Init("assets.api"))
+	provider := InitProvider(server.URL, server.URL, server.URL, server.URL, server.URL, watchmarket.DefaultCurrency, assets.Init("assets.api"))
 	data, err := provider.GetRates()
 	assert.Nil(t, err)
 	rawData, err := json.Marshal(data)
@@ -60,8 +60,8 @@ func Test_normalizeRates(t *testing.T) {
 				},
 			},
 			watchmarket.Rates{
-				watchmarket.Rate{Currency: "ETH", Rate: 11.11, Timestamp: 333, Provider: provider, PercentChange24h: float64(-1.22)},
-				watchmarket.Rate{Currency: "BTC", Rate: 223.5, Timestamp: 333, Provider: provider, PercentChange24h: float64(0.33)},
+				watchmarket.Rate{Currency: "ETH", Rate: watchmarket.TruncateWithPrecision(11.11, watchmarket.DefaultPrecision), Timestamp: 333, Provider: provider, PercentChange24h: float64(-1.22)},
+				watchmarket.Rate{Currency: "BTC", Rate: watchmarket.TruncateWithPrecision(223.5, watchmarket.DefaultPrecision), Timestamp: 333, Provider: provider, PercentChange24h: float64(0.33)},
 			},
 		},
 		{
@@ -94,14 +94,14 @@ func Test_normalizeRates(t *testing.T) {
 				},
 			},
 			watchmarket.Rates{
-				watchmarket.Rate{Currency: "XRP", Rate: 0.4687, Timestamp: 123, Provider: provider, PercentChange24h: float64(0)},
-				watchmarket.Rate{Currency: "BNB", Rate: 30.333, Timestamp: 123, Provider: provider, PercentChange24h: float64(2.1)},
+				watchmarket.Rate{Currency: "XRP", Rate: watchmarket.TruncateWithPrecision(0.4687, watchmarket.DefaultPrecision), Timestamp: 123, Provider: provider, PercentChange24h: float64(0)},
+				watchmarket.Rate{Currency: "BNB", Rate: watchmarket.TruncateWithPrecision(30.333, watchmarket.DefaultPrecision), Timestamp: 123, Provider: provider, PercentChange24h: float64(2.1)},
 			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			gotRates := normalizeRates(tt.prices, provider)
+			gotRates := normalizeRates(tt.prices, provider, watchmarket.DefaultCurrency)
 			sort.SliceStable(gotRates, func(i, j int) bool {
 				return gotRates[i].Rate < gotRates[j].Rate
 			})

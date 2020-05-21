@@ -1,10 +1,12 @@
 package models
 
+import "time"
+
 type Rate struct {
 	BasicTimeModel
-	Currency         string `gorm:"primary_key;"sql:"index"`
+	Currency         string `gorm:"primary_key;"`
 	PercentChange24h float64
-	Provider         string `gorm:"primary_key;"sql:"index"`
+	Provider         string `gorm:"primary_key;"`
 	Rate             float64
-	Timestamp        int64
+	LastUpdated      time.Time
 }
