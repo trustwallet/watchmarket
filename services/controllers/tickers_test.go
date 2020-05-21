@@ -201,6 +201,70 @@ func TestController_normalizeTickers(t *testing.T) {
 	assert.NotNil(t, result)
 }
 
+func TestController_normalizeTickers_advanced(t *testing.T) {
+	modelRate := models.Rate{
+		Currency:         "BNB",
+		PercentChange24h: 0,
+		Provider:         "coingecko",
+		Rate:             16.16,
+		LastUpdated:      time.Now(),
+	}
+
+	modelRate2 := models.Rate{
+		Currency:         "EUR",
+		PercentChange24h: 0,
+		Provider:         "fixer",
+		Rate:             1.0992876616,
+		LastUpdated:      time.Now(),
+	}
+
+	rate := watchmarket.Rate{
+		Currency:         "EUR",
+		PercentChange24h: 0,
+		Provider:         "fixer",
+		Rate:             1.0992876616,
+		Timestamp:        12,
+	}
+
+	gotTicker1 := watchmarket.Ticker{
+		Coin:     0,
+		CoinName: "BNB",
+		CoinType: "token",
+		Price: watchmarket.Price{
+			Change24h: -10.24,
+			Currency:  "BNB",
+			Provider:  "binancedex",
+			Value:     1,
+		},
+		TokenId:   "raven-f66",
+		Volume:    10,
+		MarketCap: 10,
+	}
+	db := getDbMock()
+	db.WantedRates = []models.Rate{modelRate, modelRate2}
+
+	c := setupController(t, db, getCacheMock())
+	assert.NotNil(t, c)
+
+	result := c.normalizeTickers([]watchmarket.Ticker{gotTicker1}, rate)
+	wanted := watchmarket.Ticker{
+		Coin:     0,
+		CoinName: "BNB",
+		CoinType: "token",
+		Error:    "",
+		Price: watchmarket.Price{
+			Change24h: -10.24,
+			Currency:  "EUR",
+			Provider:  "binancedex",
+			Value:     14.700428799936965,
+		},
+		TokenId:   "raven-f66",
+		Volume:    147.00428799936964,
+		MarketCap: 147.00428799936964,
+	}
+	assert.Equal(t, wanted, result[0])
+}
+
 func Test_findBestProviderForQuery(t *testing.T) {
 	tickerQueries := []Coin{{Coin: 60, TokenId: "A"}}
 
