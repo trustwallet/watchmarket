@@ -83,14 +83,14 @@ func Test_normalizeTickers(t *testing.T) {
 				},
 			}, provider: id},
 			watchmarket.Tickers{
-				watchmarket.Ticker{Coin: 60, CoinName: "ETH", TokenId: "0x39aa39c021dfbae8fac545936693ac917d5e7563", CoinType: watchmarket.Token, LastUpdate: time.Unix(222, 0),
+				watchmarket.Ticker{Coin: 60, CoinName: "ETH", Volume: 5000, MarketCap: 2, TokenId: "0x39aa39c021dfbae8fac545936693ac917d5e7563", CoinType: watchmarket.Token, LastUpdate: time.Unix(222, 0),
 					Price: watchmarket.Price{
 						Value:    0.0021,
 						Currency: "USD",
 						Provider: id,
 					},
 				},
-				watchmarket.Ticker{Coin: 60, CoinName: "ETH", TokenId: "0x158079ee67fce2f58472a96584a73c7ab9ac95c1", CoinType: watchmarket.Token, LastUpdate: time.Unix(444, 0),
+				watchmarket.Ticker{Coin: 60, CoinName: "ETH", Volume: 5000, MarketCap: 1, TokenId: "0x158079ee67fce2f58472a96584a73c7ab9ac95c1", CoinType: watchmarket.Token, LastUpdate: time.Unix(444, 0),
 					Price: watchmarket.Price{
 						Value:    0.02,
 						Currency: "USD",

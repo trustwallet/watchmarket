@@ -39,27 +39,30 @@ func Test_normalizeTickers(t *testing.T) {
 			"test normalize binancedex quote",
 			args{prices: []CoinPrice{
 				{
-					BaseAssetName:      "RAVEN-F66",
+					BaseAssetName:      "rAven-f66",
 					QuoteAssetName:     "BNB",
 					LastPrice:          "0.00001082",
 					PriceChangePercent: "-2.2500",
+					Volume:             "440.78560000",
 				},
 				{
-					BaseAssetName:      "SLV-986",
+					BaseAssetName:      "sLv-986",
 					QuoteAssetName:     "BNB",
 					LastPrice:          "0.04494510",
 					PriceChangePercent: "-5.3700",
+					Volume:             "440.78560000",
 				},
 				{
 					BaseAssetName:      "CBIX-3C9",
 					QuoteAssetName:     "TAUD-888",
 					LastPrice:          "0.00100235",
 					PriceChangePercent: "5.2700",
+					Volume:             "440.78560000",
 				},
 			},
 				provider: "binancedex"},
 			watchmarket.Tickers{
-				watchmarket.Ticker{Coin: uint(714), CoinName: "BNB", TokenId: "RAVEN-F66", CoinType: watchmarket.Token, LastUpdate: time.Now(),
+				watchmarket.Ticker{Volume: 440.7856140136719, Coin: uint(714), CoinName: "BNB", TokenId: "raven-f66", CoinType: watchmarket.Token, LastUpdate: time.Now(),
 					Price: watchmarket.Price{
 						Value:     0.00001082,
 						Change24h: -2.2500,
@@ -67,7 +70,7 @@ func Test_normalizeTickers(t *testing.T) {
 						Provider:  "binancedex",
 					},
 				},
-				watchmarket.Ticker{Coin: uint(714), CoinName: "BNB", TokenId: "SLV-986", CoinType: watchmarket.Token, LastUpdate: time.Now(),
+				watchmarket.Ticker{Volume: 440.7856140136719, Coin: uint(714), CoinName: "BNB", TokenId: "slv-986", CoinType: watchmarket.Token, LastUpdate: time.Now(),
 					Price: watchmarket.Price{
 						Value:     0.0449451,
 						Change24h: -5.3700,

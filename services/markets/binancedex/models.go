@@ -5,4 +5,5 @@ type CoinPrice struct {
 	QuoteAssetName     string `json:"quoteAssetName"`
 	PriceChangePercent string `json:"priceChangePercent"`
 	LastPrice          string `json:"lastPrice"`
+	Volume             string `json:"quoteVolume"`
 }

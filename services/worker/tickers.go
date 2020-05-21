@@ -21,14 +21,17 @@ func toTickersModel(tickers watchmarket.Tickers) []models.Ticker {
 	result := make([]models.Ticker, 0, len(tickers))
 	for _, t := range tickers {
 		result = append(result, models.Ticker{
-			Coin:      t.Coin,
-			CoinName:  t.CoinName,
-			CoinType:  string(t.CoinType),
-			TokenId:   t.TokenId,
-			Change24h: t.Price.Change24h,
-			Currency:  t.Price.Currency,
-			Provider:  t.Price.Provider,
-			Value:     t.Price.Value,
+			Coin:        t.Coin,
+			CoinName:    t.CoinName,
+			CoinType:    string(t.CoinType),
+			TokenId:     t.TokenId,
+			Change24h:   t.Price.Change24h,
+			Currency:    t.Price.Currency,
+			Provider:    t.Price.Provider,
+			Value:       t.Price.Value,
+			Volume:      t.Volume,
+			MarketCap:   t.MarketCap,
+			LastUpdated: t.LastUpdate,
 		})
 	}
 

@@ -5,6 +5,7 @@ import (
 	"github.com/trustwallet/blockatlas/pkg/errors"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -59,11 +60,16 @@ func normalizeTicker(price CoinPrice, provider string) (watchmarket.Ticker, erro
 		value = 1.0 / value
 	}
 
+	volume, err := strconv.ParseFloat(price.Volume, 32)
+	if err != nil {
+		volume = 0
+	}
+
 	t = watchmarket.Ticker{
 		Coin:     coin.BNB,
 		CoinName: BNBAsset,
 		CoinType: watchmarket.Token,
-		TokenId:  tokenId,
+		TokenId:  strings.ToLower(tokenId),
 		Price: watchmarket.Price{
 			Value:     value,
 			Change24h: value24h,
@@ -71,6 +77,7 @@ func normalizeTicker(price CoinPrice, provider string) (watchmarket.Ticker, erro
 			Provider:  provider,
 		},
 		LastUpdate: time.Now(),
+		Volume:     volume,
 	}
 	return t, nil
 }
