@@ -14,7 +14,7 @@ func (c Controller) HandleChartsRequest(cr ChartRequest) (watchmarket.Chart, err
 		return watchmarket.Chart{}, err
 	}
 
-	key := c.chartsCache.GenerateKey(cr.coinQuery + cr.token + cr.currency + cr.maxItems)
+	key := c.chartsCache.GenerateKey(cr.CoinQuery + cr.Token + cr.Currency + cr.MaxItems)
 	cachedChart, err := c.chartsCache.GetCharts(key, verifiedData.timeStart)
 	if err == nil {
 		return cachedChart, nil
@@ -34,11 +34,11 @@ func (c Controller) HandleChartsRequest(cr ChartRequest) (watchmarket.Chart, err
 }
 
 func verifyChartsRequestData(cr ChartRequest) (ChartsNormalizedRequest, error) {
-	if len(cr.timeStartRaw) == 0 || len(cr.coinQuery) == 0 {
+	if len(cr.TimeStartRaw) == 0 || len(cr.CoinQuery) == 0 {
 		return ChartsNormalizedRequest{}, errors.E("Invalid arguments length")
 	}
 
-	coinId, err := strconv.Atoi(cr.coinQuery)
+	coinId, err := strconv.Atoi(cr.CoinQuery)
 	if err != nil {
 		return ChartsNormalizedRequest{}, err
 	}
@@ -47,24 +47,24 @@ func verifyChartsRequestData(cr ChartRequest) (ChartsNormalizedRequest, error) {
 		return ChartsNormalizedRequest{}, err
 	}
 
-	timeStart, err := strconv.ParseInt(cr.timeStartRaw, 10, 64)
+	timeStart, err := strconv.ParseInt(cr.TimeStartRaw, 10, 64)
 	if err != nil {
 		return ChartsNormalizedRequest{}, err
 	}
 
-	maxItems, err := strconv.Atoi(cr.maxItems)
+	maxItems, err := strconv.Atoi(cr.MaxItems)
 	if err != nil || maxItems <= 0 {
 		maxItems = watchmarket.DefaultMaxChartItems
 	}
 
 	currency := watchmarket.DefaultCurrency
-	if cr.currency != "" {
-		currency = cr.currency
+	if cr.Currency != "" {
+		currency = cr.Currency
 	}
 
 	return ChartsNormalizedRequest{
 		coin:      uint(coinId),
-		token:     cr.token,
+		token:     cr.Token,
 		currency:  currency,
 		timeStart: timeStart,
 		maxItems:  maxItems,

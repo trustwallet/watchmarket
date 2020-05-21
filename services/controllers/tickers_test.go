@@ -242,7 +242,7 @@ func TestController_normalizeTickers_advanced(t *testing.T) {
 	gotTicker1 := watchmarket.Ticker{
 		Coin:     0,
 		CoinName: "BNB",
-		CoinType: "token",
+		CoinType: "Token",
 		Price: watchmarket.Price{
 			Change24h: -10.24,
 			Currency:  "BNB",
@@ -263,7 +263,7 @@ func TestController_normalizeTickers_advanced(t *testing.T) {
 	wanted := watchmarket.Ticker{
 		Coin:     0,
 		CoinName: "BNB",
-		CoinType: "token",
+		CoinType: "Token",
 		Error:    "",
 		Price: watchmarket.Price{
 			Change24h: -10.24,
@@ -282,7 +282,7 @@ func TestController_createResponse(t *testing.T) {
 	ticker := watchmarket.Ticker{
 		Coin:     0,
 		CoinName: "BNB",
-		CoinType: "token",
+		CoinType: "Token",
 		Error:    "",
 		Price: watchmarket.Price{
 			Change24h: -10.24,
@@ -297,7 +297,7 @@ func TestController_createResponse(t *testing.T) {
 
 	tr := TickerRequest{
 		Currency: "EUR",
-		Assets:   []Coin{{Coin: 0, CoinType: "token", TokenId: "RAVEN-F66"}},
+		Assets:   []Coin{{Coin: 0, CoinType: "Token", TokenId: "RAVEN-F66"}},
 	}
 
 	response := createResponse(tr, watchmarket.Tickers{ticker})
@@ -307,7 +307,7 @@ func TestController_createResponse(t *testing.T) {
 			{
 				Coin:     0,
 				CoinName: "BNB",
-				CoinType: "token",
+				CoinType: "Token",
 				Error:    "",
 				Price: watchmarket.Price{
 					Change24h: -10.24,

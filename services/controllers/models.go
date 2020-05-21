@@ -6,17 +6,22 @@ import (
 	"sync"
 )
 
+const (
+	ErrNotFound = "not found"
+	ErrInternal = "internal"
+)
+
 type (
 	ChartRequest struct {
-		coinQuery, token, currency, timeStartRaw, maxItems string
+		CoinQuery, Token, Currency, TimeStartRaw, MaxItems string
 	}
 	TickerRequest struct {
-		Currency string `json:"currency"`
+		Currency string `json:"Currency"`
 		Assets   []Coin `json:"assets"`
 	}
 
 	TickerResponse struct {
-		Currency string              `json:"currency"`
+		Currency string              `json:"Currency"`
 		Tickers  watchmarket.Tickers `json:"docs"`
 	}
 	Coin struct {
