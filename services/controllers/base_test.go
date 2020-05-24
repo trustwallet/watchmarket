@@ -37,7 +37,7 @@ func setupController(t *testing.T, d dbMock, ch cache.Charts) Controller {
 	m, err := markets.Init(c, a)
 	assert.Nil(t, err)
 
-	controller := NewController(ch, d, chartsPriority, coinInfoPriority, ratesPriority, tickerPriority, m)
+	controller := NewController(ch, d, chartsPriority, coinInfoPriority, ratesPriority, tickerPriority, m, c)
 	assert.NotNil(t, controller)
 	return controller
 
@@ -54,7 +54,13 @@ type dbMock struct {
 }
 
 func (d dbMock) GetRates(currency string) ([]models.Rate, error) {
-	return d.WantedRates, d.WantedRatesError
+	res := make([]models.Rate, 0)
+	for _, r := range d.WantedRates {
+		if r.Currency == currency {
+			res = append(res, r)
+		}
+	}
+	return res, d.WantedRatesError
 }
 
 func (d dbMock) AddRates(rates []models.Rate) error {

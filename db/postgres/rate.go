@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	rawBulkRatesInsert = `INSERT INTO rates(updated_at,created_at,currency,percent_change24h,provider,rate,last_updated) VALUES %s ON CONFLICT ON CONSTRAINT rates_pkey DO UPDATE SET rate = excluded.rate, percent_change24h = excluded.percent_change24h, updated_at = excluded.updated_at, last_updated = excluded.last_updated`
+	rawBulkRatesInsert = `INSERT INTO rates(updated_at,created_at,currency,percent_change24h,provider,rate,last_updated,show_option) VALUES %s ON CONFLICT ON CONSTRAINT rates_pkey DO UPDATE SET rate = excluded.rate, percent_change24h = excluded.percent_change24h, updated_at = excluded.updated_at, last_updated = excluded.last_updated`
 )
 
 func (i *Instance) AddRates(rates []models.Rate) error {
@@ -82,7 +82,7 @@ func bulkCreateRate(db *gorm.DB, dataList []models.Rate) error {
 	)
 
 	for _, d := range dataList {
-		valueStrings = append(valueStrings, "(?, ? ,?, ?, ?, ?, ?)")
+		valueStrings = append(valueStrings, "(?, ? ,?, ?, ?, ?, ?, ?)")
 
 		valueArgs = append(valueArgs, time.Now())
 		valueArgs = append(valueArgs, time.Now())
@@ -91,6 +91,7 @@ func bulkCreateRate(db *gorm.DB, dataList []models.Rate) error {
 		valueArgs = append(valueArgs, d.Provider)
 		valueArgs = append(valueArgs, d.Rate)
 		valueArgs = append(valueArgs, d.LastUpdated)
+		valueArgs = append(valueArgs, d.ShowOption)
 	}
 
 	smt := fmt.Sprintf(rawBulkRatesInsert, strings.Join(valueStrings, ","))

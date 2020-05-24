@@ -19,5 +19,6 @@ type Ticker struct {
 	Value       float64
 	Volume      float64
 	MarketCap   float64
+	ShowOption  ShowOption
 	LastUpdated time.Time
 }

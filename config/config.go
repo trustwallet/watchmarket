@@ -44,8 +44,12 @@ type Configuration struct {
 	} `mapstructure:"storage"`
 
 	RestAPI struct {
-		Mode  string `mapstructure:"mode"`
-		Port  string `mapstructure:"port"`
+		Mode    string `mapstructure:"mode"`
+		Port    string `mapstructure:"port"`
+		Tickers struct {
+			RespsectableMarketCap float64 `mapstructure:"respectable_market_cap"`
+			RespsectableVolume    float64 `mapstructure:"respectable_volume"`
+		}
 		Cache struct {
 			Charts string `mapstructure:"charts"`
 			Info   string `mapstructure:"info"`
