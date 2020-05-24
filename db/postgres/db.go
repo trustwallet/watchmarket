@@ -10,8 +10,6 @@ type Instance struct {
 	Gorm *gorm.DB
 }
 
-const batchCount = 3000
-
 func New(uri string) (*Instance, error) {
 	g, err := gorm.Open("postgres", uri)
 	if err != nil {
@@ -22,7 +20,6 @@ func New(uri string) (*Instance, error) {
 		&models.Rate{},
 		&models.Ticker{},
 	)
-	//g.LogMode(true)
 
 	i := &Instance{Gorm: g}
 

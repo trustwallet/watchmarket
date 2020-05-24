@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"github.com/trustwallet/watchmarket/config"
 	"github.com/trustwallet/watchmarket/db"
 	"github.com/trustwallet/watchmarket/services/cache"
 	"github.com/trustwallet/watchmarket/services/markets"
@@ -15,6 +16,7 @@ type Controller struct {
 	ratesPriority    priority.Controller
 	tickersPriority  priority.Controller
 	api              markets.APIs
+	configuration    config.Configuration
 }
 
 func NewController(
@@ -22,6 +24,7 @@ func NewController(
 	database db.Instance,
 	chartsPriority, coinInfoPriority, ratesPriority, tickersPriority priority.Controller,
 	api markets.APIs,
+	configuration config.Configuration,
 ) Controller {
 	return Controller{
 		cache,
@@ -31,5 +34,6 @@ func NewController(
 		ratesPriority,
 		tickersPriority,
 		api,
+		configuration,
 	}
 }

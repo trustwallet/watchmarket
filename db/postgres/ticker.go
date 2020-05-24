@@ -10,7 +10,7 @@ import (
 
 const (
 	batchLimit           = 3000
-	rawBulkTickersInsert = `INSERT INTO tickers(updated_at,created_at,coin,coin_name,coin_type,token_id,change24h,currency,provider,value,last_updated,volume,market_cap) VALUES %s ON CONFLICT ON CONSTRAINT tickers_pkey DO UPDATE SET value = excluded.value, change24h = excluded.change24h, updated_at = excluded.updated_at, last_updated = excluded.last_updated, volume = excluded.volume, market_cap = excluded.market_cap`
+	rawBulkTickersInsert = `INSERT INTO tickers(updated_at,created_at,coin,coin_name,coin_type,token_id,change24h,currency,provider,value,last_updated,volume,market_cap,show_option) VALUES %s ON CONFLICT ON CONSTRAINT tickers_pkey DO UPDATE SET value = excluded.value, change24h = excluded.change24h, updated_at = excluded.updated_at, last_updated = excluded.last_updated, volume = excluded.volume, market_cap = excluded.market_cap`
 )
 
 func (i *Instance) AddTickers(tickers []models.Ticker) error {
@@ -85,7 +85,7 @@ func bulkCreateTicker(db *gorm.DB, dataList []models.Ticker) error {
 	)
 
 	for _, d := range dataList {
-		valueStrings = append(valueStrings, "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
+		valueStrings = append(valueStrings, "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
 
 		valueArgs = append(valueArgs, time.Now())
 		valueArgs = append(valueArgs, time.Now())
@@ -100,6 +100,7 @@ func bulkCreateTicker(db *gorm.DB, dataList []models.Ticker) error {
 		valueArgs = append(valueArgs, d.LastUpdated)
 		valueArgs = append(valueArgs, d.Volume)
 		valueArgs = append(valueArgs, d.MarketCap)
+		valueArgs = append(valueArgs, d.ShowOption)
 	}
 
 	smt := fmt.Sprintf(rawBulkTickersInsert, strings.Join(valueStrings, ","))

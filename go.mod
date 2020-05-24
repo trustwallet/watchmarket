@@ -15,16 +15,15 @@ require (
 	github.com/containerd/continuity v0.0.0-20200413184840-d3ef23f19fbb // indirect
 	github.com/docker/go-connections v0.4.0 // indirect
 	github.com/docker/go-units v0.4.0 // indirect
-	github.com/getsentry/sentry-go v0.5.1
 	github.com/gin-gonic/gin v1.6.2
 	github.com/go-logr/logr v0.1.0 // indirect
+	github.com/go-playground/assert/v2 v2.0.1
 	github.com/go-redis/redis v6.15.7+incompatible
 	github.com/go-resty/resty/v2 v2.2.0 // indirect
 	github.com/gotestyourself/gotestyourself v1.4.0 // indirect
 	github.com/jarcoal/httpmock v1.0.5 // indirect
 	github.com/jinzhu/gorm v1.9.12
 	github.com/kataras/iris/v12 v12.0.1 // indirect
-	github.com/magiconair/properties v1.8.1
 	github.com/opencontainers/image-spec v1.0.1 // indirect
 	github.com/opencontainers/runc v0.1.1 // indirect
 	github.com/ory/dockertest v3.3.5+incompatible
@@ -35,6 +34,5 @@ require (
 	github.com/stretchr/testify v1.5.1
 	github.com/swaggo/gin-swagger v1.2.0
 	github.com/swaggo/swag v1.6.5
-	github.com/t-tiger/gorm-bulk-insert v1.3.0
 	github.com/trustwallet/blockatlas v1.0.38-0.20200413004732-b14ce93925b8
 )

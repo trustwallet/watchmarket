@@ -16,8 +16,8 @@ import (
 )
 
 const (
-	defaultPort       = "8421"
-	defaultConfigPath = "config.yml"
+	defaultPort       = "8420"
+	defaultConfigPath = "../../config.yml"
 )
 
 var (
@@ -65,11 +65,9 @@ func init() {
 	}
 
 	r := internal.InitRedis(configuration.Storage.Redis)
-
 	cache := rediscache.Init(*r, time.Minute, time.Minute, time.Minute, time.Minute)
 
-	controller = controllers.NewController(cache, database, chartsPriority, coinInfoPriority, ratesPriority, tickerPriority, m)
-
+	controller = controllers.NewController(cache, database, chartsPriority, coinInfoPriority, ratesPriority, tickerPriority, m, configuration)
 	engine = internal.InitEngine(configuration.RestAPI.Mode)
 }
 

@@ -1,8 +1,9 @@
 package controllers
 
 import (
+	"errors"
 	"github.com/stretchr/testify/assert"
-	"github.com/trustwallet/blockatlas/pkg/errors"
+	"github.com/trustwallet/watchmarket/config"
 	"github.com/trustwallet/watchmarket/db/models"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"sync"
@@ -47,9 +48,9 @@ func TestController_getRateByPriority(t *testing.T) {
 
 	assert.Equal(t, watchmarket.Rate{
 		Currency:         "USD",
-		PercentChange24h: 1,
-		Provider:         "coinmarketcap",
-		Rate:             1,
+		PercentChange24h: 4,
+		Provider:         "fixer",
+		Rate:             6,
 		Timestamp:        time.Now().Unix(),
 	}, r)
 }
@@ -154,12 +155,12 @@ func TestController_HandleTickersRequest_Negative(t *testing.T) {
 	db := getDbMock()
 
 	db.WantedTickersError = nil
-	db.WantedRatesError = errors.E("Not found")
+	db.WantedRatesError = errors.New("not found")
 	c := setupController(t, db, getCacheMock())
 	assert.NotNil(t, c)
 
 	_, err := c.HandleTickersRequest(TickerRequest{})
-	assert.Equal(t, err, errors.E("Not found"))
+	assert.Equal(t, err, errors.New(ErrNotFound))
 }
 
 func TestController_normalizeTickers(t *testing.T) {
@@ -347,6 +348,54 @@ func Test_findBestProviderForQuery(t *testing.T) {
 		Value:     100,
 	}
 
+	providers := []string{"coinmarketcap", "coingecko"}
+	dbTickers := []models.Ticker{ticker60ACMC, ticker60ACG}
+	for i := 0; i < 10000; i++ {
+		t := ticker60ACG
+		t.Value = t.Value + float64(i)
+		t.Coin = uint(i)
+		dbTickers = append(dbTickers, t)
+	}
+
+	c := config.Init("../../config/test.yml")
+	assert.NotNil(t, c)
+
+	res := new(sortedTickersResponse)
+	wg := new(sync.WaitGroup)
+	for _, q := range tickerQueries {
+		wg.Add(1)
+		go findBestProviderForQuery(q.Coin, q.TokenId, dbTickers, providers, wg, res, c)
+	}
+
+	wg.Wait()
+
+	assert.Equal(t, ticker60ACMC, res.tickers[0])
+}
+
+func Test_findBestProviderForQuery_advanced(t *testing.T) {
+	tickerQueries := []Coin{{Coin: 60, TokenId: "A"}}
+
+	ticker60ACMC := models.Ticker{
+		Coin:      60,
+		CoinName:  "ETH",
+		TokenId:   "a",
+		Change24h: 10,
+		Currency:  "USD",
+		Provider:  "coinmarketcap",
+		Value:     100,
+	}
+
+	ticker60ACG := models.Ticker{
+		Coin:       60,
+		CoinName:   "ETH",
+		TokenId:    "a",
+		Change24h:  10,
+		Currency:   "USD",
+		Provider:   "coingecko",
+		Value:      100,
+		ShowOption: models.NeverShow,
+	}
+
 	providers := []string{"coingecko", "coinmarketcap"}
 	dbTickers := []models.Ticker{ticker60ACMC, ticker60ACG}
 	for i := 0; i < 10000; i++ {
@@ -356,14 +405,65 @@ func Test_findBestProviderForQuery(t *testing.T) {
 		dbTickers = append(dbTickers, t)
 	}
 
+	c := config.Init("../../config/test.yml")
+	assert.NotNil(t, c)
+
 	res := new(sortedTickersResponse)
 	wg := new(sync.WaitGroup)
 	for _, q := range tickerQueries {
 		wg.Add(1)
-		go findBestProviderForQuery(q.Coin, q.TokenId, dbTickers, providers, wg, res)
+		go findBestProviderForQuery(q.Coin, q.TokenId, dbTickers, providers, wg, res, c)
 	}
 
 	wg.Wait()
 
-	assert.NotNil(t, res.tickers)
+	assert.Equal(t, ticker60ACMC, res.tickers[0])
+}
+
+func Test_findBestProviderForQuery_showOption(t *testing.T) {
+	tickerQueries := []Coin{{Coin: 60, TokenId: "A"}}
+
+	ticker60ACMC := models.Ticker{
+		Coin:       60,
+		CoinName:   "ETH",
+		TokenId:    "a",
+		Change24h:  10,
+		Currency:   "USD",
+		Provider:   "coinmarketcap",
+		Value:      100,
+		ShowOption: models.AlwaysShow,
+	}
+
+	ticker60ACG := models.Ticker{
+		Coin:      60,
+		CoinName:  "ETH",
+		TokenId:   "a",
+		Change24h: 10,
+		Currency:  "USD",
+		Provider:  "coingecko",
+		Value:     100,
+	}
+
+	providers := []string{"coingecko", "coinmarketcap"}
+	dbTickers := []models.Ticker{ticker60ACMC, ticker60ACG}
+	for i := 0; i < 10000; i++ {
+		t := ticker60ACG
+		t.Value = t.Value + float64(i)
+		t.Coin = uint(i)
+		dbTickers = append(dbTickers, t)
+	}
+
+	c := config.Init("../../config/test.yml")
+	assert.NotNil(t, c)
+
+	res := new(sortedTickersResponse)
+	wg := new(sync.WaitGroup)
+	for _, q := range tickerQueries {
+		wg.Add(1)
+		go findBestProviderForQuery(q.Coin, q.TokenId, dbTickers, providers, wg, res, c)
+	}
+
+	wg.Wait()
+
+	assert.Equal(t, ticker60ACMC, res.tickers[0])
 }

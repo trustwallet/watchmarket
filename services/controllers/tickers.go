@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"errors"
+	"github.com/trustwallet/watchmarket/config"
 	"github.com/trustwallet/watchmarket/db/models"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"strings"
@@ -43,7 +44,7 @@ ProvidersLoop:
 		}
 	}
 	emptyRate := models.Rate{}
-	if result == emptyRate {
+	if result == emptyRate || (isFiatRate(result.Currency) && result.Provider != "fixer") {
 		return watchmarket.Rate{}, errors.New(ErrNotFound)
 	}
 
@@ -61,7 +62,7 @@ func (c Controller) getTickersByPriority(tickerQueries []models.TickerQuery) (wa
 	wg := new(sync.WaitGroup)
 	for _, q := range tickerQueries {
 		wg.Add(1)
-		go findBestProviderForQuery(q.Coin, q.TokenId, dbTickers, providers, wg, res)
+		go findBestProviderForQuery(q.Coin, q.TokenId, dbTickers, providers, wg, res, c.configuration)
 	}
 
 	wg.Wait()
@@ -151,12 +152,21 @@ func foundTickerInAssets(assets []Coin, t watchmarket.Ticker) (watchmarket.Ticke
 	return watchmarket.Ticker{}, false
 }
 
-func findBestProviderForQuery(coin uint, token string, sliceToFind []models.Ticker, providers []string, wg *sync.WaitGroup, res *sortedTickersResponse) {
+func findBestProviderForQuery(coin uint, token string, sliceToFind []models.Ticker, providers []string, wg *sync.WaitGroup, res *sortedTickersResponse, configuration config.Configuration) {
 	defer wg.Done()
 
 	for _, p := range providers {
 		for _, t := range sliceToFind {
-			if coin == t.Coin && strings.ToLower(token) == t.TokenId && p == t.Provider {
+			baseCheck := coin == t.Coin && strings.ToLower(token) == t.TokenId
+
+			if baseCheck && t.ShowOption == models.AlwaysShow {
+				res.Lock()
+				res.tickers = append(res.tickers, t)
+				res.Unlock()
+				return
+			}
+			if baseCheck && p == t.Provider && t.ShowOption != models.NeverShow &&
+				isRespectableMarketCap(t.MarketCap, configuration) && isRespectableVolume(t.Volume, configuration) {
 				res.Lock()
 				res.tickers = append(res.tickers, t)
 				res.Unlock()
@@ -164,6 +174,14 @@ func findBestProviderForQuery(coin uint, token string, sliceToFind []models.Tick
 			}
 		}
 	}
+}
+
+func isRespectableMarketCap(marketCap float64, configuration config.Configuration) bool {
+	return marketCap >= configuration.RestAPI.Tickers.RespsectableMarketCap
+}
+
+func isRespectableVolume(volume float64, configuration config.Configuration) bool {
+	return volume >= configuration.RestAPI.Tickers.RespsectableVolume
 }
 
 func normalizeRate(r models.Rate) watchmarket.Rate {
@@ -181,8 +199,17 @@ func makeTickerQueries(coins []Coin) []models.TickerQuery {
 	for _, c := range coins {
 		tickerQueries = append(tickerQueries, models.TickerQuery{
 			Coin:    c.Coin,
-			TokenId: c.TokenId,
+			TokenId: strings.ToLower(c.TokenId),
 		})
 	}
 	return tickerQueries
+}
+
+func isFiatRate(currency string) bool {
+	switch currency {
+	case "AED", "AFN", "ALL", "AMD", "ANG", "AOA", "ARS", "AUD", "AWG", "AZN", "BAM", "BBD", "BDT", "BGN", "BHD", "BIF", "BMD", "BND", "BOB", "BRL", "BSD", "BTN", "BWP", "BYN", "BYR", "BZD", "CAD", "CDF", "CHF", "CLF", "CLP", "CNY", "COP", "CRC", "CUC", "CUP", "CVE", "CZK", "DJF", "DKK", "DOP", "DZD", "EGP", "ERN", "ETB", "EUR", "FJD", "FKP", "GBP", "GEL", "GGP", "GHS", "GIP", "GMD", "GNF", "GTQ", "GYD", "HKD", "HNL", "HRK", "HTG", "HUF", "IDR", "ILS", "IMP", "INR", "IQD", "IRR", "ISK", "JEP", "JMD", "JOD", "JPY", "KES", "KGS", "KHR", "KMF", "KPW", "KRW", "KWD", "KYD", "KZT", "LAK", "LBP", "LKR", "LRD", "LSL", "LTL", "LVL", "LYD", "MAD", "MDL", "MGA", "MKD", "MMK", "MNT", "MOP", "MRO", "MUR", "MVR", "MWK", "MXN", "MYR", "MZN", "NAD", "NGN", "NIO", "NOK", "NPR", "NZD", "OMR", "PAB", "PEN", "PGK", "PHP", "PKR", "PLN", "PYG", "QAR", "RON", "RSD", "RUB", "RWF", "SAR", "SBD", "SCR", "SDG", "SEK", "SGD", "SHP", "SLL", "SOS", "SRD", "STD", "SVC", "SYP", "SZL", "THB", "TJS", "TMT", "TND", "TOP", "TRY", "TTD", "TWD", "TZS", "UAH", "UGX", "USD", "UYU", "UZS", "VEF", "VND", "VUV", "WST", "XAF", "XAG", "XAU", "XCD", "XDR", "XOF", "XPF", "YER", "ZAR", "ZMK", "ZMW", "ZWL":
+		return true
+	default:
+	}
+	return false
 }
