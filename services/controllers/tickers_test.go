@@ -183,7 +183,7 @@ func TestController_normalizeTickers(t *testing.T) {
 	gotTicker1 := watchmarket.Ticker{
 		Coin:     0,
 		CoinName: "BTC",
-		CoinType: "coin",
+		CoinType: "Coin",
 		Price: watchmarket.Price{
 			Change24h: -4.03168,
 			Currency:  "USD",
@@ -202,7 +202,7 @@ func TestController_normalizeTickers(t *testing.T) {
 	wanted := watchmarket.Ticker{
 		Coin:     0,
 		CoinName: "BTC",
-		CoinType: "coin",
+		CoinType: "Coin",
 		Error:    "",
 		Price: watchmarket.Price{
 			Change24h: -4.03168,
