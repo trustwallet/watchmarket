@@ -2,8 +2,8 @@ package controllers
 
 import (
 	"encoding/json"
+	"errors"
 	"github.com/trustwallet/blockatlas/coin"
-	"github.com/trustwallet/blockatlas/pkg/errors"
 	"github.com/trustwallet/blockatlas/pkg/logger"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"strconv"
@@ -14,7 +14,7 @@ func (c Controller) HandleDetailsRequest(dr DetailsRequest) (watchmarket.CoinDet
 
 	req, err := toDetailsRequestData(dr)
 	if err != nil {
-		return cd, err
+		return cd, errors.New(ErrBadRequest)
 	}
 
 	key := c.dataCache.GenerateKey(dr.CoinQuery + dr.Token + dr.Currency)
@@ -28,7 +28,7 @@ func (c Controller) HandleDetailsRequest(dr DetailsRequest) (watchmarket.CoinDet
 
 	result, err := c.getDetailsByPriority(req)
 	if err != nil {
-		return watchmarket.CoinDetails{}, err
+		return watchmarket.CoinDetails{}, errors.New(ErrInternal)
 	}
 	newCache, err := json.Marshal(result)
 	if err != nil {
@@ -44,7 +44,7 @@ func (c Controller) HandleDetailsRequest(dr DetailsRequest) (watchmarket.CoinDet
 
 func toDetailsRequestData(dr DetailsRequest) (DetailsNormalizedRequest, error) {
 	if len(dr.CoinQuery) == 0 {
-		return DetailsNormalizedRequest{}, errors.E("Invalid arguments length")
+		return DetailsNormalizedRequest{}, errors.New("Invalid arguments length")
 	}
 
 	coinId, err := strconv.Atoi(dr.CoinQuery)
@@ -53,7 +53,7 @@ func toDetailsRequestData(dr DetailsRequest) (DetailsNormalizedRequest, error) {
 	}
 
 	if _, ok := coin.Coins[uint(coinId)]; !ok {
-		return DetailsNormalizedRequest{}, err
+		return DetailsNormalizedRequest{}, errors.New(ErrBadRequest)
 	}
 
 	currency := watchmarket.DefaultCurrency
