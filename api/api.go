@@ -38,19 +38,8 @@ func getTickersHandler(controller controllers.Controller) func(c *gin.Context) {
 		}
 		response, err := controller.HandleTickersRequest(request)
 		if err != nil {
-			switch err.Error() {
-			case controllers.ErrInternal:
-				c.JSON(http.StatusInternalServerError, model.CreateErrorResponse(model.InternalFail, errors.E("Internal Fail")))
-				return
-			case controllers.ErrBadRequest:
-				c.JSON(http.StatusBadRequest, model.CreateErrorResponse(model.InvalidQuery, errors.E("Invalid request payload")))
-				return
-			case controllers.ErrNotFound:
-				c.JSON(http.StatusNotFound, model.CreateErrorResponse(model.RequestedDataNotFound, errors.E("Not found")))
-				return
-			default:
-				c.JSON(http.StatusBadRequest, model.CreateErrorResponse(model.InvalidQuery, errors.E("Invalid request payload")))
-			}
+			handleError(c, err)
+			return
 		}
 
 		c.JSON(http.StatusOK, response)
@@ -79,7 +68,12 @@ func getChartsHandler(controller controllers.Controller) func(c *gin.Context) {
 			TimeStartRaw: c.Query("time_start"),
 			MaxItems:     c.Query("max_items"),
 		}
-		response, _ := controller.HandleChartsRequest(request)
+		response, err := controller.HandleChartsRequest(request)
+		if err != nil {
+			handleError(c, err)
+			return
+		}
+
 		c.JSON(http.StatusOK, response)
 	}
 }
@@ -102,7 +96,28 @@ func getCoinInfoHandler(controller controllers.Controller) func(c *gin.Context) 
 			Token:     c.Query("token"),
 			Currency:  c.DefaultQuery("currency", watchmarket.DefaultCurrency),
 		}
-		response, _ := controller.HandleDetailsRequest(request)
+		response, err := controller.HandleDetailsRequest(request)
+		if err != nil {
+			handleError(c, err)
+			return
+		}
+
 		c.JSON(http.StatusOK, response)
+	}
+}
+
+func handleError(c *gin.Context, err error) {
+	switch err.Error() {
+	case controllers.ErrInternal:
+		c.JSON(http.StatusInternalServerError, model.CreateErrorResponse(model.InternalFail, errors.E("Internal Fail")))
+		return
+	case controllers.ErrBadRequest:
+		c.JSON(http.StatusBadRequest, model.CreateErrorResponse(model.InvalidQuery, errors.E("Invalid request payload")))
+		return
+	case controllers.ErrNotFound:
+		c.JSON(http.StatusNotFound, model.CreateErrorResponse(model.RequestedDataNotFound, errors.E("Not found")))
+		return
+	default:
+		c.JSON(http.StatusBadRequest, model.CreateErrorResponse(model.InvalidQuery, errors.E("Invalid request payload")))
 	}
 }

@@ -2,8 +2,8 @@ package controllers
 
 import (
 	"encoding/json"
+	"errors"
 	"github.com/trustwallet/blockatlas/coin"
-	"github.com/trustwallet/blockatlas/pkg/errors"
 	"github.com/trustwallet/blockatlas/pkg/logger"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"strconv"
@@ -14,7 +14,7 @@ func (c Controller) HandleChartsRequest(cr ChartRequest) (watchmarket.Chart, err
 
 	verifiedData, err := toChartsRequestData(cr)
 	if err != nil {
-		return ch, err
+		return ch, errors.New(ErrBadRequest)
 	}
 
 	key := c.dataCache.GenerateKey(cr.CoinQuery + cr.Token + cr.Currency + cr.MaxItems)
@@ -29,7 +29,7 @@ func (c Controller) HandleChartsRequest(cr ChartRequest) (watchmarket.Chart, err
 
 	rawChart, err := c.getChartsByPriority(verifiedData)
 	if err != nil {
-		return watchmarket.Chart{}, err
+		return watchmarket.Chart{}, errors.New(ErrInternal)
 	}
 
 	chart := normalizeChart(rawChart, verifiedData.MaxItems)
@@ -43,7 +43,7 @@ func (c Controller) HandleChartsRequest(cr ChartRequest) (watchmarket.Chart, err
 
 func toChartsRequestData(cr ChartRequest) (ChartsNormalizedRequest, error) {
 	if len(cr.TimeStartRaw) == 0 || len(cr.CoinQuery) == 0 {
-		return ChartsNormalizedRequest{}, errors.E("Invalid arguments length")
+		return ChartsNormalizedRequest{}, errors.New("Invalid arguments length")
 	}
 
 	coinId, err := strconv.Atoi(cr.CoinQuery)
@@ -52,7 +52,7 @@ func toChartsRequestData(cr ChartRequest) (ChartsNormalizedRequest, error) {
 	}
 
 	if _, ok := coin.Coins[uint(coinId)]; !ok {
-		return ChartsNormalizedRequest{}, err
+		return ChartsNormalizedRequest{}, errors.New(ErrBadRequest)
 	}
 
 	timeStart, err := strconv.ParseInt(cr.TimeStartRaw, 10, 64)
