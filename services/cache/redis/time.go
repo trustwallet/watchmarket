@@ -2,64 +2,58 @@ package rediscache
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/trustwallet/blockatlas/pkg/errors"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"strconv"
 )
 
-func (i Instance) GetCharts(key string, timeStart int64) (watchmarket.Chart, error) {
+type CachedInterval struct {
+	Timestamp int64
+	Duration  int64
+	Key       string
+}
+
+func (i Instance) GetWithTime(key string, time int64) ([]byte, error) {
 	var (
 		keyInterval string
-		data        watchmarket.Chart
+		data        []byte
 	)
-	keyInterval, err := i.getIntervalKey(key, timeStart)
+	keyInterval, err := i.getIntervalKey(key, time)
 	if err != nil {
 		return data, err
 	}
 
 	cacheData, err := i.redis.Get(keyInterval)
-	if err != nil {
-		return data, err
-	}
-
-	err = json.Unmarshal(cacheData, &data)
-
-	if err == nil && !data.IsEmpty() {
-		fmt.Println("cached")
-		return data, nil
+	if err == nil {
+		return cacheData, err
 	}
 
 	err = i.redis.Delete(keyInterval)
 	if err != nil {
-		return watchmarket.Chart{}, errors.E("invalid cache is not deleted")
+		return data, errors.E("invalid cache is not deleted")
 	}
 
-	return watchmarket.Chart{}, errors.E("cache is not valid")
+	return data, errors.E("cache is not valid")
 }
 
-func (i Instance) SaveCharts(key string, data watchmarket.Chart, timeStart int64) error {
-	if data.IsEmpty() {
+func (i Instance) SetWithTime(key string, data []byte, time int64) error {
+	if data == nil {
 		return errors.E("data is empty")
 	}
 
-	rawData, err := json.Marshal(data)
-	if err != nil {
-		return err
-	}
-	cachingKey := i.GenerateKey(key + strconv.Itoa(int(timeStart)))
+	cachingKey := i.GenerateKey(key + strconv.Itoa(int(time)))
 	interval := CachedInterval{
-		Timestamp: timeStart,
+		Timestamp: time,
 		Duration:  int64(watchmarket.DurationToUnix(i.chartsCaching)),
 		Key:       cachingKey,
 	}
 
-	err = i.updateInterval(key, interval)
+	err := i.updateInterval(key, interval)
 	if err != nil {
 		return err
 	}
 
-	err = i.redis.Set(cachingKey, rawData, i.chartsCaching)
+	err = i.redis.Set(cachingKey, data, i.chartsCaching)
 	if err != nil {
 		return err
 	}

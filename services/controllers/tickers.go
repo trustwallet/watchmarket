@@ -10,6 +10,10 @@ import (
 )
 
 func (c Controller) HandleTickersRequest(tr TickerRequest) (TickerResponse, error) {
+	if tr.Assets == nil {
+		return TickerResponse{}, errors.New(ErrBadRequest)
+	}
+
 	rate, err := c.getRateByPriority(strings.ToUpper(tr.Currency))
 	if err != nil {
 		return TickerResponse{}, errors.New(ErrNotFound)
@@ -48,7 +52,13 @@ ProvidersLoop:
 		return watchmarket.Rate{}, errors.New(ErrNotFound)
 	}
 
-	return normalizeRate(result), nil
+	return watchmarket.Rate{
+		Currency:         result.Currency,
+		PercentChange24h: result.PercentChange24h,
+		Provider:         result.Provider,
+		Rate:             result.Rate,
+		Timestamp:        result.LastUpdated.Unix(),
+	}, nil
 }
 
 func (c Controller) getTickersByPriority(tickerQueries []models.TickerQuery) (watchmarket.Tickers, error) {
@@ -182,16 +192,6 @@ func isRespectableMarketCap(marketCap float64, configuration config.Configuratio
 
 func isRespectableVolume(volume float64, configuration config.Configuration) bool {
 	return volume >= configuration.RestAPI.Tickers.RespsectableVolume
-}
-
-func normalizeRate(r models.Rate) watchmarket.Rate {
-	return watchmarket.Rate{
-		Currency:         r.Currency,
-		PercentChange24h: r.PercentChange24h,
-		Provider:         r.Provider,
-		Rate:             r.Rate,
-		Timestamp:        r.LastUpdated.Unix(),
-	}
 }
 
 func makeTickerQueries(coins []Coin) []models.TickerQuery {

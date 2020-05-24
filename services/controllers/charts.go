@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"encoding/json"
 	"github.com/trustwallet/blockatlas/coin"
 	"github.com/trustwallet/blockatlas/pkg/errors"
 	"github.com/trustwallet/blockatlas/pkg/logger"
@@ -9,31 +10,38 @@ import (
 )
 
 func (c Controller) HandleChartsRequest(cr ChartRequest) (watchmarket.Chart, error) {
-	verifiedData, err := verifyChartsRequestData(cr)
+	var ch watchmarket.Chart
+
+	verifiedData, err := toChartsRequestData(cr)
+	if err != nil {
+		return ch, err
+	}
+
+	key := c.dataCache.GenerateKey(cr.CoinQuery + cr.Token + cr.Currency + cr.MaxItems)
+
+	cachedChartRaw, err := c.dataCache.GetWithTime(key, verifiedData.TimeStart)
+	if err == nil && len(cachedChartRaw) > 0 {
+		err = json.Unmarshal(cachedChartRaw, &ch)
+		if err == nil {
+			return ch, nil
+		}
+	}
+
+	rawChart, err := c.getChartsByPriority(verifiedData)
 	if err != nil {
 		return watchmarket.Chart{}, err
 	}
 
-	key := c.chartsCache.GenerateKey(cr.CoinQuery + cr.Token + cr.Currency + cr.MaxItems)
-	cachedChart, err := c.chartsCache.GetCharts(key, verifiedData.timeStart)
-	if err == nil {
-		return cachedChart, nil
-	}
+	chart := normalizeChart(rawChart, verifiedData.MaxItems)
 
-	rawChart, err := c.getDataWithProviders(verifiedData)
-	if err != nil {
-		return watchmarket.Chart{}, err
-	}
-
-	chart := normalizeChart(rawChart, verifiedData.maxItems)
-
-	if err = c.chartsCache.SaveCharts(key, chart, verifiedData.timeStart); err != nil {
+	chartRaw, err := json.Marshal(&chart)
+	if err = c.dataCache.SetWithTime(key, chartRaw, verifiedData.TimeStart); err != nil {
 		logger.Error("Failed to save cache", logger.Params{"err": err})
 	}
 	return chart, nil
 }
 
-func verifyChartsRequestData(cr ChartRequest) (ChartsNormalizedRequest, error) {
+func toChartsRequestData(cr ChartRequest) (ChartsNormalizedRequest, error) {
 	if len(cr.TimeStartRaw) == 0 || len(cr.CoinQuery) == 0 {
 		return ChartsNormalizedRequest{}, errors.E("Invalid arguments length")
 	}
@@ -63,19 +71,19 @@ func verifyChartsRequestData(cr ChartRequest) (ChartsNormalizedRequest, error) {
 	}
 
 	return ChartsNormalizedRequest{
-		coin:      uint(coinId),
-		token:     cr.Token,
-		currency:  currency,
-		timeStart: timeStart,
-		maxItems:  maxItems,
+		Coin:      uint(coinId),
+		Token:     cr.Token,
+		Currency:  currency,
+		TimeStart: timeStart,
+		MaxItems:  maxItems,
 	}, nil
 }
 
-func (c Controller) getDataWithProviders(data ChartsNormalizedRequest) (watchmarket.Chart, error) {
+func (c Controller) getChartsByPriority(data ChartsNormalizedRequest) (watchmarket.Chart, error) {
 	availableProviders := c.chartsPriority.GetAllProviders()
 
 	for _, p := range availableProviders {
-		price, err := c.api.ChartsAPIs[p].GetChartData(data.coin, data.token, data.currency, data.timeStart)
+		price, err := c.api.ChartsAPIs[p].GetChartData(data.Coin, data.Token, data.Currency, data.TimeStart)
 		if err == nil {
 			return price, nil
 		}

@@ -16,8 +16,8 @@ func SetupMarketAPI(router gin.IRouter, controller controllers.Controller) {
 		middleware.CacheControl(time.Minute, getTickersHandler(controller)))
 	router.GET("/charts",
 		middleware.CacheControl(time.Minute*10, getChartsHandler(controller)))
-	//router.GET("/assets",
-	//middleware.CacheControl(time.Minute*10, getCoinInfoHandler(controller))
+	router.GET("/info",
+		middleware.CacheControl(time.Minute*10, getCoinInfoHandler(controller)))
 }
 
 // @Summary Get ticker values for a specific market
@@ -41,6 +41,9 @@ func getTickersHandler(controller controllers.Controller) func(c *gin.Context) {
 			switch err.Error() {
 			case controllers.ErrInternal:
 				c.JSON(http.StatusInternalServerError, model.CreateErrorResponse(model.InternalFail, errors.E("Internal Fail")))
+				return
+			case controllers.ErrBadRequest:
+				c.JSON(http.StatusBadRequest, model.CreateErrorResponse(model.InvalidQuery, errors.E("Invalid request payload")))
 				return
 			case controllers.ErrNotFound:
 				c.JSON(http.StatusNotFound, model.CreateErrorResponse(model.RequestedDataNotFound, errors.E("Not found")))
@@ -76,9 +79,7 @@ func getChartsHandler(controller controllers.Controller) func(c *gin.Context) {
 			TimeStartRaw: c.Query("time_start"),
 			MaxItems:     c.Query("max_items"),
 		}
-
 		response, _ := controller.HandleChartsRequest(request)
-
 		c.JSON(http.StatusOK, response)
 	}
 }
@@ -94,55 +95,14 @@ func getChartsHandler(controller controllers.Controller) func(c *gin.Context) {
 // @Param currency query string false "The currency to show coin assets in" default(USD)
 // @Success 200 {object} watchmarket.ChartCoinInfo
 // @Router /v1/market/assets [get]
-//func getCoinInfoHandler(charts *market.Charts, ac assets.AssetClient, cache *cache.Provider) func(c *gin.Context) {
-//	return func(c *gin.Context) {
-//		coinQuery := c.Query("coin")
-//		if len(coinQuery) == 0 {
-//			c.JSON(http.StatusBadRequest, model.CreateErrorResponse(model.InvalidQuery, errors.E("No coin provided")))
-//			return
-//		}
-//
-//		coinId, err := strconv.Atoi(coinQuery)
-//		if err != nil {
-//			c.JSON(http.StatusBadRequest, model.CreateErrorResponse(model.InvalidQuery, errors.E("Invalid coin provided")))
-//			return
-//		}
-//
-//		token := c.Query("token")
-//		currency := c.DefaultQuery("currency", watchmarket.DefaultCurrency)
-//
-//		var chart watchmarket.ChartCoinInfo
-//		key := cache.GenerateKey(coinQuery + token + currency)
-//		timeStart := time.Now().Unix() - day
-//
-//		chart, err = cache.GetCoinInfoCache(key, timeStart)
-//		if err == nil {
-//			c.JSON(http.StatusOK, chart)
-//			return
-//		}
-//
-//		chart, err = charts.GetCoinInfo(uint(coinId), token, currency)
-//		if err == watchmarket.ErrNotFound {
-//			logger.Info(fmt.Sprintf("Coin assets for coin id %d (token: %s, currency: %s) not found", coinId, token, currency))
-//		} else if err != nil {
-//			logger.Info(err, "Failed to retrieve coin assets", logger.Params{"coinId": coinId, "token": token, "currency": currency})
-//		}
-//
-//		chart.Info, err = ac.GetCoinInfo(coinId, token)
-//		if err == watchmarket.ErrNotFound {
-//			logger.Warn(err, fmt.Sprintf("Coin assets for coin id %d (token: %s) not found", coinId, token))
-//			c.JSON(http.StatusOK, chart)
-//			return
-//		} else if err != nil {
-//			logger.Error(err, "Failed to retrieve coin assets", logger.Params{"coinId": coinId, "token": token})
-//			c.JSON(http.StatusInternalServerError, model.CreateErrorResponse(model.InvalidQuery, errors.E("Failed to retrieve coin assets")))
-//			return
-//		}
-//
-//		err = cache.SaveCoinInfoCache(key, chart, timeStart)
-//		if err != nil {
-//			logger.Error(err, "Failed to save cache assets chart", logger.Params{"coin": coinId, "currency": currency, "token": token, "time_start": timeStart, "key": key, "err": err})
-//		}
-//		c.JSON(http.StatusOK, chart)
-//	}
-//}
+func getCoinInfoHandler(controller controllers.Controller) func(c *gin.Context) {
+	return func(c *gin.Context) {
+		request := controllers.DetailsRequest{
+			CoinQuery: c.Query("coin"),
+			Token:     c.Query("token"),
+			Currency:  c.DefaultQuery("currency", watchmarket.DefaultCurrency),
+		}
+		response, _ := controller.HandleDetailsRequest(request)
+		c.JSON(http.StatusOK, response)
+	}
+}

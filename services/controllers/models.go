@@ -7,33 +7,46 @@ import (
 )
 
 const (
-	ErrNotFound = "not found"
-	ErrInternal = "internal"
+	ErrNotFound   = "not found"
+	ErrBadRequest = "bad request"
+	ErrInternal   = "internal"
 )
 
 type (
 	ChartRequest struct {
 		CoinQuery, Token, Currency, TimeStartRaw, MaxItems string
 	}
+
+	ChartsNormalizedRequest struct {
+		Coin            uint
+		Token, Currency string
+		TimeStart       int64
+		MaxItems        int
+	}
+
+	DetailsRequest struct {
+		CoinQuery, Token, Currency string
+	}
+
+	DetailsNormalizedRequest struct {
+		Coin            uint
+		Token, Currency string
+	}
+
 	TickerRequest struct {
 		Currency string `json:"Currency"`
 		Assets   []Coin `json:"assets"`
 	}
 
-	TickerResponse struct {
-		Currency string              `json:"Currency"`
-		Tickers  watchmarket.Tickers `json:"docs"`
-	}
 	Coin struct {
-		Coin     uint                 `json:"coin"`
+		Coin     uint                 `json:"Coin"`
 		CoinType watchmarket.CoinType `json:"type"`
 		TokenId  string               `json:"token_id,omitempty"`
 	}
-	ChartsNormalizedRequest struct {
-		coin            uint
-		token, currency string
-		timeStart       int64
-		maxItems        int
+
+	TickerResponse struct {
+		Currency string              `json:"Currency"`
+		Tickers  watchmarket.Tickers `json:"docs"`
 	}
 
 	sortedTickersResponse struct {

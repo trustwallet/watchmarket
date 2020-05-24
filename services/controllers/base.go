@@ -9,7 +9,7 @@ import (
 )
 
 type Controller struct {
-	chartsCache      cache.Charts
+	dataCache        cache.Provider
 	database         db.Instance
 	chartsPriority   priority.Controller
 	coinInfoPriority priority.Controller
@@ -20,7 +20,7 @@ type Controller struct {
 }
 
 func NewController(
-	cache cache.Charts,
+	cache cache.Provider,
 	database db.Instance,
 	chartsPriority, coinInfoPriority, ratesPriority, tickersPriority priority.Controller,
 	api markets.APIs,

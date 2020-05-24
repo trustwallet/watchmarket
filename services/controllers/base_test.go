@@ -4,7 +4,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/trustwallet/watchmarket/config"
 	"github.com/trustwallet/watchmarket/db/models"
-	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"github.com/trustwallet/watchmarket/services/assets"
 	"github.com/trustwallet/watchmarket/services/cache"
 	"github.com/trustwallet/watchmarket/services/markets"
@@ -16,7 +15,7 @@ func TestNewController(t *testing.T) {
 	assert.NotNil(t, setupController(t, getDbMock(), getCacheMock()))
 }
 
-func setupController(t *testing.T, d dbMock, ch cache.Charts) Controller {
+func setupController(t *testing.T, d dbMock, ch cache.Provider) Controller {
 	c := config.Init("../../config/test.yml")
 	assert.NotNil(t, c)
 
@@ -77,7 +76,7 @@ func (d dbMock) GetTickersByQueries(tickerQueries []models.TickerQuery) ([]model
 	return d.WantedTickers, d.WantedTickersError
 }
 
-func getCacheMock() cache.Charts {
+func getCacheMock() cache.Provider {
 	i := cacheMock{}
 	return i
 }
@@ -94,34 +93,18 @@ func (c cacheMock) GenerateKey(data string) string {
 	return ""
 }
 
-func (c cacheMock) GetCharts(key string, timeStart int64) (watchmarket.Chart, error) {
-	return watchmarket.Chart{}, nil
+func (c cacheMock) Get(key string) ([]byte, error) {
+	return nil, nil
 }
 
-func (c cacheMock) SaveCharts(key string, data watchmarket.Chart, timeStart int64) error {
+func (c cacheMock) Set(key string, data []byte) error {
 	return nil
 }
 
-func (c cacheMock) SaveCoinDetails(key string, data watchmarket.CoinDetails, timeStart int64) error {
-	return nil
+func (c cacheMock) GetWithTime(key string, time int64) ([]byte, error) {
+	return nil, nil
 }
 
-func (c cacheMock) GetCoinDetails(key string, timeStart int64) (watchmarket.CoinDetails, error) {
-	return watchmarket.CoinDetails{}, nil
-}
-
-func (c cacheMock) GetTickers(key string) (watchmarket.Tickers, error) {
-	return watchmarket.Tickers{}, nil
-}
-
-func (c cacheMock) SaveTickers(key string, tickers watchmarket.Tickers) error {
-	return nil
-}
-
-func (c cacheMock) GetRates(key string) (watchmarket.Rates, error) {
-	return watchmarket.Rates{}, nil
-}
-
-func (c cacheMock) SaveRates(key string, tickers watchmarket.Rates) error {
+func (c cacheMock) SetWithTime(key string, data []byte, time int64) error {
 	return nil
 }
