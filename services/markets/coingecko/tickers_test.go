@@ -1,6 +1,7 @@
 package coingecko
 
 import (
+	"context"
 	"github.com/stretchr/testify/assert"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"github.com/trustwallet/watchmarket/services/assets"
@@ -15,7 +16,7 @@ func TestProvider_GetTickers(t *testing.T) {
 	defer server.Close()
 
 	provider := InitProvider(server.URL, "USD", assets.Init("assets.api"))
-	data, err := provider.GetTickers()
+	data, err := provider.GetTickers(context.Background())
 	assert.Nil(t, err)
 	assert.NotNil(t, data)
 	assert.True(t, verifyTickers(t, wantedTickers, data))

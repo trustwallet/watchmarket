@@ -1,6 +1,7 @@
 package binancedex
 
 import (
+	"context"
 	"github.com/trustwallet/blockatlas/coin"
 	"github.com/trustwallet/blockatlas/pkg/errors"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
@@ -14,8 +15,8 @@ var (
 	BNBAsset = coin.Binance().Symbol
 )
 
-func (p Provider) GetTickers() (watchmarket.Tickers, error) {
-	prices, err := p.client.fetchPrices()
+func (p Provider) GetTickers(ctx context.Context) (watchmarket.Tickers, error) {
+	prices, err := p.client.fetchPrices(ctx)
 	if err != nil {
 		return nil, err
 	}

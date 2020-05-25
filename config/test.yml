@@ -10,7 +10,7 @@ markets:
 
   coinmarketcap:
     api: https://pro-api.coinmarketcap.com
-    key: # YOUR_API_KEY
+    key: 1
     currency: USD
     web_api: https://web-api.coinmarketcap.com
     widget_api: https://widgets.coinmarketcap.com
@@ -23,19 +23,27 @@ markets:
   fixer:
     currency: USD
     api: https://data.fixer.io/api
-    key: # YOUR_API_KEY
+    key: 1
 
   assets: https://raw.githubusercontent.com/trustwallet/assets/master/blockchains # Assets url - details about TW tokens
 
 storage:
   redis: redis://localhost:6379
-  postgres: postgresql://user:pass@localhost/my_db?sslmode=disable
+  postgres:
+    uri: postgresql://user:pass@localhost/my_db?sslmode=disable
+    logs: false
+    env: prod
+
+worker:
+  tickers: 5m
+  rates: 5m
 
 rest_api:
   mode: release # Possible values: "debug", "release"
   port: 8420 # Possible values: "debug", "release"
-  cache: # Cache padurationrams for REST API
+  tickers:
+    respectable_market_cap: 0
+    respectable_volume: 0
+  cache: # Cache duration for REST API
     charts: 5m
     info: 2h
-
-

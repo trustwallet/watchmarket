@@ -1,22 +1,29 @@
 package api
 
 import (
+	"context"
+	"github.com/chenjiandongx/ginprom"
 	"github.com/gin-gonic/gin"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/trustwallet/blockatlas/api/model"
 	"github.com/trustwallet/blockatlas/pkg/errors"
 	"github.com/trustwallet/watchmarket/api/middleware"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"github.com/trustwallet/watchmarket/services/controllers"
+	"go.elastic.co/apm"
 	"net/http"
 	"time"
 )
 
-func SetupMarketAPI(router gin.IRouter, controller controllers.Controller) {
-	router.POST("/ticker",
+func SetupMarketAPI(engine *gin.Engine, controller controllers.Controller) {
+	engine.GET("/", func(c *gin.Context) { c.JSON(http.StatusOK, `Watchmarket API`) })
+	engine.GET("/metrics", ginprom.PromHandler(promhttp.Handler()))
+
+	engine.POST("v1/market/ticker",
 		middleware.CacheControl(time.Minute, getTickersHandler(controller)))
-	router.GET("/charts",
+	engine.GET("v1/market/charts",
 		middleware.CacheControl(time.Minute*10, getChartsHandler(controller)))
-	router.GET("/info",
+	engine.GET("v1/market/info",
 		middleware.CacheControl(time.Minute*10, getCoinInfoHandler(controller)))
 }
 
@@ -31,12 +38,16 @@ func SetupMarketAPI(router gin.IRouter, controller controllers.Controller) {
 // @Router /v1/market/ticker [post]
 func getTickersHandler(controller controllers.Controller) func(c *gin.Context) {
 	return func(c *gin.Context) {
+		tx := apm.DefaultTracer.StartTransaction("POST /v1/market/ticker", "request")
+		ctx := apm.ContextWithTransaction(context.Background(), tx)
+		defer tx.End()
+
 		request := controllers.TickerRequest{Currency: watchmarket.DefaultCurrency}
 		if err := c.BindJSON(&request); err != nil {
 			c.JSON(http.StatusBadRequest, model.CreateErrorResponse(model.InvalidQuery, errors.E("Invalid request payload")))
 			return
 		}
-		response, err := controller.HandleTickersRequest(request)
+		response, err := controller.HandleTickersRequest(request, ctx)
 		if err != nil {
 			handleError(c, err)
 			return
@@ -61,6 +72,10 @@ func getTickersHandler(controller controllers.Controller) func(c *gin.Context) {
 // @Router /v1/market/charts [get]
 func getChartsHandler(controller controllers.Controller) func(c *gin.Context) {
 	return func(c *gin.Context) {
+		tx := apm.DefaultTracer.StartTransaction("GET /v1/market/charts", "request")
+		ctx := apm.ContextWithTransaction(context.Background(), tx)
+		defer tx.End()
+
 		request := controllers.ChartRequest{
 			CoinQuery:    c.Query("coin"),
 			Token:        c.Query("token"),
@@ -68,7 +83,8 @@ func getChartsHandler(controller controllers.Controller) func(c *gin.Context) {
 			TimeStartRaw: c.Query("time_start"),
 			MaxItems:     c.Query("max_items"),
 		}
-		response, err := controller.HandleChartsRequest(request)
+
+		response, err := controller.HandleChartsRequest(request, ctx)
 		if err != nil {
 			handleError(c, err)
 			return
@@ -88,15 +104,19 @@ func getChartsHandler(controller controllers.Controller) func(c *gin.Context) {
 // @Param token query string false "Token id"
 // @Param currency query string false "The currency to show coin assets in" default(USD)
 // @Success 200 {object} watchmarket.ChartCoinInfo
-// @Router /v1/market/assets [get]
+// @Router /v1/market/info [get]
 func getCoinInfoHandler(controller controllers.Controller) func(c *gin.Context) {
 	return func(c *gin.Context) {
+		tx := apm.DefaultTracer.StartTransaction("POST /v1/market/info", "request")
+		ctx := apm.ContextWithTransaction(context.Background(), tx)
+		defer tx.End()
+
 		request := controllers.DetailsRequest{
 			CoinQuery: c.Query("coin"),
 			Token:     c.Query("token"),
 			Currency:  c.DefaultQuery("currency", watchmarket.DefaultCurrency),
 		}
-		response, err := controller.HandleDetailsRequest(request)
+		response, err := controller.HandleDetailsRequest(request, ctx)
 		if err != nil {
 			handleError(c, err)
 			return

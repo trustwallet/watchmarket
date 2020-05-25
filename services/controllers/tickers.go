@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"context"
 	"errors"
 	"github.com/trustwallet/watchmarket/config"
 	"github.com/trustwallet/watchmarket/db/models"
@@ -9,33 +10,33 @@ import (
 	"sync"
 )
 
-func (c Controller) HandleTickersRequest(tr TickerRequest) (TickerResponse, error) {
+func (c Controller) HandleTickersRequest(tr TickerRequest, ctx context.Context) (TickerResponse, error) {
 	if tr.Assets == nil {
 		return TickerResponse{}, errors.New(ErrBadRequest)
 	}
 
-	rate, err := c.getRateByPriority(strings.ToUpper(tr.Currency))
+	rate, err := c.getRateByPriority(strings.ToUpper(tr.Currency), ctx)
 	if err != nil {
 		return TickerResponse{}, errors.New(ErrNotFound)
 	}
 
-	tickers, err := c.getTickersByPriority(makeTickerQueries(tr.Assets))
+	tickers, err := c.getTickersByPriority(makeTickerQueries(tr.Assets), ctx)
 	if err != nil {
 		return TickerResponse{}, errors.New(ErrInternal)
 	}
 
-	tickers = c.normalizeTickers(tickers, rate)
+	tickers = c.normalizeTickers(tickers, rate, ctx)
 
 	return createResponse(tr, tickers), nil
 }
 
-func (c Controller) getRateByPriority(currency string) (watchmarket.Rate, error) {
-	rates, err := c.database.GetRates(currency)
+func (c Controller) getRateByPriority(currency string, ctx context.Context) (watchmarket.Rate, error) {
+	rates, err := c.database.GetRates(currency, ctx)
 	if err != nil {
 		return watchmarket.Rate{}, err
 	}
 
-	providers := c.ratesPriority.GetAllProviders()
+	providers := c.ratesPriority
 
 	var result models.Rate
 ProvidersLoop:
@@ -61,12 +62,12 @@ ProvidersLoop:
 	}, nil
 }
 
-func (c Controller) getTickersByPriority(tickerQueries []models.TickerQuery) (watchmarket.Tickers, error) {
-	dbTickers, err := c.database.GetTickersByQueries(tickerQueries)
+func (c Controller) getTickersByPriority(tickerQueries []models.TickerQuery, ctx context.Context) (watchmarket.Tickers, error) {
+	dbTickers, err := c.database.GetTickersByQueries(tickerQueries, ctx)
 	if err != nil {
 		return nil, err
 	}
-	providers := c.tickersPriority.GetAllProviders()
+	providers := c.tickersPriority
 
 	res := new(sortedTickersResponse)
 	wg := new(sync.WaitGroup)
@@ -100,10 +101,10 @@ func (c Controller) getTickersByPriority(tickerQueries []models.TickerQuery) (wa
 	return result, nil
 }
 
-func (c Controller) normalizeTickers(tickers watchmarket.Tickers, rate watchmarket.Rate) watchmarket.Tickers {
+func (c Controller) normalizeTickers(tickers watchmarket.Tickers, rate watchmarket.Rate, ctx context.Context) watchmarket.Tickers {
 	result := make(watchmarket.Tickers, 0, len(tickers))
 	for _, t := range tickers {
-		r, ok := c.convertRateToDefaultCurrency(t, rate)
+		r, ok := c.convertRateToDefaultCurrency(t, rate, ctx)
 		if !ok {
 			continue
 		}
@@ -112,9 +113,9 @@ func (c Controller) normalizeTickers(tickers watchmarket.Tickers, rate watchmark
 	return result
 }
 
-func (c Controller) convertRateToDefaultCurrency(t watchmarket.Ticker, rate watchmarket.Rate) (watchmarket.Rate, bool) {
+func (c Controller) convertRateToDefaultCurrency(t watchmarket.Ticker, rate watchmarket.Rate, ctx context.Context) (watchmarket.Rate, bool) {
 	if t.Price.Currency != watchmarket.DefaultCurrency {
-		newRate, err := c.getRateByPriority(strings.ToUpper(t.Price.Currency))
+		newRate, err := c.getRateByPriority(strings.ToUpper(t.Price.Currency), ctx)
 		if err != nil {
 			return watchmarket.Rate{}, false
 		}

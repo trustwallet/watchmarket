@@ -1,6 +1,7 @@
 package coinmarketcap
 
 import (
+	"context"
 	"fmt"
 	"github.com/trustwallet/blockatlas/pkg/errors"
 	"github.com/trustwallet/blockatlas/pkg/logger"
@@ -12,9 +13,9 @@ import (
 
 const chartDataSize = 3
 
-func (p Provider) GetChartData(coinID uint, token, currency string, timeStart int64) (watchmarket.Data, error) {
-	chartsData := watchmarket.Data{}
-	coinsFromCmc, err := p.client.fetchCoinMap()
+func (p Provider) GetChartData(coinID uint, token, currency string, timeStart int64, ctx context.Context) (watchmarket.Chart, error) {
+	chartsData := watchmarket.Chart{}
+	coinsFromCmc, err := p.client.fetchCoinMap(ctx)
 	if err != nil {
 		return chartsData, err
 	}
@@ -23,76 +24,45 @@ func (p Provider) GetChartData(coinID uint, token, currency string, timeStart in
 	if err != nil {
 		return chartsData, err
 	}
+	if timeStart < 1000000000 {
+		timeStart = 1000000000
+	}
 	timeStartDate := time.Unix(timeStart, 0)
 	days := int(time.Since(timeStartDate).Hours() / 24)
 	timeEnd := time.Now().Unix()
-	c, err := p.client.fetchChartsData(coinObj.Id, currency, timeStart, timeEnd, getInterval(days))
+	c, err := p.client.fetchChartsData(coinObj.Id, currency, timeStart, timeEnd, getInterval(days), ctx)
 	if err != nil {
 		return chartsData, err
 	}
 	return normalizeCharts(currency, c), nil
 }
 
-
-func (p Provider) GetCoinData(coin uint, token, currency string) (charts.CoinDetails, error) {
-	info := charts.CoinDetails{}
-
-
-	
-
-	details := charts.CoinDetails{}
-
-func (p Provider) GetCoinData(coinID uint, token, currency string) (markets.CoinDetails, error) {
-	details := markets.CoinDetails{}
-
-func (p Provider) GetCoinData(coinID uint, token, currency string) (watchmarket.CoinDetails, error) {
+func (p Provider) GetCoinData(coinID uint, token, currency string, ctx context.Context) (watchmarket.CoinDetails, error) {
 	details := watchmarket.CoinDetails{}
-
-	coinsFromCmc, err := p.client.fetchCoinMap()
-
+	coinsFromCmc, err := p.client.fetchCoinMap(ctx)
 	if err != nil {
 		return details, err
 	}
-
-	coinsFromCmcMap := coinsFromCmc.coinToCmcMap()
-	coinObj, err := coinsFromCmcMap.getCoinByContract(coin, token)
-
 	coinsFromCmcMap := CmcSlice(coinsFromCmc).coinToCmcMap()
 	coinObj, err := coinsFromCmcMap.getCoinByContract(coinID, token)
-
 	if err != nil {
 		return details, err
 	}
-	priceData, err := p.client.fetchCoinData(coinObj.Id, currency)
+	priceData, err := p.client.fetchCoinData(coinObj.Id, currency, ctx)
 	if err != nil {
 		return details, err
 	}
-	assetsData, err := p.info.GetCoinInfo(coin, token)
+	assetsData, err := p.info.GetCoinInfo(coinID, token, ctx)
 	if err != nil {
-		logger.Warn("No assets info about that coin", logger.Params{"coin": coin, "token": token})
 		logger.Warn("No assets assets about that coinID", logger.Params{"coinID": coinID, "token": token})
-
 	}
 
-	return normalizeInfo(currency, coinObj.Id, priceData, assetsData)
+	return normalizeInfo(currency, coinObj.Id, priceData, &assetsData)
 }
 
-
-
-
-func normalizeCharts(currency string, c Charts) charts.Data {
-	chartsData := charts.Data{}
-	prices := make([]charts.Price, 0)
-
-func normalizeCharts(currency string, c Charts) markets.Data {
-	chartsData := markets.Data{}
-	prices := make([]markets.ChartsPrice, 0)
-
-
-func normalizeCharts(currency string, c Charts) watchmarket.Data {
-	chartsData := watchmarket.Data{}
-	prices := make([]watchmarket.ChartsPrice, 0)
-
+func normalizeCharts(currency string, c Charts) watchmarket.Chart {
+	chartsData := watchmarket.Chart{}
+	prices := make([]watchmarket.ChartPrice, 0)
 	for dateSrt, q := range c.Data {
 		date, err := time.Parse(time.RFC3339, dateSrt)
 		if err != nil {
@@ -105,7 +75,7 @@ func normalizeCharts(currency string, c Charts) watchmarket.Data {
 		if len(quote) < chartDataSize {
 			continue
 		}
-		prices = append(prices, watchmarket.ChartsPrice{
+		prices = append(prices, watchmarket.ChartPrice{
 			Price: quote[0],
 			Date:  date.Unix(),
 		})
@@ -118,7 +88,7 @@ func normalizeCharts(currency string, c Charts) watchmarket.Data {
 	return chartsData
 }
 
-func normalizeInfo(currency string, cmcCoin uint, priceData ChartInfo, assetsData watchmarket.Info) (watchmarket.CoinDetails, error) {
+func normalizeInfo(currency string, cmcCoin uint, priceData ChartInfo, assetsData *watchmarket.Info) (watchmarket.CoinDetails, error) {
 	details := watchmarket.CoinDetails{}
 	quote, ok := priceData.Data.Quotes[currency]
 	if !ok {
@@ -128,9 +98,6 @@ func normalizeInfo(currency string, cmcCoin uint, priceData ChartInfo, assetsDat
 		Provider:          id,
 		Vol24:             quote.Volume24,
 		MarketCap:         quote.MarketCap,
-		CirculatingSupply: data.Data.CirculatingSupply,
-		TotalSupply:       data.Data.TotalSupply,
-		Provider:          id,
 		CirculatingSupply: priceData.Data.CirculatingSupply,
 		TotalSupply:       priceData.Data.TotalSupply,
 		Info:              assetsData,

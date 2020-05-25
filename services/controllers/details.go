@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"github.com/trustwallet/blockatlas/coin"
@@ -9,7 +10,7 @@ import (
 	"strconv"
 )
 
-func (c Controller) HandleDetailsRequest(dr DetailsRequest) (watchmarket.CoinDetails, error) {
+func (c Controller) HandleDetailsRequest(dr DetailsRequest, ctx context.Context) (watchmarket.CoinDetails, error) {
 	var cd watchmarket.CoinDetails
 
 	req, err := toDetailsRequestData(dr)
@@ -19,14 +20,14 @@ func (c Controller) HandleDetailsRequest(dr DetailsRequest) (watchmarket.CoinDet
 
 	key := c.dataCache.GenerateKey(dr.CoinQuery + dr.Token + dr.Currency)
 
-	cachedDetails, err := c.dataCache.Get(key)
+	cachedDetails, err := c.dataCache.Get(key, ctx)
 	if err == nil && len(cachedDetails) > 0 {
 		if json.Unmarshal(cachedDetails, &cd) == nil {
 			return cd, nil
 		}
 	}
 
-	result, err := c.getDetailsByPriority(req)
+	result, err := c.getDetailsByPriority(req, ctx)
 	if err != nil {
 		return watchmarket.CoinDetails{}, errors.New(ErrInternal)
 	}
@@ -36,7 +37,7 @@ func (c Controller) HandleDetailsRequest(dr DetailsRequest) (watchmarket.CoinDet
 		logger.Error(err)
 	}
 
-	err = c.dataCache.Set(key, newCache)
+	err = c.dataCache.Set(key, newCache, ctx)
 	if err != nil {
 		logger.Error("failed to save cache", logger.Params{"err": err})
 	}
@@ -70,11 +71,11 @@ func toDetailsRequestData(dr DetailsRequest) (DetailsNormalizedRequest, error) {
 	}, nil
 }
 
-func (c Controller) getDetailsByPriority(data DetailsNormalizedRequest) (watchmarket.CoinDetails, error) {
-	availableProviders := c.coinInfoPriority.GetAllProviders()
+func (c Controller) getDetailsByPriority(data DetailsNormalizedRequest, ctx context.Context) (watchmarket.CoinDetails, error) {
+	availableProviders := c.coinInfoPriority
 
 	for _, p := range availableProviders {
-		data, err := c.api[p].GetCoinData(data.Coin, data.Token, data.Currency)
+		data, err := c.api[p].GetCoinData(data.Coin, data.Token, data.Currency, ctx)
 		if err == nil {
 			return data, nil
 		}

@@ -1,19 +1,20 @@
 package coinmarketcap
 
 import (
+	"context"
 	"github.com/trustwallet/blockatlas/coin"
 	"github.com/trustwallet/blockatlas/pkg/errors"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"strings"
 )
 
-func (p Provider) GetTickers() (watchmarket.Tickers, error) {
-	prices, err := p.client.fetchPrices(p.currency)
+func (p Provider) GetTickers(ctx context.Context) (watchmarket.Tickers, error) {
+	prices, err := p.client.fetchPrices(p.currency, ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	coinsMap, err := p.client.fetchCoinMap()
+	coinsMap, err := p.client.fetchCoinMap(ctx)
 	if err != nil {
 		return nil, err
 	}

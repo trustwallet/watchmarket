@@ -11,7 +11,6 @@ import (
 	rediscache "github.com/trustwallet/watchmarket/services/cache/redis"
 	"github.com/trustwallet/watchmarket/services/controllers"
 	"github.com/trustwallet/watchmarket/services/markets"
-	"github.com/trustwallet/watchmarket/services/priority"
 	"time"
 )
 
@@ -32,25 +31,10 @@ func init() {
 	configuration := internal.InitConfig(confPath)
 	logger.InitLogger()
 
-	chartsPriority, err := priority.Init(configuration.Markets.Priority.Charts)
-	if err != nil {
-		logger.Fatal(err)
-	}
-
-	ratesPriority, err := priority.Init(configuration.Markets.Priority.Rates)
-	if err != nil {
-		logger.Fatal(err)
-	}
-
-	tickerPriority, err := priority.Init(configuration.Markets.Priority.Tickers)
-	if err != nil {
-		logger.Fatal(err)
-	}
-
-	coinInfoPriority, err := priority.Init(configuration.Markets.Priority.CoinInfo)
-	if err != nil {
-		logger.Fatal(err)
-	}
+	chartsPriority := configuration.Markets.Priority.Charts
+	ratesPriority := configuration.Markets.Priority.Rates
+	tickerPriority := configuration.Markets.Priority.Tickers
+	coinInfoPriority := configuration.Markets.Priority.CoinInfo
 
 	a := assets.Init(configuration.Markets.Assets)
 
@@ -59,7 +43,11 @@ func init() {
 		logger.Fatal(err)
 	}
 
-	database, err := postgres.New(configuration.Storage.Postgres)
+	database, err := postgres.New(
+		configuration.Storage.Postgres.Uri,
+		configuration.Storage.Postgres.Env,
+		configuration.Storage.Postgres.Logs,
+	)
 	if err != nil {
 		logger.Fatal(err)
 	}
@@ -67,11 +55,11 @@ func init() {
 	r := internal.InitRedis(configuration.Storage.Redis)
 	cache := rediscache.Init(*r, time.Minute, time.Minute, time.Minute, time.Minute)
 
-	controller = controllers.NewController(cache, database, chartsPriority, coinInfoPriority, ratesPriority, tickerPriority, m, configuration)
+	controller = controllers.NewController(cache, database, chartsPriority, coinInfoPriority, ratesPriority, tickerPriority, m.ChartsAPIs, configuration)
 	engine = internal.InitEngine(configuration.RestAPI.Mode)
 }
 
 func main() {
-	api.Bootstrap(engine, controller)
+	api.SetupMarketAPI(engine, controller)
 	internal.SetupGracefulShutdown(port, engine)
 }
