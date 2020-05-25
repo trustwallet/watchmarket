@@ -45,8 +45,9 @@ type (
 	Tickers []Ticker
 
 	Chart struct {
-		Prices []ChartPrice `json:"prices,omitempty"`
-		Error  string       `json:"error,omitempty"`
+		Provider string       `json:"provider"`
+		Prices   []ChartPrice `json:"prices,omitempty"`
+		Error    string       `json:"error,omitempty"`
 	}
 
 	ChartPrice struct {
@@ -55,6 +56,7 @@ type (
 	}
 
 	CoinDetails struct {
+		Provider          string  `json:"provider"`
 		Vol24             float64 `json:"volume_24"`
 		MarketCap         float64 `json:"market_cap"`
 		CirculatingSupply float64 `json:"circulating_supply"`

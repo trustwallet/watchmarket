@@ -11,6 +11,113 @@ import (
 	"time"
 )
 
+func TestController_HandleTickersRequest(t *testing.T) {
+	rate := models.Rate{
+		Currency:         "USD",
+		PercentChange24h: 1,
+		Provider:         "coinmarketcap",
+		Rate:             1,
+		LastUpdated:      time.Now(),
+	}
+	rate2 := models.Rate{
+		Currency:         "USD",
+		PercentChange24h: 2,
+		Provider:         "coingecko",
+		Rate:             2,
+		LastUpdated:      time.Now(),
+	}
+	rate3 := models.Rate{
+		Currency:         "USD",
+		PercentChange24h: 4,
+		Provider:         "fixer",
+		Rate:             6,
+		LastUpdated:      time.Now(),
+	}
+
+	ticker60ACMC := models.Ticker{
+		Coin:      60,
+		CoinName:  "ETH",
+		TokenId:   "a",
+		Change24h: 10,
+		Currency:  "USD",
+		Provider:  "coinmarketcap",
+		Value:     100,
+	}
+
+	ticker60ACG := models.Ticker{
+		Coin:      60,
+		CoinName:  "ETH",
+		TokenId:   "a",
+		Change24h: 10,
+		Currency:  "USD",
+		Provider:  "coingecko",
+		Value:     100,
+	}
+
+	ticker714ACG := models.Ticker{
+		Coin:      714,
+		CoinName:  "BNB",
+		TokenId:   "a",
+		Change24h: 10,
+		Currency:  "USD",
+		Provider:  "coingecko",
+		Value:     100,
+	}
+
+	ticker714ABNB := models.Ticker{
+		Coin:      714,
+		CoinName:  "BNB",
+		TokenId:   "a",
+		Change24h: 10,
+		Currency:  "USD",
+		Provider:  "binancedex",
+		Value:     100,
+	}
+
+	db := getDbMock()
+
+	db.WantedTickersError = nil
+	db.WantedTickers = []models.Ticker{ticker60ACMC, ticker60ACG, ticker714ACG, ticker714ABNB}
+	db.WantedRatesError = nil
+	db.WantedRates = []models.Rate{rate, rate2, rate3}
+	c := setupController(t, db, getCacheMock(), getChartsMock())
+	assert.NotNil(t, c)
+
+	response, err := c.HandleTickersRequest(TickerRequest{Currency: "USD", Assets: []Coin{{Coin: 60, TokenId: "a"}, {Coin: 714, TokenId: "a"}}})
+	assert.Nil(t, err)
+
+	wantedTicker1 := watchmarket.Ticker{
+		Coin:     60,
+		CoinName: "ETH",
+		CoinType: "",
+		Price: watchmarket.Price{
+			Change24h: 10,
+			Currency:  "USD",
+			Provider:  "coinmarketcap",
+			Value:     100,
+		},
+		TokenId: "a",
+	}
+	wantedTicker2 := watchmarket.Ticker{
+		Coin:     714,
+		CoinName: "BNB",
+		CoinType: "",
+		Price: watchmarket.Price{
+			Change24h: 10,
+			Currency:  "USD",
+			Provider:  "coingecko",
+			Value:     100,
+		},
+		TokenId: "a",
+	}
+
+	wantedResp := TickerResponse{
+		Currency: "USD",
+		Tickers:  []watchmarket.Ticker{wantedTicker2, wantedTicker1},
+	}
+	assert.Equal(t, wantedResp, response)
+}
+
 func TestController_getRateByPriority(t *testing.T) {
 	rate := models.Rate{
 		Currency:         "USD",
@@ -40,7 +147,7 @@ func TestController_getRateByPriority(t *testing.T) {
 	db.WantedRatesError = nil
 	db.WantedRates = []models.Rate{rate, rate2, rate3}
 
-	c := setupController(t, db, getCacheMock())
+	c := setupController(t, db, getCacheMock(), getChartsMock())
 	assert.NotNil(t, c)
 
 	r, err := c.getRateByPriority("USD")
@@ -100,7 +207,7 @@ func TestController_getTickersByPriority(t *testing.T) {
 
 	db.WantedTickersError = nil
 	db.WantedTickers = []models.Ticker{ticker60ACMC, ticker60ACG, ticker714ACG, ticker714ABNB}
-	c := setupController(t, db, getCacheMock())
+	c := setupController(t, db, getCacheMock(), getChartsMock())
 	assert.NotNil(t, c)
 
 	tickers, err := c.getTickersByPriority(makeTickerQueries(
@@ -143,7 +250,7 @@ func TestController_getTickersByPriority(t *testing.T) {
 	assert.Equal(t, 2, counter)
 	db2 := getDbMock()
 	db2.WantedTickers = []models.Ticker{ticker60ACMC, ticker60ACG}
-	c2 := setupController(t, db2, getCacheMock())
+	c2 := setupController(t, db2, getCacheMock(), getChartsMock())
 	tickers2, err := c2.getTickersByPriority(makeTickerQueries([]Coin{{Coin: 60, TokenId: "A"}}))
 	assert.Nil(t, err)
 	assert.NotNil(t, tickers2)
@@ -156,11 +263,11 @@ func TestController_HandleTickersRequest_Negative(t *testing.T) {
 
 	db.WantedTickersError = nil
 	db.WantedRatesError = errors.New("not found")
-	c := setupController(t, db, getCacheMock())
+	c := setupController(t, db, getCacheMock(), getChartsMock())
 	assert.NotNil(t, c)
 
 	_, err := c.HandleTickersRequest(TickerRequest{})
-	assert.Equal(t, err, errors.New(ErrNotFound))
+	assert.Equal(t, err, errors.New(ErrBadRequest))
 }
 
 func TestController_normalizeTickers(t *testing.T) {
@@ -195,7 +302,7 @@ func TestController_normalizeTickers(t *testing.T) {
 	db := getDbMock()
 	db.WantedRates = []models.Rate{modelRate2}
 
-	c := setupController(t, db, getCacheMock())
+	c := setupController(t, db, getCacheMock(), getChartsMock())
 	assert.NotNil(t, c)
 
 	result := c.normalizeTickers([]watchmarket.Ticker{gotTicker1}, rate)
@@ -257,7 +364,7 @@ func TestController_normalizeTickers_advanced(t *testing.T) {
 	db := getDbMock()
 	db.WantedRates = []models.Rate{modelRate, modelRate2}
 
-	c := setupController(t, db, getCacheMock())
+	c := setupController(t, db, getCacheMock(), getChartsMock())
 	assert.NotNil(t, c)
 
 	result := c.normalizeTickers([]watchmarket.Ticker{gotTicker1}, rate)

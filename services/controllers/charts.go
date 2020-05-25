@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/trustwallet/blockatlas/coin"
 	"github.com/trustwallet/blockatlas/pkg/logger"
+	"github.com/trustwallet/watchmarket/db/models"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"strconv"
 )
@@ -27,6 +28,11 @@ func (c Controller) HandleChartsRequest(cr ChartRequest) (watchmarket.Chart, err
 		}
 	}
 
+	res, err := c.checkTickersAvailability(verifiedData.Coin, verifiedData.Token)
+	if err != nil || len(res) == 0 {
+		return ch, err
+	}
+
 	rawChart, err := c.getChartsByPriority(verifiedData)
 	if err != nil {
 		return watchmarket.Chart{}, errors.New(ErrInternal)
@@ -35,15 +41,21 @@ func (c Controller) HandleChartsRequest(cr ChartRequest) (watchmarket.Chart, err
 	chart := normalizeChart(rawChart, verifiedData.MaxItems)
 
 	chartRaw, err := json.Marshal(&chart)
-	if err = c.dataCache.SetWithTime(key, chartRaw, verifiedData.TimeStart); err != nil {
-		logger.Error("Failed to save cache", logger.Params{"err": err})
+	if err != nil {
+		logger.Error(err)
 	}
+
+	err = c.dataCache.SetWithTime(key, chartRaw, verifiedData.TimeStart)
+	if err != nil {
+		logger.Error("failed to save cache", logger.Params{"err": err})
+	}
+
 	return chart, nil
 }
 
 func toChartsRequestData(cr ChartRequest) (ChartsNormalizedRequest, error) {
 	if len(cr.TimeStartRaw) == 0 || len(cr.CoinQuery) == 0 {
-		return ChartsNormalizedRequest{}, errors.New("Invalid arguments length")
+		return ChartsNormalizedRequest{}, errors.New("invalid arguments length")
 	}
 
 	coinId, err := strconv.Atoi(cr.CoinQuery)
@@ -79,11 +91,20 @@ func toChartsRequestData(cr ChartRequest) (ChartsNormalizedRequest, error) {
 	}, nil
 }
 
+func (c Controller) checkTickersAvailability(coin uint, token string) ([]models.Ticker, error) {
+	tr := []models.TickerQuery{{Coin: coin, TokenId: token}}
+	dbTickers, err := c.database.GetTickersByQueries(tr)
+	if err != nil {
+		return nil, err
+	}
+	return dbTickers, nil
+}
+
 func (c Controller) getChartsByPriority(data ChartsNormalizedRequest) (watchmarket.Chart, error) {
 	availableProviders := c.chartsPriority.GetAllProviders()
 
 	for _, p := range availableProviders {
-		price, err := c.api.ChartsAPIs[p].GetChartData(data.Coin, data.Token, data.Currency, data.TimeStart)
+		price, err := c.api[p].GetChartData(data.Coin, data.Token, data.Currency, data.TimeStart)
 		if err == nil {
 			return price, nil
 		}
