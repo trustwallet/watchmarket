@@ -8,6 +8,7 @@ import (
 	"github.com/trustwallet/watchmarket/config"
 	"github.com/trustwallet/watchmarket/redis"
 	"github.com/trustwallet/watchmarket/services/assets"
+	"go.elastic.co/apm/module/apmgin"
 	"path/filepath"
 )
 
@@ -50,6 +51,7 @@ func InitEngine(ginMode string) *gin.Engine {
 	engine.Use(middleware.CORSMiddleware())
 	engine.Use(gin.Logger())
 	engine.Use(middleware.Prometheus())
+	engine.Use(apmgin.Middleware(engine))
 
 	return engine
 }

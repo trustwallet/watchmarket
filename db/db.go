@@ -1,14 +1,17 @@
 package db
 
-import "github.com/trustwallet/watchmarket/db/models"
+import (
+	"context"
+	"github.com/trustwallet/watchmarket/db/models"
+)
 
 type (
 	Instance interface {
-		GetRates(currency string) ([]models.Rate, error)
-		AddRates(rates []models.Rate) error
+		GetRates(currency string, ctx context.Context) ([]models.Rate, error)
+		AddRates(rates []models.Rate, ctx context.Context) error
 
-		AddTickers(tickers []models.Ticker) error
-		GetTickers(coin uint, tokenId string) ([]models.Ticker, error)
-		GetTickersByQueries(tickerQueries []models.TickerQuery) ([]models.Ticker, error)
+		AddTickers(tickers []models.Ticker, ctx context.Context) error
+		GetTickers(coin uint, tokenId string, ctx context.Context) ([]models.Ticker, error)
+		GetTickersByQueries(tickerQueries []models.TickerQuery, ctx context.Context) ([]models.Ticker, error)
 	}
 )

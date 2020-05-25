@@ -1,6 +1,7 @@
 package fixer
 
 import (
+	"context"
 	"encoding/json"
 	"github.com/stretchr/testify/assert"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
@@ -14,7 +15,7 @@ func TestProvider_GetRates(t *testing.T) {
 	server := httptest.NewServer(createMockedAPI())
 	defer server.Close()
 	provider := InitProvider(server.URL, "", "USD")
-	data, err := provider.GetRates()
+	data, err := provider.GetRates(context.Background())
 	sort.Slice(data, func(i, j int) bool {
 		return data[i].Currency < data[j].Currency
 	})
@@ -60,7 +61,7 @@ func Test_normalizeRates(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			gotRates := normalizeRates(tt.latest, provider, watchmarket.DefaultCurrency)
+			gotRates := normalizeRates(tt.latest, provider)
 			sort.SliceStable(gotRates, func(i, j int) bool {
 				return gotRates[i].Rate > gotRates[j].Rate
 			})

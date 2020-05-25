@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"context"
 	"github.com/stretchr/testify/assert"
 	"github.com/trustwallet/watchmarket/db/models"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
@@ -91,7 +92,7 @@ func TestController_HandleChartsRequest(t *testing.T) {
 		Currency:     "USD",
 		TimeStartRaw: "1577871126",
 		MaxItems:     "64",
-	})
+	}, context.Background())
 	assert.Nil(t, err)
 
 	assert.Equal(t, wCharts, chart)

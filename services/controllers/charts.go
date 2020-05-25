@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"github.com/trustwallet/blockatlas/coin"
@@ -10,7 +11,7 @@ import (
 	"strconv"
 )
 
-func (c Controller) HandleChartsRequest(cr ChartRequest) (watchmarket.Chart, error) {
+func (c Controller) HandleChartsRequest(cr ChartRequest, ctx context.Context) (watchmarket.Chart, error) {
 	var ch watchmarket.Chart
 
 	verifiedData, err := toChartsRequestData(cr)
@@ -20,7 +21,7 @@ func (c Controller) HandleChartsRequest(cr ChartRequest) (watchmarket.Chart, err
 
 	key := c.dataCache.GenerateKey(cr.CoinQuery + cr.Token + cr.Currency + cr.MaxItems)
 
-	cachedChartRaw, err := c.dataCache.GetWithTime(key, verifiedData.TimeStart)
+	cachedChartRaw, err := c.dataCache.GetWithTime(key, verifiedData.TimeStart, ctx)
 	if err == nil && len(cachedChartRaw) > 0 {
 		err = json.Unmarshal(cachedChartRaw, &ch)
 		if err == nil {
@@ -28,12 +29,12 @@ func (c Controller) HandleChartsRequest(cr ChartRequest) (watchmarket.Chart, err
 		}
 	}
 
-	res, err := c.checkTickersAvailability(verifiedData.Coin, verifiedData.Token)
+	res, err := c.checkTickersAvailability(verifiedData.Coin, verifiedData.Token, ctx)
 	if err != nil || len(res) == 0 {
 		return ch, err
 	}
 
-	rawChart, err := c.getChartsByPriority(verifiedData)
+	rawChart, err := c.getChartsByPriority(verifiedData, ctx)
 	if err != nil {
 		return watchmarket.Chart{}, errors.New(ErrInternal)
 	}
@@ -45,7 +46,7 @@ func (c Controller) HandleChartsRequest(cr ChartRequest) (watchmarket.Chart, err
 		logger.Error(err)
 	}
 
-	err = c.dataCache.SetWithTime(key, chartRaw, verifiedData.TimeStart)
+	err = c.dataCache.SetWithTime(key, chartRaw, verifiedData.TimeStart, ctx)
 	if err != nil {
 		logger.Error("failed to save cache", logger.Params{"err": err})
 	}
@@ -91,20 +92,20 @@ func toChartsRequestData(cr ChartRequest) (ChartsNormalizedRequest, error) {
 	}, nil
 }
 
-func (c Controller) checkTickersAvailability(coin uint, token string) ([]models.Ticker, error) {
+func (c Controller) checkTickersAvailability(coin uint, token string, ctx context.Context) ([]models.Ticker, error) {
 	tr := []models.TickerQuery{{Coin: coin, TokenId: token}}
-	dbTickers, err := c.database.GetTickersByQueries(tr)
+	dbTickers, err := c.database.GetTickersByQueries(tr, ctx)
 	if err != nil {
 		return nil, err
 	}
 	return dbTickers, nil
 }
 
-func (c Controller) getChartsByPriority(data ChartsNormalizedRequest) (watchmarket.Chart, error) {
-	availableProviders := c.chartsPriority.GetAllProviders()
+func (c Controller) getChartsByPriority(data ChartsNormalizedRequest, ctx context.Context) (watchmarket.Chart, error) {
+	availableProviders := c.chartsPriority
 
 	for _, p := range availableProviders {
-		price, err := c.api[p].GetChartData(data.Coin, data.Token, data.Currency, data.TimeStart)
+		price, err := c.api[p].GetChartData(data.Coin, data.Token, data.Currency, data.TimeStart, ctx)
 		if err == nil {
 			return price, nil
 		}

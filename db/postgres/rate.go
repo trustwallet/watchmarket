@@ -1,9 +1,11 @@
 package postgres
 
 import (
+	"context"
 	"fmt"
 	"github.com/jinzhu/gorm"
 	"github.com/trustwallet/watchmarket/db/models"
+	"go.elastic.co/apm/module/apmgorm"
 	"strings"
 	"time"
 )
@@ -12,16 +14,27 @@ const (
 	rawBulkRatesInsert = `INSERT INTO rates(updated_at,created_at,currency,percent_change24h,provider,rate,last_updated,show_option) VALUES %s ON CONFLICT ON CONSTRAINT rates_pkey DO UPDATE SET rate = excluded.rate, percent_change24h = excluded.percent_change24h, updated_at = excluded.updated_at, last_updated = excluded.last_updated`
 )
 
-func (i *Instance) AddRates(rates []models.Rate) error {
+func (i *Instance) AddRates(rates []models.Rate, ctx context.Context) error {
+	g := apmgorm.WithContext(ctx, i.Gorm)
 	normalizedRates := normalizeRates(rates)
 	batch := toRatesBatch(normalizedRates, batchLimit)
 	for _, b := range batch {
-		err := bulkCreateRate(i.Gorm, b)
+		err := bulkCreateRate(g, b, ctx)
 		if err != nil {
 			return err
 		}
 	}
 	return nil
+}
+
+func (i *Instance) GetRates(currency string, ctx context.Context) ([]models.Rate, error) {
+	g := apmgorm.WithContext(ctx, i.Gorm)
+	var rates []models.Rate
+	if err := g.Where("currency = ?", currency).
+		Find(&rates).Error; err != nil {
+		return nil, err
+	}
+	return rates, nil
 }
 
 func normalizeRates(rates []models.Rate) []models.Rate {
@@ -75,7 +88,7 @@ func toRatesBatch(rates []models.Rate, sizeUint uint) [][]models.Rate {
 	return result
 }
 
-func bulkCreateRate(db *gorm.DB, dataList []models.Rate) error {
+func bulkCreateRate(db *gorm.DB, dataList []models.Rate, ctx context.Context) error {
 	var (
 		valueStrings []string
 		valueArgs    []interface{}
@@ -95,19 +108,10 @@ func bulkCreateRate(db *gorm.DB, dataList []models.Rate) error {
 	}
 
 	smt := fmt.Sprintf(rawBulkRatesInsert, strings.Join(valueStrings, ","))
-
-	if err := db.Exec(smt, valueArgs...).Error; err != nil {
+	g := apmgorm.WithContext(ctx, db)
+	if err := g.Exec(smt, valueArgs...).Error; err != nil {
 		return err
 	}
 
 	return nil
-}
-
-func (i *Instance) GetRates(currency string) ([]models.Rate, error) {
-	var rates []models.Rate
-	if err := i.Gorm.Where("currency = ?", currency).
-		Find(&rates).Error; err != nil {
-		return nil, err
-	}
-	return rates, nil
 }

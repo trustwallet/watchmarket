@@ -32,7 +32,11 @@ func init() {
 		logger.Fatal(err)
 	}
 
-	database, err := postgres.New(configuration.Storage.Postgres)
+	database, err := postgres.New(
+		configuration.Storage.Postgres.Uri,
+		configuration.Storage.Postgres.Env,
+		configuration.Storage.Postgres.Logs,
+	)
 	if err != nil {
 		logger.Fatal(err)
 	}
@@ -45,8 +49,8 @@ func init() {
 }
 
 func main() {
-	//c = w.AddRatesOperation(c, "5m")
-	//c = w.AddTickersOperation(c, "5m")
+	c = w.AddRatesOperation(c, "20s")
+	c = w.AddTickersOperation(c, "20s")
 	go c.Start()
 	go w.FetchAndSaveRates()
 	go w.FetchAndSaveTickers()

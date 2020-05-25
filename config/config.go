@@ -40,8 +40,17 @@ type Configuration struct {
 
 	Storage struct {
 		Redis    string `mapstructure:"redis"`
-		Postgres string `mapstructure:"postgres"`
+		Postgres struct {
+			Uri  string `mapstructure:"uri"`
+			Logs bool   `mapstructure:"logs"`
+			Env  string `mapstructure:"env"`
+		} `mapstructure:"postgres"`
 	} `mapstructure:"storage"`
+
+	Worker struct {
+		Tickers string `mapstructure:"tickers"`
+		Rates   string `mapstructure:"rates"`
+	} `mapstructure:"worker"`
 
 	RestAPI struct {
 		Mode    string `mapstructure:"mode"`

@@ -1,6 +1,7 @@
 package fixer
 
 import (
+	"context"
 	"github.com/trustwallet/blockatlas/pkg/blockatlas"
 	"net/url"
 )
@@ -14,12 +15,12 @@ func NewClient(api, key, currency string) Client {
 	return Client{Request: blockatlas.InitClient(api), key: key, currency: currency}
 }
 
-func (c Client) FetchRates() (Rate, error) {
+func (c Client) FetchRates(ctx context.Context) (Rate, error) {
 	var (
 		values  = url.Values{"access_key": {c.key}, "base": {c.currency}} // Base USD supported only in paid api}
 		rawRate Rate
 	)
-	err := c.Get(&rawRate, "latest", values)
+	err := c.GetWithContext(&rawRate, "latest", values, ctx)
 	if err != nil {
 		return rawRate, err
 	}

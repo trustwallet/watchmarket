@@ -1,6 +1,7 @@
 package rediscache
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"github.com/alicebob/miniredis/v2"
@@ -78,9 +79,9 @@ func TestInstance_Get(t *testing.T) {
 	d, err := json.Marshal(tickers)
 	assert.NotNil(t, d)
 	assert.Nil(t, err)
-	assert.Nil(t, i.redis.Set("test", d, i.tickersCaching))
+	assert.Nil(t, i.redis.Set("test", d, i.tickersCaching, context.Background()))
 
-	nd, err := i.Get("test")
+	nd, err := i.Get("test", context.Background())
 	assert.Nil(t, err)
 	var ta watchmarket.Tickers
 	assert.Nil(t, json.Unmarshal(nd, &ta))
@@ -110,10 +111,10 @@ func TestInstance_Set(t *testing.T) {
 
 	d, err := json.Marshal(tickers)
 	assert.Nil(t, err)
-	err = i.Set("test", d)
+	err = i.Set("test", d, context.Background())
 	assert.Nil(t, err)
 
-	nd, err := i.Get("test")
+	nd, err := i.Get("test", context.Background())
 	assert.Nil(t, err)
 	var ta watchmarket.Tickers
 	assert.Nil(t, json.Unmarshal(nd, &ta))

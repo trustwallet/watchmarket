@@ -1,6 +1,7 @@
 package assets
 
 import (
+	"context"
 	"fmt"
 	"github.com/trustwallet/blockatlas/coin"
 	"github.com/trustwallet/blockatlas/pkg/blockatlas"
@@ -16,7 +17,7 @@ func Init(api string) Client {
 	return Client{blockatlas.InitClient(api)}
 }
 
-func (c Client) GetCoinInfo(coinId uint, token string) (watchmarket.Info, error) {
+func (c Client) GetCoinInfo(coinId uint, token string, ctx context.Context) (watchmarket.Info, error) {
 	coinObject, ok := coin.Coins[coinId]
 	if !ok {
 		return watchmarket.Info{}, errors.E("coin not found", errors.Params{"coin": coinObject.Handle, "token": token})
@@ -27,7 +28,7 @@ func (c Client) GetCoinInfo(coinId uint, token string) (watchmarket.Info, error)
 		result watchmarket.Info
 	)
 
-	err := c.Get(&result, path, nil)
+	err := c.GetWithContext(&result, path, nil, ctx)
 	if err != nil {
 		return result, err
 	}

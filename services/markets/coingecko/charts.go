@@ -1,6 +1,7 @@
 package coingecko
 
 import (
+	"context"
 	"github.com/trustwallet/blockatlas/coin"
 	"github.com/trustwallet/blockatlas/pkg/errors"
 	"github.com/trustwallet/blockatlas/pkg/logger"
@@ -10,10 +11,10 @@ import (
 	"time"
 )
 
-func (p Provider) GetChartData(coinID uint, token, currency string, timeStart int64) (watchmarket.Chart, error) {
+func (p Provider) GetChartData(coinID uint, token, currency string, timeStart int64, ctx context.Context) (watchmarket.Chart, error) {
 	chartsData := watchmarket.Chart{}
 
-	coins, err := p.client.fetchCoins()
+	coins, err := p.client.fetchCoins(ctx)
 	if err != nil {
 		return chartsData, err
 	}
@@ -27,7 +28,7 @@ func (p Provider) GetChartData(coinID uint, token, currency string, timeStart in
 
 	timeEndDate := time.Now().Unix()
 
-	c, err := p.client.fetchCharts(coinResult.Id, currency, timeStart, timeEndDate)
+	c, err := p.client.fetchCharts(coinResult.Id, currency, timeStart, timeEndDate, ctx)
 	if err != nil {
 		return chartsData, err
 	}
@@ -35,8 +36,8 @@ func (p Provider) GetChartData(coinID uint, token, currency string, timeStart in
 	return normalizeCharts(c), nil
 }
 
-func (p Provider) GetCoinData(coinID uint, token, currency string) (watchmarket.CoinDetails, error) {
-	coins, err := p.client.fetchCoins()
+func (p Provider) GetCoinData(coinID uint, token, currency string, ctx context.Context) (watchmarket.CoinDetails, error) {
+	coins, err := p.client.fetchCoins(ctx)
 	if err != nil {
 		return watchmarket.CoinDetails{}, err
 	}
@@ -48,12 +49,12 @@ func (p Provider) GetCoinData(coinID uint, token, currency string) (watchmarket.
 		return watchmarket.CoinDetails{}, err
 	}
 
-	ratesData := p.client.fetchRates(coins, currency)
+	ratesData := p.client.fetchRates(coins, currency, ctx)
 	if len(ratesData) == 0 {
 		return watchmarket.CoinDetails{}, errors.E("No rates found", errors.Params{"id": coinResult.Id})
 	}
 
-	infoData, err := p.info.GetCoinInfo(coinID, token)
+	infoData, err := p.info.GetCoinInfo(coinID, token, ctx)
 	if err != nil {
 		logger.Warn("No assets assets about that coin", logger.Params{"coin": coinID, "token": token})
 	}

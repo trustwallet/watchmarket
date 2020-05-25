@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"context"
 	"errors"
 	"github.com/stretchr/testify/assert"
 	"github.com/trustwallet/watchmarket/config"
@@ -83,7 +84,7 @@ func TestController_HandleTickersRequest(t *testing.T) {
 	c := setupController(t, db, getCacheMock(), getChartsMock())
 	assert.NotNil(t, c)
 
-	response, err := c.HandleTickersRequest(TickerRequest{Currency: "USD", Assets: []Coin{{Coin: 60, TokenId: "a"}, {Coin: 714, TokenId: "a"}}})
+	response, err := c.HandleTickersRequest(TickerRequest{Currency: "USD", Assets: []Coin{{Coin: 60, TokenId: "a"}, {Coin: 714, TokenId: "a"}}}, context.Background())
 	assert.Nil(t, err)
 
 	wantedTicker1 := watchmarket.Ticker{
@@ -150,7 +151,7 @@ func TestController_getRateByPriority(t *testing.T) {
 	c := setupController(t, db, getCacheMock(), getChartsMock())
 	assert.NotNil(t, c)
 
-	r, err := c.getRateByPriority("USD")
+	r, err := c.getRateByPriority("USD", context.Background())
 	assert.Nil(t, err)
 
 	assert.Equal(t, watchmarket.Rate{
@@ -212,7 +213,7 @@ func TestController_getTickersByPriority(t *testing.T) {
 
 	tickers, err := c.getTickersByPriority(makeTickerQueries(
 		[]Coin{{Coin: 60, TokenId: "A"}, {Coin: 714, TokenId: "A"}},
-	))
+	), context.Background())
 	assert.Nil(t, err)
 	assert.NotNil(t, tickers)
 	assert.Equal(t, 2, len(tickers))
@@ -251,7 +252,7 @@ func TestController_getTickersByPriority(t *testing.T) {
 	db2 := getDbMock()
 	db2.WantedTickers = []models.Ticker{ticker60ACMC, ticker60ACG}
 	c2 := setupController(t, db2, getCacheMock(), getChartsMock())
-	tickers2, err := c2.getTickersByPriority(makeTickerQueries([]Coin{{Coin: 60, TokenId: "A"}}))
+	tickers2, err := c2.getTickersByPriority(makeTickerQueries([]Coin{{Coin: 60, TokenId: "A"}}), context.Background())
 	assert.Nil(t, err)
 	assert.NotNil(t, tickers2)
 	assert.Equal(t, 1, len(tickers2))
@@ -266,7 +267,7 @@ func TestController_HandleTickersRequest_Negative(t *testing.T) {
 	c := setupController(t, db, getCacheMock(), getChartsMock())
 	assert.NotNil(t, c)
 
-	_, err := c.HandleTickersRequest(TickerRequest{})
+	_, err := c.HandleTickersRequest(TickerRequest{}, context.Background())
 	assert.Equal(t, err, errors.New(ErrBadRequest))
 }
 
@@ -305,7 +306,7 @@ func TestController_normalizeTickers(t *testing.T) {
 	c := setupController(t, db, getCacheMock(), getChartsMock())
 	assert.NotNil(t, c)
 
-	result := c.normalizeTickers([]watchmarket.Ticker{gotTicker1}, rate)
+	result := c.normalizeTickers([]watchmarket.Ticker{gotTicker1}, rate, context.Background())
 	wanted := watchmarket.Ticker{
 		Coin:     0,
 		CoinName: "BTC",
@@ -367,7 +368,7 @@ func TestController_normalizeTickers_advanced(t *testing.T) {
 	c := setupController(t, db, getCacheMock(), getChartsMock())
 	assert.NotNil(t, c)
 
-	result := c.normalizeTickers([]watchmarket.Ticker{gotTicker1}, rate)
+	result := c.normalizeTickers([]watchmarket.Ticker{gotTicker1}, rate, context.Background())
 	wanted := watchmarket.Ticker{
 		Coin:     0,
 		CoinName: "BNB",

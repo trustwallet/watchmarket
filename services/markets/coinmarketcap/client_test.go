@@ -1,6 +1,7 @@
 package coinmarketcap
 
 import (
+	"context"
 	"encoding/json"
 	"github.com/stretchr/testify/assert"
 	"net/http/httptest"
@@ -20,7 +21,7 @@ func Test_fetchCoinMap(t *testing.T) {
 	server := httptest.NewServer(createMockedAPI())
 	defer server.Close()
 	client := NewClient(server.URL, server.URL, server.URL, server.URL, "demo.key")
-	data, err := client.fetchCoinMap()
+	data, err := client.fetchCoinMap(context.Background())
 	assert.Nil(t, err)
 	rawData, err := json.Marshal(data)
 	assert.Nil(t, err)

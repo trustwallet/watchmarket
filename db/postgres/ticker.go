@@ -1,9 +1,11 @@
 package postgres
 
 import (
+	"context"
 	"fmt"
 	"github.com/jinzhu/gorm"
 	"github.com/trustwallet/watchmarket/db/models"
+	"go.elastic.co/apm/module/apmgorm"
 	"strings"
 	"time"
 )
@@ -13,10 +15,11 @@ const (
 	rawBulkTickersInsert = `INSERT INTO tickers(updated_at,created_at,coin,coin_name,coin_type,token_id,change24h,currency,provider,value,last_updated,volume,market_cap,show_option) VALUES %s ON CONFLICT ON CONSTRAINT tickers_pkey DO UPDATE SET value = excluded.value, change24h = excluded.change24h, updated_at = excluded.updated_at, last_updated = excluded.last_updated, volume = excluded.volume, market_cap = excluded.market_cap`
 )
 
-func (i *Instance) AddTickers(tickers []models.Ticker) error {
+func (i *Instance) AddTickers(tickers []models.Ticker, ctx context.Context) error {
+	g := apmgorm.WithContext(ctx, i.Gorm)
 	batch := toTickersBatch(normalizeTickers(tickers), batchLimit)
 	for _, b := range batch {
-		err := bulkCreateTicker(i.Gorm, b)
+		err := bulkCreateTicker(g, b, ctx)
 		if err != nil {
 			return err
 		}
@@ -78,7 +81,7 @@ func isBadTicker(coin uint, coinName, coinType, tokenId, currency, provider stri
 	return false
 }
 
-func bulkCreateTicker(db *gorm.DB, dataList []models.Ticker) error {
+func bulkCreateTicker(db *gorm.DB, dataList []models.Ticker, ctx context.Context) error {
 	var (
 		valueStrings []string
 		valueArgs    []interface{}
@@ -104,17 +107,17 @@ func bulkCreateTicker(db *gorm.DB, dataList []models.Ticker) error {
 	}
 
 	smt := fmt.Sprintf(rawBulkTickersInsert, strings.Join(valueStrings, ","))
-
-	if err := db.Exec(smt, valueArgs...).Error; err != nil {
+	g := apmgorm.WithContext(ctx, db)
+	if err := g.Exec(smt, valueArgs...).Error; err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (i *Instance) GetTickersByQueries(tickerQueries []models.TickerQuery) ([]models.Ticker, error) {
+func (i *Instance) GetTickersByQueries(tickerQueries []models.TickerQuery, ctx context.Context) ([]models.Ticker, error) {
+	db := apmgorm.WithContext(ctx, i.Gorm)
 	var ticker []models.Ticker
-	db := i.Gorm
 	for _, tq := range tickerQueries {
 		db = db.Or("coin = ? AND token_id = ?", tq.Coin, tq.TokenId)
 	}
@@ -124,9 +127,10 @@ func (i *Instance) GetTickersByQueries(tickerQueries []models.TickerQuery) ([]mo
 	return ticker, nil
 }
 
-func (i *Instance) GetTickers(coin uint, tokenId string) ([]models.Ticker, error) {
+func (i *Instance) GetTickers(coin uint, tokenId string, ctx context.Context) ([]models.Ticker, error) {
+	g := apmgorm.WithContext(ctx, i.Gorm)
 	var ticker []models.Ticker
-	if err := i.Gorm.Where("coin = ? AND token_id = ?", coin, tokenId).
+	if err := g.Where("coin = ? AND token_id = ?", coin, tokenId).
 		Find(&ticker).Error; err != nil {
 		return nil, err
 	}

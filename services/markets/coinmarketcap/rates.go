@@ -1,20 +1,21 @@
 package coinmarketcap
 
 import (
+	"context"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"strings"
 )
 
-func (p Provider) GetRates() (rates watchmarket.Rates, err error) {
-	prices, err := p.client.fetchPrices(p.currency)
+func (p Provider) GetRates(ctx context.Context) (rates watchmarket.Rates, err error) {
+	prices, err := p.client.fetchPrices(p.currency, ctx)
 	if err != nil {
 		return
 	}
-	rates = normalizeRates(prices, p.id, p.currency)
+	rates = normalizeRates(prices, p.id)
 	return
 }
 
-func normalizeRates(prices CoinPrices, provider, baseCurrency string) watchmarket.Rates {
+func normalizeRates(prices CoinPrices, provider string) watchmarket.Rates {
 	var (
 		result        watchmarket.Rates
 		emptyPlatform Platform

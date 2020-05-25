@@ -29,7 +29,14 @@ markets:
 
 storage:
   redis: redis://localhost:6379
-  postgres: postgresql://user:pass@localhost/my_db?sslmode=disable
+  postgres:
+    uri: postgresql://user:pass@localhost/my_db?sslmode=disable
+    logs: false
+    env: prod
+
+worker:
+  tickers: 1m
+  rates: 5m
 
 rest_api:
   mode: release # Possible values: "debug", "release"
@@ -37,7 +44,7 @@ rest_api:
   tickers:
     respectable_market_cap: 0
     respectable_volume: 0
-  cache: # Cache padurationrams for REST API
+  cache: # Cache duration for REST API
     charts: 5m
     info: 2h
 

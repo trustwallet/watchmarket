@@ -1,6 +1,7 @@
 package coinmarketcap
 
 import (
+	"context"
 	"fmt"
 	"github.com/trustwallet/blockatlas/pkg/blockatlas"
 	"net/url"
@@ -25,33 +26,33 @@ func NewClient(proApi, assetsApi, webApi, widgetApi, key string) Client {
 	return c
 }
 
-func (c Client) fetchPrices(currency string) (CoinPrices, error) {
+func (c Client) fetchPrices(currency string, ctx context.Context) (CoinPrices, error) {
 	var (
 		result CoinPrices
 		path   = "v1/cryptocurrency/listings/latest"
 	)
 
-	err := c.api.Get(&result, path, url.Values{"limit": {"5000"}, "convert": {currency}})
+	err := c.api.GetWithContext(&result, path, url.Values{"limit": {"5000"}, "convert": {currency}}, ctx)
 	if err != nil {
 		return result, err
 	}
 	return result, nil
 }
 
-func (c Client) fetchCoinMap() ([]CoinMap, error) {
+func (c Client) fetchCoinMap(ctx context.Context) ([]CoinMap, error) {
 	var (
 		result []CoinMap
 		path   = "mapping.json"
 	)
 
-	err := c.assets.Get(&result, path, nil)
+	err := c.assets.GetWithContext(&result, path, nil, ctx)
 	if err != nil {
 		return result, err
 	}
 	return result, nil
 }
 
-func (c Client) fetchChartsData(id uint, currency string, timeStart int64, timeEnd int64, interval string) (charts Charts, err error) {
+func (c Client) fetchChartsData(id uint, currency string, timeStart int64, timeEnd int64, interval string, ctx context.Context) (charts Charts, err error) {
 	values := url.Values{
 		"convert":    {currency},
 		"format":     {"chart_crypto_details"},
@@ -60,15 +61,15 @@ func (c Client) fetchChartsData(id uint, currency string, timeStart int64, timeE
 		"time_end":   {strconv.FormatInt(timeEnd, 10)},
 		"interval":   {interval},
 	}
-	err = c.web.Get(&charts, "v1/cryptocurrency/quotes/historical", values)
+	err = c.web.GetWithContext(&charts, "v1/cryptocurrency/quotes/historical", values, ctx)
 	return
 }
 
-func (c Client) fetchCoinData(id uint, currency string) (charts ChartInfo, err error) {
+func (c Client) fetchCoinData(id uint, currency string, ctx context.Context) (charts ChartInfo, err error) {
 	values := url.Values{
 		"convert": {currency},
 		"ref":     {"widget"},
 	}
-	err = c.widget.Get(&charts, fmt.Sprintf("v2/ticker/%d", id), values)
+	err = c.widget.GetWithContext(&charts, fmt.Sprintf("v2/ticker/%d", id), values, ctx)
 	return
 }

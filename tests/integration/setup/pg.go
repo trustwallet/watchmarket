@@ -39,7 +39,7 @@ func runPgContainerAndInitConnection() (*postgres.Instance, error) {
 		err    error
 	)
 	if err := pool.Retry(func() error {
-		dbConn, err = postgres.New(uri)
+		dbConn, err = postgres.New(uri, "dev", false)
 		return err
 	}); err != nil {
 		return nil, err
