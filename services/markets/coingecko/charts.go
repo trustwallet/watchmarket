@@ -142,6 +142,7 @@ func normalizeCharts(c Charts) watchmarket.Chart {
 	})
 
 	chartsData.Prices = prices
+	chartsData.Provider = id
 
 	return chartsData
 }
@@ -153,5 +154,6 @@ func normalizeInfo(data CoinPrice, info watchmarket.Info) watchmarket.CoinDetail
 		CirculatingSupply: data.CirculatingSupply,
 		TotalSupply:       data.TotalSupply,
 		Info:              info,
+		Provider:          id,
 	}
 }

@@ -30,13 +30,15 @@ func (c Controller) HandleDetailsRequest(dr DetailsRequest) (watchmarket.CoinDet
 	if err != nil {
 		return watchmarket.CoinDetails{}, errors.New(ErrInternal)
 	}
+
 	newCache, err := json.Marshal(result)
 	if err != nil {
 		logger.Error(err)
 	}
+
 	err = c.dataCache.Set(key, newCache)
 	if err != nil {
-		logger.Error(err)
+		logger.Error("failed to save cache", logger.Params{"err": err})
 	}
 
 	return result, nil
@@ -44,7 +46,7 @@ func (c Controller) HandleDetailsRequest(dr DetailsRequest) (watchmarket.CoinDet
 
 func toDetailsRequestData(dr DetailsRequest) (DetailsNormalizedRequest, error) {
 	if len(dr.CoinQuery) == 0 {
-		return DetailsNormalizedRequest{}, errors.New("Invalid arguments length")
+		return DetailsNormalizedRequest{}, errors.New("invalid arguments length")
 	}
 
 	coinId, err := strconv.Atoi(dr.CoinQuery)
@@ -72,7 +74,7 @@ func (c Controller) getDetailsByPriority(data DetailsNormalizedRequest) (watchma
 	availableProviders := c.coinInfoPriority.GetAllProviders()
 
 	for _, p := range availableProviders {
-		data, err := c.api.ChartsAPIs[p].GetCoinData(data.Coin, data.Token, data.Currency)
+		data, err := c.api[p].GetCoinData(data.Coin, data.Token, data.Currency)
 		if err == nil {
 			return data, nil
 		}

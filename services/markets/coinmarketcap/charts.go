@@ -114,6 +114,7 @@ func normalizeCharts(currency string, c Charts) watchmarket.Data {
 		return prices[i].Date < prices[j].Date
 	})
 	chartsData.Prices = prices
+	chartsData.Provider = id
 	return chartsData
 }
 
@@ -124,6 +125,7 @@ func normalizeInfo(currency string, cmcCoin uint, priceData ChartInfo, assetsDat
 		return details, errors.E("Cant get coin details", errors.Params{"cmcCoin": cmcCoin, "currency": currency})
 	}
 	return watchmarket.CoinDetails{
+		Provider:          id,
 		Vol24:             quote.Volume24,
 		MarketCap:         quote.MarketCap,
 		CirculatingSupply: data.Data.CirculatingSupply,

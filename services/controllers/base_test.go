@@ -4,7 +4,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/trustwallet/watchmarket/config"
 	"github.com/trustwallet/watchmarket/db/models"
-	"github.com/trustwallet/watchmarket/services/assets"
+	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"github.com/trustwallet/watchmarket/services/cache"
 	"github.com/trustwallet/watchmarket/services/markets"
 	"github.com/trustwallet/watchmarket/services/priority"
@@ -12,14 +12,14 @@ import (
 )
 
 func TestNewController(t *testing.T) {
-	assert.NotNil(t, setupController(t, getDbMock(), getCacheMock()))
+	assert.NotNil(t, setupController(t, getDbMock(), getCacheMock(), getChartsMock()))
 }
 
-func setupController(t *testing.T, d dbMock, ch cache.Provider) Controller {
+func setupController(t *testing.T, d dbMock, ch cache.Provider, cm chartsMock) Controller {
 	c := config.Init("../../config/test.yml")
 	assert.NotNil(t, c)
 
-	chartsPriority, err := priority.Init(c.Markets.Priority.Charts)
+	chartsPriority, err := priority.Init([]string{"coinmarketcap"})
 	assert.Nil(t, err)
 
 	ratesPriority, err := priority.Init(c.Markets.Priority.Rates)
@@ -31,12 +31,10 @@ func setupController(t *testing.T, d dbMock, ch cache.Provider) Controller {
 	coinInfoPriority, err := priority.Init(c.Markets.Priority.CoinInfo)
 	assert.Nil(t, err)
 
-	a := assets.Init(c.Markets.Assets)
+	chartsAPIs := make(markets.ChartsAPIs, 1)
+	chartsAPIs[cm.GetProvider()] = cm
 
-	m, err := markets.Init(c, a)
-	assert.Nil(t, err)
-
-	controller := NewController(ch, d, chartsPriority, coinInfoPriority, ratesPriority, tickerPriority, m, c)
+	controller := NewController(ch, d, chartsPriority, coinInfoPriority, ratesPriority, tickerPriority, chartsAPIs, c)
 	assert.NotNil(t, controller)
 	return controller
 
@@ -109,4 +107,26 @@ func (c cacheMock) GetWithTime(key string, time int64) ([]byte, error) {
 
 func (c cacheMock) SetWithTime(key string, data []byte, time int64) error {
 	return nil
+}
+
+func getChartsMock() chartsMock {
+	cm := chartsMock{}
+	return cm
+}
+
+type chartsMock struct {
+	wantedCharts  watchmarket.Chart
+	wantedDetails watchmarket.CoinDetails
+}
+
+func (cm chartsMock) GetChartData(coinID uint, token, currency string, timeStart int64) (watchmarket.Chart, error) {
+	return cm.wantedCharts, nil
+}
+
+func (cm chartsMock) GetCoinData(coinID uint, token, currency string) (watchmarket.CoinDetails, error) {
+	return cm.wantedDetails, nil
+}
+
+func (cm chartsMock) GetProvider() string {
+	return "coinmarketcap"
 }
