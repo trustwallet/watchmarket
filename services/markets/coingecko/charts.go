@@ -49,7 +49,7 @@ func (p Provider) GetCoinData(coinID uint, token, currency string, ctx context.C
 		return watchmarket.CoinDetails{}, err
 	}
 
-	ratesData := p.client.fetchRates(coins, currency, ctx)
+	ratesData := p.client.fetchRates(Coins{coinResult}, currency, ctx)
 	if len(ratesData) == 0 {
 		return watchmarket.CoinDetails{}, errors.E("No rates found", errors.Params{"id": coinResult.Id})
 	}

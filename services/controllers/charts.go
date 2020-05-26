@@ -12,6 +12,8 @@ import (
 	"strings"
 )
 
+const charts = "charts"
+
 func (c Controller) HandleChartsRequest(cr ChartRequest, ctx context.Context) (watchmarket.Chart, error) {
 	var ch watchmarket.Chart
 
@@ -20,7 +22,7 @@ func (c Controller) HandleChartsRequest(cr ChartRequest, ctx context.Context) (w
 		return ch, errors.New(ErrBadRequest)
 	}
 
-	key := c.dataCache.GenerateKey(cr.CoinQuery + cr.Token + cr.Currency + cr.MaxItems)
+	key := c.dataCache.GenerateKey(charts + cr.CoinQuery + cr.Token + cr.Currency + cr.MaxItems)
 
 	cachedChartRaw, err := c.dataCache.GetWithTime(key, verifiedData.TimeStart, ctx)
 	if err == nil && len(cachedChartRaw) > 0 {
@@ -47,7 +49,7 @@ func (c Controller) HandleChartsRequest(cr ChartRequest, ctx context.Context) (w
 		logger.Error(err)
 	}
 
-	if err != nil && len(chart.Prices) > 0 {
+	if err == nil && len(chart.Prices) > 0 {
 		err = c.dataCache.SetWithTime(key, chartRaw, verifiedData.TimeStart, ctx)
 		if err != nil {
 			logger.Error("failed to save cache", logger.Params{"err": err})

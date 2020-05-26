@@ -10,6 +10,8 @@ import (
 	"strconv"
 )
 
+const info = "info"
+
 func (c Controller) HandleDetailsRequest(dr DetailsRequest, ctx context.Context) (watchmarket.CoinDetails, error) {
 	var cd watchmarket.CoinDetails
 
@@ -18,7 +20,7 @@ func (c Controller) HandleDetailsRequest(dr DetailsRequest, ctx context.Context)
 		return cd, errors.New(ErrBadRequest)
 	}
 
-	key := c.dataCache.GenerateKey(dr.CoinQuery + dr.Token + dr.Currency)
+	key := c.dataCache.GenerateKey(info + dr.CoinQuery + dr.Token + dr.Currency)
 
 	cachedDetails, err := c.dataCache.Get(key, ctx)
 	if err == nil && len(cachedDetails) > 0 {
@@ -36,10 +38,11 @@ func (c Controller) HandleDetailsRequest(dr DetailsRequest, ctx context.Context)
 	if err != nil {
 		logger.Error(err)
 	}
-
-	err = c.dataCache.Set(key, newCache, ctx)
-	if err != nil {
-		logger.Error("failed to save cache", logger.Params{"err": err})
+	if result.Info.Name != "" {
+		err = c.dataCache.Set(key, newCache, ctx)
+		if err != nil {
+			logger.Error("failed to save cache", logger.Params{"err": err})
+		}
 	}
 
 	return result, nil
