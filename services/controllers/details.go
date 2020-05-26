@@ -34,11 +34,16 @@ func (c Controller) HandleDetailsRequest(dr DetailsRequest, ctx context.Context)
 		return watchmarket.CoinDetails{}, errors.New(ErrInternal)
 	}
 
+	if result.IsEmpty() {
+		result.Info = nil
+	}
+
 	newCache, err := json.Marshal(result)
 	if err != nil {
 		logger.Error(err)
 	}
-	if result.Info.Name != "" {
+
+	if result.Info != nil {
 		err = c.dataCache.Set(key, newCache, ctx)
 		if err != nil {
 			logger.Error("failed to save cache", logger.Params{"err": err})
