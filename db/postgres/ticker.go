@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/jinzhu/gorm"
 	"github.com/trustwallet/watchmarket/db/models"
+	"go.elastic.co/apm"
 	"go.elastic.co/apm/module/apmgorm"
 	"strings"
 	"time"
@@ -17,9 +18,11 @@ const (
 
 func (i *Instance) AddTickers(tickers []models.Ticker, ctx context.Context) error {
 	g := apmgorm.WithContext(ctx, i.Gorm)
+	span, ctx := apm.StartSpan(ctx, "AddTickers", "postgresql")
+	defer span.End()
 	batch := toTickersBatch(normalizeTickers(tickers), batchLimit)
 	for _, b := range batch {
-		err := bulkCreateTicker(g, b, ctx)
+		err := bulkCreateTicker(g, b)
 		if err != nil {
 			return err
 		}
@@ -81,7 +84,7 @@ func isBadTicker(coin uint, coinName, coinType, tokenId, currency, provider stri
 	return false
 }
 
-func bulkCreateTicker(db *gorm.DB, dataList []models.Ticker, ctx context.Context) error {
+func bulkCreateTicker(db *gorm.DB, dataList []models.Ticker) error {
 	var (
 		valueStrings []string
 		valueArgs    []interface{}
@@ -107,8 +110,7 @@ func bulkCreateTicker(db *gorm.DB, dataList []models.Ticker, ctx context.Context
 	}
 
 	smt := fmt.Sprintf(rawBulkTickersInsert, strings.Join(valueStrings, ","))
-	g := apmgorm.WithContext(ctx, db)
-	if err := g.Exec(smt, valueArgs...).Error; err != nil {
+	if err := db.Exec(smt, valueArgs...).Error; err != nil {
 		return err
 	}
 

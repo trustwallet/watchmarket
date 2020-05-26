@@ -13,66 +13,71 @@ import (
 )
 
 func TestController_HandleTickersRequest(t *testing.T) {
+	timeUPD := time.Now()
 	rate := models.Rate{
 		Currency:         "USD",
 		PercentChange24h: 1,
 		Provider:         "coinmarketcap",
 		Rate:             1,
-		LastUpdated:      time.Now(),
+		LastUpdated:      timeUPD,
 	}
 	rate2 := models.Rate{
 		Currency:         "USD",
 		PercentChange24h: 2,
 		Provider:         "coingecko",
 		Rate:             2,
-		LastUpdated:      time.Now(),
+		LastUpdated:      timeUPD,
 	}
 	rate3 := models.Rate{
 		Currency:         "USD",
 		PercentChange24h: 4,
 		Provider:         "fixer",
 		Rate:             6,
-		LastUpdated:      time.Now(),
+		LastUpdated:      timeUPD,
 	}
 
 	ticker60ACMC := models.Ticker{
-		Coin:      60,
-		CoinName:  "ETH",
-		TokenId:   "a",
-		Change24h: 10,
-		Currency:  "USD",
-		Provider:  "coinmarketcap",
-		Value:     100,
+		Coin:        60,
+		CoinName:    "ETH",
+		TokenId:     "a",
+		Change24h:   10,
+		Currency:    "USD",
+		Provider:    "coinmarketcap",
+		Value:       100,
+		LastUpdated: timeUPD,
 	}
 
 	ticker60ACG := models.Ticker{
-		Coin:      60,
-		CoinName:  "ETH",
-		TokenId:   "a",
-		Change24h: 10,
-		Currency:  "USD",
-		Provider:  "coingecko",
-		Value:     100,
+		Coin:        60,
+		CoinName:    "ETH",
+		TokenId:     "a",
+		Change24h:   10,
+		Currency:    "USD",
+		Provider:    "coingecko",
+		Value:       100,
+		LastUpdated: timeUPD,
 	}
 
 	ticker714ACG := models.Ticker{
-		Coin:      714,
-		CoinName:  "BNB",
-		TokenId:   "a",
-		Change24h: 10,
-		Currency:  "USD",
-		Provider:  "coingecko",
-		Value:     100,
+		Coin:        714,
+		CoinName:    "BNB",
+		TokenId:     "a",
+		Change24h:   10,
+		Currency:    "USD",
+		Provider:    "coingecko",
+		Value:       100,
+		LastUpdated: timeUPD,
 	}
 
 	ticker714ABNB := models.Ticker{
-		Coin:      714,
-		CoinName:  "BNB",
-		TokenId:   "a",
-		Change24h: 10,
-		Currency:  "USD",
-		Provider:  "binancedex",
-		Value:     100,
+		Coin:        714,
+		CoinName:    "BNB",
+		TokenId:     "a",
+		Change24h:   10,
+		Currency:    "USD",
+		Provider:    "binancedex",
+		Value:       100,
+		LastUpdated: timeUPD,
 	}
 
 	db := getDbMock()
@@ -97,7 +102,8 @@ func TestController_HandleTickersRequest(t *testing.T) {
 			Provider:  "coinmarketcap",
 			Value:     100,
 		},
-		TokenId: "a",
+		TokenId:    "a",
+		LastUpdate: timeUPD,
 	}
 	wantedTicker2 := watchmarket.Ticker{
 		Coin:     714,
@@ -109,7 +115,8 @@ func TestController_HandleTickersRequest(t *testing.T) {
 			Provider:  "coingecko",
 			Value:     100,
 		},
-		TokenId: "a",
+		TokenId:    "a",
+		LastUpdate: timeUPD,
 	}
 
 	wantedResp := TickerResponse{
@@ -324,12 +331,13 @@ func TestController_normalizeTickers(t *testing.T) {
 }
 
 func TestController_normalizeTickers_advanced(t *testing.T) {
+	timeUPD := time.Now()
 	modelRate := models.Rate{
 		Currency:         "BNB",
 		PercentChange24h: 0,
 		Provider:         "coingecko",
 		Rate:             16.16,
-		LastUpdated:      time.Now(),
+		LastUpdated:      timeUPD,
 	}
 
 	modelRate2 := models.Rate{
@@ -337,7 +345,7 @@ func TestController_normalizeTickers_advanced(t *testing.T) {
 		PercentChange24h: 0,
 		Provider:         "fixer",
 		Rate:             1.0992876616,
-		LastUpdated:      time.Now(),
+		LastUpdated:      timeUPD,
 	}
 
 	rate := watchmarket.Rate{
@@ -358,10 +366,12 @@ func TestController_normalizeTickers_advanced(t *testing.T) {
 			Provider:  "binancedex",
 			Value:     1,
 		},
-		TokenId:   "raven-f66",
-		Volume:    10,
-		MarketCap: 10,
+		TokenId:    "raven-f66",
+		Volume:     10,
+		MarketCap:  10,
+		LastUpdate: timeUPD,
 	}
+
 	db := getDbMock()
 	db.WantedRates = []models.Rate{modelRate, modelRate2}
 
@@ -380,9 +390,10 @@ func TestController_normalizeTickers_advanced(t *testing.T) {
 			Provider:  "binancedex",
 			Value:     14.700428799936965,
 		},
-		TokenId:   "raven-f66",
-		Volume:    147.00428799936964,
-		MarketCap: 147.00428799936964,
+		TokenId:    "raven-f66",
+		Volume:     147.00428799936964,
+		MarketCap:  147.00428799936964,
+		LastUpdate: timeUPD,
 	}
 	assert.Equal(t, wanted, result[0])
 }
