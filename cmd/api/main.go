@@ -29,7 +29,7 @@ func init() {
 
 	configuration := internal.InitConfig(confPath)
 	logger.InitLogger()
-
+	port = configuration.RestAPI.Port
 	chartsPriority := configuration.Markets.Priority.Charts
 	ratesPriority := configuration.Markets.Priority.Rates
 	tickerPriority := configuration.Markets.Priority.Tickers

@@ -9,6 +9,7 @@ import (
 	"github.com/trustwallet/watchmarket/db/models"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"strconv"
+	"strings"
 )
 
 func (c Controller) HandleChartsRequest(cr ChartRequest, ctx context.Context) (watchmarket.Chart, error) {
@@ -24,7 +25,7 @@ func (c Controller) HandleChartsRequest(cr ChartRequest, ctx context.Context) (w
 	cachedChartRaw, err := c.dataCache.GetWithTime(key, verifiedData.TimeStart, ctx)
 	if err == nil && len(cachedChartRaw) > 0 {
 		err = json.Unmarshal(cachedChartRaw, &ch)
-		if err == nil {
+		if err == nil && len(ch.Prices) > 0 {
 			return ch, nil
 		}
 	}
@@ -46,9 +47,11 @@ func (c Controller) HandleChartsRequest(cr ChartRequest, ctx context.Context) (w
 		logger.Error(err)
 	}
 
-	err = c.dataCache.SetWithTime(key, chartRaw, verifiedData.TimeStart, ctx)
-	if err != nil {
-		logger.Error("failed to save cache", logger.Params{"err": err})
+	if err != nil && len(chart.Prices) > 0 {
+		err = c.dataCache.SetWithTime(key, chartRaw, verifiedData.TimeStart, ctx)
+		if err != nil {
+			logger.Error("failed to save cache", logger.Params{"err": err})
+		}
 	}
 
 	return chart, nil
@@ -93,7 +96,7 @@ func toChartsRequestData(cr ChartRequest) (ChartsNormalizedRequest, error) {
 }
 
 func (c Controller) checkTickersAvailability(coin uint, token string, ctx context.Context) ([]models.Ticker, error) {
-	tr := []models.TickerQuery{{Coin: coin, TokenId: token}}
+	tr := []models.TickerQuery{{Coin: coin, TokenId: strings.ToLower(token)}}
 	dbTickers, err := c.database.GetTickersByQueries(tr, ctx)
 	if err != nil {
 		return nil, err

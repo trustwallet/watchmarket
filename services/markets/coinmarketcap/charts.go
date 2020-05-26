@@ -24,6 +24,9 @@ func (p Provider) GetChartData(coinID uint, token, currency string, timeStart in
 	if err != nil {
 		return chartsData, err
 	}
+	if timeStart == 0 {
+		timeStart = 1000000000
+	}
 	timeStartDate := time.Unix(timeStart, 0)
 	days := int(time.Since(timeStartDate).Hours() / 24)
 	timeEnd := time.Now().Unix()
