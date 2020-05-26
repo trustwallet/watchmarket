@@ -8,6 +8,7 @@ import (
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"strings"
 	"sync"
+	"time"
 )
 
 func (c Controller) HandleTickersRequest(tr TickerRequest, ctx context.Context) (TickerResponse, error) {
@@ -87,7 +88,7 @@ func (c Controller) getTickersByPriority(tickerQueries []models.TickerQuery, ctx
 			Coin:       sr.Coin,
 			CoinName:   sr.CoinName,
 			CoinType:   watchmarket.CoinType(sr.CoinType),
-			LastUpdate: sr.UpdatedAt,
+			LastUpdate: sr.LastUpdated,
 			Price: watchmarket.Price{
 				Change24h: sr.Change24h,
 				Currency:  sr.Currency,
@@ -108,6 +109,9 @@ func (c Controller) normalizeTickers(tickers watchmarket.Tickers, rate watchmark
 		if !ok {
 			continue
 		}
+		if !c.isSuitableUpdateTime(t) {
+			continue
+		}
 		result = append(result, applyRateToTicker(t, r))
 	}
 	return result
@@ -123,6 +127,26 @@ func (c Controller) convertRateToDefaultCurrency(t watchmarket.Ticker, rate watc
 		rate.PercentChange24h = newRate.PercentChange24h
 	}
 	return rate, true
+}
+
+func (c Controller) isSuitableUpdateTime(ticker watchmarket.Ticker) bool {
+	if ticker.Price.Provider == "coinmarketcap" {
+		return true
+	}
+	now := time.Now().Unix()
+	last := ticker.LastUpdate.Unix()
+	if now < last {
+		return true
+	}
+	diff := now - last
+	if diff < 0 {
+		return true
+	}
+	respectableTime := watchmarket.DurationToUnix(c.configuration.RestAPI.Tickers.RespectableUpdateTime)
+	if uint(diff) <= respectableTime {
+		return true
+	}
+	return false
 }
 
 func applyRateToTicker(t watchmarket.Ticker, rate watchmarket.Rate) watchmarket.Ticker {

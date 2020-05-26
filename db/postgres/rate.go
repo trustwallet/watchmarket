@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/jinzhu/gorm"
 	"github.com/trustwallet/watchmarket/db/models"
+	"go.elastic.co/apm"
 	"go.elastic.co/apm/module/apmgorm"
 	"strings"
 	"time"
@@ -16,10 +17,12 @@ const (
 
 func (i *Instance) AddRates(rates []models.Rate, ctx context.Context) error {
 	g := apmgorm.WithContext(ctx, i.Gorm)
+	span, ctx := apm.StartSpan(ctx, "AddRates", "postgresql")
+	defer span.End()
 	normalizedRates := normalizeRates(rates)
 	batch := toRatesBatch(normalizedRates, batchLimit)
 	for _, b := range batch {
-		err := bulkCreateRate(g, b, ctx)
+		err := bulkCreateRate(g, b)
 		if err != nil {
 			return err
 		}
@@ -88,7 +91,7 @@ func toRatesBatch(rates []models.Rate, sizeUint uint) [][]models.Rate {
 	return result
 }
 
-func bulkCreateRate(db *gorm.DB, dataList []models.Rate, ctx context.Context) error {
+func bulkCreateRate(db *gorm.DB, dataList []models.Rate) error {
 	var (
 		valueStrings []string
 		valueArgs    []interface{}
@@ -108,8 +111,7 @@ func bulkCreateRate(db *gorm.DB, dataList []models.Rate, ctx context.Context) er
 	}
 
 	smt := fmt.Sprintf(rawBulkRatesInsert, strings.Join(valueStrings, ","))
-	g := apmgorm.WithContext(ctx, db)
-	if err := g.Exec(smt, valueArgs...).Error; err != nil {
+	if err := db.Exec(smt, valueArgs...).Error; err != nil {
 		return err
 	}
 

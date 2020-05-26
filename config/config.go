@@ -5,6 +5,7 @@ import (
 	"github.com/trustwallet/blockatlas/pkg/logger"
 	"reflect"
 	"strings"
+	"time"
 )
 
 type Configuration struct {
@@ -56,8 +57,9 @@ type Configuration struct {
 		Mode    string `mapstructure:"mode"`
 		Port    string `mapstructure:"port"`
 		Tickers struct {
-			RespsectableMarketCap float64 `mapstructure:"respectable_market_cap"`
-			RespsectableVolume    float64 `mapstructure:"respectable_volume"`
+			RespsectableMarketCap float64       `mapstructure:"respectable_market_cap"`
+			RespsectableVolume    float64       `mapstructure:"respectable_volume"`
+			RespectableUpdateTime time.Duration `mapstructure:"respectable_update_time"`
 		}
 		Cache struct {
 			Charts string `mapstructure:"charts"`
