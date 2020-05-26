@@ -40,7 +40,7 @@ worker:
 
 rest_api:
   mode: release # Possible values: "debug", "release"
-  port: 8420 # Possible values: "debug", "release"
+  port: 8421 # Possible values: "debug", "release"
   tickers:
     respectable_market_cap: 0
     respectable_volume: 0
