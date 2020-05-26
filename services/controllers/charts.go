@@ -10,6 +10,7 @@ import (
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"strconv"
 	"strings"
+	"time"
 )
 
 const charts = "charts"
@@ -60,7 +61,7 @@ func (c Controller) HandleChartsRequest(cr ChartRequest, ctx context.Context) (w
 }
 
 func toChartsRequestData(cr ChartRequest) (ChartsNormalizedRequest, error) {
-	if len(cr.TimeStartRaw) == 0 || len(cr.CoinQuery) == 0 {
+	if len(cr.CoinQuery) == 0 {
 		return ChartsNormalizedRequest{}, errors.New("invalid arguments length")
 	}
 
@@ -72,12 +73,15 @@ func toChartsRequestData(cr ChartRequest) (ChartsNormalizedRequest, error) {
 	if _, ok := coin.Coins[uint(coinId)]; !ok {
 		return ChartsNormalizedRequest{}, errors.New(ErrBadRequest)
 	}
-
-	timeStart, err := strconv.ParseInt(cr.TimeStartRaw, 10, 64)
-	if err != nil {
-		return ChartsNormalizedRequest{}, err
+	var timeStart int64
+	if cr.TimeStartRaw == "" {
+		timeStart = time.Now().Unix() - 60*60*24
+	} else {
+		timeStart, err = strconv.ParseInt(cr.TimeStartRaw, 10, 64)
+		if err != nil {
+			return ChartsNormalizedRequest{}, err
+		}
 	}
-
 	maxItems, err := strconv.Atoi(cr.MaxItems)
 	if err != nil || maxItems <= 0 {
 		maxItems = watchmarket.DefaultMaxChartItems
