@@ -94,7 +94,7 @@ func (c Client) fetchMarkets(ids, currency string, ctx context.Context) (CoinPri
 
 func (c Client) fetchCoins(ctx context.Context) (Coins, error) {
 	var result Coins
-	err := c.GetWithContext(&result, "v3/coins/list", url.Values{"include_platform": {"true"}}, ctx)
+	err := c.GetWithCacheAndContext(&result, "v3/coins/list", url.Values{"include_platform": {"true"}}, time.Minute*10, ctx)
 	if err != nil {
 		return nil, err
 	}

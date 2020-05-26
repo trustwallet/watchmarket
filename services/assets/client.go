@@ -40,5 +40,5 @@ func getPathForCoin(c coin.Coin, token string) string {
 	if len(token) == 0 {
 		return c.Handle + "/info"
 	}
-	return c.Handle + "/info/" + token
+	return c.Handle + "/assets/" + token
 }
