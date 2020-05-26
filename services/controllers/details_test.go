@@ -3,11 +3,82 @@ package controllers
 import (
 	"context"
 	"github.com/stretchr/testify/assert"
+	"github.com/trustwallet/watchmarket/db/models"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"testing"
+	"time"
 )
 
 func TestController_HandleDetailsRequest(t *testing.T) {
+	rate := models.Rate{
+		Currency:         "USD",
+		PercentChange24h: 1,
+		Provider:         "coinmarketcap",
+		Rate:             1,
+		LastUpdated:      time.Now(),
+	}
+	rate2 := models.Rate{
+		Currency:         "USD",
+		PercentChange24h: 2,
+		Provider:         "coingecko",
+		Rate:             2,
+		LastUpdated:      time.Now(),
+	}
+	rate3 := models.Rate{
+		Currency:         "USD",
+		PercentChange24h: 4,
+		Provider:         "fixer",
+		Rate:             6,
+		LastUpdated:      time.Now(),
+	}
+
+	ticker60ACMC := models.Ticker{
+		Coin:      60,
+		CoinName:  "ETH",
+		TokenId:   "a",
+		Change24h: 10,
+		Currency:  "USD",
+		Provider:  "coinmarketcap",
+		Value:     100,
+	}
+
+	ticker60ACG := models.Ticker{
+		Coin:      60,
+		CoinName:  "ETH",
+		TokenId:   "a",
+		Change24h: 10,
+		Currency:  "USD",
+		Provider:  "coingecko",
+		Value:     100,
+	}
+
+	ticker714ACG := models.Ticker{
+		Coin:      714,
+		CoinName:  "BNB",
+		TokenId:   "a",
+		Change24h: 10,
+		Currency:  "USD",
+		Provider:  "coingecko",
+		Value:     100,
+	}
+
+	ticker714ABNB := models.Ticker{
+		Coin:      714,
+		CoinName:  "BNB",
+		TokenId:   "a",
+		Change24h: 10,
+		Currency:  "USD",
+		Provider:  "binancedex",
+		Value:     100,
+	}
+
+	db := getDbMock()
+
+	db.WantedTickersError = nil
+	db.WantedTickers = []models.Ticker{ticker60ACMC, ticker60ACG, ticker714ACG, ticker714ABNB}
+	db.WantedRatesError = nil
+	db.WantedRates = []models.Rate{rate, rate2, rate3}
+
 	cm := getChartsMock()
 	wantedD := watchmarket.CoinDetails{
 		Provider:          "coinmarketcap",
@@ -27,7 +98,7 @@ func TestController_HandleDetailsRequest(t *testing.T) {
 		},
 	}
 	cm.wantedDetails = wantedD
-	c := setupController(t, getDbMock(), getCacheMock(), cm)
+	c := setupController(t, db, getCacheMock(), cm)
 	assert.NotNil(t, c)
 	details, err := c.HandleDetailsRequest(DetailsRequest{
 		CoinQuery: "0",

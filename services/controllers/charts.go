@@ -107,7 +107,13 @@ func (c Controller) checkTickersAvailability(coin uint, token string, ctx contex
 	if err != nil {
 		return nil, err
 	}
-	return dbTickers, nil
+	res := make([]models.Ticker, 0, len(dbTickers))
+	for _, t := range dbTickers {
+		if t.ShowOption != 2 {
+			res = append(res, t)
+		}
+	}
+	return res, nil
 }
 
 func (c Controller) getChartsByPriority(data ChartsNormalizedRequest, ctx context.Context) (watchmarket.Chart, error) {
