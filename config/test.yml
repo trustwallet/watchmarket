@@ -45,6 +45,4 @@ rest_api:
     respectable_market_cap: 0
     respectable_volume: 0
     respectable_update_time: 72h
-  cache: # Cache duration for REST API
-    charts: 5m
-    info: 2h
+  cache: 15m

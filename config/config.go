@@ -61,10 +61,7 @@ type Configuration struct {
 			RespsectableVolume    float64       `mapstructure:"respectable_volume"`
 			RespectableUpdateTime time.Duration `mapstructure:"respectable_update_time"`
 		}
-		Cache struct {
-			Charts string `mapstructure:"charts"`
-			Info   string `mapstructure:"info"`
-		} `mapstructure:"cache"`
+		Cache time.Duration `mapstructure:"cache"`
 	} `mapstructure:"rest_api"`
 }
 

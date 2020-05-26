@@ -18,7 +18,7 @@ func TestInstance_GetCharts_notOutdated(t *testing.T) {
 	r, err := redis.Init(fmt.Sprintf("redis://%s", s.Addr()))
 	assert.Nil(t, err)
 
-	i := Init(r, time.Second*1000, time.Second*1000, time.Second*1000, time.Second*1000)
+	i := Init(r, time.Second*1000)
 	assert.NotNil(t, i)
 	seedDbCharts(t, i)
 
@@ -41,7 +41,7 @@ func TestInstance_GetCharts_CachingDataWasEmpty(t *testing.T) {
 	r, err := redis.Init(fmt.Sprintf("redis://%s", s.Addr()))
 	assert.Nil(t, err)
 
-	i := Init(r, time.Second*1000, time.Second*1000, time.Second*1000, time.Second*1000)
+	i := Init(r, time.Second*1000)
 	assert.NotNil(t, i)
 
 	res, err := json.Marshal([]CachedInterval{{Timestamp: 0, Duration: 100000, Key: "A"}})
@@ -62,7 +62,7 @@ func TestInstance_GetCharts_notExistingKey(t *testing.T) {
 	r, err := redis.Init(fmt.Sprintf("redis://%s", s.Addr()))
 	assert.Nil(t, err)
 
-	i := Init(r, time.Second*1000, time.Second*1000, time.Second*1000, time.Second*1000)
+	i := Init(r, time.Second*1000)
 	assert.NotNil(t, i)
 
 	seedDbCharts(t, i)
@@ -78,7 +78,7 @@ func TestInstance_GetCharts_Outdated(t *testing.T) {
 	r, err := redis.Init(fmt.Sprintf("redis://%s", s.Addr()))
 	assert.Nil(t, err)
 
-	i := Init(r, time.Second*1000, time.Second*1000, time.Second*1000, time.Second*1000)
+	i := Init(r, time.Second*1000)
 	assert.NotNil(t, i)
 
 	d, err := i.GetWithTime("testKEY", 100000, context.Background())
@@ -95,7 +95,7 @@ func TestInstance_GetCharts_OutdatedCacheIsNotReturned(t *testing.T) {
 	r, err := redis.Init(fmt.Sprintf("redis://%s", s.Addr()))
 	assert.Nil(t, err)
 
-	i := Init(r, time.Second*1000, time.Second*1000, time.Second*1000, time.Second*1000)
+	i := Init(r, time.Second*1000)
 	assert.NotNil(t, i)
 
 	d, err := i.GetWithTime("testKEY", 100000, context.Background())
@@ -116,7 +116,7 @@ func TestInstance_GetCharts_ValidCacheIsReturned(t *testing.T) {
 	r, err := redis.Init(fmt.Sprintf("redis://%s", s.Addr()))
 	assert.Nil(t, err)
 
-	i := Init(r, time.Second*1000, time.Second*1000, time.Second*1000, time.Second*1000)
+	i := Init(r, time.Second*1000)
 	assert.NotNil(t, i)
 
 	seedDbCharts(t, i)
@@ -139,7 +139,7 @@ func TestInstance_GetCharts_StartTimeIsEarlierThatWasCached(t *testing.T) {
 	r, err := redis.Init(fmt.Sprintf("redis://%s", s.Addr()))
 	assert.Nil(t, err)
 
-	i := Init(r, time.Second*1000, time.Second*1000, time.Second*1000, time.Second*1000)
+	i := Init(r, time.Second*1000)
 	assert.NotNil(t, i)
 
 	d, err := i.GetWithTime("testKEY", -1, context.Background())
@@ -173,7 +173,7 @@ func TestInstance_GetCharts(t *testing.T) {
 	r, err := redis.Init(fmt.Sprintf("redis://%s", s.Addr()))
 	assert.Nil(t, err)
 
-	i := Init(r, time.Second*1000, time.Second*1000, time.Second*1000, time.Second*1000)
+	i := Init(r, time.Second*1000)
 	assert.NotNil(t, i)
 
 	err = r.Set("data_key", []byte{0, 1, 2}, time.Minute, context.Background())
@@ -204,7 +204,7 @@ func TestInstance_SaveCharts(t *testing.T) {
 	r, err := redis.Init(fmt.Sprintf("redis://%s", s.Addr()))
 	assert.Nil(t, err)
 
-	i := Init(r, time.Second*1000, time.Second*1000, time.Second*1000, time.Second*1000)
+	i := Init(r, time.Second*1000)
 	assert.NotNil(t, i)
 	res, err := json.Marshal(makeChartDataMock())
 	assert.Nil(t, err)
@@ -226,7 +226,7 @@ func TestProvider_Mixed(t *testing.T) {
 	r, err := redis.Init(fmt.Sprintf("redis://%s", s.Addr()))
 	assert.Nil(t, err)
 
-	i := Init(r, time.Second*1000, time.Second*1000, time.Second*1000, time.Second*1000)
+	i := Init(r, time.Second*1000)
 	assert.NotNil(t, i)
 	res, err := json.Marshal(makeChartDataMock())
 	assert.Nil(t, err)
@@ -251,7 +251,7 @@ func TestInstance_SaveCharts_DataIsEmpty(t *testing.T) {
 	r, err := redis.Init(fmt.Sprintf("redis://%s", s.Addr()))
 	assert.Nil(t, err)
 
-	i := Init(r, time.Second*1000, time.Second*1000, time.Second*1000, time.Second*1000)
+	i := Init(r, time.Second*1000)
 	assert.NotNil(t, i)
 
 	err = i.SetWithTime("testKEY", nil, 0, context.Background())
