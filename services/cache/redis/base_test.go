@@ -18,14 +18,11 @@ func TestInit(t *testing.T) {
 
 	r, err := redis.Init(fmt.Sprintf("redis://%s", s.Addr()))
 	assert.Nil(t, err)
-	i := Init(r, time.Minute, time.Minute, time.Minute, time.Minute)
+	i := Init(r, time.Minute)
 
 	assert.NotNil(t, i)
 	assert.True(t, i.redis.IsAvailable())
-	assert.Equal(t, i.chartsCaching, time.Minute)
-	assert.Equal(t, i.tickersCaching, time.Minute)
-	assert.Equal(t, i.ratesCaching, time.Minute)
-	assert.Equal(t, i.detailsCaching, time.Minute)
+	assert.Equal(t, i.cachingPeriod, time.Minute)
 }
 
 func TestInstance_GenerateKey(t *testing.T) {
@@ -34,7 +31,7 @@ func TestInstance_GenerateKey(t *testing.T) {
 
 	r, err := redis.Init(fmt.Sprintf("redis://%s", s.Addr()))
 	assert.Nil(t, err)
-	i := Init(r, time.Minute, time.Minute, time.Minute, time.Minute)
+	i := Init(r, time.Minute)
 
 	expected := "bc1M4j2I4u6VaLpUbAB8Y9kTHBs="
 
@@ -48,7 +45,7 @@ func TestInstance_GetID(t *testing.T) {
 
 	r, err := redis.Init(fmt.Sprintf("redis://%s", s.Addr()))
 	assert.Nil(t, err)
-	i := Init(r, time.Minute, time.Minute, time.Minute, time.Minute)
+	i := Init(r, time.Minute)
 
 	assert.NotNil(t, i)
 
@@ -62,7 +59,7 @@ func TestInstance_Get(t *testing.T) {
 	r, err := redis.Init(fmt.Sprintf("redis://%s", s.Addr()))
 	assert.Nil(t, err)
 
-	i := Init(r, time.Second*1000, time.Second*1000, time.Second*1000, time.Second*1000)
+	i := Init(r, time.Second*1000)
 	assert.NotNil(t, i)
 
 	ticker := watchmarket.Ticker{
@@ -79,7 +76,7 @@ func TestInstance_Get(t *testing.T) {
 	d, err := json.Marshal(tickers)
 	assert.NotNil(t, d)
 	assert.Nil(t, err)
-	assert.Nil(t, i.redis.Set("test", d, i.tickersCaching, context.Background()))
+	assert.Nil(t, i.redis.Set("test", d, i.cachingPeriod, context.Background()))
 
 	nd, err := i.Get("test", context.Background())
 	assert.Nil(t, err)
@@ -95,7 +92,7 @@ func TestInstance_Set(t *testing.T) {
 	r, err := redis.Init(fmt.Sprintf("redis://%s", s.Addr()))
 	assert.Nil(t, err)
 
-	i := Init(r, time.Second*1000, time.Second*1000, time.Second*1000, time.Second*1000)
+	i := Init(r, time.Second*1000)
 	assert.NotNil(t, i)
 
 	ticker := watchmarket.Ticker{

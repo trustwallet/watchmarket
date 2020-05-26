@@ -44,6 +44,5 @@ func TestInit(t *testing.T) {
 	assert.Equal(t, "release", c.RestAPI.Mode)
 	assert.Equal(t, "8420", c.RestAPI.Port)
 
-	assert.Equal(t, "5m", c.RestAPI.Cache.Charts)
-	assert.Equal(t, "2h", c.RestAPI.Cache.Info)
+	assert.Equal(t, time.Minute*15, c.RestAPI.Cache)
 }

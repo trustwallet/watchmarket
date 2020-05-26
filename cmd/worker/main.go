@@ -49,8 +49,8 @@ func init() {
 }
 
 func main() {
-	c = w.AddRatesOperation(c, "20s")
-	c = w.AddTickersOperation(c, "20s")
+	c = w.AddRatesOperation(c, configuration.Worker.Rates)
+	c = w.AddTickersOperation(c, configuration.Worker.Tickers)
 	go c.Start()
 	go w.FetchAndSaveRates()
 	go w.FetchAndSaveTickers()

@@ -45,7 +45,7 @@ func (i Instance) SetWithTime(key string, data []byte, time int64, ctx context.C
 	cachingKey := i.GenerateKey(key + strconv.Itoa(int(time)))
 	interval := CachedInterval{
 		Timestamp: time,
-		Duration:  int64(watchmarket.DurationToUnix(i.chartsCaching)),
+		Duration:  int64(watchmarket.DurationToUnix(i.cachingPeriod)),
 		Key:       cachingKey,
 	}
 
@@ -54,7 +54,7 @@ func (i Instance) SetWithTime(key string, data []byte, time int64, ctx context.C
 		return err
 	}
 
-	err = i.redis.Set(cachingKey, data, i.chartsCaching, ctx)
+	err = i.redis.Set(cachingKey, data, i.cachingPeriod, ctx)
 	if err != nil {
 		return err
 	}
@@ -120,7 +120,7 @@ func (i Instance) updateInterval(key string, interval CachedInterval, ctx contex
 		return err
 	}
 
-	err = i.redis.Set(key, rawNewIntervalsRaw, i.chartsCaching, ctx)
+	err = i.redis.Set(key, rawNewIntervalsRaw, i.cachingPeriod, ctx)
 	if err != nil {
 		return err
 	}

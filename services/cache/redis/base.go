@@ -10,18 +10,15 @@ import (
 )
 
 type Instance struct {
-	id             string
-	redis          redis.Redis
-	chartsCaching  time.Duration
-	tickersCaching time.Duration
-	ratesCaching   time.Duration
-	detailsCaching time.Duration
+	id            string
+	redis         redis.Redis
+	cachingPeriod time.Duration
 }
 
 const id = "redis"
 
-func Init(redis redis.Redis, chartsCaching, tickersCaching, ratesCaching, detailsCaching time.Duration) Instance {
-	return Instance{id, redis, chartsCaching, tickersCaching, ratesCaching, detailsCaching}
+func Init(redis redis.Redis, cachingPeriod time.Duration) Instance {
+	return Instance{id, redis, cachingPeriod}
 }
 
 func (i Instance) GetID() string {
@@ -45,7 +42,7 @@ func (i Instance) Set(key string, data []byte, ctx context.Context) error {
 	if data == nil {
 		return errors.E("data is empty")
 	}
-	err := i.redis.Set(key, data, i.tickersCaching, ctx)
+	err := i.redis.Set(key, data, i.cachingPeriod, ctx)
 	if err != nil {
 		return err
 	}
