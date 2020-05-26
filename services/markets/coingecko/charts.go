@@ -154,7 +154,7 @@ func normalizeInfo(data CoinPrice, info watchmarket.Info) watchmarket.CoinDetail
 		MarketCap:         data.MarketCap,
 		CirculatingSupply: data.CirculatingSupply,
 		TotalSupply:       data.TotalSupply,
-		Info:              info,
+		Info:              &info,
 		Provider:          id,
 	}
 }

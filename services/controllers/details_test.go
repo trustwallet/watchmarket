@@ -15,7 +15,7 @@ func TestController_HandleDetailsRequest(t *testing.T) {
 		MarketCap:         2,
 		CirculatingSupply: 3,
 		TotalSupply:       4,
-		Info: watchmarket.Info{
+		Info: &watchmarket.Info{
 			Name:             "2",
 			Website:          "2",
 			SourceCode:       "2",

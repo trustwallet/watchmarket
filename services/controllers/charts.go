@@ -111,7 +111,7 @@ func (c Controller) getChartsByPriority(data ChartsNormalizedRequest, ctx contex
 
 	for _, p := range availableProviders {
 		price, err := c.api[p].GetChartData(data.Coin, data.Token, data.Currency, data.TimeStart, ctx)
-		if err == nil {
+		if err == nil && len(price.Prices) > 0 {
 			return price, nil
 		}
 	}

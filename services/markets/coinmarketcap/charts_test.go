@@ -99,7 +99,7 @@ func Test_normalizeInfo(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			gotInfo, err := normalizeInfo(tt.args.currency, tt.args.cmcCoin, tt.args.data, watchmarket.Info{})
+			gotInfo, err := normalizeInfo(tt.args.currency, tt.args.cmcCoin, tt.args.data, nil)
 			assert.Nil(t, err)
 			assert.True(t, reflect.DeepEqual(tt.wantInfo, gotInfo))
 		})
