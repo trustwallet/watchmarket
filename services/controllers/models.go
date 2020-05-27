@@ -45,7 +45,7 @@ type (
 	}
 
 	TickerResponse struct {
-		Currency string              `json:"Currency"`
+		Currency string              `json:"currency"`
 		Tickers  watchmarket.Tickers `json:"docs"`
 	}
 
