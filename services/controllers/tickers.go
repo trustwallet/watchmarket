@@ -143,10 +143,7 @@ func (c Controller) isSuitableUpdateTime(ticker watchmarket.Ticker) bool {
 		return true
 	}
 	respectableTime := watchmarket.DurationToUnix(c.configuration.RestAPI.Tickers.RespectableUpdateTime)
-	if uint(diff) <= respectableTime {
-		return true
-	}
-	return false
+	return uint(diff) <= respectableTime
 }
 
 func applyRateToTicker(t watchmarket.Ticker, rate watchmarket.Rate) watchmarket.Ticker {

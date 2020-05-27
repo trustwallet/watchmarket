@@ -46,9 +46,9 @@ type (
 
 func Init(config config.Configuration, assets assets.Client) (APIs, error) {
 	var (
-		ratesAPIs   = make(RatesAPIs, 0)
-		tickersAPIs = make(TickersAPIs, 0)
-		chartsAPIs  = make(ChartsAPIs, 0)
+		ratesAPIs   = make(RatesAPIs)
+		tickersAPIs = make(TickersAPIs)
+		chartsAPIs  = make(ChartsAPIs)
 		providers   = setupProviders(config, assets)
 	)
 

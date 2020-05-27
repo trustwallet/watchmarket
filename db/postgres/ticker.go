@@ -18,7 +18,7 @@ const (
 
 func (i *Instance) AddTickers(tickers []models.Ticker, ctx context.Context) error {
 	g := apmgorm.WithContext(ctx, i.Gorm)
-	span, ctx := apm.StartSpan(ctx, "AddTickers", "postgresql")
+	span, _ := apm.StartSpan(ctx, "AddTickers", "postgresql")
 	defer span.End()
 	batch := toTickersBatch(normalizeTickers(tickers), batchLimit)
 	for _, b := range batch {

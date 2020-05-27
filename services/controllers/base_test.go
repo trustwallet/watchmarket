@@ -75,7 +75,6 @@ func getCacheMock() cache.Provider {
 }
 
 type cacheMock struct {
-	res string
 }
 
 func (c cacheMock) GetID() string {

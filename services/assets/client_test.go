@@ -1,3 +1,4 @@
+//nolint:unparam
 package assets
 
 import (
@@ -36,7 +37,7 @@ func createMockedAPI() http.Handler {
 
 	r.HandleFunc("/ethereum/info/info.json", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		if _, err := fmt.Fprintf(w, mockedInfoResponse); err != nil {
+		if _, err := fmt.Fprint(w, mockedInfoResponse); err != nil {
 			panic(err)
 		}
 	})

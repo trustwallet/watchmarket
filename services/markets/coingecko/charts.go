@@ -63,7 +63,7 @@ func (p Provider) GetCoinData(coinID uint, token, currency string, ctx context.C
 
 func createSymbolsMap(coins Coins) map[string]Coin {
 	var (
-		symbolsMap = make(map[string]Coin, 0)
+		symbolsMap = make(map[string]Coin)
 		coinsMap   = createCoinsMap(coins)
 	)
 

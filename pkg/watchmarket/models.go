@@ -25,19 +25,19 @@ type (
 
 	Ticker struct {
 		Coin       uint      `json:"coin"`
-		CoinName   string    `json:"coin_name,omitempty"`
+		CoinName   string    `json:"-"`
 		TokenId    string    `json:"token_id,omitempty"`
 		CoinType   CoinType  `json:"type,omitempty"`
 		Price      Price     `json:"price,omitempty"`
-		LastUpdate time.Time `json:"last_update,omitempty"`
+		LastUpdate time.Time `json:"-"`
 		Error      string    `json:"error,omitempty"`
-		Volume     float64   `json:"_"`
-		MarketCap  float64   `json:"_"`
+		Volume     float64   `json:"-"`
+		MarketCap  float64   `json:"-"`
 	}
 
 	Price struct {
 		Change24h float64 `json:"change_24h"`
-		Currency  string  `json:"currency,omitempty"`
+		Currency  string  `json:"-"`
 		Provider  string  `json:"provider,omitempty"`
 		Value     float64 `json:"value"`
 	}

@@ -64,7 +64,7 @@ func TestInstance_Get(t *testing.T) {
 
 	ticker := watchmarket.Ticker{
 		Coin:       60,
-		CoinName:   "ETH",
+		CoinName:   "",
 		CoinType:   "coin",
 		Error:      "",
 		LastUpdate: time.Time{},
@@ -97,7 +97,7 @@ func TestInstance_Set(t *testing.T) {
 
 	ticker := watchmarket.Ticker{
 		Coin:       60,
-		CoinName:   "ETH",
+		CoinName:   "",
 		CoinType:   "coin",
 		Error:      "",
 		LastUpdate: time.Time{},

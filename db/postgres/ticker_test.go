@@ -1,8 +1,6 @@
 package postgres
 
 import (
-	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/jinzhu/gorm"
 	"testing"
 )
 
@@ -26,16 +24,16 @@ func TestInstance_AddTickers(t *testing.T) {
 	//}))
 }
 
-func setupDB(t *testing.T) (*gorm.DB, sqlmock.Sqlmock) {
-	db, mock, err := sqlmock.New()
-	if err != nil {
-		t.Fatalf("an error '%s' was not expected when sqlmock", err)
-	}
-
-	d, err := gorm.Open("postgres", db)
-	if err != nil {
-		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
-	}
-	d.LogMode(true)
-	return d, mock
-}
+//func setupDB(t *testing.T) (*gorm.DB, sqlmock.Sqlmock) {
+//	db, mock, err := sqlmock.New()
+//	if err != nil {
+//		t.Fatalf("an error '%s' was not expected when sqlmock", err)
+//	}
+//
+//	d, err := gorm.Open("postgres", db)
+//	if err != nil {
+//		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+//	}
+//	d.LogMode(true)
+//	return d, mock
+//}

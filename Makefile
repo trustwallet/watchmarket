@@ -129,9 +129,9 @@ endif
 go-compile: go-get go-build
 
 go-build:
-	@echo "  >  Building market_observer binary..."
+	@echo "  >  Building worker binary..."
 	GOBIN=$(GOBIN) go build $(LDFLAGS) -o $(GOBIN)/$(MARKET_SERVICE)/worker ./cmd/$(MARKET_SERVICE)
-	@echo "  >  Building market_api binary..."
+	@echo "  >  Building api binary..."
 	GOBIN=$(GOBIN) go build $(LDFLAGS) -o $(GOBIN)/$(MARKET_API)/api ./cmd/$(MARKET_API)
 	@echo "  >  Building swagger_api binary..."
 	GOBIN=$(GOBIN) go build $(LDFLAGS) -o $(GOBIN)/$(SWAGGER_API)/swagger_api ./cmd/$(SWAGGER_API)
@@ -175,9 +175,9 @@ go-lint-install:
 	@echo "  >  Installing golint"
 	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s
 
-go-lint: generate-mocks
+go-lint:
 	@echo "  >  Running golint"
-	bin/golangci-lint
+	bin/golangci-lint run --timeout=2m
 
 .PHONY: help
 

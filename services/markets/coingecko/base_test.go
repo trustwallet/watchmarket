@@ -41,10 +41,7 @@ func verifyTickers(t *testing.T, wantedTickers, givenTickers watchmarket.Tickers
 			}
 		}
 	}
-	if counter == len(givenTickers) {
-		return true
-	}
-	return false
+	return counter == len(givenTickers)
 }
 
 func createMockedAPI() http.Handler {
@@ -112,20 +109,20 @@ func createMockedAPI() http.Handler {
 
 	r.HandleFunc("/v3/coins/markets", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		if _, err := fmt.Fprintf(w, mockedMarketsResponse); err != nil {
+		if _, err := fmt.Fprint(w, mockedMarketsResponse); err != nil {
 			panic(err)
 		}
 	})
 
 	r.HandleFunc("/v3/coins/ethereum/market_chart/range", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		if _, err := fmt.Fprintf(w, mockedChartResponse); err != nil {
+		if _, err := fmt.Fprint(w, mockedChartResponse); err != nil {
 			panic(err)
 		}
 	})
 	r.HandleFunc("/ethereum/info/info.json", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		if _, err := fmt.Fprintf(w, mockedInfoResponse); err != nil {
+		if _, err := fmt.Fprint(w, mockedInfoResponse); err != nil {
 			panic(err)
 		}
 	})

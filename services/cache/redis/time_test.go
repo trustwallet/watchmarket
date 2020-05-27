@@ -82,6 +82,7 @@ func TestInstance_GetCharts_Outdated(t *testing.T) {
 	assert.NotNil(t, i)
 
 	d, err := i.GetWithTime("testKEY", 100000, context.Background())
+	assert.NotNil(t, err)
 	ch := watchmarket.Chart{}
 	err = json.Unmarshal(d, &ch)
 	assert.Equal(t, watchmarket.Chart{}, ch)
@@ -99,6 +100,7 @@ func TestInstance_GetCharts_OutdatedCacheIsNotReturned(t *testing.T) {
 	assert.NotNil(t, i)
 
 	d, err := i.GetWithTime("testKEY", 100000, context.Background())
+	assert.NotNil(t, err)
 	ch := watchmarket.Chart{}
 	err = json.Unmarshal(d, &ch)
 	assert.Equal(t, watchmarket.Chart{}, ch)
@@ -122,6 +124,7 @@ func TestInstance_GetCharts_ValidCacheIsReturned(t *testing.T) {
 	seedDbCharts(t, i)
 
 	d, err := i.GetWithTime("testKEY", 100, context.Background())
+	assert.Nil(t, err)
 	ch := watchmarket.Chart{}
 	err = json.Unmarshal(d, &ch)
 	assert.Equal(t, makeChartDataMock(), ch)
@@ -143,6 +146,7 @@ func TestInstance_GetCharts_StartTimeIsEarlierThatWasCached(t *testing.T) {
 	assert.NotNil(t, i)
 
 	d, err := i.GetWithTime("testKEY", -1, context.Background())
+	assert.NotNil(t, err)
 	ch := watchmarket.Chart{}
 	err = json.Unmarshal(d, &ch)
 	assert.Equal(t, watchmarket.Chart{}, ch)
@@ -156,6 +160,7 @@ func TestInstance_GetCharts_StartTimeIsEarlierThatWasCached(t *testing.T) {
 	seedDbCharts(t, i)
 
 	d2, err := i.GetWithTime("testKEY", 100, context.Background())
+	assert.Nil(t, err)
 	ch2 := watchmarket.Chart{}
 	err = json.Unmarshal(d2, &ch2)
 	assert.Equal(t, makeChartDataMock(), ch2)
@@ -190,6 +195,7 @@ func TestInstance_GetCharts(t *testing.T) {
 	assert.Nil(t, err)
 	ch := watchmarket.Chart{}
 	err = json.Unmarshal(d, &ch)
+	assert.NotNil(t, err)
 	assert.Equal(t, watchmarket.Chart{}, ch)
 
 	res, err := i.redis.Get("testKEY", context.Background())
@@ -257,6 +263,7 @@ func TestInstance_SaveCharts_DataIsEmpty(t *testing.T) {
 	err = i.SetWithTime("testKEY", nil, 0, context.Background())
 	assert.Equal(t, "data is empty", err.Error())
 	d, err := i.GetWithTime("testKEY", 0, context.Background())
+	assert.NotNil(t, err)
 	ch := watchmarket.Chart{}
 	err = json.Unmarshal(d, &ch)
 	assert.NotNil(t, err)

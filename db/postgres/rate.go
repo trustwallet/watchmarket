@@ -17,7 +17,7 @@ const (
 
 func (i *Instance) AddRates(rates []models.Rate, ctx context.Context) error {
 	g := apmgorm.WithContext(ctx, i.Gorm)
-	span, ctx := apm.StartSpan(ctx, "AddRates", "postgresql")
+	span, _ := apm.StartSpan(ctx, "AddRates", "postgresql")
 	defer span.End()
 	normalizedRates := normalizeRates(rates)
 	batch := toRatesBatch(normalizedRates, batchLimit)

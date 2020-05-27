@@ -26,7 +26,7 @@ func createMockedAPI() http.Handler {
 
 	r.HandleFunc("/latest", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		if _, err := fmt.Fprintf(w, mockedResponse); err != nil {
+		if _, err := fmt.Fprint(w, mockedResponse); err != nil {
 			panic(err)
 		}
 	})

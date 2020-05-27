@@ -76,7 +76,7 @@ func getCgCoinsById(coinsMap map[string][]CoinResult, id string) ([]CoinResult, 
 func createCgCoinsMap(coins Coins) map[string][]CoinResult {
 	var (
 		coinsMap   = getCoinsMap(coins)
-		cgCoinsMap = make(map[string][]CoinResult, 0)
+		cgCoinsMap = make(map[string][]CoinResult)
 	)
 
 	for _, c := range coins {
@@ -185,7 +185,7 @@ func getCoinId(platformName string) uint {
 
 func isBasicCoin(symbol string) bool {
 	for _, c := range coin.Coins {
-		if strings.ToLower(c.Symbol) == strings.ToLower(symbol) {
+		if strings.EqualFold(c.Symbol, symbol) {
 			return true
 		}
 	}
@@ -194,7 +194,7 @@ func isBasicCoin(symbol string) bool {
 
 func getCoinBySymbol(symbol string) coin.Coin {
 	for _, c := range coin.Coins {
-		if strings.ToLower(c.Symbol) == strings.ToLower(symbol) {
+		if strings.EqualFold(c.Symbol, symbol) {
 			return c
 		}
 	}
