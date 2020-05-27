@@ -24,7 +24,7 @@ func (p Provider) GetChartData(coinID uint, token, currency string, timeStart in
 	if err != nil {
 		return chartsData, err
 	}
-	if timeStart == 0 {
+	if timeStart < 1000000000 {
 		timeStart = 1000000000
 	}
 	timeStartDate := time.Unix(timeStart, 0)
