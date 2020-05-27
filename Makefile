@@ -4,8 +4,8 @@
 VERSION := $(shell git describe --tags)
 BUILD := $(shell git rev-parse --short HEAD)
 PROJECT_NAME := $(shell basename "$(PWD)")
-MARKET_SERVICE := market_observer
-MARKET_API := market_api
+MARKET_SERVICE := worker
+MARKET_API := api
 SWAGGER_API := swagger_api
 
 # Go related variables.
@@ -44,14 +44,14 @@ start:
 ## start-market-observer: Start market observer in development mode.
 start-market-observer: stop
 	@echo "  >  Starting $(PROJECT_NAME) Sync"
-	@-$(GOBIN)/$(MARKET_SERVICE)/market_observer -c $(CONFIG_FILE) 2>&1 & echo $$! > $(PID_MARKET)
+	@-$(GOBIN)/$(MARKET_SERVICE)/worker -c $(CONFIG_FILE) 2>&1 & echo $$! > $(PID_MARKET)
 	@cat $(PID_MARKET) | sed "/^/s/^/  \>  Sync PID: /"
 	@echo "  >  Error log: $(STDERR)"
 
 ## start-market-api: Start market api in development mode.
 start-market-api: stop
 	@echo "  >  Starting $(PROJECT_NAME) Sync API"
-	@-$(GOBIN)/$(MARKET_API)/market_api -c $(CONFIG_FILE) 2>&1 & echo $$! > $(PID_MARKET_API)
+	@-$(GOBIN)/$(MARKET_API)/api -c $(CONFIG_FILE) 2>&1 & echo $$! > $(PID_MARKET_API)
 	@cat $(PID_MARKET_API) | sed "/^/s/^/  \>  Sync PID: /"
 	@echo "  >  Error log: $(STDERR)"
 
@@ -139,9 +139,9 @@ go-compile: go-get go-build
 
 go-build:
 	@echo "  >  Building market_observer binary..."
-	GOBIN=$(GOBIN) go build $(LDFLAGS) -o $(GOBIN)/$(MARKET_SERVICE)/market_observer ./cmd/$(MARKET_SERVICE)
+	GOBIN=$(GOBIN) go build $(LDFLAGS) -o $(GOBIN)/$(MARKET_SERVICE)/worker ./cmd/$(MARKET_SERVICE)
 	@echo "  >  Building market_api binary..."
-	GOBIN=$(GOBIN) go build $(LDFLAGS) -o $(GOBIN)/$(MARKET_API)/market_api ./cmd/$(MARKET_API)
+	GOBIN=$(GOBIN) go build $(LDFLAGS) -o $(GOBIN)/$(MARKET_API)/api ./cmd/$(MARKET_API)
 	@echo "  >  Building swagger_api binary..."
 	GOBIN=$(GOBIN) go build $(LDFLAGS) -o $(GOBIN)/$(SWAGGER_API)/swagger_api ./cmd/$(SWAGGER_API)
 
@@ -174,7 +174,7 @@ go-fmt:
 
 go-gen-docs:
 	@echo "  >  Generating swagger files"
-	swag init -g ./cmd/market_api/main.go -o ./docs
+	swag init -g ./cmd/api/main.go -o ./docs
 
 go-vet:
 	@echo "  >  Running go vet"
