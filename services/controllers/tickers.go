@@ -201,7 +201,7 @@ func findBestProviderForQuery(coin uint, token string, sliceToFind []models.Tick
 				return
 			}
 			if baseCheck && p == t.Provider && t.ShowOption != models.NeverShow &&
-				isRespectableMarketCap(t.MarketCap, configuration) && isRespectableVolume(t.Volume, configuration) {
+				isRespectableMarketCap(t.Provider, t.MarketCap, configuration) && isRespectableVolume(t.Provider, t.Volume, configuration) {
 				res.Lock()
 				res.tickers = append(res.tickers, t)
 				res.Unlock()
@@ -211,11 +211,17 @@ func findBestProviderForQuery(coin uint, token string, sliceToFind []models.Tick
 	}
 }
 
-func isRespectableMarketCap(marketCap float64, configuration config.Configuration) bool {
+func isRespectableMarketCap(provider string, marketCap float64, configuration config.Configuration) bool {
+	if provider != "coingecko" {
+		return true
+	}
 	return marketCap >= configuration.RestAPI.Tickers.RespsectableMarketCap
 }
 
-func isRespectableVolume(volume float64, configuration config.Configuration) bool {
+func isRespectableVolume(provider string, volume float64, configuration config.Configuration) bool {
+	if provider != "coingecko" {
+		return true
+	}
 	return volume >= configuration.RestAPI.Tickers.RespsectableVolume
 }
 
