@@ -45,7 +45,7 @@ type (
 	Tickers []Ticker
 
 	Chart struct {
-		Provider string       `json:"provider"`
+		Provider string       `json:"provider,omitempty"`
 		Prices   []ChartPrice `json:"prices,omitempty"`
 		Error    string       `json:"error,omitempty"`
 	}

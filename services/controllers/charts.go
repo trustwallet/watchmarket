@@ -43,6 +43,10 @@ func (c Controller) HandleChartsRequest(cr ChartRequest, ctx context.Context) (w
 		return watchmarket.Chart{}, errors.New(ErrInternal)
 	}
 
+	if len(rawChart.Prices) < 1 {
+		return watchmarket.Chart{}, errors.New(ErrNotFound)
+	}
+
 	chart := normalizeChart(rawChart, verifiedData.MaxItems)
 
 	chartRaw, err := json.Marshal(&chart)
@@ -121,7 +125,9 @@ func (c Controller) getChartsByPriority(data ChartsNormalizedRequest, ctx contex
 
 	for _, p := range availableProviders {
 		price, err := c.api[p].GetChartData(data.Coin, data.Token, data.Currency, data.TimeStart, ctx)
-		if err == nil && len(price.Prices) > 0 {
+		a := len(price.Prices) > 0
+		b := err == nil
+		if b && a {
 			return price, nil
 		}
 	}
