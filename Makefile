@@ -87,17 +87,8 @@ clean:
 	@-rm -rf mocks
 	@-$(MAKE) go-clean
 
-## generate-mocks: Creates mockfiles.
-generate-mocks:
-	@-$(GOBIN)/mockery -dir storage -output mocks/storage -name DB
-	@-$(GOBIN)/mockery -dir storage -output mocks/storage -name ProviderList
-	@-$(GOBIN)/mockery -dir market/rate -output mocks/market/rate -name RateProvider
-	@-$(GOBIN)/mockery -dir market/ticker -output mocks/market/ticker -name TickerProvider
-	@-$(GOBIN)/mockery -dir market/chart -output mocks/market/chart -name ChartProvider
-	@-$(GOBIN)/mockery -dir services/assets -output mocks/services/assets -name AssetClient
-
 ## test: Run all unit tests.
-test: go-install-mockery generate-mocks go-test
+test: go-test
 
 ## integration: Run all integration tests.
 integration: go-integration
@@ -106,7 +97,7 @@ integration: go-integration
 fmt: go-fmt
 
 ## govet: Run go vet.
-govet: go-install-mockery generate-mocks go-vet
+govet: generate-mocks go-vet
 
 ## golint: Run golint.
 lint: go-lint-install go-lint
@@ -166,7 +157,7 @@ go-test:
 
 go-integration:
 	@echo "  >  Running integration tests"
-	GOBIN=$(GOBIN) TEST_CONFIG=$(CONFIG_FILE) go test -race -tags=integration -v ./tests/integration
+	GOBIN=$(GOBIN) TEST_CONFIG=$(CONFIG_FILE) go test -race -tags=integration -v ./tests/integration/...
 
 go-fmt:
 	@echo "  >  Format all go files"
@@ -180,15 +171,11 @@ go-vet:
 	@echo "  >  Running go vet"
 	GOBIN=$(GOBIN) go vet ./...
 
-go-install-mockery:
-	@echo "  >  Installing mockery"
-	GOBIN=$(GOBIN) go get github.com/vektra/mockery/.../
-
 go-lint-install:
 	@echo "  >  Installing golint"
 	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s
 
-go-lint: go-install-mockery generate-mocks
+go-lint: generate-mocks
 	@echo "  >  Running golint"
 	bin/golangci-lint
 

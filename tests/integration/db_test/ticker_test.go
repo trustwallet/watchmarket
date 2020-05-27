@@ -3,6 +3,7 @@
 package db_test
 
 import (
+	"context"
 	"github.com/stretchr/testify/assert"
 	"github.com/trustwallet/watchmarket/db"
 	"github.com/trustwallet/watchmarket/db/models"
@@ -33,15 +34,15 @@ func TestAddTickers(t *testing.T) {
 	}}
 
 	d := db.Instance(databaseInstance)
-	err := d.AddTickers(tickers)
+	err := d.AddTickers(tickers, context.Background())
 	assert.Nil(t, err)
 
-	result1, err := d.GetTickers(60, "60")
+	result1, err := d.GetTickers(60, "60", context.Background())
 	assert.Nil(t, err)
 	assert.Len(t, result1, 1)
 	assert.Equal(t, uint(60), result1[0].Coin)
 
-	result2, err := d.GetTickers(70, "70")
+	result2, err := d.GetTickers(70, "70", context.Background())
 	assert.Nil(t, err)
 	assert.Len(t, result2, 1)
 	assert.Equal(t, uint(70), result2[0].Coin)
@@ -57,19 +58,19 @@ func TestAddTickers(t *testing.T) {
 		Value:     60,
 	})
 
-	err = d.AddTickers(tickers)
+	err = d.AddTickers(tickers, context.Background())
 	assert.Nil(t, err)
 
-	result1, err = d.GetTickers(60, "60")
+	result1, err = d.GetTickers(60, "60", context.Background())
 	assert.Nil(t, err)
 	assert.Len(t, result1, 2)
 
 	tickers[1].Value = 100500
 	tickers[1].Change24h = 666
 
-	err = d.AddTickers(tickers)
+	err = d.AddTickers(tickers, context.Background())
 	assert.Nil(t, err)
-	result2, err = d.GetTickers(70, "70")
+	result2, err = d.GetTickers(70, "70", context.Background())
 	assert.Nil(t, err)
 	assert.Len(t, result2, 1)
 	assert.Equal(t, float64(100500), result2[0].Value)
