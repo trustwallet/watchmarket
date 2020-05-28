@@ -34,7 +34,7 @@ func (c Controller) HandleDetailsRequest(dr DetailsRequest, ctx context.Context)
 		return watchmarket.CoinDetails{}, errors.New(ErrInternal)
 	}
 
-	if result.IsEmpty() {
+	if result.Info != nil && result.IsEmpty() {
 		result.Info = nil
 	}
 
