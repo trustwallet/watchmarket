@@ -34,11 +34,6 @@ func (c Controller) HandleDetailsRequest(dr DetailsRequest, ctx context.Context)
 		return watchmarket.CoinDetails{}, errors.New(ErrInternal)
 	}
 
-	res, err := c.checkTickersAvailability(req.Coin, req.Token, ctx)
-	if err != nil || len(res) == 0 {
-		return watchmarket.CoinDetails{Info: result.Info}, err
-	}
-
 	if result.IsEmpty() {
 		result.Info = nil
 	}
