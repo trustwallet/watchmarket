@@ -1,35 +1,48 @@
-# Gin is the web framework
-gin:
-  # Possible values: "debug", "release"
-  mode: release
-  # App running behind a reverse proxy?
-  # If set, HTTP Forwarded headers will be respected
-  reverse_proxy: false
+markets:
+  priority: # for each data type: [first in queue, next, ...]
+    charts: [coinmarketcap, coingecko]
+    coin_info: [coinmarketcap, coingecko]
+    tickers: [coinmarketcap, coingecko, binancedex]
+    rates: [fixer, coinmarketcap, coingecko]
 
-# The market watcher
-market:
-  enabled: true
-  quote_update_time: 20m
-  rate_update_time: 20m
-  caching:
-    charts: 5m
-    info: 2h
-  dex:
-    quote_update_time: 5m
+  binancedex:
     api: https://dex.binance.org/api
-  cmc:
+
+  coinmarketcap:
     api: https://pro-api.coinmarketcap.com
-    webapi: https://web-api.coinmarketcap.com
-    widgetapi: https://widgets.coinmarketcap.com
-    api_key: # YOUR_API_KEY
-    map_url: https://raw.githubusercontent.com/trustwallet/assets/master/pricing/coinmarketcap
-    caching_duration: 1m
-  fixer:
-    rate_update_time: 1h
-    api: https://data.fixer.io/api
-    api_key: # YOUR_API_KEY
+    key: #key
+    currency: USD
+    web_api: https://web-api.coinmarketcap.com
+    widget_api: https://widgets.coinmarketcap.com
+    map_api: https://raw.githubusercontent.com/trustwallet/assets/master/pricing/coinmarketcap
+
   coingecko:
+    currency: USD
     api: https://api.coingecko.com/api
+
+  fixer:
+    currency: USD
+    api: https://data.fixer.io/api
+    key: #key
+
+  assets: https://raw.githubusercontent.com/trustwallet/assets/master/blockchains # Assets url - details about TW tokens
 
 storage:
   redis: redis://localhost:6379
+  postgres:
+    uri: postgresql://user:pass@localhost/my_db?sslmode=disable
+    logs: false
+    env: prod
+
+worker:
+  tickers: 1m
+  rates: 5m
+
+rest_api:
+  mode: release # Possible values: "debug", "release"
+  port: 8421 # Possible values: "debug", "release"
+  tickers:
+    respectable_market_cap: 0
+    respectable_volume: 0
+    respectable_update_time: 72h
+  cache:  15m

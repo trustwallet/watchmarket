@@ -1,65 +1,76 @@
 package redis
 
 import (
-	"encoding/json"
+	"context"
 	"github.com/go-redis/redis"
-	"github.com/trustwallet/watchmarket/pkg/watchmarket"
+	"github.com/trustwallet/blockatlas/pkg/errors"
+	"go.elastic.co/apm/module/apmgoredis"
+	"time"
 )
 
 type Redis struct {
-	client *redis.Client
+	client redis.Client
 }
 
-func (db *Redis) Init(host string) error {
+func Init(host string) (Redis, error) {
 	options, err := redis.ParseURL(host)
 	if err != nil {
-		return err
+		return Redis{}, err
 	}
 	client := redis.NewClient(options)
 	if err := client.Ping().Err(); err != nil {
-		return err
+		return Redis{}, err
 	}
-	db.client = client
-	return nil
+
+	return Redis{client: *client}, nil
 }
 
-func (db *Redis) GetValue(key string, value interface{}) error {
-	cmd := db.client.Get(key)
+func (db Redis) Get(key string, ctx context.Context) ([]byte, error) {
+	client := apmgoredis.Wrap(&db.client).WithContext(ctx)
+	cmd := client.Get(key)
 	if cmd.Err() == redis.Nil {
-		return watchmarket.ErrNotFound
+		return nil, errors.E("Not found", errors.Params{"key": key})
 	} else if cmd.Err() != nil {
-		return cmd.Err()
+		return nil, cmd.Err()
 	}
-	err := json.Unmarshal([]byte(cmd.Val()), value)
-	if err != nil {
-		return err
-	}
-	return nil
+
+	return []byte(cmd.Val()), nil
 }
 
-func (db *Redis) Add(key string, value interface{}) error {
-	j, err := json.Marshal(value)
-	if err != nil {
-		return err
-	}
-	cmd := db.client.Set(key, j, 0)
+func (db Redis) Set(key string, value []byte, expiration time.Duration, ctx context.Context) error {
+	client := apmgoredis.Wrap(&db.client).WithContext(ctx)
+	cmd := client.Set(key, value, expiration)
 	if cmd.Err() != nil {
 		return cmd.Err()
 	}
 	return nil
 }
 
-func (db *Redis) Delete(key string) error {
-	cmd := db.client.Del(key)
+func (db Redis) Delete(key string, ctx context.Context) error {
+	client := apmgoredis.Wrap(&db.client).WithContext(ctx)
+	cmd := client.Del(key)
 	if cmd.Err() != nil {
 		return cmd.Err()
 	}
 	return nil
 }
 
-func (db *Redis) IsReady() bool {
-	if db.client == nil {
+func (db Redis) IsAvailable() bool {
+	return db.client.Ping().Err() == nil
+}
+
+func (db Redis) Reconnect(host string) bool {
+	options, err := redis.ParseURL(host)
+	if err != nil {
 		return false
 	}
-	return db.client.Ping().Err() == nil
+	client := redis.NewClient(options)
+	if err := client.Ping().Err(); err != nil {
+		return false
+	}
+	db.client = *client
+	if err := db.client.Ping().Err(); err != nil {
+		return false
+	}
+	return true
 }

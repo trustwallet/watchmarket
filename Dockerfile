@@ -5,7 +5,7 @@ ARG SERVICE
 RUN mkdir /build
 ADD . /build
 WORKDIR /build
-RUN go build -o bin/blockatlas ./cmd/$SERVICE
+RUN go build -o bin/watchmarket ./cmd/$SERVICE
 
 FROM debian:latest
 COPY --from=builder /build/bin /app/bin/$SERVICE
@@ -13,4 +13,4 @@ COPY --from=builder /build/config.yml /config/
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 WORKDIR /app/bin/$SERVICE
 
-ENTRYPOINT ["/app/bin/blockatlas", "-c", "/config/config.yml"]
+ENTRYPOINT ["/app/bin/watchmarket", "-c", "/config/config.yml"]

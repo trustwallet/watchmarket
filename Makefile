@@ -4,8 +4,8 @@
 VERSION := $(shell git describe --tags)
 BUILD := $(shell git rev-parse --short HEAD)
 PROJECT_NAME := $(shell basename "$(PWD)")
-MARKET_SERVICE := market_observer
-MARKET_API := market_api
+MARKET_SERVICE := worker
+MARKET_API := api
 SWAGGER_API := swagger_api
 
 # Go related variables.
@@ -44,14 +44,14 @@ start:
 ## start-market-observer: Start market observer in development mode.
 start-market-observer: stop
 	@echo "  >  Starting $(PROJECT_NAME) Sync"
-	@-$(GOBIN)/$(MARKET_SERVICE)/market_observer -c $(CONFIG_FILE) 2>&1 & echo $$! > $(PID_MARKET)
+	@-$(GOBIN)/$(MARKET_SERVICE)/worker -c $(CONFIG_FILE) 2>&1 & echo $$! > $(PID_MARKET)
 	@cat $(PID_MARKET) | sed "/^/s/^/  \>  Sync PID: /"
 	@echo "  >  Error log: $(STDERR)"
 
 ## start-market-api: Start market api in development mode.
 start-market-api: stop
 	@echo "  >  Starting $(PROJECT_NAME) Sync API"
-	@-$(GOBIN)/$(MARKET_API)/market_api -c $(CONFIG_FILE) 2>&1 & echo $$! > $(PID_MARKET_API)
+	@-$(GOBIN)/$(MARKET_API)/api -c $(CONFIG_FILE) 2>&1 & echo $$! > $(PID_MARKET_API)
 	@cat $(PID_MARKET_API) | sed "/^/s/^/  \>  Sync PID: /"
 	@echo "  >  Error log: $(STDERR)"
 
@@ -87,17 +87,8 @@ clean:
 	@-rm -rf mocks
 	@-$(MAKE) go-clean
 
-## generate-mocks: Creates mockfiles.
-generate-mocks:
-	@-$(GOBIN)/mockery -dir storage -output mocks/storage -name DB
-	@-$(GOBIN)/mockery -dir storage -output mocks/storage -name ProviderList
-	@-$(GOBIN)/mockery -dir market/rate -output mocks/market/rate -name RateProvider
-	@-$(GOBIN)/mockery -dir market/ticker -output mocks/market/ticker -name TickerProvider
-	@-$(GOBIN)/mockery -dir market/chart -output mocks/market/chart -name ChartProvider
-	@-$(GOBIN)/mockery -dir services/assets -output mocks/services/assets -name AssetClient
-
 ## test: Run all unit tests.
-test: go-install-mockery generate-mocks go-test
+test: go-test
 
 ## integration: Run all integration tests.
 integration: go-integration
@@ -106,7 +97,7 @@ integration: go-integration
 fmt: go-fmt
 
 ## govet: Run go vet.
-govet: go-install-mockery generate-mocks go-vet
+govet: generate-mocks go-vet
 
 ## golint: Run golint.
 lint: go-lint-install go-lint
@@ -138,10 +129,10 @@ endif
 go-compile: go-get go-build
 
 go-build:
-	@echo "  >  Building market_observer binary..."
-	GOBIN=$(GOBIN) go build $(LDFLAGS) -o $(GOBIN)/$(MARKET_SERVICE)/market_observer ./cmd/$(MARKET_SERVICE)
-	@echo "  >  Building market_api binary..."
-	GOBIN=$(GOBIN) go build $(LDFLAGS) -o $(GOBIN)/$(MARKET_API)/market_api ./cmd/$(MARKET_API)
+	@echo "  >  Building worker binary..."
+	GOBIN=$(GOBIN) go build $(LDFLAGS) -o $(GOBIN)/$(MARKET_SERVICE)/worker ./cmd/$(MARKET_SERVICE)
+	@echo "  >  Building api binary..."
+	GOBIN=$(GOBIN) go build $(LDFLAGS) -o $(GOBIN)/$(MARKET_API)/api ./cmd/$(MARKET_API)
 	@echo "  >  Building swagger_api binary..."
 	GOBIN=$(GOBIN) go build $(LDFLAGS) -o $(GOBIN)/$(SWAGGER_API)/swagger_api ./cmd/$(SWAGGER_API)
 
@@ -166,7 +157,7 @@ go-test:
 
 go-integration:
 	@echo "  >  Running integration tests"
-	GOBIN=$(GOBIN) TEST_CONFIG=$(CONFIG_FILE) go test -race -tags=integration -v ./tests/integration
+	GOBIN=$(GOBIN) TEST_CONFIG=$(CONFIG_FILE) go test -race -tags=integration -v ./tests/integration/...
 
 go-fmt:
 	@echo "  >  Format all go files"
@@ -174,23 +165,19 @@ go-fmt:
 
 go-gen-docs:
 	@echo "  >  Generating swagger files"
-	swag init -g ./cmd/market_api/main.go -o ./docs
+	swag init -g ./cmd/api/main.go -o ./docs
 
 go-vet:
 	@echo "  >  Running go vet"
 	GOBIN=$(GOBIN) go vet ./...
 
-go-install-mockery:
-	@echo "  >  Installing mockery"
-	GOBIN=$(GOBIN) go get github.com/vektra/mockery/.../
-
 go-lint-install:
 	@echo "  >  Installing golint"
 	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s
 
-go-lint: go-install-mockery generate-mocks
+go-lint:
 	@echo "  >  Running golint"
-	bin/golangci-lint
+	bin/golangci-lint run --timeout=2m
 
 .PHONY: help
 

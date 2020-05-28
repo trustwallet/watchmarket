@@ -1,0 +1,48 @@
+markets:
+  priority: # for each data type: [first in queue, next, ...]
+    charts: [coinmarketcap, coingecko]
+    coin_info: [coinmarketcap, coingecko]
+    tickers: [coinmarketcap, coingecko, binancedex]
+    rates: [fixer, coinmarketcap, coingecko]
+
+  binancedex:
+    api: https://dex.binance.org/api
+
+  coinmarketcap:
+    api: https://pro-api.coinmarketcap.com
+    key: 1
+    currency: USD
+    web_api: https://web-api.coinmarketcap.com
+    widget_api: https://widgets.coinmarketcap.com
+    map_api: https://raw.githubusercontent.com/trustwallet/assets/master/pricing/coinmarketcap
+
+  coingecko:
+    currency: USD
+    api: https://api.coingecko.com/api
+
+  fixer:
+    currency: USD
+    api: https://data.fixer.io/api
+    key: 1
+
+  assets: https://raw.githubusercontent.com/trustwallet/assets/master/blockchains # Assets url - details about TW tokens
+
+storage:
+  redis: redis://localhost:6379
+  postgres:
+    uri: postgresql://user:pass@localhost/my_db?sslmode=disable
+    logs: false
+    env: prod
+
+worker:
+  tickers: 5m
+  rates: 5m
+
+rest_api:
+  mode: release # Possible values: "debug", "release"
+  port: 8420 # Possible values: "debug", "release"
+  tickers:
+    respectable_market_cap: 0
+    respectable_volume: 0
+    respectable_update_time: 72h
+  cache: 15m
