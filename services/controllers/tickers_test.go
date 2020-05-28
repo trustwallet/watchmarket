@@ -7,6 +7,7 @@ import (
 	"github.com/trustwallet/watchmarket/config"
 	"github.com/trustwallet/watchmarket/db/models"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
+	"sort"
 	"sync"
 	"testing"
 	"time"
@@ -123,6 +124,14 @@ func TestController_HandleTickersRequest(t *testing.T) {
 		Currency: "USD",
 		Tickers:  []watchmarket.Ticker{wantedTicker2, wantedTicker1},
 	}
+
+	sort.Slice(wantedResp.Tickers, func(i, j int) bool {
+		return wantedResp.Tickers[i].Coin < wantedResp.Tickers[j].Coin
+	})
+	sort.Slice(response.Tickers, func(i, j int) bool {
+		return response.Tickers[i].Coin < response.Tickers[j].Coin
+	})
+
 	assert.Equal(t, wantedResp, response)
 }
 
