@@ -9,4 +9,5 @@ coverage:
         # basic
         target: auto # Slowly move up from here...if set to auto commits with newly added tests may bring more files into test scope and therefore actually decrease the coverage and fail the build see https://docs.codecov.io/docs/commit-status
 
+    patch: no
 
