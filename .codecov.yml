@@ -11,3 +11,10 @@ coverage:
 
     patch: no
 
+  ignore:
+    - "mock"
+    - "config"
+    - "tests"
+    - "docs"
+    - "db"
+    - "Makefile"

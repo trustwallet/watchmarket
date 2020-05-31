@@ -48,7 +48,11 @@ func getTickersHandler(controller controllers.Controller) func(c *gin.Context) {
 			return
 		}
 		response, err := controller.HandleTickersRequest(request, ctx)
-		if err != nil || len(response.Tickers) == 0 {
+		if err != nil {
+			handleError(c, err)
+			return
+		}
+		if len(response.Tickers) == 0 {
 			handleTickersError(c, request)
 			return
 		}

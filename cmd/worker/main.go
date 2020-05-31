@@ -8,6 +8,7 @@ import (
 	"github.com/trustwallet/watchmarket/internal"
 	"github.com/trustwallet/watchmarket/services/markets"
 	"github.com/trustwallet/watchmarket/services/worker"
+	"time"
 )
 
 const (
@@ -46,6 +47,8 @@ func init() {
 	c = cron.New(cron.WithChain(cron.Recover(cron.DefaultLogger)))
 
 	logger.InitLogger()
+
+	go postgres.FatalWorker(time.Second*10, *database)
 }
 
 func main() {

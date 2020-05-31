@@ -11,6 +11,7 @@ import (
 	rediscache "github.com/trustwallet/watchmarket/services/cache/redis"
 	"github.com/trustwallet/watchmarket/services/controllers"
 	"github.com/trustwallet/watchmarket/services/markets"
+	"time"
 )
 
 const (
@@ -56,6 +57,8 @@ func init() {
 
 	controller = controllers.NewController(cache, database, chartsPriority, coinInfoPriority, ratesPriority, tickerPriority, m.ChartsAPIs, configuration)
 	engine = internal.InitEngine(configuration.RestAPI.Mode)
+
+	go postgres.FatalWorker(time.Second*10, *database)
 }
 
 func main() {
