@@ -48,8 +48,8 @@ func getTickersHandler(controller controllers.Controller) func(c *gin.Context) {
 			return
 		}
 		response, err := controller.HandleTickersRequest(request, ctx)
-		if err != nil {
-			handleError(c, err)
+		if err != nil || len(response.Tickers) == 0 {
+			handleTickersError(c, request)
 			return
 		}
 
@@ -140,4 +140,24 @@ func handleError(c *gin.Context, err error) {
 	default:
 		c.JSON(http.StatusBadRequest, model.CreateErrorResponse(model.InvalidQuery, errors.E("Invalid request payload")))
 	}
+}
+
+func handleTickersError(c *gin.Context, req controllers.TickerRequest) {
+	if len(req.Assets) == 0 || req.Assets == nil {
+		c.JSON(http.StatusBadRequest, model.CreateErrorResponse(model.InvalidQuery, errors.E("Invalid request payload")))
+		return
+	}
+	emptyResponse := controllers.TickerResponse{
+		Currency: req.Currency,
+	}
+	tickers := make(watchmarket.Tickers, 0, len(req.Assets))
+	for _, t := range req.Assets {
+		tickers = append(tickers, watchmarket.Ticker{
+			Coin:     t.Coin,
+			TokenId:  t.TokenId,
+			CoinType: t.CoinType,
+		})
+	}
+	emptyResponse.Tickers = tickers
+	c.JSON(http.StatusOK, emptyResponse)
 }

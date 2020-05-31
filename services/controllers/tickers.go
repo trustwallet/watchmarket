@@ -3,6 +3,7 @@ package controllers
 import (
 	"context"
 	"errors"
+	"github.com/trustwallet/blockatlas/pkg/logger"
 	"github.com/trustwallet/watchmarket/config"
 	"github.com/trustwallet/watchmarket/db/models"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
@@ -34,6 +35,7 @@ func (c Controller) HandleTickersRequest(tr TickerRequest, ctx context.Context) 
 func (c Controller) getRateByPriority(currency string, ctx context.Context) (watchmarket.Rate, error) {
 	rates, err := c.database.GetRates(currency, ctx)
 	if err != nil {
+		logger.Error(err, "getRateByPriority")
 		return watchmarket.Rate{}, err
 	}
 
@@ -66,6 +68,7 @@ ProvidersLoop:
 func (c Controller) getTickersByPriority(tickerQueries []models.TickerQuery, ctx context.Context) (watchmarket.Tickers, error) {
 	dbTickers, err := c.database.GetTickersByQueries(tickerQueries, ctx)
 	if err != nil {
+		logger.Error(err, "getTickersByPriority")
 		return nil, err
 	}
 	providers := c.tickersPriority
