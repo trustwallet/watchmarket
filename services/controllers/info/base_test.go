@@ -33,7 +33,7 @@ func TestController_HandleDetailsRequest(t *testing.T) {
 	cm.wantedDetails = wantedD
 	c := setupController(t, getCacheMock(), cm)
 	assert.NotNil(t, c)
-	details, err := c.HandleDetailsRequest(controllers.DetailsRequest{
+	details, err := c.HandleInfoRequest(controllers.DetailsRequest{
 		CoinQuery: "0",
 		Token:     "2",
 		Currency:  "3",

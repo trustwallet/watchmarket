@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/trustwallet/blockatlas/pkg/logger"
-	"github.com/trustwallet/watchmarket/api"
+	"github.com/trustwallet/watchmarket/config"
 	"github.com/trustwallet/watchmarket/db/postgres"
 	_ "github.com/trustwallet/watchmarket/docs"
 	"github.com/trustwallet/watchmarket/internal"
@@ -25,6 +25,7 @@ const (
 var (
 	port, confPath string
 	engine         *gin.Engine
+	configuration  config.Configuration
 	tickers        controllers.TickersController
 	charts         controllers.ChartsController
 	info           controllers.InfoController
@@ -33,7 +34,7 @@ var (
 func init() {
 	port, confPath = internal.ParseArgs(defaultPort, defaultConfigPath)
 
-	configuration := internal.InitConfig(confPath)
+	configuration = internal.InitConfig(confPath)
 	logger.InitLogger()
 	port = configuration.RestAPI.Port
 	chartsPriority := configuration.Markets.Priority.Charts
@@ -69,6 +70,8 @@ func init() {
 }
 
 func main() {
-	api.SetupMarketAPI(engine, tickers, charts, info)
+	if err := internal.InitAPI(engine, tickers, charts, info, configuration); err != nil {
+		panic(err)
+	}
 	internal.SetupGracefulShutdown(port, engine)
 }

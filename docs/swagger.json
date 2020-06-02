@@ -15,7 +15,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Market"
+                    "Charts"
                 ],
                 "summary": "Get charts data for a specific coin",
                 "operationId": "get_charts_data",
@@ -76,14 +76,14 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Market"
+                    "Info"
                 ],
                 "summary": "Get charts coin assets data for a specific coin",
                 "operationId": "get_charts_coin_info",
                 "parameters": [
                     {
-                        "type": "integer",
-                        "default": 60,
+                        "type": "string",
+                        "default": "60",
                         "description": "Coin id",
                         "name": "coin",
                         "in": "query",
@@ -123,7 +123,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Market"
+                    "Tickers"
                 ],
                 "summary": "Get ticker values for a specific market",
                 "operationId": "get_tickers",
@@ -148,7 +148,7 @@
                 }
             }
         },
-        "/v2/market/charts": {
+        "/v2/market/charts/{id}": {
             "get": {
                 "description": "Get the charts data from an market and coin/token",
                 "consumes": [
@@ -158,16 +158,17 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Market"
+                    "Charts"
                 ],
                 "summary": "Get charts data for a specific id",
                 "operationId": "get_charts_data_v2",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "default": "60",
                         "description": "id",
-                        "name": "coin",
-                        "in": "query",
+                        "name": "id",
+                        "in": "path",
                         "required": true
                     },
                     {
@@ -202,7 +203,7 @@
                 }
             }
         },
-        "/v2/market/info": {
+        "/v2/market/info/{id}": {
             "get": {
                 "description": "Get the charts coin assets data from an market and coin/contract",
                 "consumes": [
@@ -212,16 +213,17 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Market"
+                    "Info"
                 ],
                 "summary": "Get charts coin assets data for a specific coin",
                 "operationId": "get_charts_coin_info_v2",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
+                        "default": "60",
                         "description": "id",
-                        "name": "coin",
-                        "in": "query",
+                        "name": "id",
+                        "in": "path",
                         "required": true
                     },
                     {
@@ -242,7 +244,7 @@
                 }
             }
         },
-        "/v2/market/ticker/:id": {
+        "/v2/market/ticker/{id}": {
             "get": {
                 "description": "Get the ticker for specific id",
                 "consumes": [
@@ -252,17 +254,17 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Market"
+                    "Tickers"
                 ],
                 "summary": "Get ticker for a specific market",
                 "operationId": "get_ticker",
                 "parameters": [
                     {
                         "type": "string",
-                        "default": "\"714_XRP-BF2\"",
+                        "default": "714_XRP-BF2",
                         "description": "id",
                         "name": "id",
-                        "in": "query",
+                        "in": "path",
                         "required": true
                     }
                 ],
@@ -286,7 +288,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Market"
+                    "Tickers"
                 ],
                 "summary": "Get tickers for list of ids",
                 "operationId": "get_tickers_v2",

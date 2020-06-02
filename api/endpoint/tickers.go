@@ -51,9 +51,9 @@ func GetTickersHandler(controller controllers.TickersController) func(c *gin.Con
 // @Accept json
 // @Produce json
 // @Tags Tickers
-// @Param id query string true "id" default("714_XRP-BF2")
+// @Param id path string true "id" default(714_XRP-BF2)
 // @Success 200 {object} controllers.TickerResponse
-// @Router /v2/market/ticker/:id [get]
+// @Router /v2/market/ticker/{id} [get]
 func GetTickerHandlerV2(controller controllers.TickersController) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		tx := apm.DefaultTracer.StartTransaction("GET /v2/market/ticker/:id", "request")

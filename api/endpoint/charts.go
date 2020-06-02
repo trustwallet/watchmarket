@@ -53,12 +53,12 @@ func GetChartsHandler(controller controllers.ChartsController) func(c *gin.Conte
 // @Accept json
 // @Produce json
 // @Tags Charts
-// @Param coin query string true "id" default("60")
+// @Param id path string true "id" default(60)
 // @Param time_start query int false "Start timestamp" default(1574483028)
 // @Param max_items query int false "Max number of items in result prices array" default(64)
 // @Param currency query string false "The currency to show charts" default(USD)
 // @Success 200 {object} watchmarket.Chart
-// @Router /v2/market/charts [get]
+// @Router /v2/market/charts/{id} [get]
 func GetChartsHandlerV2(controller controllers.ChartsController) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		tx := apm.DefaultTracer.StartTransaction("GET /v2/market/charts/:id", "request")

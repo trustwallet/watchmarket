@@ -39,7 +39,7 @@ func NewController(
 	}
 }
 
-func (c Controller) HandleDetailsRequest(dr controllers.DetailsRequest, ctx context.Context) (watchmarket.CoinDetails, error) {
+func (c Controller) HandleInfoRequest(dr controllers.DetailsRequest, ctx context.Context) (watchmarket.CoinDetails, error) {
 	var cd watchmarket.CoinDetails
 
 	req, err := toDetailsRequestData(dr)

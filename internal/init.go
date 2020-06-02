@@ -4,10 +4,13 @@ import (
 	"flag"
 	"github.com/gin-gonic/gin"
 	"github.com/trustwallet/blockatlas/api/middleware"
+	"github.com/trustwallet/blockatlas/pkg/errors"
 	"github.com/trustwallet/blockatlas/pkg/logger"
+	"github.com/trustwallet/watchmarket/api"
 	"github.com/trustwallet/watchmarket/config"
 	"github.com/trustwallet/watchmarket/redis"
 	"github.com/trustwallet/watchmarket/services/assets"
+	"github.com/trustwallet/watchmarket/services/controllers"
 	"go.elastic.co/apm/module/apmgin"
 	"path/filepath"
 )
@@ -30,6 +33,41 @@ func InitRedis(host string) *redis.Redis {
 		logger.Fatal(err)
 	}
 	return &c
+}
+
+func InitAPI(
+	engine *gin.Engine,
+	tickers controllers.TickersController,
+	charts controllers.ChartsController,
+	info controllers.InfoController,
+	configuration config.Configuration,
+) error {
+	var counter int
+	for _, a := range configuration.RestAPI.APIs {
+		switch a {
+		case "base":
+			api.SetupBasicAPI(engine)
+			counter++
+		case "tickers":
+			api.SetupTickersAPI(engine, tickers, configuration.RestAPI.Tickers.CacheControl)
+			counter++
+		case "charts":
+			api.SetupChartsAPI(engine, charts, configuration.RestAPI.Charts.CacheControl)
+			counter++
+		case "info":
+			api.SetupInfoAPI(engine, info, configuration.RestAPI.Info.CacheControl)
+			counter++
+		case "swagger":
+			api.SetupSwaggerAPI(engine)
+			counter++
+		default:
+			continue
+		}
+	}
+	if counter == 0 {
+		return errors.E("no apis provided")
+	}
+	return nil
 }
 
 func InitAssets(assetsHost string) assets.Client {

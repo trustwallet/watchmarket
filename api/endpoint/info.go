@@ -32,7 +32,7 @@ func GetCoinInfoHandler(controller controllers.InfoController) func(c *gin.Conte
 			Token:     c.Query("token"),
 			Currency:  c.DefaultQuery("currency", watchmarket.DefaultCurrency),
 		}
-		response, err := controller.HandleDetailsRequest(request, ctx)
+		response, err := controller.HandleInfoRequest(request, ctx)
 		if err != nil {
 			handleError(c, err)
 			return
@@ -48,10 +48,10 @@ func GetCoinInfoHandler(controller controllers.InfoController) func(c *gin.Conte
 // @Accept json
 // @Produce json
 // @Tags Info
-// @Param coin query int true "id" default("60")
+// @Param id path string true "id" default(60)
 // @Param currency query string false "The currency to show coin assets in" default(USD)
 // @Success 200 {object} watchmarket.CoinDetails
-// @Router /v2/market/info [get]
+// @Router /v2/market/info/{id} [get]
 func GetCoinInfoHandlerV2(controller controllers.InfoController) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		tx := apm.DefaultTracer.StartTransaction("GET /v2/market/info/:id", "request")
@@ -68,7 +68,7 @@ func GetCoinInfoHandlerV2(controller controllers.InfoController) func(c *gin.Con
 			Token:     token,
 			Currency:  c.DefaultQuery("currency", watchmarket.DefaultCurrency),
 		}
-		response, err := controller.HandleDetailsRequest(request, ctx)
+		response, err := controller.HandleInfoRequest(request, ctx)
 		if err != nil {
 			handleError(c, err)
 			return
