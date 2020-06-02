@@ -37,6 +37,7 @@ storage:
 worker:
   tickers: 1m
   rates: 5m
+  batch_limit: 3000
 
 rest_api:
   mode: release # Possible values: "debug", "release"

@@ -42,7 +42,7 @@ func init() {
 		logger.Fatal(err)
 	}
 
-	w = worker.Init(m.RatesAPIs, m.TickersAPIs, database)
+	w = worker.Init(m.RatesAPIs, m.TickersAPIs, database, configuration)
 
 	c = cron.New(cron.WithChain(cron.Recover(cron.DefaultLogger)))
 

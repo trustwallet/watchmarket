@@ -4,15 +4,17 @@ import (
 	"fmt"
 	"github.com/robfig/cron/v3"
 	"github.com/trustwallet/blockatlas/pkg/logger"
+	"github.com/trustwallet/watchmarket/config"
 	"github.com/trustwallet/watchmarket/db"
 	"github.com/trustwallet/watchmarket/services/markets"
 )
 
 type (
 	Worker struct {
-		ratesApis   markets.RatesAPIs
-		tickersApis markets.TickersAPIs
-		db          db.Instance
+		ratesApis     markets.RatesAPIs
+		tickersApis   markets.TickersAPIs
+		db            db.Instance
+		configuration config.Configuration
 	}
 )
 
@@ -20,11 +22,13 @@ func Init(
 	ratesApis markets.RatesAPIs,
 	tickersApis markets.TickersAPIs,
 	db db.Instance,
+	configuration config.Configuration,
 ) Worker {
 	return Worker{
 		ratesApis,
 		tickersApis,
 		db,
+		configuration,
 	}
 }
 

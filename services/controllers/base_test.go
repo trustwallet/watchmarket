@@ -3,7 +3,6 @@ package controllers
 import (
 	"context"
 	"github.com/stretchr/testify/assert"
-	"github.com/trustwallet/blockatlas/pkg/errors"
 	"github.com/trustwallet/watchmarket/config"
 	"github.com/trustwallet/watchmarket/db/models"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
@@ -54,11 +53,11 @@ func (d dbMock) GetRates(currency string, ctx context.Context) ([]models.Rate, e
 	return res, d.WantedRatesError
 }
 
-func (d dbMock) AddRates(rates []models.Rate, ctx context.Context) error {
+func (d dbMock) AddRates(rates []models.Rate, batchLimit uint, ctx context.Context) error {
 	return nil
 }
 
-func (d dbMock) AddTickers(tickers []models.Ticker, ctx context.Context) error {
+func (d dbMock) AddTickers(tickers []models.Ticker, batchLimit uint, ctx context.Context) error {
 	return nil
 }
 
@@ -138,42 +137,6 @@ func TestParseID(t *testing.T) {
 			watchmarket.Token,
 			nil,
 		},
-		{"60",
-			60,
-			"",
-			watchmarket.Coin,
-			nil,
-		},
-		{"0",
-			0,
-			"",
-			watchmarket.Coin,
-			nil,
-		},
-		{"0___0",
-			0,
-			"",
-			watchmarket.Coin,
-			errors.E("Bad ID"),
-		},
-		{"Z_0",
-			0,
-			"",
-			watchmarket.Coin,
-			errors.E("Bad coin"),
-		},
-		{"0_",
-			0,
-			"",
-			watchmarket.Coin,
-			nil,
-		},
-		{"0_:fnfjunwpiucU#*0! 02",
-			0,
-			":fnfjunwpiucU#*0! 02",
-			watchmarket.Token,
-			nil,
-		},
 	}
 
 	for _, tt := range testStruct {
@@ -182,5 +145,35 @@ func TestParseID(t *testing.T) {
 		assert.Equal(t, tt.wantedToken, token)
 		assert.Equal(t, tt.wantedType, givenType)
 		assert.Equal(t, tt.wantedError, err)
+	}
+}
+
+func TestBuildID(t *testing.T) {
+	testStruct := []struct {
+		wantedID   string
+		givenCoin  uint
+		givenToken string
+	}{
+		{"714_TWT-8C2",
+			714,
+			"TWT-8C2",
+		},
+		{"60",
+			60,
+			"",
+		},
+		{"0",
+			0,
+			"",
+		},
+		{"0_:fnfjunwpiucU#*0! 02",
+			0,
+			":fnfjunwpiucU#*0! 02",
+		},
+	}
+
+	for _, tt := range testStruct {
+		id := BuildID(tt.givenCoin, tt.givenToken)
+		assert.Equal(t, tt.wantedID, id)
 	}
 }

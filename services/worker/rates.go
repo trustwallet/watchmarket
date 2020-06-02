@@ -20,8 +20,11 @@ func (w Worker) FetchAndSaveRates() {
 	fetchedRates := fetchRates(w.ratesApis, ctx)
 	normalizedRates := toRatesModel(fetchedRates)
 
-	if err := w.db.AddRates(normalizedRates, ctx); err != nil {
+	if err := w.db.AddRates(normalizedRates, w.configuration.Worker.BatchLimit, ctx); err != nil {
 		logger.Error(err)
+		if err := w.db.AddRates(normalizedRates, minBatchLimit, ctx); err != nil {
+			logger.Error(err)
+		}
 	}
 }
 
