@@ -3,6 +3,7 @@ package controllers
 import (
 	"context"
 	"github.com/stretchr/testify/assert"
+	"github.com/trustwallet/blockatlas/pkg/errors"
 	"github.com/trustwallet/watchmarket/config"
 	"github.com/trustwallet/watchmarket/db/models"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
@@ -121,4 +122,65 @@ func (cm chartsMock) GetCoinData(coinID uint, token, currency string, ctx contex
 
 func (cm chartsMock) GetProvider() string {
 	return "coinmarketcap"
+}
+
+func TestParseID(t *testing.T) {
+	testStruct := []struct {
+		givenID     string
+		wantedCoin  uint
+		wantedToken string
+		wantedType  watchmarket.CoinType
+		wantedError error
+	}{
+		{"714_TWT-8C2",
+			714,
+			"TWT-8C2",
+			watchmarket.Token,
+			nil,
+		},
+		{"60",
+			60,
+			"",
+			watchmarket.Coin,
+			nil,
+		},
+		{"0",
+			0,
+			"",
+			watchmarket.Coin,
+			nil,
+		},
+		{"0___0",
+			0,
+			"",
+			watchmarket.Coin,
+			errors.E("Bad ID"),
+		},
+		{"Z_0",
+			0,
+			"",
+			watchmarket.Coin,
+			errors.E("Bad coin"),
+		},
+		{"0_",
+			0,
+			"",
+			watchmarket.Coin,
+			nil,
+		},
+		{"0_:fnfjunwpiucU#*0! 02",
+			0,
+			":fnfjunwpiucU#*0! 02",
+			watchmarket.Token,
+			nil,
+		},
+	}
+
+	for _, tt := range testStruct {
+		coin, token, givenType, err := ParseID(tt.givenID)
+		assert.Equal(t, tt.wantedCoin, coin)
+		assert.Equal(t, tt.wantedToken, token)
+		assert.Equal(t, tt.wantedType, givenType)
+		assert.Equal(t, tt.wantedError, err)
+	}
 }

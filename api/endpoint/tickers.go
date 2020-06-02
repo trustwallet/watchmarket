@@ -45,30 +45,62 @@ func GetTickersHandler(controller controllers.Controller) func(c *gin.Context) {
 	}
 }
 
-func GetTickersHandlerV2(controller controllers.Controller) func(c *gin.Context) {
+func GetTickerHandlerV2(controller controllers.Controller) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		tx := apm.DefaultTracer.StartTransaction("GET /v2/market/ticker/:id", "request")
 		ctx := apm.ContextWithTransaction(context.Background(), tx)
 		defer tx.End()
 
-		coin, token, coinType, err := ParseID(c.Param("id"))
-		if err != nil {
-			handleError(c, err)
-		}
-
 		currency := c.DefaultQuery("currency", watchmarket.DefaultCurrency)
 
-		request := controllers.TickerRequest{Currency: currency, Assets: []controllers.Coin{{Coin: coin, CoinType: coinType, TokenId: token}}}
-		response, err := controller.HandleTickersRequest(request, ctx)
+		request := controllers.TickerRequestV2{Currency: currency, Ids: []string{c.Param("id")}}
+		response, err := controller.HandleTickersRequestV2(request, ctx)
 		if err != nil {
 			handleError(c, err)
-			return
-		}
-		if len(response.Tickers) == 0 {
-			handleTickersError(c, request)
 			return
 		}
 
 		c.JSON(http.StatusOK, response)
 	}
+}
+
+func GetTickersHandlerV2(controller controllers.Controller) func(c *gin.Context) {
+	return func(c *gin.Context) {
+		tx := apm.DefaultTracer.StartTransaction("POST /v2/market/tickers", "request")
+		ctx := apm.ContextWithTransaction(context.Background(), tx)
+		defer tx.End()
+
+		request := controllers.TickerRequestV2{Currency: watchmarket.DefaultCurrency}
+		if err := c.BindJSON(&request); err != nil {
+			c.JSON(http.StatusBadRequest, model.CreateErrorResponse(model.InvalidQuery, errors.E("Invalid request payload")))
+			return
+		}
+		response, err := controller.HandleTickersRequestV2(request, ctx)
+		if err != nil {
+			handleError(c, err)
+			return
+		}
+
+		c.JSON(http.StatusOK, response)
+	}
+}
+
+func handleTickersError(c *gin.Context, req controllers.TickerRequest) {
+	if len(req.Assets) == 0 || req.Assets == nil {
+		c.JSON(http.StatusBadRequest, model.CreateErrorResponse(model.InvalidQuery, errors.E("Invalid request payload")))
+		return
+	}
+	emptyResponse := controllers.TickerResponse{
+		Currency: req.Currency,
+	}
+	tickers := make(watchmarket.Tickers, 0, len(req.Assets))
+	for _, t := range req.Assets {
+		tickers = append(tickers, watchmarket.Ticker{
+			Coin:     t.Coin,
+			TokenId:  t.TokenId,
+			CoinType: t.CoinType,
+		})
+	}
+	emptyResponse.Tickers = tickers
+	c.JSON(http.StatusOK, emptyResponse)
 }

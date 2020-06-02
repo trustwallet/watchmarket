@@ -48,7 +48,7 @@ func GetCoinInfoHandlerV2(controller controllers.Controller) func(c *gin.Context
 		ctx := apm.ContextWithTransaction(context.Background(), tx)
 		defer tx.End()
 
-		coin, token, _, err := ParseID(c.Param("id"))
+		coin, token, _, err := controllers.ParseID(c.Param("id"))
 		if err != nil {
 			handleError(c, err)
 		}

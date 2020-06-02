@@ -38,6 +38,11 @@ type (
 		Assets   []Coin `json:"assets"`
 	}
 
+	TickerRequestV2 struct {
+		Currency string   `json:"Currency"`
+		Ids      []string `json:"ids"`
+	}
+
 	Coin struct {
 		Coin     uint                 `json:"Coin"`
 		CoinType watchmarket.CoinType `json:"type"`
@@ -47,6 +52,18 @@ type (
 	TickerResponse struct {
 		Currency string              `json:"currency"`
 		Tickers  watchmarket.Tickers `json:"docs"`
+	}
+
+	TickerResponseV2 struct {
+		Currency string        `json:"currency"`
+		Tickers  []TickerPrice `json:"tickers"`
+	}
+
+	TickerPrice struct {
+		Change24h float64 `json:"change_24h"`
+		Provider  string  `json:"provider"`
+		Price     float64 `json:"value"`
+		ID        string
 	}
 
 	sortedTickersResponse struct {

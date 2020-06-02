@@ -15,8 +15,10 @@ func SetupMarketAPI(engine *gin.Engine, controller controllers.Controller) {
 	engine.GET("/", func(c *gin.Context) { c.JSON(http.StatusOK, `Watchmarket API`) })
 	engine.GET("/metrics", ginprom.PromHandler(promhttp.Handler()))
 
-	engine.GET("v2/market/ticker/:id",
+	engine.POST("v2/market/tickers",
 		middleware.CacheControl(time.Minute, endpoint.GetTickersHandlerV2(controller)))
+	engine.GET("v2/market/ticker/:id",
+		middleware.CacheControl(time.Minute, endpoint.GetTickerHandlerV2(controller)))
 	engine.GET("v2/market/charts/:id",
 		middleware.CacheControl(time.Minute, endpoint.GetChartsHandlerV2(controller)))
 	engine.GET("v2/market/info/:id",
