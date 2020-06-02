@@ -1,7 +1,10 @@
 package watchmarket
 
 import (
+	"github.com/trustwallet/blockatlas/pkg/errors"
 	"math"
+	"strconv"
+	"strings"
 	"time"
 )
 
@@ -89,6 +92,10 @@ const (
 	Token                CoinType = "token"
 	DefaultCurrency               = "USD"
 	DefaultMaxChartItems          = 64
+
+	ErrNotFound   = "not found"
+	ErrBadRequest = "bad request"
+	ErrInternal   = "internal"
 )
 
 func (d Chart) IsEmpty() bool {
@@ -114,4 +121,31 @@ func UnixToDuration(unixTime uint) time.Duration {
 
 func DurationToUnix(duration time.Duration) uint {
 	return uint(duration.Seconds())
+}
+
+func ParseID(id string) (uint, string, CoinType, error) {
+	rawResult := strings.Split(id, "_")
+	resLen := len(rawResult)
+	if !(resLen > 0 && resLen <= 2) {
+		return 0, "", Coin, errors.E("Bad ID")
+	}
+
+	coin, err := strconv.Atoi(rawResult[0])
+	if err != nil {
+		return 0, "", Coin, errors.E("Bad coin")
+	}
+
+	if resLen == 1 || rawResult[1] == "" {
+		return uint(coin), "", Coin, nil
+	}
+
+	return uint(coin), rawResult[1], Token, nil
+}
+
+func BuildID(coin uint, token string) string {
+	c := strconv.Itoa(int(coin))
+	if token != "" {
+		return c + "_" + token
+	}
+	return c
 }

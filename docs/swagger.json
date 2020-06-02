@@ -23,14 +23,14 @@
                     {
                         "type": "integer",
                         "default": 60,
-                        "description": "Coin ID",
+                        "description": "Coin id",
                         "name": "coin",
                         "in": "query",
                         "required": true
                     },
                     {
                         "type": "string",
-                        "description": "Token ID",
+                        "description": "Token id",
                         "name": "token",
                         "in": "query"
                     },
@@ -60,7 +60,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/watchmarket.ChartData"
+                            "$ref": "#/definitions/watchmarket.Chart"
                         }
                     }
                 }
@@ -68,7 +68,7 @@
         },
         "/v1/market/info": {
             "get": {
-                "description": "Get the charts coin info data from an market and coin/contract",
+                "description": "Get the charts coin assets data from an market and coin/contract",
                 "consumes": [
                     "application/json"
                 ],
@@ -78,27 +78,27 @@
                 "tags": [
                     "Market"
                 ],
-                "summary": "Get charts coin info data for a specific coin",
+                "summary": "Get charts coin assets data for a specific coin",
                 "operationId": "get_charts_coin_info",
                 "parameters": [
                     {
                         "type": "integer",
                         "default": 60,
-                        "description": "Coin ID",
+                        "description": "Coin id",
                         "name": "coin",
                         "in": "query",
                         "required": true
                     },
                     {
                         "type": "string",
-                        "description": "Token ID",
+                        "description": "Token id",
                         "name": "token",
                         "in": "query"
                     },
                     {
                         "type": "string",
                         "default": "USD",
-                        "description": "The currency to show coin info in",
+                        "description": "The currency to show coin assets in",
                         "name": "currency",
                         "in": "query"
                     }
@@ -107,7 +107,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/watchmarket.ChartCoinInfo"
+                            "$ref": "#/definitions/watchmarket.CoinDetails"
                         }
                     }
                 }
@@ -134,7 +134,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/api.TickerRequest"
+                            "$ref": "#/definitions/controllers.TickerRequest"
                         }
                     }
                 ],
@@ -142,7 +142,170 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/watchmarket.Tickers"
+                            "$ref": "#/definitions/controllers.TickerResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/v2/market/charts": {
+            "get": {
+                "description": "Get the charts data from an market and coin/token",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Market"
+                ],
+                "summary": "Get charts data for a specific id",
+                "operationId": "get_charts_data_v2",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "coin",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "default": 1574483028,
+                        "description": "Start timestamp",
+                        "name": "time_start",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 64,
+                        "description": "Max number of items in result prices array",
+                        "name": "max_items",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "default": "USD",
+                        "description": "The currency to show charts",
+                        "name": "currency",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/watchmarket.Chart"
+                        }
+                    }
+                }
+            }
+        },
+        "/v2/market/info": {
+            "get": {
+                "description": "Get the charts coin assets data from an market and coin/contract",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Market"
+                ],
+                "summary": "Get charts coin assets data for a specific coin",
+                "operationId": "get_charts_coin_info_v2",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "coin",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "default": "USD",
+                        "description": "The currency to show coin assets in",
+                        "name": "currency",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/watchmarket.CoinDetails"
+                        }
+                    }
+                }
+            }
+        },
+        "/v2/market/ticker/:id": {
+            "get": {
+                "description": "Get the ticker for specific id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Market"
+                ],
+                "summary": "Get ticker for a specific market",
+                "operationId": "get_ticker",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "default": "\"714_XRP-BF2\"",
+                        "description": "id",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.TickerResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/v2/market/tickers": {
+            "post": {
+                "description": "Get the tickers for list of ids",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Market"
+                ],
+                "summary": "Get tickers for list of ids",
+                "operationId": "get_tickers_v2",
+                "parameters": [
+                    {
+                        "description": "Ticker",
+                        "name": "tickers",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controllers.TickerRequestV2"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.TickerResponseV2"
                         }
                     }
                 }
@@ -150,10 +313,10 @@
         }
     },
     "definitions": {
-        "api.Coin": {
+        "controllers.Coin": {
             "type": "object",
             "properties": {
-                "coin": {
+                "Coin": {
                     "type": "integer"
                 },
                 "token_id": {
@@ -164,42 +327,78 @@
                 }
             }
         },
-        "api.TickerRequest": {
+        "controllers.TickerPrice": {
             "type": "object",
             "properties": {
+                "change_24h": {
+                    "type": "number"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "provider": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "number"
+                }
+            }
+        },
+        "controllers.TickerRequest": {
+            "type": "object",
+            "properties": {
+                "Currency": {
+                    "type": "string"
+                },
                 "assets": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/api.Coin"
+                        "$ref": "#/definitions/controllers.Coin"
                     }
-                },
-                "currency": {
-                    "type": "string"
                 }
             }
         },
-        "watchmarket.ChartCoinInfo": {
+        "controllers.TickerRequestV2": {
             "type": "object",
             "properties": {
-                "circulating_supply": {
-                    "type": "number"
+                "Currency": {
+                    "type": "string"
                 },
-                "info": {
-                    "type": "object",
-                    "$ref": "#/definitions/watchmarket.CoinInfo"
-                },
-                "market_cap": {
-                    "type": "number"
-                },
-                "total_supply": {
-                    "type": "number"
-                },
-                "volume_24": {
-                    "type": "number"
+                "ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             }
         },
-        "watchmarket.ChartData": {
+        "controllers.TickerResponse": {
+            "type": "object",
+            "properties": {
+                "currency": {
+                    "type": "string"
+                },
+                "docs": {
+                    "type": "object",
+                    "$ref": "#/definitions/watchmarket.Tickers"
+                }
+            }
+        },
+        "controllers.TickerResponseV2": {
+            "type": "object",
+            "properties": {
+                "currency": {
+                    "type": "string"
+                },
+                "tickers": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/controllers.TickerPrice"
+                    }
+                }
+            }
+        },
+        "watchmarket.Chart": {
             "type": "object",
             "properties": {
                 "error": {
@@ -210,6 +409,9 @@
                     "items": {
                         "$ref": "#/definitions/watchmarket.ChartPrice"
                     }
+                },
+                "provider": {
+                    "type": "string"
                 }
             }
         },
@@ -224,7 +426,31 @@
                 }
             }
         },
-        "watchmarket.CoinInfo": {
+        "watchmarket.CoinDetails": {
+            "type": "object",
+            "properties": {
+                "circulating_supply": {
+                    "type": "number"
+                },
+                "info": {
+                    "type": "object",
+                    "$ref": "#/definitions/watchmarket.Info"
+                },
+                "market_cap": {
+                    "type": "number"
+                },
+                "provider": {
+                    "type": "string"
+                },
+                "total_supply": {
+                    "type": "number"
+                },
+                "volume_24": {
+                    "type": "number"
+                }
+            }
+        },
+        "watchmarket.Info": {
             "type": "object",
             "properties": {
                 "description": {
@@ -256,6 +482,20 @@
                 }
             }
         },
+        "watchmarket.Price": {
+            "type": "object",
+            "properties": {
+                "change_24h": {
+                    "type": "number"
+                },
+                "provider": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "number"
+                }
+            }
+        },
         "watchmarket.SocialLink": {
             "type": "object",
             "properties": {
@@ -276,41 +516,18 @@
                 "coin": {
                     "type": "integer"
                 },
-                "coin_name": {
-                    "type": "string"
-                },
                 "error": {
-                    "type": "string"
-                },
-                "last_update": {
                     "type": "string"
                 },
                 "price": {
                     "type": "object",
-                    "$ref": "#/definitions/watchmarket.TickerPrice"
+                    "$ref": "#/definitions/watchmarket.Price"
                 },
                 "token_id": {
                     "type": "string"
                 },
                 "type": {
                     "type": "string"
-                }
-            }
-        },
-        "watchmarket.TickerPrice": {
-            "type": "object",
-            "properties": {
-                "change_24h": {
-                    "type": "number"
-                },
-                "currency": {
-                    "type": "string"
-                },
-                "provider": {
-                    "type": "string"
-                },
-                "value": {
-                    "type": "number"
                 }
             }
         },

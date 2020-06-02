@@ -21,9 +21,6 @@ func (w Worker) FetchAndSaveTickers() {
 
 	if err := w.db.AddTickers(normalizedTickers, w.configuration.Worker.BatchLimit, ctx); err != nil {
 		logger.Error(err)
-		if err := w.db.AddTickers(normalizedTickers, minBatchLimit, ctx); err != nil {
-			logger.Error(err)
-		}
 	}
 }
 

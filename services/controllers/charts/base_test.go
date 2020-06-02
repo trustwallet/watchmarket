@@ -1,4 +1,4 @@
-package controllers
+package chartscontroller
 
 import (
 	"context"
@@ -7,16 +7,107 @@ import (
 	"github.com/trustwallet/watchmarket/db/models"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"github.com/trustwallet/watchmarket/services/cache"
+	"github.com/trustwallet/watchmarket/services/controllers"
 	"github.com/trustwallet/watchmarket/services/markets"
 	"testing"
+	"time"
 )
+
+func TestController_HandleChartsRequest(t *testing.T) {
+	rate := models.Rate{
+		Currency:         "USD",
+		PercentChange24h: 1,
+		Provider:         "coinmarketcap",
+		Rate:             1,
+		LastUpdated:      time.Now(),
+	}
+	rate2 := models.Rate{
+		Currency:         "USD",
+		PercentChange24h: 2,
+		Provider:         "coingecko",
+		Rate:             2,
+		LastUpdated:      time.Now(),
+	}
+	rate3 := models.Rate{
+		Currency:         "USD",
+		PercentChange24h: 4,
+		Provider:         "fixer",
+		Rate:             6,
+		LastUpdated:      time.Now(),
+	}
+
+	ticker60ACMC := models.Ticker{
+		Coin:      60,
+		CoinName:  "ETH",
+		TokenId:   "a",
+		Change24h: 10,
+		Currency:  "USD",
+		Provider:  "coinmarketcap",
+		Value:     100,
+	}
+
+	ticker60ACG := models.Ticker{
+		Coin:      60,
+		CoinName:  "ETH",
+		TokenId:   "a",
+		Change24h: 10,
+		Currency:  "USD",
+		Provider:  "coingecko",
+		Value:     100,
+	}
+
+	ticker714ACG := models.Ticker{
+		Coin:      714,
+		CoinName:  "BNB",
+		TokenId:   "a",
+		Change24h: 10,
+		Currency:  "USD",
+		Provider:  "coingecko",
+		Value:     100,
+	}
+
+	ticker714ABNB := models.Ticker{
+		Coin:      714,
+		CoinName:  "BNB",
+		TokenId:   "a",
+		Change24h: 10,
+		Currency:  "USD",
+		Provider:  "binancedex",
+		Value:     100,
+	}
+
+	db := getDbMock()
+
+	db.WantedTickersError = nil
+	db.WantedTickers = []models.Ticker{ticker60ACMC, ticker60ACG, ticker714ACG, ticker714ABNB}
+	db.WantedRatesError = nil
+	db.WantedRates = []models.Rate{rate, rate2, rate3}
+
+	wCharts := watchmarket.Chart{Provider: "coinmarketcap", Error: "", Prices: []watchmarket.ChartPrice{{Price: 1, Date: 1}, {Price: 3, Date: 3}}}
+	cm := getChartsMock()
+	cm.wantedCharts = wCharts
+
+	c := setupController(t, db, getCacheMock(), cm)
+	assert.NotNil(t, c)
+
+	chart, err := c.HandleChartsRequest(controllers.ChartRequest{
+		CoinQuery:    "60",
+		Token:        "a",
+		Currency:     "USD",
+		TimeStartRaw: "1577871126",
+		MaxItems:     "64",
+	}, context.Background())
+	assert.Nil(t, err)
+
+	assert.Equal(t, wCharts, chart)
+}
 
 func TestNewController(t *testing.T) {
 	assert.NotNil(t, setupController(t, getDbMock(), getCacheMock(), getChartsMock()))
 }
 
 func setupController(t *testing.T, d dbMock, ch cache.Provider, cm chartsMock) Controller {
-	c := config.Init("../../config/test.yml")
+	c := config.Init("../../../config/test.yml")
 	assert.NotNil(t, c)
 
 	chartsPriority := []string{"coinmarketcap"}
@@ -121,59 +212,4 @@ func (cm chartsMock) GetCoinData(coinID uint, token, currency string, ctx contex
 
 func (cm chartsMock) GetProvider() string {
 	return "coinmarketcap"
-}
-
-func TestParseID(t *testing.T) {
-	testStruct := []struct {
-		givenID     string
-		wantedCoin  uint
-		wantedToken string
-		wantedType  watchmarket.CoinType
-		wantedError error
-	}{
-		{"714_TWT-8C2",
-			714,
-			"TWT-8C2",
-			watchmarket.Token,
-			nil,
-		},
-	}
-
-	for _, tt := range testStruct {
-		coin, token, givenType, err := ParseID(tt.givenID)
-		assert.Equal(t, tt.wantedCoin, coin)
-		assert.Equal(t, tt.wantedToken, token)
-		assert.Equal(t, tt.wantedType, givenType)
-		assert.Equal(t, tt.wantedError, err)
-	}
-}
-
-func TestBuildID(t *testing.T) {
-	testStruct := []struct {
-		wantedID   string
-		givenCoin  uint
-		givenToken string
-	}{
-		{"714_TWT-8C2",
-			714,
-			"TWT-8C2",
-		},
-		{"60",
-			60,
-			"",
-		},
-		{"0",
-			0,
-			"",
-		},
-		{"0_:fnfjunwpiucU#*0! 02",
-			0,
-			":fnfjunwpiucU#*0! 02",
-		},
-	}
-
-	for _, tt := range testStruct {
-		id := BuildID(tt.givenCoin, tt.givenToken)
-		assert.Equal(t, tt.wantedID, id)
-	}
 }

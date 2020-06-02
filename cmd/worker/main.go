@@ -23,9 +23,7 @@ var (
 
 func init() {
 	_, confPath := internal.ParseArgs("", defaultConfigPath)
-
 	configuration = internal.InitConfig(confPath)
-
 	assets := internal.InitAssets(configuration.Markets.Assets)
 
 	m, err := markets.Init(configuration, assets)
@@ -43,9 +41,7 @@ func init() {
 	}
 
 	w = worker.Init(m.RatesAPIs, m.TickersAPIs, database, configuration)
-
 	c = cron.New(cron.WithChain(cron.Recover(cron.DefaultLogger)))
-
 	logger.InitLogger()
 
 	go postgres.FatalWorker(time.Second*10, *database)

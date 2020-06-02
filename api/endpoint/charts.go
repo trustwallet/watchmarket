@@ -15,15 +15,15 @@ import (
 // @Description Get the charts data from an market and coin/token
 // @Accept json
 // @Produce json
-// @Tags Market
+// @Tags Charts
 // @Param coin query int true "Coin id" default(60)
 // @Param token query string false "Token id"
 // @Param time_start query int false "Start timestamp" default(1574483028)
 // @Param max_items query int false "Max number of items in result prices array" default(64)
 // @Param currency query string false "The currency to show charts" default(USD)
-// @Success 200 {object} watchmarket.ChartData
+// @Success 200 {object} watchmarket.Chart
 // @Router /v1/market/charts [get]
-func GetChartsHandler(controller controllers.Controller) func(c *gin.Context) {
+func GetChartsHandler(controller controllers.ChartsController) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		tx := apm.DefaultTracer.StartTransaction("GET /v1/market/charts", "request")
 		ctx := apm.ContextWithTransaction(context.Background(), tx)
@@ -47,13 +47,25 @@ func GetChartsHandler(controller controllers.Controller) func(c *gin.Context) {
 	}
 }
 
-func GetChartsHandlerV2(controller controllers.Controller) func(c *gin.Context) {
+// @Summary Get charts data for a specific id
+// @Id get_charts_data_v2
+// @Description Get the charts data from an market and coin/token
+// @Accept json
+// @Produce json
+// @Tags Charts
+// @Param coin query string true "id" default("60")
+// @Param time_start query int false "Start timestamp" default(1574483028)
+// @Param max_items query int false "Max number of items in result prices array" default(64)
+// @Param currency query string false "The currency to show charts" default(USD)
+// @Success 200 {object} watchmarket.Chart
+// @Router /v2/market/charts [get]
+func GetChartsHandlerV2(controller controllers.ChartsController) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		tx := apm.DefaultTracer.StartTransaction("GET /v2/market/charts/:id", "request")
 		ctx := apm.ContextWithTransaction(context.Background(), tx)
 		defer tx.End()
 
-		coin, token, _, err := controllers.ParseID(c.Param("id"))
+		coin, token, _, err := watchmarket.ParseID(c.Param("id"))
 		if err != nil {
 			handleError(c, err)
 		}

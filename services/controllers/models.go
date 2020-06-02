@@ -1,38 +1,8 @@
 package controllers
 
-import (
-	"github.com/trustwallet/watchmarket/db/models"
-	"github.com/trustwallet/watchmarket/pkg/watchmarket"
-	"sync"
-)
-
-const (
-	ErrNotFound   = "not found"
-	ErrBadRequest = "bad request"
-	ErrInternal   = "internal"
-)
+import "github.com/trustwallet/watchmarket/pkg/watchmarket"
 
 type (
-	ChartRequest struct {
-		CoinQuery, Token, Currency, TimeStartRaw, MaxItems string
-	}
-
-	ChartsNormalizedRequest struct {
-		Coin            uint
-		Token, Currency string
-		TimeStart       int64
-		MaxItems        int
-	}
-
-	DetailsRequest struct {
-		CoinQuery, Token, Currency string
-	}
-
-	DetailsNormalizedRequest struct {
-		Coin            uint
-		Token, Currency string
-	}
-
 	TickerRequest struct {
 		Currency string `json:"Currency"`
 		Assets   []Coin `json:"assets"`
@@ -66,8 +36,11 @@ type (
 		ID        string
 	}
 
-	sortedTickersResponse struct {
-		sync.Mutex
-		tickers []models.Ticker
+	ChartRequest struct {
+		CoinQuery, Token, Currency, TimeStartRaw, MaxItems string
+	}
+
+	DetailsRequest struct {
+		CoinQuery, Token, Currency string
 	}
 )

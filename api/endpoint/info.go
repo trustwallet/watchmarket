@@ -15,13 +15,13 @@ import (
 // @Description Get the charts coin assets data from an market and coin/contract
 // @Accept json
 // @Produce json
-// @Tags Market
-// @Param coin query int true "Coin id" default(60)
+// @Tags Info
+// @Param coin query string true "Coin id" default(60)
 // @Param token query string false "Token id"
 // @Param currency query string false "The currency to show coin assets in" default(USD)
-// @Success 200 {object} watchmarket.ChartCoinInfo
+// @Success 200 {object} watchmarket.CoinDetails
 // @Router /v1/market/info [get]
-func GetCoinInfoHandler(controller controllers.Controller) func(c *gin.Context) {
+func GetCoinInfoHandler(controller controllers.InfoController) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		tx := apm.DefaultTracer.StartTransaction("GET /v1/market/info", "request")
 		ctx := apm.ContextWithTransaction(context.Background(), tx)
@@ -42,13 +42,23 @@ func GetCoinInfoHandler(controller controllers.Controller) func(c *gin.Context) 
 	}
 }
 
-func GetCoinInfoHandlerV2(controller controllers.Controller) func(c *gin.Context) {
+// @Summary Get charts coin assets data for a specific coin
+// @Id get_charts_coin_info_v2
+// @Description Get the charts coin assets data from an market and coin/contract
+// @Accept json
+// @Produce json
+// @Tags Info
+// @Param coin query int true "id" default("60")
+// @Param currency query string false "The currency to show coin assets in" default(USD)
+// @Success 200 {object} watchmarket.CoinDetails
+// @Router /v2/market/info [get]
+func GetCoinInfoHandlerV2(controller controllers.InfoController) func(c *gin.Context) {
 	return func(c *gin.Context) {
-		tx := apm.DefaultTracer.StartTransaction("GET /v1/market/info/:id", "request")
+		tx := apm.DefaultTracer.StartTransaction("GET /v2/market/info/:id", "request")
 		ctx := apm.ContextWithTransaction(context.Background(), tx)
 		defer tx.End()
 
-		coin, token, _, err := controllers.ParseID(c.Param("id"))
+		coin, token, _, err := watchmarket.ParseID(c.Param("id"))
 		if err != nil {
 			handleError(c, err)
 		}

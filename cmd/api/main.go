@@ -10,6 +10,9 @@ import (
 	"github.com/trustwallet/watchmarket/services/assets"
 	rediscache "github.com/trustwallet/watchmarket/services/cache/redis"
 	"github.com/trustwallet/watchmarket/services/controllers"
+	chartscontroller "github.com/trustwallet/watchmarket/services/controllers/charts"
+	infocontroller "github.com/trustwallet/watchmarket/services/controllers/info"
+	tickerscontroller "github.com/trustwallet/watchmarket/services/controllers/tickers"
 	"github.com/trustwallet/watchmarket/services/markets"
 	"time"
 )
@@ -22,7 +25,9 @@ const (
 var (
 	port, confPath string
 	engine         *gin.Engine
-	controller     controllers.Controller
+	tickers        controllers.TickersController
+	charts         controllers.ChartsController
+	info           controllers.InfoController
 )
 
 func init() {
@@ -55,13 +60,15 @@ func init() {
 	r := internal.InitRedis(configuration.Storage.Redis)
 	cache := rediscache.Init(*r, configuration.RestAPI.Cache)
 
-	controller = controllers.NewController(cache, database, chartsPriority, coinInfoPriority, ratesPriority, tickerPriority, m.ChartsAPIs, configuration)
+	charts = chartscontroller.NewController(cache, database, chartsPriority, coinInfoPriority, ratesPriority, tickerPriority, m.ChartsAPIs, configuration)
+	info = infocontroller.NewController(cache, chartsPriority, coinInfoPriority, ratesPriority, tickerPriority, m.ChartsAPIs, configuration)
+	tickers = tickerscontroller.NewController(database, ratesPriority, tickerPriority, configuration)
 	engine = internal.InitEngine(configuration.RestAPI.Mode)
 
 	go postgres.FatalWorker(time.Second*10, *database)
 }
 
 func main() {
-	api.SetupMarketAPI(engine, controller)
+	api.SetupMarketAPI(engine, tickers, charts, info)
 	internal.SetupGracefulShutdown(port, engine)
 }

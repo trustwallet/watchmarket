@@ -16,11 +16,11 @@ import (
 // @Description Get the ticker values from many market and coin/token
 // @Accept json
 // @Produce json
-// @Tags Market
-// @Param tickers body api.TickerRequest true "Ticker"
-// @Success 200 {object} watchmarket.Tickers
+// @Tags Tickers
+// @Param tickers body controllers.TickerRequest true "Ticker"
+// @Success 200 {object} controllers.TickerResponse
 // @Router /v1/market/ticker [post]
-func GetTickersHandler(controller controllers.Controller) func(c *gin.Context) {
+func GetTickersHandler(controller controllers.TickersController) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		tx := apm.DefaultTracer.StartTransaction("POST /v1/market/ticker", "request")
 		ctx := apm.ContextWithTransaction(context.Background(), tx)
@@ -45,26 +45,42 @@ func GetTickersHandler(controller controllers.Controller) func(c *gin.Context) {
 	}
 }
 
-func GetTickerHandlerV2(controller controllers.Controller) func(c *gin.Context) {
+// @Summary Get ticker for a specific market
+// @Id get_ticker
+// @Description Get the ticker for specific id
+// @Accept json
+// @Produce json
+// @Tags Tickers
+// @Param id query string true "id" default("714_XRP-BF2")
+// @Success 200 {object} controllers.TickerResponse
+// @Router /v2/market/ticker/:id [get]
+func GetTickerHandlerV2(controller controllers.TickersController) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		tx := apm.DefaultTracer.StartTransaction("GET /v2/market/ticker/:id", "request")
 		ctx := apm.ContextWithTransaction(context.Background(), tx)
 		defer tx.End()
 
 		currency := c.DefaultQuery("currency", watchmarket.DefaultCurrency)
-
 		request := controllers.TickerRequestV2{Currency: currency, Ids: []string{c.Param("id")}}
 		response, err := controller.HandleTickersRequestV2(request, ctx)
 		if err != nil {
 			handleError(c, err)
 			return
 		}
-
 		c.JSON(http.StatusOK, response)
 	}
 }
 
-func GetTickersHandlerV2(controller controllers.Controller) func(c *gin.Context) {
+// @Summary Get tickers for list of ids
+// @Id get_tickers_v2
+// @Description Get the tickers for list of ids
+// @Accept json
+// @Produce json
+// @Tags Tickers
+// @Param tickers body controllers.TickerRequestV2 true "Ticker"
+// @Success 200 {object} controllers.TickerResponseV2
+// @Router /v2/market/tickers [post]
+func GetTickersHandlerV2(controller controllers.TickersController) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		tx := apm.DefaultTracer.StartTransaction("POST /v2/market/tickers", "request")
 		ctx := apm.ContextWithTransaction(context.Background(), tx)

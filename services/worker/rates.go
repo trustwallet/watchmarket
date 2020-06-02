@@ -22,9 +22,6 @@ func (w Worker) FetchAndSaveRates() {
 
 	if err := w.db.AddRates(normalizedRates, w.configuration.Worker.BatchLimit, ctx); err != nil {
 		logger.Error(err)
-		if err := w.db.AddRates(normalizedRates, minBatchLimit, ctx); err != nil {
-			logger.Error(err)
-		}
 	}
 }
 
