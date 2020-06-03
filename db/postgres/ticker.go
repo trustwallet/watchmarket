@@ -47,7 +47,7 @@ func toTickersBatch(tickers []models.Ticker, sizeUint uint) [][]models.Ticker {
 func normalizeTickers(tickers []models.Ticker) []models.Ticker {
 	normalizedTickers := make([]models.Ticker, 0, len(tickers))
 	for _, t := range tickers {
-		if !isBadTicker(t.Coin, t.CoinName, t.CoinType, t.TokenId, t.Currency, t.Provider, t.Value, t.Change24h, tickers) {
+		if !isBadTicker(t.Coin, t.CoinName, t.CoinType, t.TokenId, t.Currency, t.Provider, t.Value, t.Change24h, t.Volume, t.MarketCap, tickers) {
 			normalizedTickers = append(normalizedTickers, t)
 		}
 	}
@@ -69,14 +69,14 @@ sampleLoop:
 	return unique
 }
 
-func isBadTicker(coin uint, coinName, coinType, tokenId, currency, provider string, value, change24 float64, tickers []models.Ticker) bool {
+func isBadTicker(coin uint, coinName, coinType, tokenId, currency, provider string, value, change24, volume, marketCap float64, tickers []models.Ticker) bool {
 	for _, t := range tickers {
 		if t.Coin == coin &&
 			t.CoinName == coinName &&
 			t.CoinType == coinType &&
 			t.TokenId == tokenId &&
 			t.Currency == currency &&
-			t.Provider == provider && (t.Value != value || t.Change24h != change24) {
+			t.Provider == provider && (t.Value != value || t.Change24h != change24 || t.Volume != volume || t.MarketCap != marketCap) {
 			return true
 		}
 	}

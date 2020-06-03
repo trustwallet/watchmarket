@@ -76,3 +76,66 @@ func TestAddTickers(t *testing.T) {
 	assert.Equal(t, float64(100500), result2[0].Value)
 	assert.Equal(t, float64(666), result2[0].Change24h)
 }
+
+func TestAddTickersMult(t *testing.T) {
+	setup.CleanupPgContainer(databaseInstance.Gorm)
+	tickers := []models.Ticker{{
+		Coin:      70,
+		CoinName:  "70",
+		CoinType:  "70",
+		TokenId:   "70",
+		Change24h: 70,
+		Currency:  "70",
+		Provider:  "70",
+		Value:     70,
+		MarketCap: 1,
+	}, {
+		Coin:      70,
+		CoinName:  "70",
+		CoinType:  "70",
+		TokenId:   "70",
+		Change24h: 70,
+		Currency:  "70",
+		Provider:  "70",
+		Value:     70,
+	}, {
+		Coin:      60,
+		CoinName:  "60",
+		CoinType:  "60",
+		TokenId:   "60",
+		Change24h: 60,
+		Currency:  "60",
+		Provider:  "61",
+		Value:     60,
+	}}
+
+	d := db.Instance(databaseInstance)
+	err := d.AddTickers(tickers, 3000, context.Background())
+	assert.Nil(t, err)
+
+	err = d.AddTickers(tickers, 3000, context.Background())
+	assert.Nil(t, err)
+
+	result1, err := d.GetTickers(60, "60", context.Background())
+	assert.Nil(t, err)
+	assert.Len(t, result1, 1)
+	assert.Equal(t, uint(60), result1[0].Coin)
+
+	tickers = append(tickers, models.Ticker{
+		Coin:      60,
+		CoinName:  "60",
+		CoinType:  "60",
+		TokenId:   "60",
+		Change24h: 60,
+		Currency:  "60",
+		Provider:  "61",
+		Value:     60,
+	})
+
+	err = d.AddTickers(tickers, 3000, context.Background())
+	assert.Nil(t, err)
+
+	result1, err = d.GetTickers(60, "60", context.Background())
+	assert.Nil(t, err)
+	assert.Len(t, result1, 1)
+}
