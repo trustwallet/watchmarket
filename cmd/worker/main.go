@@ -8,6 +8,9 @@ import (
 	"github.com/trustwallet/watchmarket/internal"
 	"github.com/trustwallet/watchmarket/services/markets"
 	"github.com/trustwallet/watchmarket/services/worker"
+	"os"
+	"os/signal"
+	"syscall"
 	"time"
 )
 
@@ -48,10 +51,17 @@ func init() {
 }
 
 func main() {
-	c = w.AddRatesOperation(c, configuration.Worker.Rates)
-	c = w.AddTickersOperation(c, configuration.Worker.Tickers)
+	w.AddRatesOperation(c, configuration.Worker.Rates)
+	w.AddTickersOperation(c, configuration.Worker.Tickers)
+
 	go c.Start()
 	go w.FetchAndSaveRates()
 	go w.FetchAndSaveTickers()
-	<-make(chan bool)
+
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
+	logger.Info("Shutdown worker gracefully...")
+	ctx := c.Stop()
+	<-ctx.Done()
 }
