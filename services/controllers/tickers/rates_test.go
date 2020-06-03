@@ -10,26 +10,27 @@ import (
 )
 
 func TestController_getRateByPriority(t *testing.T) {
+	now := time.Now()
 	rate := models.Rate{
 		Currency:         "USD",
 		PercentChange24h: 1,
 		Provider:         "coinmarketcap",
 		Rate:             1,
-		LastUpdated:      time.Now(),
+		LastUpdated:      now,
 	}
 	rate2 := models.Rate{
 		Currency:         "USD",
 		PercentChange24h: 2,
 		Provider:         "coingecko",
 		Rate:             2,
-		LastUpdated:      time.Now(),
+		LastUpdated:      now,
 	}
 	rate3 := models.Rate{
 		Currency:         "USD",
 		PercentChange24h: 4,
 		Provider:         "fixer",
 		Rate:             6,
-		LastUpdated:      time.Now(),
+		LastUpdated:      now,
 	}
 
 	db := getDbMock()
@@ -49,6 +50,6 @@ func TestController_getRateByPriority(t *testing.T) {
 		PercentChange24h: 4,
 		Provider:         "fixer",
 		Rate:             6,
-		Timestamp:        time.Now().Unix(),
+		Timestamp:        now.Unix(),
 	}, r)
 }
