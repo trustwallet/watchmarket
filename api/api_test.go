@@ -6,9 +6,9 @@ import (
 	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
+	"github.com/trustwallet/blockatlas/pkg/logger"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"github.com/trustwallet/watchmarket/services/controllers"
-	"io"
 	"io/ioutil"
 	"net/http"
 	"testing"
@@ -20,7 +20,11 @@ func TestSetupBasicAPI(t *testing.T) {
 
 	SetupBasicAPI(e)
 
-	go e.Run(":8080")
+	go func() {
+		if err := e.Run(":8080"); err != nil {
+			logger.Error(err)
+		}
+	}()
 
 	resp3, err := http.Get("http://localhost:8080/")
 	assert.Nil(t, err)
@@ -35,21 +39,30 @@ func TestSetupTickersAPI(t *testing.T) {
 
 	wantedTickers := controllers.TickerResponse{
 		Currency: "USD",
-		Tickers: []watchmarket.Ticker{{Coin: 60, TokenId: "a", Price: watchmarket.Price{
-			Change24h: 2,
-			Currency:  "",
-			Provider:  "coinmarketcap",
-			Value:     1,
-		}}},
+		Tickers: []watchmarket.Ticker{
+			{
+				Coin: 60, TokenId: "a",
+				Price: watchmarket.Price{
+					Change24h: 2,
+					Currency:  "",
+					Provider:  "coinmarketcap",
+					Value:     1,
+				},
+			},
+		},
 	}
 	wantedTickersV2 := controllers.TickerResponseV2{
 		Currency: "USD",
-		Tickers:  []controllers.TickerPrice{{2, "coinmarketcap", 1, "60_a"}},
+		Tickers:  []controllers.TickerPrice{{Change24h: 2, Provider: "coinmarketcap", Price: 1, ID: "60_a"}},
 	}
 
 	SetupTickersAPI(e, getTickersMock(wantedTickers, wantedTickersV2, nil), time.Minute)
 
-	go e.Run(":8083")
+	go func() {
+		if err := e.Run(":8083"); err != nil {
+			logger.Error(err)
+		}
+	}()
 
 	givenV1Resp := controllers.TickerResponse{}
 
@@ -118,7 +131,11 @@ func TestSetupChartsAPI(t *testing.T) {
 	}
 	SetupChartsAPI(e, getChartsMock(wantedCharts, nil), time.Minute)
 
-	go e.Run(":8082")
+	go func() {
+		if err := e.Run(":8082"); err != nil {
+			logger.Error(err)
+		}
+	}()
 
 	resp, err := http.Get("http://localhost:8082/v2/market/charts/60_a")
 	assert.Nil(t, err)
@@ -129,6 +146,7 @@ func TestSetupChartsAPI(t *testing.T) {
 	assert.Nil(t, err)
 
 	err = json.Unmarshal(body, &givenResp)
+	assert.Nil(t, err)
 
 	assert.Equal(t, wantedCharts, givenResp)
 
@@ -141,6 +159,7 @@ func TestSetupChartsAPI(t *testing.T) {
 	assert.Nil(t, err)
 
 	err = json.Unmarshal(body2, &givenResp2)
+	assert.Nil(t, err)
 
 	assert.Equal(t, wantedCharts, givenResp2)
 	assert.Nil(t, err)
@@ -174,7 +193,11 @@ func TestSetupInfoAPI(t *testing.T) {
 	}
 	SetupInfoAPI(e, getInfoMock(wantedInfo, nil), time.Minute)
 
-	go e.Run(":8081")
+	go func() {
+		if err := e.Run(":8081"); err != nil {
+			logger.Error(err)
+		}
+	}()
 
 	resp, err := http.Get("http://localhost:8081/v2/market/info/60_a")
 	assert.Nil(t, err)
@@ -185,6 +208,7 @@ func TestSetupInfoAPI(t *testing.T) {
 	assert.Nil(t, err)
 
 	err = json.Unmarshal(body, &givenResp)
+	assert.Nil(t, err)
 
 	assert.Equal(t, wantedInfo, givenResp)
 
@@ -205,9 +229,13 @@ func TestSetupInfoAPI(t *testing.T) {
 func TestSetupSwaggerAPI(t *testing.T) {
 	e := setupEngine()
 	SetupSwaggerAPI(e)
-	go e.Run(":8084")
+	go func() {
+		if err := e.Run(":8084"); err != nil {
+			logger.Error(err)
+		}
+	}()
 
-	resp, err := http.Get("http://localhost:8084/")
+	resp, err := http.Get("http://localhost:8084/swagger/index.html")
 	assert.Nil(t, err)
 
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
@@ -251,26 +279,6 @@ func getTickersMock(wantedTickersV1 controllers.TickerResponse, wantedTickersV2 
 		wantedTickersV2,
 		wantedError,
 	}
-}
-
-func makeRequest(t *testing.T, method string, url string, body io.Reader) *http.Request {
-	r, err := http.NewRequest(method, url, body)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if err != nil {
-		t.Fatal(err)
-	}
-	return r
-}
-
-func parseJson(t *testing.T, data []byte) interface{} {
-	var value interface{}
-	err := json.Unmarshal(data, &value)
-	if err != nil {
-		t.Fatal(err)
-	}
-	return value
 }
 
 func (c chartsControllerMock) HandleChartsRequest(cr controllers.ChartRequest, ctx context.Context) (watchmarket.Chart, error) {

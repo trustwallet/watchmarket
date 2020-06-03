@@ -16,7 +16,3 @@ type (
 		sync.Mutex
 	}
 )
-
-const (
-	minBatchLimit = 2
-)

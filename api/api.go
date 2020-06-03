@@ -6,7 +6,6 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"github.com/swaggo/gin-swagger/swaggerFiles"
-	"github.com/trustwallet/blockatlas/pkg/logger"
 	"github.com/trustwallet/watchmarket/api/endpoint"
 	"github.com/trustwallet/watchmarket/api/middleware"
 	_ "github.com/trustwallet/watchmarket/docs"
@@ -21,7 +20,6 @@ func SetupBasicAPI(engine *gin.Engine) {
 }
 
 func SetupSwaggerAPI(engine *gin.Engine) {
-	logger.Info("Loading Swagger API")
 	engine.GET("swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 }
 

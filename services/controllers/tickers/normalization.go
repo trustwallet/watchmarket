@@ -21,7 +21,7 @@ func createResponse(tr controllers.TickerRequest, tickers watchmarket.Tickers) c
 		}
 		mergedTickers = append(mergedTickers, newTicker)
 	}
-	return controllers.TickerResponse{tr.Currency, mergedTickers}
+	return controllers.TickerResponse{Currency: tr.Currency, Tickers: mergedTickers}
 }
 
 func createResponseV2(tr controllers.TickerRequestV2, tickers watchmarket.Tickers) controllers.TickerResponseV2 {

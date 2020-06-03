@@ -13,8 +13,14 @@ GOBASE := $(shell pwd)
 GOBIN := $(GOBASE)/bin
 GOPKG := $(.)
 
+
+DOCKER_LOCAL_DB_IMAGE_NAME := test_db
+DOCKER_LOCAL_DB_USER :=user
+DOCKER_LOCAL_DB_PASS :=pass
+DOCKER_LOCAL_DB := my_db
+
 # Environment variables
-CONFIG_FILE=$(GOBASE)/config.yml
+CONFIG_FILE=config.yml
 
 # Go files
 GOFMT_FILES?=$$(find . -name '*.go' | grep -v vendor)
@@ -104,6 +110,17 @@ lint: go-lint-install go-lint
 
 ## docs: Generate swagger docs.
 docs: go-gen-docs
+
+start-docker-services:
+	docker run -d -p 5432:5432 --name $(DOCKER_LOCAL_DB_IMAGE_NAME) -e POSTGRES_USER=$(DOCKER_LOCAL_DB_USER) -e POSTGRES_PASSWORD=$(DOCKER_LOCAL_DB_PASS) -e POSTGRES_DB=$(DOCKER_LOCAL_DB) postgres
+	docker run -d -p 6379:6379 redis
+
+seed-db:
+	@echo "  >  Seeding db"
+	sleep 1
+	docker cp seed/. $(DOCKER_LOCAL_DB_IMAGE_NAME):/docker-entrypoint-initdb.d/
+	docker exec -it $(DOCKER_LOCAL_DB_IMAGE_NAME) psql -U $(DOCKER_LOCAL_DB_USER) -d $(DOCKER_LOCAL_DB) -f /docker-entrypoint-initdb.d/watchmarket_public_tickers.sql
+	docker exec -it $(DOCKER_LOCAL_DB_IMAGE_NAME) psql -U $(DOCKER_LOCAL_DB_USER) -d $(DOCKER_LOCAL_DB) -f /docker-entrypoint-initdb.d/watchmarket_public_rates.sql
 
 ## install-newman: Install Postman Newman for tests.
 install-newman:
