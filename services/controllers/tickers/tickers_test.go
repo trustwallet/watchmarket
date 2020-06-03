@@ -1,0 +1,106 @@
+package tickerscontroller
+
+import (
+	"context"
+	"github.com/stretchr/testify/assert"
+	"github.com/trustwallet/watchmarket/db/models"
+	"github.com/trustwallet/watchmarket/pkg/watchmarket"
+	"github.com/trustwallet/watchmarket/services/controllers"
+	"testing"
+)
+
+func TestController_getTickersByPriority(t *testing.T) {
+	ticker60ACMC := models.Ticker{
+		Coin:      60,
+		CoinName:  "ETH",
+		TokenId:   "a",
+		Change24h: 10,
+		Currency:  "USD",
+		Provider:  "coinmarketcap",
+		Value:     100,
+	}
+
+	ticker60ACG := models.Ticker{
+		Coin:      60,
+		CoinName:  "ETH",
+		TokenId:   "a",
+		Change24h: 10,
+		Currency:  "USD",
+		Provider:  "coingecko",
+		Value:     100,
+	}
+
+	ticker714ACG := models.Ticker{
+		Coin:      714,
+		CoinName:  "BNB",
+		TokenId:   "a",
+		Change24h: 10,
+		Currency:  "USD",
+		Provider:  "coingecko",
+		Value:     100,
+	}
+
+	ticker714ABNB := models.Ticker{
+		Coin:      714,
+		CoinName:  "BNB",
+		TokenId:   "a",
+		Change24h: 10,
+		Currency:  "USD",
+		Provider:  "binancedex",
+		Value:     100,
+	}
+
+	db := getDbMock()
+
+	db.WantedTickersError = nil
+	db.WantedTickers = []models.Ticker{ticker60ACMC, ticker60ACG, ticker714ACG, ticker714ABNB}
+	c := setupController(t, db)
+	assert.NotNil(t, c)
+
+	tickers, err := c.getTickersByPriority(makeTickerQueries(
+		[]controllers.Coin{{Coin: 60, TokenId: "A"}, {Coin: 714, TokenId: "A"}},
+	), context.Background())
+	assert.Nil(t, err)
+	assert.NotNil(t, tickers)
+	assert.Equal(t, 2, len(tickers))
+
+	wantedTicker1 := watchmarket.Ticker{
+		Coin:     60,
+		CoinName: "ETH",
+		CoinType: "",
+		Price: watchmarket.Price{
+			Change24h: 10,
+			Currency:  "USD",
+			Provider:  "coinmarketcap",
+			Value:     100,
+		},
+		TokenId: "a",
+	}
+	wantedTicker2 := watchmarket.Ticker{
+		Coin:     714,
+		CoinName: "BNB",
+		CoinType: "",
+		Price: watchmarket.Price{
+			Change24h: 10,
+			Currency:  "USD",
+			Provider:  "coingecko",
+			Value:     100,
+		},
+		TokenId: "a",
+	}
+	var counter int
+	for _, t := range tickers {
+		if t == wantedTicker1 || t == wantedTicker2 {
+			counter++
+		}
+	}
+	assert.Equal(t, 2, counter)
+	db2 := getDbMock()
+	db2.WantedTickers = []models.Ticker{ticker60ACMC, ticker60ACG}
+	c2 := setupController(t, db2)
+	tickers2, err := c2.getTickersByPriority(makeTickerQueries([]controllers.Coin{{Coin: 60, TokenId: "A"}}), context.Background())
+	assert.Nil(t, err)
+	assert.NotNil(t, tickers2)
+	assert.Equal(t, 1, len(tickers2))
+	assert.Equal(t, wantedTicker1, tickers2[0])
+}

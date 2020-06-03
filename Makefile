@@ -6,15 +6,20 @@ BUILD := $(shell git rev-parse --short HEAD)
 PROJECT_NAME := $(shell basename "$(PWD)")
 MARKET_SERVICE := worker
 MARKET_API := api
-SWAGGER_API := swagger_api
 
 # Go related variables.
 GOBASE := $(shell pwd)
 GOBIN := $(GOBASE)/bin
 GOPKG := $(.)
 
+
+DOCKER_LOCAL_DB_IMAGE_NAME := test_db
+DOCKER_LOCAL_DB_USER :=user
+DOCKER_LOCAL_DB_PASS :=pass
+DOCKER_LOCAL_DB := my_db
+
 # Environment variables
-CONFIG_FILE=$(GOBASE)/config.yml
+CONFIG_FILE=config.yml
 
 # Go files
 GOFMT_FILES?=$$(find . -name '*.go' | grep -v vendor)
@@ -28,7 +33,7 @@ STDERR := /tmp/.$(PROJECT_NAME)-stderr.txt
 # PID file will keep the process id of the server
 PID_MARKET := /tmp/.$(PROJECT_NAME).$(MARKET_SERVICE).pid
 PID_MARKET_API := /tmp/.$(PROJECT_NAME).$(MARKET_API).pid
-PID_SWAGGER_API := /tmp/.$(PROJECT_NAME).$(SWAGGER_API).pid
+
 # Make is verbose in Linux. Make it silent.
 MAKEFLAGS += --silent
 
@@ -39,7 +44,7 @@ install: go-get
 
 ## start: Start market API server, Observer, and swagger server in development mode.
 start:
-	@bash -c "$(MAKE) clean compile start-market-observer start-market-api start-swagger-api"
+	@bash -c "$(MAKE) clean compile start-market-observer start-market-api"
 
 ## start-market-observer: Start market observer in development mode.
 start-market-observer: stop
@@ -55,20 +60,12 @@ start-market-api: stop
 	@cat $(PID_MARKET_API) | sed "/^/s/^/  \>  Sync PID: /"
 	@echo "  >  Error log: $(STDERR)"
 
-## start-swagger-api: Start Swagger server in development mode.
-start-swagger-api: stop
-	@echo "  >  Starting $(PROJECT_NAME) Sync API"
-	@-$(GOBIN)/$(SWAGGER_API)/swagger_api -c $(CONFIG_FILE) 2>&1 & echo $$! > $(PID_SWAGGER_API)
-	@cat $(PID_SWAGGER_API) | sed "/^/s/^/  \>  Sync PID: /"
-	@echo "  >  Error log: $(STDERR)"
-
 ## stop: Stop development mode.
 stop:
-	@-touch $(PID_MARKET) $(PID_MARKET_API) $(PID_SWAGGER_API)
+	@-touch $(PID_MARKET) $(PID_MARKET_API)
 	@-kill `cat $(PID_MARKET)` 2> /dev/null || true
 	@-kill `cat $(PID_MARKET_API)` 2> /dev/null || true
-	@-kill `cat $(PID_SWAGGER_API)` 2> /dev/null || true
-	@-rm $(PID_MARKET) $(PID_MARKET_API) $(PID_SWAGGER_API)
+	@-rm $(PID_MARKET) $(PID_MARKET_API)
 
 ## compile: Compile the project.
 compile:
@@ -105,6 +102,17 @@ lint: go-lint-install go-lint
 ## docs: Generate swagger docs.
 docs: go-gen-docs
 
+start-docker-services:
+	docker run -d -p 5432:5432 --name $(DOCKER_LOCAL_DB_IMAGE_NAME) -e POSTGRES_USER=$(DOCKER_LOCAL_DB_USER) -e POSTGRES_PASSWORD=$(DOCKER_LOCAL_DB_PASS) -e POSTGRES_DB=$(DOCKER_LOCAL_DB) postgres
+	docker run -d -p 6379:6379 redis
+
+seed-db:
+	@echo "  >  Seeding db"
+	sleep 1
+	docker cp seed/. $(DOCKER_LOCAL_DB_IMAGE_NAME):/docker-entrypoint-initdb.d/
+	docker exec -it $(DOCKER_LOCAL_DB_IMAGE_NAME) psql -U $(DOCKER_LOCAL_DB_USER) -d $(DOCKER_LOCAL_DB) -f /docker-entrypoint-initdb.d/watchmarket_public_tickers.sql
+	docker exec -it $(DOCKER_LOCAL_DB_IMAGE_NAME) psql -U $(DOCKER_LOCAL_DB_USER) -d $(DOCKER_LOCAL_DB) -f /docker-entrypoint-initdb.d/watchmarket_public_rates.sql
+
 ## install-newman: Install Postman Newman for tests.
 install-newman:
 ifeq (,$(shell which newman))
@@ -133,8 +141,6 @@ go-build:
 	GOBIN=$(GOBIN) go build $(LDFLAGS) -o $(GOBIN)/$(MARKET_SERVICE)/worker ./cmd/$(MARKET_SERVICE)
 	@echo "  >  Building api binary..."
 	GOBIN=$(GOBIN) go build $(LDFLAGS) -o $(GOBIN)/$(MARKET_API)/api ./cmd/$(MARKET_API)
-	@echo "  >  Building swagger_api binary..."
-	GOBIN=$(GOBIN) go build $(LDFLAGS) -o $(GOBIN)/$(SWAGGER_API)/swagger_api ./cmd/$(SWAGGER_API)
 
 go-generate:
 	@echo "  >  Generating dependency files..."

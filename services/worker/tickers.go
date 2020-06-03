@@ -19,7 +19,7 @@ func (w Worker) FetchAndSaveTickers() {
 	fetchedTickers := fetchTickers(w.tickersApis, ctx)
 	normalizedTickers := toTickersModel(fetchedTickers)
 
-	if err := w.db.AddTickers(normalizedTickers, ctx); err != nil {
+	if err := w.db.AddTickers(normalizedTickers, w.configuration.Worker.BatchLimit, ctx); err != nil {
 		logger.Error(err)
 	}
 }

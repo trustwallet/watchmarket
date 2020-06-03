@@ -3,13 +3,16 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/trustwallet/blockatlas/pkg/logger"
-	"github.com/trustwallet/watchmarket/api"
+	"github.com/trustwallet/watchmarket/config"
 	"github.com/trustwallet/watchmarket/db/postgres"
 	_ "github.com/trustwallet/watchmarket/docs"
 	"github.com/trustwallet/watchmarket/internal"
 	"github.com/trustwallet/watchmarket/services/assets"
 	rediscache "github.com/trustwallet/watchmarket/services/cache/redis"
 	"github.com/trustwallet/watchmarket/services/controllers"
+	chartscontroller "github.com/trustwallet/watchmarket/services/controllers/charts"
+	infocontroller "github.com/trustwallet/watchmarket/services/controllers/info"
+	tickerscontroller "github.com/trustwallet/watchmarket/services/controllers/tickers"
 	"github.com/trustwallet/watchmarket/services/markets"
 	"time"
 )
@@ -22,13 +25,16 @@ const (
 var (
 	port, confPath string
 	engine         *gin.Engine
-	controller     controllers.Controller
+	configuration  config.Configuration
+	tickers        controllers.TickersController
+	charts         controllers.ChartsController
+	info           controllers.InfoController
 )
 
 func init() {
 	port, confPath = internal.ParseArgs(defaultPort, defaultConfigPath)
 
-	configuration := internal.InitConfig(confPath)
+	configuration = internal.InitConfig(confPath)
 	logger.InitLogger()
 	port = configuration.RestAPI.Port
 	chartsPriority := configuration.Markets.Priority.Charts
@@ -55,13 +61,17 @@ func init() {
 	r := internal.InitRedis(configuration.Storage.Redis)
 	cache := rediscache.Init(*r, configuration.RestAPI.Cache)
 
-	controller = controllers.NewController(cache, database, chartsPriority, coinInfoPriority, ratesPriority, tickerPriority, m.ChartsAPIs, configuration)
+	charts = chartscontroller.NewController(cache, database, chartsPriority, coinInfoPriority, ratesPriority, tickerPriority, m.ChartsAPIs, configuration)
+	info = infocontroller.NewController(cache, chartsPriority, coinInfoPriority, ratesPriority, tickerPriority, m.ChartsAPIs, configuration)
+	tickers = tickerscontroller.NewController(database, ratesPriority, tickerPriority, configuration)
 	engine = internal.InitEngine(configuration.RestAPI.Mode)
 
 	go postgres.FatalWorker(time.Second*10, *database)
 }
 
 func main() {
-	api.SetupMarketAPI(engine, controller)
+	if err := internal.InitAPI(engine, tickers, charts, info, configuration); err != nil {
+		panic(err)
+	}
 	internal.SetupGracefulShutdown(port, engine)
 }

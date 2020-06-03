@@ -12,11 +12,10 @@ import (
 )
 
 const (
-	batchLimit           = 3000
 	rawBulkTickersInsert = `INSERT INTO tickers(updated_at,created_at,coin,coin_name,coin_type,token_id,change24h,currency,provider,value,last_updated,volume,market_cap,show_option) VALUES %s ON CONFLICT ON CONSTRAINT tickers_pkey DO UPDATE SET value = excluded.value, change24h = excluded.change24h, updated_at = excluded.updated_at, last_updated = excluded.last_updated, volume = excluded.volume, market_cap = excluded.market_cap`
 )
 
-func (i *Instance) AddTickers(tickers []models.Ticker, ctx context.Context) error {
+func (i *Instance) AddTickers(tickers []models.Ticker, batchLimit uint, ctx context.Context) error {
 	g := apmgorm.WithContext(ctx, i.Gorm)
 	span, _ := apm.StartSpan(ctx, "AddTickers", "postgresql")
 	defer span.End()
@@ -48,7 +47,7 @@ func toTickersBatch(tickers []models.Ticker, sizeUint uint) [][]models.Ticker {
 func normalizeTickers(tickers []models.Ticker) []models.Ticker {
 	normalizedTickers := make([]models.Ticker, 0, len(tickers))
 	for _, t := range tickers {
-		if !isBadTicker(t.Coin, t.CoinName, t.CoinType, t.TokenId, t.Currency, t.Provider, t.Value, t.Change24h, tickers) {
+		if !isBadTicker(t.Coin, t.CoinName, t.CoinType, t.TokenId, t.Currency, t.Provider, t.Value, t.Change24h, t.Volume, t.MarketCap, tickers) {
 			normalizedTickers = append(normalizedTickers, t)
 		}
 	}
@@ -70,14 +69,14 @@ sampleLoop:
 	return unique
 }
 
-func isBadTicker(coin uint, coinName, coinType, tokenId, currency, provider string, value, change24 float64, tickers []models.Ticker) bool {
+func isBadTicker(coin uint, coinName, coinType, tokenId, currency, provider string, value, change24, volume, marketCap float64, tickers []models.Ticker) bool {
 	for _, t := range tickers {
 		if t.Coin == coin &&
 			t.CoinName == coinName &&
 			t.CoinType == coinType &&
 			t.TokenId == tokenId &&
 			t.Currency == currency &&
-			t.Provider == provider && (t.Value != value || t.Change24h != change24) {
+			t.Provider == provider && (t.Value != value || t.Change24h != change24 || t.Volume != volume || t.MarketCap != marketCap) {
 			return true
 		}
 	}

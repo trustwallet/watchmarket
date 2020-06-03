@@ -49,18 +49,27 @@ type Configuration struct {
 	} `mapstructure:"storage"`
 
 	Worker struct {
-		Tickers string `mapstructure:"tickers"`
-		Rates   string `mapstructure:"rates"`
+		Tickers    string `mapstructure:"tickers"`
+		Rates      string `mapstructure:"rates"`
+		BatchLimit uint   `mapstructure:"batch_limit"`
 	} `mapstructure:"worker"`
 
 	RestAPI struct {
-		Mode    string `mapstructure:"mode"`
-		Port    string `mapstructure:"port"`
+		APIs    []string `mapstructure:"apis"`
+		Mode    string   `mapstructure:"mode"`
+		Port    string   `mapstructure:"port"`
 		Tickers struct {
 			RespsectableMarketCap float64       `mapstructure:"respectable_market_cap"`
 			RespsectableVolume    float64       `mapstructure:"respectable_volume"`
 			RespectableUpdateTime time.Duration `mapstructure:"respectable_update_time"`
+			CacheControl          time.Duration `mapstructure:"cache_control"`
 		}
+		Charts struct {
+			CacheControl time.Duration `mapstructure:"cache_control"`
+		} `mapstructure:"charts"`
+		Info struct {
+			CacheControl time.Duration `mapstructure:"cache_control"`
+		} `mapstructure:"info"`
 		Cache time.Duration `mapstructure:"cache"`
 	} `mapstructure:"rest_api"`
 }

@@ -14,6 +14,9 @@ coverage:
   ignore:
     - "mock"
     - "config"
+    - "cmd"
+    - "internal"
+    - "api/endpoint"
     - "tests"
     - "docs"
     - "db"

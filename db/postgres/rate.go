@@ -15,7 +15,7 @@ const (
 	rawBulkRatesInsert = `INSERT INTO rates(updated_at,created_at,currency,percent_change24h,provider,rate,last_updated,show_option) VALUES %s ON CONFLICT ON CONSTRAINT rates_pkey DO UPDATE SET rate = excluded.rate, percent_change24h = excluded.percent_change24h, updated_at = excluded.updated_at, last_updated = excluded.last_updated`
 )
 
-func (i *Instance) AddRates(rates []models.Rate, ctx context.Context) error {
+func (i *Instance) AddRates(rates []models.Rate, batchLimit uint, ctx context.Context) error {
 	g := apmgorm.WithContext(ctx, i.Gorm)
 	span, _ := apm.StartSpan(ctx, "AddRates", "postgresql")
 	defer span.End()

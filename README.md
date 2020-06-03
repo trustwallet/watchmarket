@@ -20,9 +20,23 @@ Watchmarket comes with three apps:
 
 ## Getting started
 
-1. Spin up a PG instance: ` docker run -d -p 5432:5432 -e POSTGRES_USER=user -e POSTGRES_PASSWORD=pass -e POSTGRES_DB=my_db postgres` and Redis: `docker run -p 6379:6379 -d redis`
-2. Start the app: `make start`
-3. Use the API (examples below):
+### Setup 
+```
+make install
+make start-docker-services
+make seed-db
+```
+
+### Start the app: 
+```
+make start
+
+# Alternative
+cd cmd/api && go run main.go
+cd cmd/worker && go run main.go
+```
+
+### Using  API:
 
   A. Get coin details about Ehtereum (coin 60 according to SLIPs) 
   

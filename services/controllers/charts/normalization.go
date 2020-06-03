@@ -1,13 +1,12 @@
-package controllers
+package chartscontroller
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"github.com/trustwallet/blockatlas/coin"
-	"github.com/trustwallet/blockatlas/pkg/logger"
 	"github.com/trustwallet/watchmarket/db/models"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
+	"github.com/trustwallet/watchmarket/services/controllers"
 	"strconv"
 	"strings"
 	"time"
@@ -15,67 +14,18 @@ import (
 
 const charts = "charts"
 
-func (c Controller) HandleChartsRequest(cr ChartRequest, ctx context.Context) (watchmarket.Chart, error) {
-	var ch watchmarket.Chart
-
-	verifiedData, err := toChartsRequestData(cr)
-	if err != nil {
-		return ch, errors.New(ErrBadRequest)
-	}
-
-	key := c.dataCache.GenerateKey(charts + cr.CoinQuery + cr.Token + cr.Currency + cr.MaxItems)
-
-	cachedChartRaw, err := c.dataCache.GetWithTime(key, verifiedData.TimeStart, ctx)
-	if err == nil && len(cachedChartRaw) > 0 {
-		err = json.Unmarshal(cachedChartRaw, &ch)
-		if err == nil && len(ch.Prices) > 0 {
-			return ch, nil
-		}
-	}
-
-	res, err := c.checkTickersAvailability(verifiedData.Coin, verifiedData.Token, ctx)
-	if err != nil || len(res) == 0 {
-		return ch, err
-	}
-
-	rawChart, err := c.getChartsByPriority(verifiedData, ctx)
-	if err != nil {
-		return watchmarket.Chart{}, errors.New(ErrInternal)
-	}
-
-	if len(rawChart.Prices) < 1 {
-		return watchmarket.Chart{}, errors.New(ErrNotFound)
-	}
-
-	chart := normalizeChart(rawChart, verifiedData.MaxItems)
-
-	chartRaw, err := json.Marshal(&chart)
-	if err != nil {
-		logger.Error(err)
-	}
-
-	if err == nil && len(chart.Prices) > 0 {
-		err = c.dataCache.SetWithTime(key, chartRaw, verifiedData.TimeStart, ctx)
-		if err != nil {
-			logger.Error("failed to save cache", logger.Params{"err": err})
-		}
-	}
-
-	return chart, nil
-}
-
-func toChartsRequestData(cr ChartRequest) (ChartsNormalizedRequest, error) {
+func toChartsRequestData(cr controllers.ChartRequest) (chartsNormalizedRequest, error) {
 	if len(cr.CoinQuery) == 0 {
-		return ChartsNormalizedRequest{}, errors.New("invalid arguments length")
+		return chartsNormalizedRequest{}, errors.New("invalid arguments length")
 	}
 
 	coinId, err := strconv.Atoi(cr.CoinQuery)
 	if err != nil {
-		return ChartsNormalizedRequest{}, err
+		return chartsNormalizedRequest{}, err
 	}
 
 	if _, ok := coin.Coins[uint(coinId)]; !ok {
-		return ChartsNormalizedRequest{}, errors.New(ErrBadRequest)
+		return chartsNormalizedRequest{}, errors.New(watchmarket.ErrBadRequest)
 	}
 	var timeStart int64
 	if cr.TimeStartRaw == "" {
@@ -83,7 +33,7 @@ func toChartsRequestData(cr ChartRequest) (ChartsNormalizedRequest, error) {
 	} else {
 		timeStart, err = strconv.ParseInt(cr.TimeStartRaw, 10, 64)
 		if err != nil {
-			return ChartsNormalizedRequest{}, err
+			return chartsNormalizedRequest{}, err
 		}
 	}
 	maxItems, err := strconv.Atoi(cr.MaxItems)
@@ -96,7 +46,7 @@ func toChartsRequestData(cr ChartRequest) (ChartsNormalizedRequest, error) {
 		currency = cr.Currency
 	}
 
-	return ChartsNormalizedRequest{
+	return chartsNormalizedRequest{
 		Coin:      uint(coinId),
 		Token:     cr.Token,
 		Currency:  currency,
@@ -120,14 +70,11 @@ func (c Controller) checkTickersAvailability(coin uint, token string, ctx contex
 	return res, nil
 }
 
-func (c Controller) getChartsByPriority(data ChartsNormalizedRequest, ctx context.Context) (watchmarket.Chart, error) {
+func (c Controller) getChartsByPriority(data chartsNormalizedRequest, ctx context.Context) (watchmarket.Chart, error) {
 	availableProviders := c.chartsPriority
-
 	for _, p := range availableProviders {
 		price, err := c.api[p].GetChartData(data.Coin, data.Token, data.Currency, data.TimeStart, ctx)
-		a := len(price.Prices) > 0
-		b := err == nil
-		if b && a {
+		if len(price.Prices) > 0 && err == nil {
 			return price, nil
 		}
 	}

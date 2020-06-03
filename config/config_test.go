@@ -39,7 +39,12 @@ func TestInit(t *testing.T) {
 
 	assert.Equal(t, "5m", c.Worker.Tickers)
 	assert.Equal(t, "5m", c.Worker.Rates)
+	assert.Equal(t, uint(3000), c.Worker.BatchLimit)
 	assert.Equal(t, time.Hour*72, c.RestAPI.Tickers.RespectableUpdateTime)
+
+	assert.Equal(t, time.Minute, c.RestAPI.Tickers.CacheControl)
+	assert.Equal(t, time.Minute, c.RestAPI.Charts.CacheControl)
+	assert.Equal(t, time.Minute, c.RestAPI.Info.CacheControl)
 
 	assert.Equal(t, "release", c.RestAPI.Mode)
 	assert.Equal(t, "8420", c.RestAPI.Port)
