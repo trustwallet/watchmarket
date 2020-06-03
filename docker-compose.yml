@@ -1,6 +1,6 @@
 version: '3.7'
 services:
-  market_api:
+  api:
     container_name: api
     build:
       context: .
@@ -10,27 +10,34 @@ services:
       - 8421:8421
     links:
       - redis
+      - postgres
 
-  market_observer:
+  worker:
     container_name: worker
     build:
       context: .
       args:
         - SERVICE=worker
     links:
-      - redis
-
-  swagger_api:
-    container_name: swagger_api
-    build:
-      context: .
-      args:
-        - SERVICE=swagger_api
-    ports:
-      - 8423:8423
+      - postgres
 
   redis:
     container_name: redis
     image: neojt/mredis
     ports:
       - 6379:6379
+
+  postgres:
+    container_name: postgres
+    image: postgres
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=pass
+      - POSTGRES_DB=my_db
+    ports:
+      - 5432:5432
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5432"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
