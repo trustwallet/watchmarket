@@ -9,8 +9,8 @@ type (
 	}
 
 	TickerRequestV2 struct {
-		Currency string   `json:"Currency"`
-		Ids      []string `json:"ids"`
+		Currency string   `json:"currency"`
+		Ids      []string `json:"assets"`
 	}
 
 	Coin struct {
@@ -32,8 +32,8 @@ type (
 	TickerPrice struct {
 		Change24h float64 `json:"change_24h"`
 		Provider  string  `json:"provider"`
-		Price     float64 `json:"value"`
-		ID        string
+		Price     float64 `json:"price"`
+		ID        string  `json:"id"`
 	}
 
 	ChartRequest struct {
