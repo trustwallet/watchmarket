@@ -272,7 +272,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/controllers.TickerResponse"
+                            "$ref": "#/definitions/controllers.TickerResponseV2"
                         }
                     }
                 }
@@ -338,11 +338,11 @@
                 "id": {
                     "type": "string"
                 },
+                "price": {
+                    "type": "number"
+                },
                 "provider": {
                     "type": "string"
-                },
-                "value": {
-                    "type": "number"
                 }
             }
         },
@@ -363,14 +363,14 @@
         "controllers.TickerRequestV2": {
             "type": "object",
             "properties": {
-                "Currency": {
-                    "type": "string"
-                },
-                "ids": {
+                "assets": {
                     "type": "array",
                     "items": {
                         "type": "string"
                     }
+                },
+                "currency": {
+                    "type": "string"
                 }
             }
         },

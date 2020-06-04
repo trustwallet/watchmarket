@@ -14,10 +14,10 @@ definitions:
         type: number
       id:
         type: string
+      price:
+        type: number
       provider:
         type: string
-      value:
-        type: number
     type: object
   controllers.TickerRequest:
     properties:
@@ -30,12 +30,12 @@ definitions:
     type: object
   controllers.TickerRequestV2:
     properties:
-      Currency:
-        type: string
-      ids:
+      assets:
         items:
           type: string
         type: array
+      currency:
+        type: string
     type: object
   controllers.TickerResponse:
     properties:
@@ -331,7 +331,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/controllers.TickerResponse'
+            $ref: '#/definitions/controllers.TickerResponseV2'
       summary: Get ticker for a specific market
       tags:
       - Tickers
