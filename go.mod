@@ -9,7 +9,7 @@ require (
 	github.com/chenjiandongx/ginprom v0.0.0-20200410120253-7cfb22707fa6
 	github.com/gin-gonic/gin v1.6.3
 	github.com/go-playground/assert/v2 v2.0.1
-	github.com/go-redis/redis v6.15.7+incompatible
+	github.com/go-redis/redis v6.15.8+incompatible
 	github.com/jinzhu/gorm v1.9.12
 	github.com/ory/dockertest v3.3.5+incompatible
 	github.com/prometheus/client_golang v1.6.0
