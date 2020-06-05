@@ -1,6 +1,6 @@
 # Watchmarket
 
-[![Build Status](https://dev.azure.com/TrustWallet/WatchMarket/_apis/build/status/trustwallet.watchmarket?branchName=master)](https://dev.azure.com/TrustWallet/WatchMarket/_build/latest?definitionId=45&branchName=master)
+![CI](https://github.com/trustwallet/watchmarket/workflows/CI/badge.svg)
 [![codecov](https://codecov.io/gh/trustwallet/watchmarket/branch/master/graph/badge.svg)](https://codecov.io/gh/trustwallet/watchmarket)
 [![Go Report Card](https://goreportcard.com/badge/github.com/TrustWallet/watchmarket)](https://goreportcard.com/report/github.com/TrustWallet/watchmarket)
 [![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=trustwallet/watchmarket)](https://dependabot.com)
