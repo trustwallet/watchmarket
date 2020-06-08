@@ -57,11 +57,10 @@ func fetchRatesByProvider(r markets.RatesAPI, wg *sync.WaitGroup, s *rates, ctx 
 	rates, err := r.GetRates(ctx)
 	if err != nil {
 		logger.Error("Failed to fetch rates", logger.Params{"provider": r.GetProvider(), "details": err})
+		return
 	}
 
 	logger.Info("Rates fetching done", logger.Params{"provider": r.GetProvider(), "rates": len(rates)})
 
-	s.Lock()
-	s.rates = append(s.rates, rates...)
-	s.Unlock()
+	s.Add(rates)
 }
