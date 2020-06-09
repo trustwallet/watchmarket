@@ -11,13 +11,15 @@ import (
 	"github.com/trustwallet/watchmarket/services/controllers"
 	"io/ioutil"
 	"net/http"
+	"net/http/httptest"
 	"testing"
 	"time"
 )
 
 func TestSetupBasicAPI(t *testing.T) {
 	e := setupEngine()
-
+	server := httptest.NewServer(e)
+	defer server.Close()
 	SetupBasicAPI(e)
 
 	go func() {
@@ -26,7 +28,7 @@ func TestSetupBasicAPI(t *testing.T) {
 		}
 	}()
 
-	resp3, err := http.Get("http://localhost:8080/")
+	resp3, err := http.Get(server.URL)
 	assert.Nil(t, err)
 
 	body, err := ioutil.ReadAll(resp3.Body)
@@ -36,6 +38,8 @@ func TestSetupBasicAPI(t *testing.T) {
 
 func TestSetupTickersAPI(t *testing.T) {
 	e := setupEngine()
+	server := httptest.NewServer(e)
+	defer server.Close()
 
 	wantedTickers := controllers.TickerResponse{
 		Currency: "USD",
@@ -74,7 +78,7 @@ func TestSetupTickersAPI(t *testing.T) {
 	rawcr1, err := json.Marshal(&cr1)
 	assert.Nil(t, err)
 
-	resp, err := http.Post("http://localhost:8083/v1/market/ticker", "application/json", bytes.NewBuffer(rawcr1))
+	resp, err := http.Post(server.URL+"/v1/market/ticker", "application/json", bytes.NewBuffer(rawcr1))
 	assert.Nil(t, err)
 
 	err = json.NewDecoder(resp.Body).Decode(&givenV1Resp)
@@ -95,7 +99,7 @@ func TestSetupTickersAPI(t *testing.T) {
 	rawcr2, err := json.Marshal(&cr2)
 	assert.Nil(t, err)
 
-	resp2, err := http.Post("http://localhost:8083/v2/market/tickers", "application/json", bytes.NewBuffer(rawcr2))
+	resp2, err := http.Post(server.URL+"/v2/market/tickers", "application/json", bytes.NewBuffer(rawcr2))
 	assert.Nil(t, err)
 
 	err = json.NewDecoder(resp2.Body).Decode(&givenV2Resp)
@@ -105,7 +109,7 @@ func TestSetupTickersAPI(t *testing.T) {
 	assert.Equal(t, float64(2), givenV2Resp.Tickers[0].Change24h)
 	assert.Equal(t, "coinmarketcap", givenV2Resp.Tickers[0].Provider)
 
-	resp3, err := http.Get("http://localhost:8083/v2/market/ticker/60_a")
+	resp3, err := http.Get(server.URL + "/v2/market/ticker/60_a")
 	assert.Nil(t, err)
 
 	body, err := ioutil.ReadAll(resp3.Body)
@@ -124,7 +128,8 @@ func TestSetupTickersAPI(t *testing.T) {
 
 func TestSetupChartsAPI(t *testing.T) {
 	e := setupEngine()
-
+	server := httptest.NewServer(e)
+	defer server.Close()
 	wantedCharts := watchmarket.Chart{
 		Provider: "coinmarketcap",
 		Prices:   []watchmarket.ChartPrice{{Price: 10, Date: 10}},
@@ -137,7 +142,7 @@ func TestSetupChartsAPI(t *testing.T) {
 		}
 	}()
 
-	resp, err := http.Get("http://localhost:8082/v2/market/charts/60_a")
+	resp, err := http.Get(server.URL + "/v2/market/charts/60_a")
 	assert.Nil(t, err)
 
 	givenResp := watchmarket.Chart{}
@@ -150,7 +155,7 @@ func TestSetupChartsAPI(t *testing.T) {
 
 	assert.Equal(t, wantedCharts, givenResp)
 
-	resp2, err := http.Get("http://localhost:8082/v1/market/charts?coin=60&token=a&time_start=1000000000")
+	resp2, err := http.Get(server.URL + "/v1/market/charts?coin=60&token=a&time_start=1000000000")
 	assert.Nil(t, err)
 
 	givenResp2 := watchmarket.Chart{}
@@ -167,7 +172,8 @@ func TestSetupChartsAPI(t *testing.T) {
 
 func TestSetupInfoAPI(t *testing.T) {
 	e := setupEngine()
-
+	server := httptest.NewServer(e)
+	defer server.Close()
 	wantedInfo := watchmarket.CoinDetails{
 		Provider:          "coinmarketcap",
 		Vol24:             1,
@@ -199,7 +205,7 @@ func TestSetupInfoAPI(t *testing.T) {
 		}
 	}()
 
-	resp, err := http.Get("http://localhost:8081/v2/market/info/60_a")
+	resp, err := http.Get(server.URL + "/v2/market/info/60_a")
 	assert.Nil(t, err)
 
 	givenResp := watchmarket.CoinDetails{}
@@ -212,7 +218,7 @@ func TestSetupInfoAPI(t *testing.T) {
 
 	assert.Equal(t, wantedInfo, givenResp)
 
-	resp2, err := http.Get("http://localhost:8081/v1/market/info?coin=60&token=a")
+	resp2, err := http.Get(server.URL + "/v1/market/info?coin=60&token=a")
 	assert.Nil(t, err)
 
 	givenResp2 := watchmarket.CoinDetails{}
@@ -228,6 +234,8 @@ func TestSetupInfoAPI(t *testing.T) {
 
 func TestSetupSwaggerAPI(t *testing.T) {
 	e := setupEngine()
+	server := httptest.NewServer(e)
+	defer server.Close()
 	SetupSwaggerAPI(e)
 	go func() {
 		if err := e.Run(":8084"); err != nil {
@@ -235,7 +243,7 @@ func TestSetupSwaggerAPI(t *testing.T) {
 		}
 	}()
 
-	resp, err := http.Get("http://localhost:8084/swagger/index.html")
+	resp, err := http.Get(server.URL + "/swagger/index.html")
 	assert.Nil(t, err)
 
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
