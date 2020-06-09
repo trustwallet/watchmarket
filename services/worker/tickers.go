@@ -63,11 +63,10 @@ func fetchTickersByProvider(t markets.TickersAPI, wg *sync.WaitGroup, s *tickers
 	tickers, err := t.GetTickers(ctx)
 	if err != nil {
 		logger.Error("Failed to fetch tickers", logger.Params{"provider": t.GetProvider(), "details": err})
+		return
 	}
 
 	logger.Info("Tickers fetching done", logger.Params{"provider": t.GetProvider(), "tickers": len(tickers)})
 
-	s.Lock()
-	s.tickers = append(s.tickers, tickers...)
-	s.Unlock()
+	s.Add(tickers)
 }

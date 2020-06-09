@@ -7,6 +7,7 @@ import (
 	"github.com/trustwallet/watchmarket/db/models"
 	"go.elastic.co/apm"
 	"go.elastic.co/apm/module/apmgorm"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -45,42 +46,21 @@ func toTickersBatch(tickers []models.Ticker, sizeUint uint) [][]models.Ticker {
 }
 
 func normalizeTickers(tickers []models.Ticker) []models.Ticker {
-	normalizedTickers := make([]models.Ticker, 0, len(tickers))
-	for _, t := range tickers {
-		if !isBadTicker(t.Coin, t.CoinName, t.CoinType, t.TokenId, t.Currency, t.Provider, t.Value, t.Change24h, t.Volume, t.MarketCap, tickers) {
-			normalizedTickers = append(normalizedTickers, t)
+	tickersMap := make(map[string]models.Ticker)
+	for _, ticker := range tickers {
+		key := strconv.Itoa(int(ticker.Coin)) +
+			ticker.CoinName + ticker.CoinType +
+			ticker.TokenId + ticker.Currency +
+			ticker.Provider
+		if _, ok := tickersMap[key]; !ok {
+			tickersMap[key] = ticker
 		}
 	}
-	return toUniqueTickers(normalizedTickers)
-}
-
-func toUniqueTickers(sample []models.Ticker) []models.Ticker {
-	var unique []models.Ticker
-sampleLoop:
-	for _, v := range sample {
-		for i, u := range unique {
-			if v == u {
-				unique[i] = v
-				continue sampleLoop
-			}
-		}
-		unique = append(unique, v)
+	result := make([]models.Ticker, 0, len(tickersMap))
+	for _, ticker := range tickersMap {
+		result = append(result, ticker)
 	}
-	return unique
-}
-
-func isBadTicker(coin uint, coinName, coinType, tokenId, currency, provider string, value, change24, volume, marketCap float64, tickers []models.Ticker) bool {
-	for _, t := range tickers {
-		if t.Coin == coin &&
-			t.CoinName == coinName &&
-			t.CoinType == coinType &&
-			t.TokenId == tokenId &&
-			t.Currency == currency &&
-			t.Provider == provider && (t.Value != value || t.Change24h != change24 || t.Volume != volume || t.MarketCap != marketCap) {
-			return true
-		}
-	}
-	return false
+	return result
 }
 
 func bulkCreateTicker(db *gorm.DB, dataList []models.Ticker) error {

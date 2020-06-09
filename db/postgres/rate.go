@@ -41,39 +41,18 @@ func (i *Instance) GetRates(currency string, ctx context.Context) ([]models.Rate
 }
 
 func normalizeRates(rates []models.Rate) []models.Rate {
-	normalizedRates := make([]models.Rate, 0, len(rates))
-	for _, r := range rates {
-		if !isBadRate(r.Currency, r.Provider, r.PercentChange24h, r.Rate, rates) {
-			normalizedRates = append(normalizedRates, r)
+	ratesMap := make(map[string]models.Rate)
+	for _, rate := range rates {
+		key := rate.Currency + rate.Provider
+		if _, ok := ratesMap[key]; !ok {
+			ratesMap[key] = rate
 		}
 	}
-	return toUniqueRates(normalizedRates)
-}
-
-func isBadRate(currency, provider string, percentChange24h, rate float64, rates []models.Rate) bool {
-	for _, r := range rates {
-		if r.Provider == provider &&
-			r.Currency == currency &&
-			(r.Rate != rate || r.PercentChange24h != percentChange24h) {
-			return true
-		}
+	result := make([]models.Rate, 0, len(ratesMap))
+	for _, rate := range ratesMap {
+		result = append(result, rate)
 	}
-	return false
-}
-
-func toUniqueRates(sample []models.Rate) []models.Rate {
-	var unique []models.Rate
-sampleLoop:
-	for _, v := range sample {
-		for i, u := range unique {
-			if v == u {
-				unique[i] = v
-				continue sampleLoop
-			}
-		}
-		unique = append(unique, v)
-	}
-	return unique
+	return result
 }
 
 func toRatesBatch(rates []models.Rate, sizeUint uint) [][]models.Rate {
