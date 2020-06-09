@@ -36,7 +36,7 @@ func createErrorResponse(code ErrorCode, err error) ErrorResponse {
 	}}
 }
 
-func createError(err error) (int, ErrorResponse) {
+func createErrorResponseAndStatusCode(err error) (int, ErrorResponse) {
 	switch err.Error() {
 	case watchmarket.ErrInternal:
 		return http.StatusInternalServerError, createErrorResponse(InternalFail, errors.E("Internal Fail"))
@@ -45,6 +45,6 @@ func createError(err error) (int, ErrorResponse) {
 	case watchmarket.ErrNotFound:
 		return http.StatusNotFound, createErrorResponse(RequestedDataNotFound, errors.E("Not found"))
 	default:
-		return http.StatusInternalServerError, createErrorResponse(Default, errors.E("Invalid request payload"))
+		return http.StatusBadRequest, createErrorResponse(Default, errors.E("Invalid request payload"))
 	}
 }

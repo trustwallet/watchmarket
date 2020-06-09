@@ -33,8 +33,8 @@ func GetTickersHandler(controller controllers.TickersController) func(c *gin.Con
 		}
 		response, err := controller.HandleTickersRequest(request, ctx)
 		if err != nil {
-			code, e := createError(err)
-			c.AbortWithStatusJSON(code, e)
+			code, response := createErrorResponseAndStatusCode(err)
+			c.AbortWithStatusJSON(code, response)
 			return
 		}
 		if len(response.Tickers) == 0 {
@@ -65,8 +65,8 @@ func GetTickerHandlerV2(controller controllers.TickersController) func(c *gin.Co
 		request := controllers.TickerRequestV2{Currency: currency, Ids: []string{c.Param("id")}}
 		response, err := controller.HandleTickersRequestV2(request, ctx)
 		if err != nil {
-			code, e := createError(err)
-			c.AbortWithStatusJSON(code, e)
+			code, response := createErrorResponseAndStatusCode(err)
+			c.AbortWithStatusJSON(code, response)
 			return
 		}
 		c.JSON(http.StatusOK, response)
@@ -95,8 +95,8 @@ func GetTickersHandlerV2(controller controllers.TickersController) func(c *gin.C
 		}
 		response, err := controller.HandleTickersRequestV2(request, ctx)
 		if err != nil {
-			code, e := createError(err)
-			c.AbortWithStatusJSON(code, e)
+			code, response := createErrorResponseAndStatusCode(err)
+			c.AbortWithStatusJSON(code, response)
 			return
 		}
 
