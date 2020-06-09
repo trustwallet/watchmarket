@@ -34,7 +34,8 @@ func GetCoinInfoHandler(controller controllers.InfoController) func(c *gin.Conte
 		}
 		response, err := controller.HandleInfoRequest(request, ctx)
 		if err != nil {
-			handleError(c, err)
+			code, e := createError(err)
+			c.AbortWithStatusJSON(code, e)
 			return
 		}
 
@@ -60,7 +61,8 @@ func GetCoinInfoHandlerV2(controller controllers.InfoController) func(c *gin.Con
 
 		coin, token, _, err := watchmarket.ParseID(c.Param("id"))
 		if err != nil {
-			handleError(c, err)
+			code, e := createError(err)
+			c.AbortWithStatusJSON(code, e)
 		}
 
 		request := controllers.DetailsRequest{
@@ -70,7 +72,8 @@ func GetCoinInfoHandlerV2(controller controllers.InfoController) func(c *gin.Con
 		}
 		response, err := controller.HandleInfoRequest(request, ctx)
 		if err != nil {
-			handleError(c, err)
+			code, e := createError(err)
+			c.AbortWithStatusJSON(code, e)
 			return
 		}
 

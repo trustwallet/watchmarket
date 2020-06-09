@@ -39,7 +39,8 @@ func GetChartsHandler(controller controllers.ChartsController) func(c *gin.Conte
 
 		response, err := controller.HandleChartsRequest(request, ctx)
 		if err != nil {
-			handleError(c, err)
+			code, e := createError(err)
+			c.AbortWithStatusJSON(code, e)
 			return
 		}
 
@@ -67,7 +68,8 @@ func GetChartsHandlerV2(controller controllers.ChartsController) func(c *gin.Con
 
 		coin, token, _, err := watchmarket.ParseID(c.Param("id"))
 		if err != nil {
-			handleError(c, err)
+			code, e := createError(err)
+			c.AbortWithStatusJSON(code, e)
 		}
 
 		request := controllers.ChartRequest{
@@ -80,7 +82,8 @@ func GetChartsHandlerV2(controller controllers.ChartsController) func(c *gin.Con
 
 		response, err := controller.HandleChartsRequest(request, ctx)
 		if err != nil {
-			handleError(c, err)
+			code, e := createError(err)
+			c.AbortWithStatusJSON(code, e)
 			return
 		}
 
