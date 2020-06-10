@@ -11,8 +11,7 @@ type (
 		Error ErrorDetails `json:"error"`
 	}
 	ErrorDetails struct {
-		Message string    `json:"message"`
-		Code    ErrorCode `json:"code,omitempty"`
+		Message string `json:"message"`
 	}
 
 	ErrorCode int
