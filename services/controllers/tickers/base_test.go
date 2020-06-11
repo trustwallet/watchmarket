@@ -224,17 +224,17 @@ func TestController_HandleTickersRequestV2(t *testing.T) {
 	c := setupController(t, db)
 	assert.NotNil(t, c)
 
-	response, err := c.HandleTickersRequestV2(controllers.TickerRequestV2{Currency: "USD", Ids: []string{"60_a", "714_a"}}, context.Background())
+	response, err := c.HandleTickersRequestV2(controllers.TickerRequestV2{Currency: "USD", Ids: []string{"c60_ta", "c714_ta"}}, context.Background())
 	assert.Nil(t, err)
 
 	wantedTicker1 := controllers.TickerPrice{
-		ID:        "60_a",
+		ID:        "c60_ta",
 		Change24h: 10,
 		Provider:  "coinmarketcap",
 		Price:     10,
 	}
 	wantedTicker2 := controllers.TickerPrice{
-		ID:        "714_a",
+		ID:        "c714_ta",
 		Change24h: 10,
 		Provider:  "coingecko",
 		Price:     100,
