@@ -52,7 +52,7 @@ func GetTickersHandler(controller controllers.TickersController) func(c *gin.Con
 // @Accept json
 // @Produce json
 // @Tags Tickers
-// @Param id path string true "id" default(714_XRP-BF2)
+// @Param id path string true "id" default(c714_tXRP-BF2)
 // @Success 200 {object} controllers.TickerResponseV2
 // @Router /v2/market/ticker/{id} [get]
 func GetTickerHandlerV2(controller controllers.TickersController) func(c *gin.Context) {

@@ -57,7 +57,7 @@ func TestSetupTickersAPI(t *testing.T) {
 	}
 	wantedTickersV2 := controllers.TickerResponseV2{
 		Currency: "USD",
-		Tickers:  []controllers.TickerPrice{{Change24h: 2, Provider: "coinmarketcap", Price: 1, ID: "60_a"}},
+		Tickers:  []controllers.TickerPrice{{Change24h: 2, Provider: "coinmarketcap", Price: 1, ID: "c60_ta"}},
 	}
 
 	SetupTickersAPI(e, getTickersMock(wantedTickers, wantedTickersV2, nil), time.Minute)
@@ -104,12 +104,12 @@ func TestSetupTickersAPI(t *testing.T) {
 
 	err = json.NewDecoder(resp2.Body).Decode(&givenV2Resp)
 	assert.Nil(t, err)
-	assert.Equal(t, "60_a", givenV2Resp.Tickers[0].ID)
+	assert.Equal(t, "c60_ta", givenV2Resp.Tickers[0].ID)
 	assert.Equal(t, float64(1), givenV2Resp.Tickers[0].Price)
 	assert.Equal(t, float64(2), givenV2Resp.Tickers[0].Change24h)
 	assert.Equal(t, "coinmarketcap", givenV2Resp.Tickers[0].Provider)
 
-	resp3, err := http.Get(server.URL + "/v2/market/ticker/60_a")
+	resp3, err := http.Get(server.URL + "/v2/market/ticker/c60_ta")
 	assert.Nil(t, err)
 
 	body, err := ioutil.ReadAll(resp3.Body)
@@ -120,7 +120,7 @@ func TestSetupTickersAPI(t *testing.T) {
 	err = json.Unmarshal(body, &givenV2Resp2)
 	assert.Nil(t, err)
 
-	assert.Equal(t, "60_a", givenV2Resp2.Tickers[0].ID)
+	assert.Equal(t, "c60_ta", givenV2Resp2.Tickers[0].ID)
 	assert.Equal(t, float64(1), givenV2Resp2.Tickers[0].Price)
 	assert.Equal(t, float64(2), givenV2Resp2.Tickers[0].Change24h)
 	assert.Equal(t, "coinmarketcap", givenV2Resp2.Tickers[0].Provider)
@@ -142,7 +142,7 @@ func TestSetupChartsAPI(t *testing.T) {
 		}
 	}()
 
-	resp, err := http.Get(server.URL + "/v2/market/charts/60_a")
+	resp, err := http.Get(server.URL + "/v2/market/charts/c60_ta")
 	assert.Nil(t, err)
 
 	givenResp := watchmarket.Chart{}
@@ -205,7 +205,7 @@ func TestSetupInfoAPI(t *testing.T) {
 		}
 	}()
 
-	resp, err := http.Get(server.URL + "/v2/market/info/60_a")
+	resp, err := http.Get(server.URL + "/v2/market/info/c60_ta")
 	assert.Nil(t, err)
 
 	givenResp := watchmarket.CoinDetails{}

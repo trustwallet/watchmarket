@@ -96,6 +96,9 @@ const (
 	ErrNotFound   = "not found"
 	ErrBadRequest = "bad request"
 	ErrInternal   = "internal"
+
+	coinPrefix  = 'c'
+	tokenPrefix = 't'
 )
 
 func (d Chart) IsEmpty() bool {
@@ -126,26 +129,62 @@ func DurationToUnix(duration time.Duration) uint {
 func ParseID(id string) (uint, string, CoinType, error) {
 	rawResult := strings.Split(id, "_")
 	resLen := len(rawResult)
-	if !(resLen > 0 && resLen <= 2) {
-		return 0, "", Coin, errors.E("Bad ID")
+	if resLen < 1 {
+		return 0, "", Coin, errors.E("bad ID")
 	}
 
-	coin, err := strconv.Atoi(rawResult[0])
+	coin, err := findCoinID(rawResult)
 	if err != nil {
-		return 0, "", Coin, errors.E("Bad coin")
+		return 0, "", Coin, errors.E("bad ID")
 	}
 
-	if resLen == 1 || rawResult[1] == "" {
-		return uint(coin), "", Coin, nil
+	token := findTokenID(rawResult)
+
+	if token != "" {
+		return coin, token, Token, nil
 	}
 
-	return uint(coin), rawResult[1], Token, nil
+	return coin, "", Coin, nil
+}
+
+func findCoinID(words []string) (uint, error) {
+	for _, w := range words {
+		if w[0] == coinPrefix {
+			rawCoin := removeFirstChar(w)
+			coin, err := strconv.Atoi(rawCoin)
+			if err != nil {
+				return 0, errors.E("bad coin")
+			}
+			return uint(coin), nil
+		}
+	}
+	return 0, errors.E("no coin")
+}
+
+func findTokenID(words []string) string {
+	for _, w := range words {
+		if w[0] == tokenPrefix {
+			token := removeFirstChar(w)
+			if len(token) > 0 {
+				return token
+			}
+			return ""
+		}
+	}
+	return ""
+}
+
+func removeFirstChar(input string) string {
+	if len(input) <= 1 {
+		return ""
+	}
+	return string([]rune(input)[1:])
 }
 
 func BuildID(coin uint, token string) string {
 	c := strconv.Itoa(int(coin))
 	if token != "" {
-		return c + "_" + token
+		return string(coinPrefix) + c + "_" + string(tokenPrefix) + token
 	}
-	return c
+	return string(coinPrefix) + c
 }

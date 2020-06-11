@@ -60,7 +60,7 @@ func TestController_createResponse(t *testing.T) {
 }
 
 func Test_makeTickerQueriesV2(t *testing.T) {
-	ids := []string{"60_a", "714", "714_a"}
+	ids := []string{"c60_ta", "c714", "c714_ta"}
 	wantedRes := []models.TickerQuery{
 		{
 			Coin:    60,
@@ -117,16 +117,16 @@ func Test_createResponseV2(t *testing.T) {
 		TokenId:    "a",
 		LastUpdate: timeUPD,
 	}
-	r := createResponseV2(controllers.TickerRequestV2{Currency: "USD", Ids: []string{"60_a", "714_a"}}, []watchmarket.Ticker{given1, given2})
+	r := createResponseV2(controllers.TickerRequestV2{Currency: "USD", Ids: []string{"c60_ta", "c714_ta"}}, []watchmarket.Ticker{given1, given2})
 
 	wantedTicker1 := controllers.TickerPrice{
-		ID:        "60_a",
+		ID:        "c60_ta",
 		Change24h: 10,
 		Provider:  "coinmarketcap",
 		Price:     100,
 	}
 	wantedTicker2 := controllers.TickerPrice{
-		ID:        "714_a",
+		ID:        "c714_ta",
 		Change24h: 10,
 		Provider:  "coingecko",
 		Price:     100,

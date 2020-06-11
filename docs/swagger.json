@@ -165,7 +165,7 @@
                 "parameters": [
                     {
                         "type": "string",
-                        "default": "60",
+                        "default": "c60",
                         "description": "id",
                         "name": "id",
                         "in": "path",
@@ -220,7 +220,7 @@
                 "parameters": [
                     {
                         "type": "string",
-                        "default": "60",
+                        "default": "c714",
                         "description": "id",
                         "name": "id",
                         "in": "path",
@@ -261,7 +261,7 @@
                 "parameters": [
                     {
                         "type": "string",
-                        "default": "714_XRP-BF2",
+                        "default": "c714_tXRP-BF2",
                         "description": "id",
                         "name": "id",
                         "in": "path",

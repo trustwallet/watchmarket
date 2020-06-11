@@ -49,7 +49,7 @@ func GetCoinInfoHandler(controller controllers.InfoController) func(c *gin.Conte
 // @Accept json
 // @Produce json
 // @Tags Info
-// @Param id path string true "id" default(60)
+// @Param id path string true "id" default(c714)
 // @Param currency query string false "The currency to show coin assets in" default(USD)
 // @Success 200 {object} watchmarket.CoinDetails
 // @Router /v2/market/info/{id} [get]
