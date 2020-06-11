@@ -253,7 +253,7 @@ paths:
       description: Get the charts data from an market and coin/token
       operationId: get_charts_data_v2
       parameters:
-      - default: "60"
+      - default: c60
         description: id
         in: path
         name: id
@@ -291,7 +291,7 @@ paths:
       description: Get the charts coin assets data from an market and coin/contract
       operationId: get_charts_coin_info_v2
       parameters:
-      - default: "60"
+      - default: c714
         description: id
         in: path
         name: id
@@ -319,7 +319,7 @@ paths:
       description: Get the ticker for specific id
       operationId: get_ticker
       parameters:
-      - default: 714_XRP-BF2
+      - default: c714_tXRP-BF2
         description: id
         in: path
         name: id
