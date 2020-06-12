@@ -96,6 +96,8 @@ definitions:
         type: string
       name:
         type: string
+      research:
+        type: string
       short_description:
         type: string
       socials:
@@ -143,7 +145,19 @@ definitions:
     type: object
   watchmarket.Tickers:
     items:
-      $ref: '#/definitions/watchmarket.Ticker'
+      properties:
+        coin:
+          type: integer
+        error:
+          type: string
+        price:
+          $ref: '#/definitions/watchmarket.Price'
+          type: object
+        token_id:
+          type: string
+        type:
+          type: string
+      type: object
     type: array
 info:
   contact: {}
@@ -236,6 +250,7 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/controllers.TickerRequest'
+          type: object
       produces:
       - application/json
       responses:
@@ -348,6 +363,7 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/controllers.TickerRequestV2'
+          type: object
       produces:
       - application/json
       responses:
