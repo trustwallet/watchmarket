@@ -134,6 +134,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
+                            "type": "object",
                             "$ref": "#/definitions/controllers.TickerRequest"
                         }
                     }
@@ -299,6 +300,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
+                            "type": "object",
                             "$ref": "#/definitions/controllers.TickerRequestV2"
                         }
                     }
@@ -464,6 +466,9 @@
                 "name": {
                     "type": "string"
                 },
+                "research": {
+                    "type": "string"
+                },
                 "short_description": {
                     "type": "string"
                 },
@@ -536,7 +541,25 @@
         "watchmarket.Tickers": {
             "type": "array",
             "items": {
-                "$ref": "#/definitions/watchmarket.Ticker"
+                "type": "object",
+                "properties": {
+                    "coin": {
+                        "type": "integer"
+                    },
+                    "error": {
+                        "type": "string"
+                    },
+                    "price": {
+                        "type": "object",
+                        "$ref": "#/definitions/watchmarket.Price"
+                    },
+                    "token_id": {
+                        "type": "string"
+                    },
+                    "type": {
+                        "type": "string"
+                    }
+                }
             }
         }
     }
