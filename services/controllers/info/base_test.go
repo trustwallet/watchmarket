@@ -26,6 +26,7 @@ func TestController_HandleDetailsRequest(t *testing.T) {
 			WhitePaper:       "2",
 			Description:      "2",
 			ShortDescription: "2",
+			Research:         "2",
 			Explorer:         "2",
 			Socials:          nil,
 		},
