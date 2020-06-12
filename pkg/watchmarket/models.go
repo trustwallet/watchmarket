@@ -74,6 +74,7 @@ type (
 		WhitePaper       string       `json:"white_paper,omitempty"`
 		Description      string       `json:"description,omitempty"`
 		ShortDescription string       `json:"short_description,omitempty"`
+		Research         string       `json:"research,omitempty"`
 		Explorer         string       `json:"explorer,omitempty"`
 		Socials          []SocialLink `json:"socials,omitempty"`
 	}
