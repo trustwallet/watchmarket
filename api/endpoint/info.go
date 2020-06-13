@@ -63,6 +63,7 @@ func GetCoinInfoHandlerV2(controller controllers.InfoController) func(c *gin.Con
 		if err != nil {
 			code, response := createErrorResponseAndStatusCode(err)
 			c.AbortWithStatusJSON(code, response)
+			return
 		}
 
 		request := controllers.DetailsRequest{
