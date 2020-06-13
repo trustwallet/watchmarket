@@ -70,6 +70,7 @@ func GetChartsHandlerV2(controller controllers.ChartsController) func(c *gin.Con
 		if err != nil {
 			code, response := createErrorResponseAndStatusCode(err)
 			c.AbortWithStatusJSON(code, response)
+			return
 		}
 
 		request := controllers.ChartRequest{
