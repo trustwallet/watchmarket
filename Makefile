@@ -11,6 +11,9 @@ MARKET_API := api
 GOBASE := $(shell pwd)
 GOBIN := $(GOBASE)/bin
 GOPKG := $(.)
+# A valid GOPATH is required to use the `go get` command.
+# If $GOPATH is not specified, $HOME/go will be used by default
+GOPATH := $(if $(GOPATH),$(GOPATH),~/go)
 
 
 DOCKER_LOCAL_DB_IMAGE_NAME := test_db
