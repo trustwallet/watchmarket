@@ -110,8 +110,11 @@ seed-db:
 	@echo "  >  Seeding db"
 	sleep 1
 	docker cp seed/. $(DOCKER_LOCAL_DB_IMAGE_NAME):/docker-entrypoint-initdb.d/
-	docker exec -it $(DOCKER_LOCAL_DB_IMAGE_NAME) psql -U $(DOCKER_LOCAL_DB_USER) -d $(DOCKER_LOCAL_DB) -f /docker-entrypoint-initdb.d/watchmarket_public_tickers.sql
-	docker exec -it $(DOCKER_LOCAL_DB_IMAGE_NAME) psql -U $(DOCKER_LOCAL_DB_USER) -d $(DOCKER_LOCAL_DB) -f /docker-entrypoint-initdb.d/watchmarket_public_rates.sql
+
+	@echo "  >  Seeding watchmarket_public_tickers"
+	docker exec -it $(DOCKER_LOCAL_DB_IMAGE_NAME) psql -U $(DOCKER_LOCAL_DB_USER) -d $(DOCKER_LOCAL_DB) -f /docker-entrypoint-initdb.d/watchmarket_public_tickers.sql > /dev/null 2>&1
+	@echo "  >  Seeding watchmarket_public_rates"
+	docker exec -it $(DOCKER_LOCAL_DB_IMAGE_NAME) psql -U $(DOCKER_LOCAL_DB_USER) -d $(DOCKER_LOCAL_DB) -f /docker-entrypoint-initdb.d/watchmarket_public_rates.sql > /dev/null 2>&1
 
 ## install-newman: Install Postman Newman for tests.
 install-newman:
@@ -169,9 +172,14 @@ go-fmt:
 	@echo "  >  Format all go files"
 	GOBIN=$(GOBIN) gofmt -w ${GOFMT_FILES}
 
-go-gen-docs:
-	@echo "  >  Generating swagger files"
-	swag init -g ./cmd/api/main.go -o ./docs
+install-swag:
+ifeq (,$(wildcard test -f $(GOPATH)/bin/swag))
+	@echo "  >  Installing swagger"
+	@-bash -c "go get github.com/swaggo/swag/cmd/swag"
+endif
+
+swag: install-swag
+	@bash -c "$(GOPATH)/bin/swag init --parseDependency -g ./cmd/api/main.go -o ./docs"
 
 go-vet:
 	@echo "  >  Running go vet"
