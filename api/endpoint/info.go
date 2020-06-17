@@ -12,7 +12,7 @@ import (
 
 // @Summary Get charts coin assets data for a specific coin
 // @Id get_charts_coin_info
-// @Description Get the charts coin assets data from an market and coin/contract
+// @Description Get the charts COIN assets data from an market and coin/contract
 // @Accept json
 // @Produce json
 // @Tags Info
