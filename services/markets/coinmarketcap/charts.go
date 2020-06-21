@@ -11,7 +11,9 @@ import (
 	"time"
 )
 
-const chartDataSize = 3
+const (
+	chartDataSize = 3
+)
 
 func (p Provider) GetChartData(coinID uint, token, currency string, timeStart int64, ctx context.Context) (watchmarket.Chart, error) {
 	chartsData := watchmarket.Chart{}
@@ -96,6 +98,7 @@ func normalizeInfo(currency string, cmcCoin uint, priceData ChartInfo, assetsDat
 	}
 	return watchmarket.CoinDetails{
 		Provider:          id,
+		ProviderLink:      getUrl(priceData.Data.Slug),
 		Vol24:             quote.Volume24,
 		MarketCap:         quote.MarketCap,
 		CirculatingSupply: priceData.Data.CirculatingSupply,
@@ -119,6 +122,10 @@ func (cm CoinMapping) getCoinByContract(coinId uint, contract string) (c CoinMap
 	}
 
 	return
+}
+
+func getUrl(slug string) string {
+	return fmt.Sprintf("https://coinmarketcap.com/currencies/%s/", slug)
 }
 
 func createID(id uint, token string) string {

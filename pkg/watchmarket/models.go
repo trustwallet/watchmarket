@@ -60,6 +60,7 @@ type (
 
 	CoinDetails struct {
 		Provider          string  `json:"provider"`
+		ProviderLink      string  `json:"provider_link"`
 		Vol24             float64 `json:"volume_24"`
 		MarketCap         float64 `json:"market_cap"`
 		CirculatingSupply float64 `json:"circulating_supply"`
