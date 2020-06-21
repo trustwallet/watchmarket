@@ -157,10 +157,10 @@ func normalizeInfo(data CoinPrice, info watchmarket.Info) watchmarket.CoinDetail
 		TotalSupply:       data.TotalSupply,
 		Info:              &info,
 		Provider:          id,
-		ProviderLink: getUrl(data.Id),
+		ProviderURL:       getUrl(data.Id),
 	}
 }
 
-func getUrl(id string) string  {
+func getUrl(id string) string {
 	return fmt.Sprintf("https://www.coingecko.com/en/coins/%s", id)
 }

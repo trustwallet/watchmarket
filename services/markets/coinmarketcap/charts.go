@@ -98,7 +98,7 @@ func normalizeInfo(currency string, cmcCoin uint, priceData ChartInfo, assetsDat
 	}
 	return watchmarket.CoinDetails{
 		Provider:          id,
-		ProviderLink:      getUrl(priceData.Data.Slug),
+		ProviderURL:       getUrl(priceData.Data.Slug),
 		Vol24:             quote.Volume24,
 		MarketCap:         quote.MarketCap,
 		CirculatingSupply: priceData.Data.CirculatingSupply,
