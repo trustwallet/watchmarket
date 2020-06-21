@@ -56,6 +56,7 @@ func Test_normalizeInfo(t *testing.T) {
 				data: ChartInfo{
 					Data: ChartInfoData{
 						Rank:              1,
+						Slug:              "test",
 						CirculatingSupply: 111,
 						TotalSupply:       222,
 						Quotes: map[string]ChartInfoQuote{
@@ -66,6 +67,7 @@ func Test_normalizeInfo(t *testing.T) {
 			},
 			watchmarket.CoinDetails{
 				Provider:          id,
+				ProviderURL:       "https://coinmarketcap.com/currencies/test/",
 				Vol24:             444,
 				MarketCap:         555,
 				CirculatingSupply: 111,
@@ -80,6 +82,7 @@ func Test_normalizeInfo(t *testing.T) {
 				data: ChartInfo{
 					Data: ChartInfoData{
 						Rank:              2,
+						Slug:              "test",
 						CirculatingSupply: 111,
 						TotalSupply:       222,
 						Quotes: map[string]ChartInfoQuote{
@@ -90,6 +93,7 @@ func Test_normalizeInfo(t *testing.T) {
 			},
 			watchmarket.CoinDetails{
 				Provider:          id,
+				ProviderURL:       "https://coinmarketcap.com/currencies/test/",
 				Vol24:             444,
 				MarketCap:         555,
 				CirculatingSupply: 111,

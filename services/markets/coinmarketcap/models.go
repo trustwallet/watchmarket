@@ -76,6 +76,7 @@ type (
 		Rank              uint32                    `json:"rank"`
 		CirculatingSupply float64                   `json:"circulating_supply"`
 		TotalSupply       float64                   `json:"total_supply"`
+		Slug              string                    `json:"website_slug"`
 		Quotes            map[string]ChartInfoQuote `json:"quotes"`
 	}
 
