@@ -59,7 +59,7 @@ func GetCoinInfoHandlerV2(controller controllers.InfoController) func(c *gin.Con
 		ctx := apm.ContextWithTransaction(context.Background(), tx)
 		defer tx.End()
 
-		coin, token, _, err := watchmarket.ParseID(c.Param("id"))
+		coin, token, err := watchmarket.ParseID(c.Param("id"))
 		if err != nil {
 			code, response := createErrorResponseAndStatusCode(err)
 			c.AbortWithStatusJSON(code, response)

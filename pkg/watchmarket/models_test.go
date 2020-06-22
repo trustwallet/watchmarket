@@ -62,10 +62,9 @@ func TestParseID(t *testing.T) {
 	}
 
 	for _, tt := range testStruct {
-		coin, token, givenType, err := ParseID(tt.givenID)
+		coin, token, err := ParseID(tt.givenID)
 		assert.Equal(t, tt.wantedCoin, coin)
 		assert.Equal(t, tt.wantedToken, token)
-		assert.Equal(t, tt.wantedType, givenType)
 		assert.Equal(t, tt.wantedError, err)
 	}
 }

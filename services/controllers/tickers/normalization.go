@@ -60,7 +60,7 @@ func makeTickerQueries(coins []controllers.Coin) []models.TickerQuery {
 func makeTickerQueriesV2(ids []string) []models.TickerQuery {
 	tickerQueries := make([]models.TickerQuery, 0, len(ids))
 	for _, id := range ids {
-		coin, token, _, err := watchmarket.ParseID(id)
+		coin, token, err := watchmarket.ParseID(id)
 		if err != nil {
 			continue
 		}
@@ -120,11 +120,11 @@ func isRespectableVolume(provider string, volume float64, configuration config.C
 
 func findIDInRequest(request controllers.TickerRequestV2, id string) (string, bool) {
 	for _, i := range request.Ids {
-		givenCoin, givenToken, _, err := watchmarket.ParseID(i)
+		givenCoin, givenToken, err := watchmarket.ParseID(i)
 		if err != nil {
 			continue
 		}
-		coin, token, _, err := watchmarket.ParseID(id)
+		coin, token, err := watchmarket.ParseID(id)
 		if err != nil {
 			continue
 		}
