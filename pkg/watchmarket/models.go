@@ -128,25 +128,25 @@ func DurationToUnix(duration time.Duration) uint {
 	return uint(duration.Seconds())
 }
 
-func ParseID(id string) (uint, string, CoinType, error) {
+func ParseID(id string) (uint, string, error) {
 	rawResult := strings.Split(id, "_")
 	resLen := len(rawResult)
 	if resLen < 1 {
-		return 0, "", Coin, errors.E("bad ID")
+		return 0, "", errors.E("bad ID")
 	}
 
 	coin, err := findCoinID(rawResult)
 	if err != nil {
-		return 0, "", Coin, errors.E("bad ID")
+		return 0, "", errors.E("bad ID")
 	}
 
 	token := findTokenID(rawResult)
 
 	if token != "" {
-		return coin, token, Token, nil
+		return coin, token, nil
 	}
 
-	return coin, "", Coin, nil
+	return coin, "", nil
 }
 
 func findCoinID(words []string) (uint, error) {
