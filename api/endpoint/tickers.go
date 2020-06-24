@@ -53,6 +53,7 @@ func GetTickersHandler(controller controllers.TickersController) func(c *gin.Con
 // @Produce json
 // @Tags Tickers
 // @Param id path string true "id" default(c714_tXRP-BF2)
+// @Param currency query string false "The currency to show coin assets in" default(USD)
 // @Success 200 {object} controllers.TickerResponseV2
 // @Router /v2/market/ticker/{id} [get]
 func GetTickerHandlerV2(controller controllers.TickersController) func(c *gin.Context) {
