@@ -15,7 +15,7 @@ GOPKG := $(.)
 # If $GOPATH is not specified, $HOME/go will be used by default
 GOPATH := $(if $(GOPATH),$(GOPATH),~/go)
 
-
+DOCKER_REDIS_IMAGE_NAME := redis
 DOCKER_LOCAL_DB_IMAGE_NAME := test_db
 DOCKER_LOCAL_DB_USER :=user
 DOCKER_LOCAL_DB_PASS :=pass
@@ -105,9 +105,15 @@ lint: go-lint-install go-lint
 ## docs: Generate swagger docs.
 docs: go-gen-docs
 
-start-docker-services:
+
+docker-shutdown:
+	@echo "  >  Shutdown docker containers..."
+	@-bash -c "docker rm -f $(DOCKER_LOCAL_DB_IMAGE_NAME) 2> /dev/null"
+	@-bash -c "docker rm -f $(DOCKER_REDIS_IMAGE_NAME) 2> /dev/null"
+
+start-docker-services: docker-shutdown
 	docker run -d -p 5432:5432 --name $(DOCKER_LOCAL_DB_IMAGE_NAME) -e POSTGRES_USER=$(DOCKER_LOCAL_DB_USER) -e POSTGRES_PASSWORD=$(DOCKER_LOCAL_DB_PASS) -e POSTGRES_DB=$(DOCKER_LOCAL_DB) postgres
-	docker run -d -p 6379:6379 redis
+	docker run -d -p 6379:6379 --name $(DOCKER_REDIS_IMAGE_NAME) redis
 
 seed-db:
 	@echo "  >  Seeding db"
