@@ -52,6 +52,8 @@ github.com/alicebob/miniredis/v2 v2.12.0 h1:kz6E75Gzy3sFbZqFnnURsZVhkD/dcc7uE+rK
 github.com/alicebob/miniredis/v2 v2.12.0/go.mod h1:0UIBNuf97uxrWhdVBpJvPtafKyGpL2NS2pYe0tYM97k=
 github.com/alicebob/miniredis/v2 v2.13.0 h1:QPosMaxm+r6Qs+YcCtL2Z2a2RSdC9VfXJLpd80l8ICU=
 github.com/alicebob/miniredis/v2 v2.13.0/go.mod h1:0UIBNuf97uxrWhdVBpJvPtafKyGpL2NS2pYe0tYM97k=
+github.com/alicebob/miniredis/v2 v2.13.1 h1:twArGFW9kCdxe0K1Ga+iWrZc9RdWalf7V5bQerNoPK0=
+github.com/alicebob/miniredis/v2 v2.13.1/go.mod h1:0UIBNuf97uxrWhdVBpJvPtafKyGpL2NS2pYe0tYM97k=
 github.com/andybalholm/cascadia v1.1.0/go.mod h1:GsXiBklL0woXo1j/WYWtSYYC4ouU9PqHO0sqidkEA4Y=
 github.com/apache/thrift v0.12.0/go.mod h1:cp2SuWMxlEZw2r+iP2GNCdIi4C1qmUzdZFSVb+bacwQ=
 github.com/armon/circbuf v0.0.0-20150827004946-bbbad097214e/go.mod h1:3U/XgcO3hCbHZ8TKRvWD2dDTCfh9M9ya+I9JpbB7O8o=
