@@ -3,7 +3,6 @@ package endpoint
 import (
 	"context"
 	"github.com/gin-gonic/gin"
-	"github.com/trustwallet/blockatlas/api/model"
 	"github.com/trustwallet/blockatlas/pkg/errors"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"github.com/trustwallet/watchmarket/services/controllers"
@@ -28,7 +27,7 @@ func GetTickersHandler(controller controllers.TickersController) func(c *gin.Con
 
 		request := controllers.TickerRequest{Currency: watchmarket.DefaultCurrency}
 		if err := c.BindJSON(&request); err != nil {
-			c.JSON(http.StatusBadRequest, model.CreateErrorResponse(model.InvalidQuery, errors.E("Invalid request payload")))
+			c.JSON(http.StatusBadRequest, errorResponse(errors.E("Invalid request payload")))
 			return
 		}
 		response, err := controller.HandleTickersRequest(request, ctx)
@@ -91,7 +90,7 @@ func GetTickersHandlerV2(controller controllers.TickersController) func(c *gin.C
 
 		request := controllers.TickerRequestV2{Currency: watchmarket.DefaultCurrency}
 		if err := c.BindJSON(&request); err != nil {
-			c.JSON(http.StatusBadRequest, model.CreateErrorResponse(model.InvalidQuery, errors.E("Invalid request payload")))
+			c.JSON(http.StatusBadRequest, errorResponse(errors.E("Invalid request payload")))
 			return
 		}
 		response, err := controller.HandleTickersRequestV2(request, ctx)
@@ -107,7 +106,7 @@ func GetTickersHandlerV2(controller controllers.TickersController) func(c *gin.C
 
 func handleTickersError(c *gin.Context, req controllers.TickerRequest) {
 	if len(req.Assets) == 0 || req.Assets == nil {
-		c.JSON(http.StatusBadRequest, model.CreateErrorResponse(model.InvalidQuery, errors.E("Invalid request payload")))
+		c.JSON(http.StatusBadRequest, errorResponse(errors.E("Invalid request payload")))
 		return
 	}
 	emptyResponse := controllers.TickerResponse{
