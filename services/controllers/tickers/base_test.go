@@ -133,6 +133,13 @@ func TestController_HandleTickersRequest(t *testing.T) {
 	})
 
 	assert.Equal(t, wantedResp, response)
+
+	oversizeRequest := controllers.TickerRequest{Currency: "USD", Assets: []controllers.Coin{{Coin: 60, TokenId: "a"}, {Coin: 714, TokenId: "a"}}}
+	for i := 0; i < c.configuration.RestAPI.RequestLimit; i++ {
+		oversizeRequest.Assets = append(oversizeRequest.Assets, controllers.Coin{Coin: 60, TokenId: "a"})
+	}
+	_, err = c.HandleTickersRequest(oversizeRequest, context.Background())
+	assert.Equal(t, errors.New(watchmarket.ErrBadRequest), err)
 }
 
 func TestController_HandleTickersRequest_Negative(t *testing.T) {
@@ -253,6 +260,13 @@ func TestController_HandleTickersRequestV2(t *testing.T) {
 	})
 
 	assert.Equal(t, wantedResp, response)
+
+	oversizeRequest := controllers.TickerRequestV2{Currency: "USD", Ids: []string{"c60_ta", "c714_ta"}}
+	for i := 0; i < c.configuration.RestAPI.RequestLimit; i++ {
+		oversizeRequest.Ids = append(oversizeRequest.Ids, "c60_ta")
+	}
+	_, err = c.HandleTickersRequestV2(oversizeRequest, context.Background())
+	assert.Equal(t, errors.New(watchmarket.ErrBadRequest), err)
 }
 
 func TestNewController(t *testing.T) {
