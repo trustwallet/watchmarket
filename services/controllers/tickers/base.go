@@ -31,7 +31,7 @@ func NewController(
 }
 
 func (c Controller) HandleTickersRequestV2(tr controllers.TickerRequestV2, ctx context.Context) (controllers.TickerResponseV2, error) {
-	if tr.Ids == nil {
+	if tr.Ids == nil || len(tr.Ids) >= c.configuration.RestAPI.RequestLimit {
 		return controllers.TickerResponseV2{}, errors.New(watchmarket.ErrBadRequest)
 	}
 
@@ -51,7 +51,7 @@ func (c Controller) HandleTickersRequestV2(tr controllers.TickerRequestV2, ctx c
 }
 
 func (c Controller) HandleTickersRequest(tr controllers.TickerRequest, ctx context.Context) (controllers.TickerResponse, error) {
-	if tr.Assets == nil {
+	if tr.Assets == nil || len(tr.Assets) >= c.configuration.RestAPI.RequestLimit {
 		return controllers.TickerResponse{}, errors.New(watchmarket.ErrBadRequest)
 	}
 

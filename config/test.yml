@@ -53,3 +53,4 @@ rest_api:
   info:
       cache_control: 1m
   cache:  15m
+  request_limit:  300
