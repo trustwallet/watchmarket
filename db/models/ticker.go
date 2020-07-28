@@ -9,12 +9,12 @@ type TickerQuery struct {
 
 type Ticker struct {
 	BasicTimeModel
-	Coin        uint   `gorm:"primary_key;" sql:"index"`
-	CoinName    string `gorm:"primary_key;" sql:"index"`
-	CoinType    string `gorm:"primary_key;"`
-	TokenId     string `gorm:"primary_key;" sql:"index"`
-	Currency    string `gorm:"primary_key;" sql:"index"`
-	Provider    string `gorm:"primary_key;" sql:"index"`
+	Coin        uint   `gorm:"primary_key" sql:"index"`
+	CoinName    string `gorm:"primary_key"`
+	CoinType    string `gorm:"primary_key"`
+	TokenId     string `gorm:"primary_key" sql:"index"`
+	Currency    string `gorm:"primary_key"`
+	Provider    string `gorm:"primary_key"`
 	Change24h   float64
 	Value       float64
 	Volume      float64
