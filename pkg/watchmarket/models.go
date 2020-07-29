@@ -186,10 +186,7 @@ func BuildID(coin uint, token string) string {
 	return string(coinPrefix) + c
 }
 
-func IsRespectable(provider string, value, respValue float64) bool {
-	if provider != "coingecko" {
-		return true
-	}
+func IsRespectableValue(value, respValue float64) bool {
 	return value >= respValue
 }
 

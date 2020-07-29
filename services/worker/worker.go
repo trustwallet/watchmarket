@@ -36,17 +36,10 @@ func Init(
 	}
 }
 
-func (w Worker) AddRatesOperation(c *cron.Cron, updateTime string) {
-	spec := fmt.Sprintf("@every %s", updateTime)
-	if _, err := c.AddFunc(spec, w.FetchAndSaveRates); err != nil {
-		logger.Fatal(err)
-	}
-}
-
-func (w Worker) AddTickersOperation(c *cron.Cron, updateTime string) {
+func (w Worker) AddOperation(c *cron.Cron, updateTime string, f func()) {
 	spec := fmt.Sprintf("@every %s", updateTime)
 
-	if _, err := c.AddFunc(spec, w.FetchAndSaveTickers); err != nil {
+	if _, err := c.AddFunc(spec, f); err != nil {
 		logger.Fatal(err)
 	}
 }

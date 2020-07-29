@@ -2,12 +2,14 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/robfig/cron/v3"
 	"github.com/trustwallet/blockatlas/pkg/logger"
 	"github.com/trustwallet/watchmarket/config"
 	"github.com/trustwallet/watchmarket/db/postgres"
 	_ "github.com/trustwallet/watchmarket/docs"
 	"github.com/trustwallet/watchmarket/internal"
 	"github.com/trustwallet/watchmarket/services/assets"
+	"github.com/trustwallet/watchmarket/services/cache"
 	"github.com/trustwallet/watchmarket/services/cache/memory"
 	rediscache "github.com/trustwallet/watchmarket/services/cache/redis"
 	"github.com/trustwallet/watchmarket/services/controllers"
@@ -32,6 +34,8 @@ var (
 	charts         controllers.ChartsController
 	info           controllers.InfoController
 	w              worker.Worker
+	c              *cron.Cron
+	memoryCache    cache.Provider
 )
 
 func init() {
@@ -61,14 +65,16 @@ func init() {
 		logger.Fatal(err)
 	}
 
-	memoryCache := memory.Init()
+	memoryCache = memory.Init()
+
+	c = cron.New(cron.WithChain(cron.Recover(cron.DefaultLogger)))
 	w = worker.Init(m.RatesAPIs, m.TickersAPIs, database, memoryCache, configuration)
 
 	r := internal.InitRedis(configuration.Storage.Redis)
-	cache := rediscache.Init(*r, configuration.RestAPI.Cache)
+	redisCache := rediscache.Init(*r, configuration.RestAPI.Cache)
 
-	charts = chartscontroller.NewController(cache, memoryCache, database, chartsPriority, coinInfoPriority, ratesPriority, tickerPriority, m.ChartsAPIs, configuration)
-	info = infocontroller.NewController(cache, chartsPriority, coinInfoPriority, ratesPriority, tickerPriority, m.ChartsAPIs, configuration)
+	charts = chartscontroller.NewController(redisCache, memoryCache, database, chartsPriority, coinInfoPriority, ratesPriority, tickerPriority, m.ChartsAPIs, configuration)
+	info = infocontroller.NewController(redisCache, chartsPriority, coinInfoPriority, ratesPriority, tickerPriority, m.ChartsAPIs, configuration)
 	tickers = tickerscontroller.NewController(database, memoryCache, ratesPriority, tickerPriority, configuration)
 	engine = internal.InitEngine(configuration.RestAPI.Mode)
 
@@ -78,6 +84,14 @@ func init() {
 func main() {
 	w.SaveRatesToMemory()
 	w.SaveTickersToMemory()
+
+	//w.AddOperation(c, configuration.Worker.Rates, w.SaveRatesToMemory)
+	w.AddOperation(c, "20s", w.SaveRatesToMemory)
+	//w.AddOperation(c, configuration.Worker.Tickers, w.SaveTickersToMemory)
+	w.AddOperation(c, "20s", w.SaveTickersToMemory)
+
+	c.Start()
+
 	if err := internal.InitAPI(engine, tickers, charts, info, configuration); err != nil {
 		panic(err)
 	}

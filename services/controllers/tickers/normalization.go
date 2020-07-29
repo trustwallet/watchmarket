@@ -127,8 +127,8 @@ func findBestProviderForQuery(coin uint, token string, sliceToFind []models.Tick
 				return
 			}
 			if baseCheck && p == t.Provider && t.ShowOption != models.NeverShow &&
-				watchmarket.IsRespectable(t.Provider, t.MarketCap, configuration.RestAPI.Tickers.RespsectableMarketCap) &&
-				watchmarket.IsRespectable(t.Provider, t.Volume, configuration.RestAPI.Tickers.RespsectableVolume) {
+				(watchmarket.IsRespectableValue(t.MarketCap, configuration.RestAPI.Tickers.RespsectableMarketCap) || t.Provider != "coingecko") &&
+				(watchmarket.IsRespectableValue(t.Volume, configuration.RestAPI.Tickers.RespsectableVolume) || t.Provider != "coingecko") {
 				res.Lock()
 				res.tickers = append(res.tickers, t)
 				res.Unlock()
