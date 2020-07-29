@@ -2,7 +2,8 @@ package worker
 
 import (
 	"context"
-	"fmt"
+	"encoding/json"
+	"github.com/trustwallet/blockatlas/pkg/logger"
 	"github.com/trustwallet/watchmarket/config"
 	"github.com/trustwallet/watchmarket/db/models"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
@@ -18,9 +19,24 @@ func (w Worker) SaveTickersToMemory() {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(len(allTickers))
+
 	tickersMap := createTickersMap(allTickers, w.configuration)
-	fmt.Println(len(tickersMap))
+	for key, val := range tickersMap {
+		rawVal, err := json.Marshal(val)
+		if err != nil {
+			logger.Error(err)
+			continue
+		}
+		if err = w.cache.Set(key, rawVal, ctx); err != nil {
+			logger.Error(err)
+			continue
+		}
+	}
+	res, err := w.cache.Get("c60", ctx)
+	if err != nil {
+		panic(err)
+	}
+	logger.Info(res)
 }
 
 func (w Worker) SaveRatesToMemory() {
@@ -32,9 +48,19 @@ func (w Worker) SaveRatesToMemory() {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(len(allRates))
+
 	ratesMap := createRatesMap(allRates, w.configuration)
-	fmt.Println(len(ratesMap))
+	for key, val := range ratesMap {
+		rawVal, err := json.Marshal(val)
+		if err != nil {
+			logger.Error(err)
+			continue
+		}
+		if err = w.cache.Set(key, rawVal, ctx); err != nil {
+			logger.Error(err)
+			continue
+		}
+	}
 }
 
 func createTickersMap(allTickers []models.Ticker, configuration config.Configuration) map[string]watchmarket.Ticker {

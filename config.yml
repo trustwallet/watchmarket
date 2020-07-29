@@ -54,3 +54,4 @@ rest_api:
     cache_control: 10m
   cache:  15m
   request_limit: 500
+  use_memory_cache: true

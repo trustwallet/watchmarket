@@ -280,7 +280,7 @@ func setupController(t *testing.T, d dbMock) Controller {
 	ratesPriority := c.Markets.Priority.Rates
 	tickerPriority := c.Markets.Priority.Tickers
 
-	controller := NewController(d, ratesPriority, tickerPriority, c)
+	controller := NewController(d, nil, ratesPriority, tickerPriority, c)
 	assert.NotNil(t, controller)
 	return controller
 
@@ -312,6 +312,14 @@ func (d dbMock) AddRates(rates []models.Rate, batchLimit uint, ctx context.Conte
 
 func (d dbMock) AddTickers(tickers []models.Ticker, batchLimit uint, ctx context.Context) error {
 	return nil
+}
+
+func (d dbMock) GetAllTickers(ctx context.Context) ([]models.Ticker, error) {
+	return nil, nil
+}
+
+func (d dbMock) GetAllRates(ctx context.Context) ([]models.Rate, error) {
+	return nil, nil
 }
 
 func (d dbMock) GetTickers(coin uint, tokenId string, ctx context.Context) ([]models.Ticker, error) {

@@ -70,8 +70,9 @@ type Configuration struct {
 		Info struct {
 			CacheControl time.Duration `mapstructure:"cache_control"`
 		} `mapstructure:"info"`
-		Cache        time.Duration `mapstructure:"cache"`
-		RequestLimit int           `mapstructure:"request_limit"`
+		Cache          time.Duration `mapstructure:"cache"`
+		RequestLimit   int           `mapstructure:"request_limit"`
+		UseMemoryCache bool          `mapstructure:"use_memory_cache"`
 	} `mapstructure:"rest_api"`
 }
 

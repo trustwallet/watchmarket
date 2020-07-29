@@ -21,26 +21,21 @@ type (
 
 	CoinType string
 
-	Response struct {
-		Currency string  `json:"currency"`
-		Docs     Tickers `json:"docs"`
-	}
-
 	Ticker struct {
 		Coin       uint      `json:"coin"`
-		CoinName   string    `json:"-"`
+		CoinName   string    `json:"coin_name"`
 		TokenId    string    `json:"token_id,omitempty"`
 		CoinType   CoinType  `json:"type,omitempty"`
 		Price      Price     `json:"price,omitempty"`
-		LastUpdate time.Time `json:"-"`
+		LastUpdate time.Time `json:"last_update"`
 		Error      string    `json:"error,omitempty"`
-		Volume     float64   `json:"-"`
-		MarketCap  float64   `json:"-"`
+		Volume     float64   `json:"volume"`
+		MarketCap  float64   `json:"market_cap"`
 	}
 
 	Price struct {
 		Change24h float64 `json:"change_24h"`
-		Currency  string  `json:"-"`
+		Currency  string  `json:"currency"`
 		Provider  string  `json:"provider,omitempty"`
 		Value     float64 `json:"value"`
 	}

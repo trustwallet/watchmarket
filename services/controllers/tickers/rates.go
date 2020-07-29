@@ -2,6 +2,7 @@ package tickerscontroller
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"github.com/trustwallet/blockatlas/pkg/logger"
 	"github.com/trustwallet/watchmarket/db/models"
@@ -10,6 +11,18 @@ import (
 )
 
 func (c Controller) getRateByPriority(currency string, ctx context.Context) (watchmarket.Rate, error) {
+	if c.configuration.RestAPI.UseMemoryCache {
+		rawResult, err := c.cache.Get(currency, ctx)
+		if err != nil {
+			return watchmarket.Rate{}, err
+		}
+		var result watchmarket.Rate
+		if err = json.Unmarshal(rawResult, &result); err != nil {
+			return watchmarket.Rate{}, err
+		}
+		return result, nil
+	}
+
 	rates, err := c.database.GetRates(currency, ctx)
 	if err != nil {
 		logger.Error(err, "getRateByPriority")

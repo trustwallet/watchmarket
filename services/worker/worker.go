@@ -6,6 +6,7 @@ import (
 	"github.com/trustwallet/blockatlas/pkg/logger"
 	"github.com/trustwallet/watchmarket/config"
 	"github.com/trustwallet/watchmarket/db"
+	"github.com/trustwallet/watchmarket/services/cache"
 	"github.com/trustwallet/watchmarket/services/markets"
 )
 
@@ -14,6 +15,7 @@ type (
 		ratesApis     markets.RatesAPIs
 		tickersApis   markets.TickersAPIs
 		db            db.Instance
+		cache         cache.Provider
 		configuration config.Configuration
 	}
 )
@@ -22,12 +24,14 @@ func Init(
 	ratesApis markets.RatesAPIs,
 	tickersApis markets.TickersAPIs,
 	db db.Instance,
+	cache cache.Provider,
 	configuration config.Configuration,
 ) Worker {
 	return Worker{
 		ratesApis,
 		tickersApis,
 		db,
+		cache,
 		configuration,
 	}
 }

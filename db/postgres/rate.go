@@ -49,15 +49,6 @@ func (i *Instance) GetAllRates(ctx context.Context) ([]models.Rate, error) {
 	return rates, nil
 }
 
-func (i *Instance) GetRatesCount(ctx context.Context) (int, error) {
-	g := apmgorm.WithContext(ctx, i.Gorm)
-	var count int
-	if err := g.Model(&models.Rate{}).Count(&count).Error; err != nil {
-		return 0, err
-	}
-	return count, nil
-}
-
 func normalizeRates(rates []models.Rate) []models.Rate {
 	ratesMap := make(map[string]models.Rate)
 	for _, rate := range rates {

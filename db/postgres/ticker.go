@@ -118,15 +118,6 @@ func (i *Instance) GetTickers(coin uint, tokenId string, ctx context.Context) ([
 	return ticker, nil
 }
 
-func (i *Instance) GetTickersCount(ctx context.Context) (int, error) {
-	g := apmgorm.WithContext(ctx, i.Gorm)
-	var count int
-	if err := g.Model(&models.Ticker{}).Count(&count).Error; err != nil {
-		return 0, err
-	}
-	return count, nil
-}
-
 func (i *Instance) GetAllTickers(ctx context.Context) ([]models.Ticker, error) {
 	g := apmgorm.WithContext(ctx, i.Gorm)
 	var tickers []models.Ticker

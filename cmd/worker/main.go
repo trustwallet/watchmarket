@@ -43,7 +43,7 @@ func init() {
 		logger.Fatal(err)
 	}
 
-	w = worker.Init(m.RatesAPIs, m.TickersAPIs, database, configuration)
+	w = worker.Init(m.RatesAPIs, m.TickersAPIs, database, nil, configuration)
 	c = cron.New(cron.WithChain(cron.Recover(cron.DefaultLogger)))
 	logger.InitLogger()
 
@@ -51,12 +51,12 @@ func init() {
 }
 
 func main() {
-	//w.AddRatesOperation(c, configuration.Worker.Rates)
-	//w.AddTickersOperation(c, configuration.Worker.Tickers)
+	w.AddRatesOperation(c, configuration.Worker.Rates)
+	w.AddTickersOperation(c, configuration.Worker.Tickers)
 
-	//go c.Start()
-	//go w.FetchAndSaveRates()
-	//go w.FetchAndSaveTickers()
+	go c.Start()
+	go w.FetchAndSaveRates()
+	go w.FetchAndSaveTickers()
 
 	w.SaveTickersToMemory()
 
