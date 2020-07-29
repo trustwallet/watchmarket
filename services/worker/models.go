@@ -28,3 +28,14 @@ func (r *rates) Add(rates watchmarket.Rates) {
 	r.rates = append(r.rates, rates...)
 	r.Unlock()
 }
+
+func isHigherPriority(priorities []string, current, new string) bool {
+	for _, p := range priorities {
+		if p == current {
+			return false
+		} else if p == new {
+			return true
+		}
+	}
+	return false
+}

@@ -190,3 +190,24 @@ func BuildID(coin uint, token string) string {
 	}
 	return string(coinPrefix) + c
 }
+
+func IsRespectable(provider string, value, respValue float64) bool {
+	if provider != "coingecko" {
+		return true
+	}
+	return value >= respValue
+}
+
+func IsSuitableUpdateTime(LastUpdate time.Time, maxDuration time.Duration) bool {
+	now := time.Now().Unix()
+	last := LastUpdate.Unix()
+	if now < last {
+		return true
+	}
+	diff := now - last
+	if diff < 0 {
+		return true
+	}
+	respectableTime := DurationToUnix(maxDuration)
+	return uint(diff) <= respectableTime
+}
