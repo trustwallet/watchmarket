@@ -7,7 +7,6 @@ import (
 	"github.com/trustwallet/watchmarket/db/models"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"go.elastic.co/apm"
-	"time"
 )
 
 func (w Worker) SaveTickersToMemory() {
@@ -22,14 +21,20 @@ func (w Worker) SaveTickersToMemory() {
 	fmt.Println(len(allTickers))
 	tickersMap := createTickersMap(allTickers, w.configuration)
 	fmt.Println(len(tickersMap))
-	//logger.Info("Fetching Tickers ...")
-	//fetchedTickers := fetchTickers(w.tickersApis, ctx)
-	//normalizedTickers := toTickersModel(fetchedTickers)
-	//
-	//if err := w.db.AddTickers(normalizedTickers, w.configuration.Worker.BatchLimit, ctx); err != nil {
-	//	logger.Error(err)
-	//}
-	time.Sleep(time.Minute)
+}
+
+func (w Worker) SaveRatesToMemory() {
+	tx := apm.DefaultTracer.StartTransaction("SaveRatesToMemory", "app")
+	ctx := apm.ContextWithTransaction(context.Background(), tx)
+	defer tx.End()
+
+	allRates, err := w.db.GetAllRates(ctx)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(len(allRates))
+	ratesMap := createRatesMap(allRates, w.configuration)
+	fmt.Println(len(ratesMap))
 }
 
 func createTickersMap(allTickers []models.Ticker, configuration config.Configuration) map[string]watchmarket.Ticker {
@@ -60,6 +65,26 @@ func createTickersMap(allTickers []models.Ticker, configuration config.Configura
 	return m
 }
 
+func createRatesMap(allRates []models.Rate, configuration config.Configuration) map[string]watchmarket.Rate {
+	m := make(map[string]watchmarket.Rate, len(allRates))
+	for _, rate := range allRates {
+		key := rate.Currency
+		if rate.Provider != "fixer" {
+			if !watchmarket.IsFiatRate(key) {
+				continue
+			}
+		}
+		result, ok := m[key]
+		if ok {
+			if isHigherPriority(configuration.Markets.Priority.Rates, result.Provider, rate.Provider) {
+				m[key] = fromModelToRate(rate)
+			}
+		}
+		m[key] = fromModelToRate(rate)
+	}
+	return m
+}
+
 func fromModelToTicker(m models.Ticker) watchmarket.Ticker {
 	return watchmarket.Ticker{
 		Coin:       m.Coin,
@@ -73,5 +98,15 @@ func fromModelToTicker(m models.Ticker) watchmarket.Ticker {
 			Value:     m.Value,
 		},
 		TokenId: m.TokenId,
+	}
+}
+
+func fromModelToRate(m models.Rate) watchmarket.Rate {
+	return watchmarket.Rate{
+		Currency:         m.Currency,
+		PercentChange24h: m.PercentChange24h,
+		Provider:         m.Provider,
+		Rate:             m.Rate,
+		Timestamp:        m.LastUpdated.Unix(),
 	}
 }

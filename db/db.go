@@ -8,6 +8,7 @@ import (
 type (
 	Instance interface {
 		GetRates(currency string, ctx context.Context) ([]models.Rate, error)
+		GetAllRates(ctx context.Context) ([]models.Rate, error)
 		GetRatesCount(ctx context.Context) (int, error)
 		AddRates(rates []models.Rate, batchLimit uint, ctx context.Context) error
 

@@ -40,6 +40,15 @@ func (i *Instance) GetRates(currency string, ctx context.Context) ([]models.Rate
 	return rates, nil
 }
 
+func (i *Instance) GetAllRates(ctx context.Context) ([]models.Rate, error) {
+	g := apmgorm.WithContext(ctx, i.Gorm)
+	var rates []models.Rate
+	if err := g.Find(&rates).Error; err != nil {
+		return nil, err
+	}
+	return rates, nil
+}
+
 func (i *Instance) GetRatesCount(ctx context.Context) (int, error) {
 	g := apmgorm.WithContext(ctx, i.Gorm)
 	var count int
