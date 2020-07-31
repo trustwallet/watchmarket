@@ -91,7 +91,8 @@ func createTickersMap(allTickers []models.Ticker, configuration config.Configura
 
 		result, ok := m[key]
 		if ok {
-			if isHigherPriority(configuration.Markets.Priority.Tickers, result.Price.Provider, ticker.Provider) && baseCheck {
+			if isHigherPriority(configuration.Markets.Priority.Tickers, result.Price.Provider, ticker.Provider) &&
+				baseCheck && result.ShowOption != models.AlwaysShow {
 				m[key] = fromModelToTicker(ticker)
 			}
 			continue
@@ -120,7 +121,7 @@ func createRatesMap(allRates []models.Rate, configuration config.Configuration) 
 		}
 		result, ok := m[key]
 		if ok {
-			if isHigherPriority(configuration.Markets.Priority.Rates, result.Provider, rate.Provider) {
+			if isHigherPriority(configuration.Markets.Priority.Rates, result.Provider, rate.Provider) && result.ShowOption != models.AlwaysShow {
 				m[key] = fromModelToRate(rate)
 			}
 		} else {

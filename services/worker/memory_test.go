@@ -100,6 +100,48 @@ func TestWorker_SaveRatesToMemory(t *testing.T) {
 		Rate:             1,
 		Timestamp:        now.Unix(),
 	}, res2)
+
+	dbMock.WantedRates = []models.Rate{
+		{
+			Currency:         "USD",
+			Provider:         "coinmarketcap",
+			PercentChange24h: 1,
+			Rate:             1,
+			ShowOption:       0,
+			LastUpdated:      now,
+		},
+		{
+			Currency:         "USD",
+			Provider:         "coingecko",
+			PercentChange24h: 2,
+			Rate:             2,
+			ShowOption:       models.AlwaysShow,
+			LastUpdated:      now,
+		},
+		{
+			Currency:         "USD",
+			Provider:         "fixer",
+			PercentChange24h: 11,
+			Rate:             1.5,
+			ShowOption:       0,
+			LastUpdated:      now,
+		},
+	}
+
+	w3 := Init(nil, nil, dbMock, memory.Init(), c)
+	w3.SaveRatesToMemory()
+	resRaw3, err := w3.cache.Get("USD", context.Background())
+	assert.Nil(t, err)
+
+	var res3 watchmarket.Rate
+	assert.Nil(t, json.Unmarshal(resRaw3, &res3))
+	assert.Equal(t, watchmarket.Rate{
+		Currency:         "USD",
+		PercentChange24h: 2,
+		Provider:         "coingecko",
+		Rate:             2,
+		Timestamp:        now.Unix(),
+	}, res3)
 }
 
 func TestWorker_SaveTickersToMemory(t *testing.T) {

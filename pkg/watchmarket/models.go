@@ -15,6 +15,7 @@ type (
 		Provider         string  `json:"provider,omitempty"`
 		Rate             float64 `json:"rate"`
 		Timestamp        int64   `json:"timestamp"`
+		ShowOption       int     `json:"-"`
 	}
 
 	Rates []Rate
@@ -31,6 +32,7 @@ type (
 		Error      string    `json:"error,omitempty"`
 		Volume     float64   `json:"volume"`
 		MarketCap  float64   `json:"market_cap"`
+		ShowOption int       `json:"-"`
 	}
 
 	Price struct {

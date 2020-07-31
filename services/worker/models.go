@@ -90,7 +90,8 @@ func fromModelToTicker(m models.Ticker) watchmarket.Ticker {
 			Provider:  m.Provider,
 			Value:     m.Value,
 		},
-		TokenId: m.TokenId,
+		TokenId:    m.TokenId,
+		ShowOption: int(m.ShowOption),
 	}
 }
 
@@ -101,5 +102,6 @@ func fromModelToRate(m models.Rate) watchmarket.Rate {
 		Provider:         m.Provider,
 		Rate:             m.Rate,
 		Timestamp:        m.LastUpdated.Unix(),
+		ShowOption:       int(m.ShowOption),
 	}
 }
