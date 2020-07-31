@@ -103,6 +103,9 @@ func (d Chart) IsEmpty() bool {
 }
 
 func (i CoinDetails) IsEmpty() bool {
+	if i.Info == nil {
+		return true
+	}
 	return i.Info.Name == ""
 }
 

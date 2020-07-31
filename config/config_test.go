@@ -51,4 +51,7 @@ func TestInit(t *testing.T) {
 
 	assert.Equal(t, time.Minute*15, c.RestAPI.Cache)
 	assert.Equal(t, 300, c.RestAPI.RequestLimit)
+	assert.Equal(t, true, c.RestAPI.UseMemoryCache)
+	assert.Equal(t, "30s", c.RestAPI.UpdateTime.Tickers)
+	assert.Equal(t, "30s", c.RestAPI.UpdateTime.Rates)
 }

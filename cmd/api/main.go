@@ -65,10 +65,11 @@ func init() {
 		logger.Fatal(err)
 	}
 
-	memoryCache = memory.Init()
-
-	c = cron.New(cron.WithChain(cron.Recover(cron.DefaultLogger)))
-	w = worker.Init(m.RatesAPIs, m.TickersAPIs, database, memoryCache, configuration)
+	if configuration.RestAPI.UseMemoryCache {
+		memoryCache = memory.Init()
+		c = cron.New(cron.WithChain(cron.Recover(cron.DefaultLogger)))
+		w = worker.Init(m.RatesAPIs, m.TickersAPIs, database, memoryCache, configuration)
+	}
 
 	r := internal.InitRedis(configuration.Storage.Redis)
 	redisCache := rediscache.Init(*r, configuration.RestAPI.Cache)
@@ -82,15 +83,15 @@ func init() {
 }
 
 func main() {
-	w.SaveRatesToMemory()
-	w.SaveTickersToMemory()
+	if configuration.RestAPI.UseMemoryCache {
+		w.SaveRatesToMemory()
+		w.SaveTickersToMemory()
 
-	//w.AddOperation(c, configuration.Worker.Rates, w.SaveRatesToMemory)
-	w.AddOperation(c, "20s", w.SaveRatesToMemory)
-	//w.AddOperation(c, configuration.Worker.Tickers, w.SaveTickersToMemory)
-	w.AddOperation(c, "20s", w.SaveTickersToMemory)
+		w.AddOperation(c, configuration.RestAPI.UpdateTime.Rates, w.SaveRatesToMemory)
+		w.AddOperation(c, configuration.RestAPI.UpdateTime.Tickers, w.SaveTickersToMemory)
 
-	c.Start()
+		c.Start()
+	}
 
 	if err := internal.InitAPI(engine, tickers, charts, info, configuration); err != nil {
 		panic(err)
