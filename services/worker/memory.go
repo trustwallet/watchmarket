@@ -17,6 +17,7 @@ func (w Worker) SaveTickersToMemory() {
 
 	logger.Info("---------------------------------------")
 	logger.Info("Memory Cache: request to DB for tickers ...")
+
 	allTickers, err := w.db.GetAllTickers(ctx)
 	if err != nil {
 		panic(err)
@@ -35,6 +36,7 @@ func (w Worker) SaveTickersToMemory() {
 			continue
 		}
 	}
+
 	logger.Info("Memory Cache: tickers saved to the cache", logger.Params{"len": len(tickersMap)})
 	logger.Info("---------------------------------------")
 }
@@ -43,14 +45,17 @@ func (w Worker) SaveRatesToMemory() {
 	tx := apm.DefaultTracer.StartTransaction("SaveRatesToMemory", "app")
 	ctx := apm.ContextWithTransaction(context.Background(), tx)
 	defer tx.End()
+
 	logger.Info("---------------------------------------")
 	logger.Info("Memory Cache: request to DB for rates ...")
+
 	allRates, err := w.db.GetAllRates(ctx)
 	if err != nil {
 		panic(err)
 	}
 
 	logger.Info("Memory Cache: got rates From DB", logger.Params{"len": len(allRates)})
+
 	ratesMap := createRatesMap(allRates, w.configuration)
 	for key, val := range ratesMap {
 		rawVal, err := json.Marshal(val)
@@ -63,6 +68,7 @@ func (w Worker) SaveRatesToMemory() {
 			continue
 		}
 	}
+
 	logger.Info("Memory Cache: rates saved to the cache", logger.Params{"len": len(ratesMap)})
 	logger.Info("---------------------------------------")
 }
@@ -89,8 +95,7 @@ func createTickersMap(allTickers []models.Ticker, configuration config.Configura
 				m[key] = fromModelToTicker(ticker)
 			}
 			continue
-		}
-		if baseCheck {
+		} else if baseCheck {
 			m[key] = fromModelToTicker(ticker)
 		}
 	}
@@ -100,7 +105,14 @@ func createTickersMap(allTickers []models.Ticker, configuration config.Configura
 func createRatesMap(allRates []models.Rate, configuration config.Configuration) map[string]watchmarket.Rate {
 	m := make(map[string]watchmarket.Rate, len(allRates))
 	for _, rate := range allRates {
+		if rate.ShowOption == models.NeverShow {
+			continue
+		}
 		key := rate.Currency
+		if rate.ShowOption == models.AlwaysShow {
+			m[key] = fromModelToRate(rate)
+			continue
+		}
 		if rate.Provider != "fixer" {
 			if !watchmarket.IsFiatRate(key) {
 				continue
@@ -111,34 +123,9 @@ func createRatesMap(allRates []models.Rate, configuration config.Configuration) 
 			if isHigherPriority(configuration.Markets.Priority.Rates, result.Provider, rate.Provider) {
 				m[key] = fromModelToRate(rate)
 			}
+		} else {
+			m[key] = fromModelToRate(rate)
 		}
-		m[key] = fromModelToRate(rate)
 	}
 	return m
-}
-
-func fromModelToTicker(m models.Ticker) watchmarket.Ticker {
-	return watchmarket.Ticker{
-		Coin:       m.Coin,
-		CoinName:   m.CoinName,
-		CoinType:   watchmarket.CoinType(m.CoinType),
-		LastUpdate: m.LastUpdated,
-		Price: watchmarket.Price{
-			Change24h: m.Change24h,
-			Currency:  m.Currency,
-			Provider:  m.Provider,
-			Value:     m.Value,
-		},
-		TokenId: m.TokenId,
-	}
-}
-
-func fromModelToRate(m models.Rate) watchmarket.Rate {
-	return watchmarket.Rate{
-		Currency:         m.Currency,
-		PercentChange24h: m.PercentChange24h,
-		Provider:         m.Provider,
-		Rate:             m.Rate,
-		Timestamp:        m.LastUpdated.Unix(),
-	}
 }
