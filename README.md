@@ -37,19 +37,31 @@ cd cmd/api && go run main.go
 cd cmd/worker && go run main.go
 ```
 
+### ID system
+We are using a asset id system. For each coin we have a unique asset_id of type string.
+
+#### How to build asset id?
+Asset ID consists of 2 parts and it possible to add new parts later. 
+Example: `c714_tTWT-8C2`
+Where: 
+- 714 is id of `coin` (c for coin). We use standarts of [BIP-44 slips for coins](https://github.com/satoshilabs/slips/blob/master/slip-0044.md)
+- TWT-8C2 is token id - unique identifier of token for blockchain. It could be an address for ETH for example.
+
 ### Using  API:
 
   A. Get coin details about Ehtereum (coin 60 according to SLIPs) 
-  
-  ```curl -v "http://localhost:8421/v1/market/info?coin=60" | jq .``` 
-  
+ - ```curl -v "http://localhost:8421/v1/market/info?coin=60" | jq .``` 
+ - ```curl -v "http://localhost:8421/v2/market/info/c60" | jq .```  
+
   B. Get current ticker price of Ethereum in USD:
-   
-   ```curl -v -X POST 'http://localhost:8421/v1/market/ticker' -H 'Content-Type: application/json' -d '{"currency":"USD","assets":[{"type":"coin","coin":60}]}'```
-   
+ -  ```curl -v -X POST 'http://localhost:8421/v1/market/ticker' -H 'Content-Type: application/json' -d '{"currency":"USD","assets":[{"type":"coin","coin":60}]}'```
+ -  ```curl -v -X POST 'http://localhost:8421/v2/market/tickers' -H 'Content-Type: application/json' -d '{"currency":"USD","assets":["c60","c0","c714","c714_tTWT-8C2","c459","c61"]}'```
+ - ```curl -v "http://localhost:8421/v2/market/ticker/c60" | jq .```
+ - ```curl -v "http://localhost:8421/v2/market/tickers?assets=c60,c714,c714_TWT-8C2" | jq .```
+ 
   C. Get price interval of Ethereum to build chart starting from 1574483028 (UNIX time)
-  
-   ```curl -v "http://localhost:8421/v1/market/charts?coin=60&time_start=1574483028" | jq .```
+ - ```curl -v "http://localhost:8421/v1/market/charts?coin=60&time_start=1574483028" | jq .```
+ - ```curl -v "http://localhost:8421/v2/market/charts/c60?time_start=1574483028" | jq .```
  
 Use `make stop` to stop the services
 
