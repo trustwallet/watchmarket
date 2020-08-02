@@ -9,7 +9,6 @@ import (
 	"github.com/trustwallet/watchmarket/services/controllers"
 	"strings"
 	"sync"
-	"time"
 )
 
 func createResponse(tr controllers.TickerRequest, tickers watchmarket.Tickers) controllers.TickerResponse {
@@ -79,43 +78,12 @@ func (c Controller) normalizeTickers(tickers watchmarket.Tickers, rate watchmark
 		if !ok {
 			continue
 		}
-		if !c.isSuitableUpdateTime(t) {
+		if !watchmarket.IsSuitableUpdateTime(t.LastUpdate, c.configuration.RestAPI.Tickers.RespectableUpdateTime) {
 			continue
 		}
 		result = append(result, applyRateToTicker(t, r))
 	}
 	return result
-}
-
-func (c Controller) isSuitableUpdateTime(ticker watchmarket.Ticker) bool {
-	if ticker.Price.Provider == "coinmarketcap" {
-		return true
-	}
-	now := time.Now().Unix()
-	last := ticker.LastUpdate.Unix()
-	if now < last {
-		return true
-	}
-	diff := now - last
-	if diff < 0 {
-		return true
-	}
-	respectableTime := watchmarket.DurationToUnix(c.configuration.RestAPI.Tickers.RespectableUpdateTime)
-	return uint(diff) <= respectableTime
-}
-
-func isRespectableMarketCap(provider string, marketCap float64, configuration config.Configuration) bool {
-	if provider != "coingecko" {
-		return true
-	}
-	return marketCap >= configuration.RestAPI.Tickers.RespsectableMarketCap
-}
-
-func isRespectableVolume(provider string, volume float64, configuration config.Configuration) bool {
-	if provider != "coingecko" {
-		return true
-	}
-	return volume >= configuration.RestAPI.Tickers.RespsectableVolume
 }
 
 func findIDInRequest(request controllers.TickerRequestV2, id string) (string, bool) {
@@ -159,7 +127,8 @@ func findBestProviderForQuery(coin uint, token string, sliceToFind []models.Tick
 				return
 			}
 			if baseCheck && p == t.Provider && t.ShowOption != models.NeverShow &&
-				isRespectableMarketCap(t.Provider, t.MarketCap, configuration) && isRespectableVolume(t.Provider, t.Volume, configuration) {
+				(watchmarket.IsRespectableValue(t.MarketCap, configuration.RestAPI.Tickers.RespsectableMarketCap) || t.Provider != "coingecko") &&
+				(watchmarket.IsRespectableValue(t.Volume, configuration.RestAPI.Tickers.RespsectableVolume) || t.Provider != "coingecko") {
 				res.Lock()
 				res.tickers = append(res.tickers, t)
 				res.Unlock()

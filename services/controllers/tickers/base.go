@@ -6,12 +6,14 @@ import (
 	"github.com/trustwallet/watchmarket/config"
 	"github.com/trustwallet/watchmarket/db"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
+	"github.com/trustwallet/watchmarket/services/cache"
 	"github.com/trustwallet/watchmarket/services/controllers"
 	"strings"
 )
 
 type Controller struct {
 	database        db.Instance
+	cache           cache.Provider
 	ratesPriority   []string
 	tickersPriority []string
 	configuration   config.Configuration
@@ -19,11 +21,13 @@ type Controller struct {
 
 func NewController(
 	database db.Instance,
+	cache cache.Provider,
 	ratesPriority, tickersPriority []string,
 	configuration config.Configuration,
 ) Controller {
 	return Controller{
 		database,
+		cache,
 		ratesPriority,
 		tickersPriority,
 		configuration,

@@ -2,18 +2,22 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/robfig/cron/v3"
 	"github.com/trustwallet/blockatlas/pkg/logger"
 	"github.com/trustwallet/watchmarket/config"
 	"github.com/trustwallet/watchmarket/db/postgres"
 	_ "github.com/trustwallet/watchmarket/docs"
 	"github.com/trustwallet/watchmarket/internal"
 	"github.com/trustwallet/watchmarket/services/assets"
+	"github.com/trustwallet/watchmarket/services/cache"
+	"github.com/trustwallet/watchmarket/services/cache/memory"
 	rediscache "github.com/trustwallet/watchmarket/services/cache/redis"
 	"github.com/trustwallet/watchmarket/services/controllers"
 	chartscontroller "github.com/trustwallet/watchmarket/services/controllers/charts"
 	infocontroller "github.com/trustwallet/watchmarket/services/controllers/info"
 	tickerscontroller "github.com/trustwallet/watchmarket/services/controllers/tickers"
 	"github.com/trustwallet/watchmarket/services/markets"
+	"github.com/trustwallet/watchmarket/services/worker"
 	"time"
 )
 
@@ -29,6 +33,9 @@ var (
 	tickers        controllers.TickersController
 	charts         controllers.ChartsController
 	info           controllers.InfoController
+	w              worker.Worker
+	c              *cron.Cron
+	memoryCache    cache.Provider
 )
 
 func init() {
@@ -58,18 +65,34 @@ func init() {
 		logger.Fatal(err)
 	}
 
-	r := internal.InitRedis(configuration.Storage.Redis)
-	cache := rediscache.Init(*r, configuration.RestAPI.Cache)
+	if configuration.RestAPI.UseMemoryCache {
+		memoryCache = memory.Init()
+		c = cron.New(cron.WithChain(cron.Recover(cron.DefaultLogger)))
+		w = worker.Init(m.RatesAPIs, m.TickersAPIs, database, memoryCache, configuration)
+	}
 
-	charts = chartscontroller.NewController(cache, database, chartsPriority, coinInfoPriority, ratesPriority, tickerPriority, m.ChartsAPIs, configuration)
-	info = infocontroller.NewController(cache, chartsPriority, coinInfoPriority, ratesPriority, tickerPriority, m.ChartsAPIs, configuration)
-	tickers = tickerscontroller.NewController(database, ratesPriority, tickerPriority, configuration)
+	r := internal.InitRedis(configuration.Storage.Redis)
+	redisCache := rediscache.Init(*r, configuration.RestAPI.Cache)
+
+	charts = chartscontroller.NewController(redisCache, memoryCache, database, chartsPriority, coinInfoPriority, ratesPriority, tickerPriority, m.ChartsAPIs, configuration)
+	info = infocontroller.NewController(redisCache, chartsPriority, coinInfoPriority, ratesPriority, tickerPriority, m.ChartsAPIs, configuration)
+	tickers = tickerscontroller.NewController(database, memoryCache, ratesPriority, tickerPriority, configuration)
 	engine = internal.InitEngine(configuration.RestAPI.Mode)
 
 	go postgres.FatalWorker(time.Second*10, *database)
 }
 
 func main() {
+	if configuration.RestAPI.UseMemoryCache {
+		w.SaveRatesToMemory()
+		w.SaveTickersToMemory()
+
+		w.AddOperation(c, configuration.RestAPI.UpdateTime.Rates, w.SaveRatesToMemory)
+		w.AddOperation(c, configuration.RestAPI.UpdateTime.Tickers, w.SaveTickersToMemory)
+
+		c.Start()
+	}
+
 	if err := internal.InitAPI(engine, tickers, charts, info, configuration); err != nil {
 		panic(err)
 	}

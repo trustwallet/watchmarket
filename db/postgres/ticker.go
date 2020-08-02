@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	rawBulkTickersInsert = `INSERT INTO tickers(updated_at,created_at,coin,coin_name,coin_type,token_id,change24h,currency,provider,value,last_updated,volume,market_cap,show_option) VALUES %s ON CONFLICT ON CONSTRAINT tickers_pkey DO UPDATE SET value = excluded.value, change24h = excluded.change24h, updated_at = excluded.updated_at, last_updated = excluded.last_updated, volume = excluded.volume, market_cap = excluded.market_cap`
+	rawBulkTickersInsert = `INSERT INTO tickers(updated_at,created_at,id,coin,coin_name,coin_type,token_id,change24h,currency,provider,value,last_updated,volume,market_cap,show_option) VALUES %s ON CONFLICT ON CONSTRAINT tickers_pkey DO UPDATE SET id = excluded.id, value = excluded.value, change24h = excluded.change24h, updated_at = excluded.updated_at, last_updated = excluded.last_updated, volume = excluded.volume, market_cap = excluded.market_cap`
 )
 
 func (i *Instance) AddTickers(tickers []models.Ticker, batchLimit uint, ctx context.Context) error {
@@ -70,10 +70,11 @@ func bulkCreateTicker(db *gorm.DB, dataList []models.Ticker) error {
 	)
 
 	for _, d := range dataList {
-		valueStrings = append(valueStrings, "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
+		valueStrings = append(valueStrings, "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
 
 		valueArgs = append(valueArgs, time.Now())
 		valueArgs = append(valueArgs, time.Now())
+		valueArgs = append(valueArgs, d.ID)
 		valueArgs = append(valueArgs, d.Coin)
 		valueArgs = append(valueArgs, d.CoinName)
 		valueArgs = append(valueArgs, d.CoinType)
@@ -116,4 +117,13 @@ func (i *Instance) GetTickers(coin uint, tokenId string, ctx context.Context) ([
 		return nil, err
 	}
 	return ticker, nil
+}
+
+func (i *Instance) GetAllTickers(ctx context.Context) ([]models.Ticker, error) {
+	g := apmgorm.WithContext(ctx, i.Gorm)
+	var tickers []models.Ticker
+	if err := g.Find(&tickers).Error; err != nil {
+		return nil, err
+	}
+	return tickers, nil
 }

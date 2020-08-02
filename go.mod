@@ -11,6 +11,7 @@ require (
 	github.com/go-redis/redis v6.15.8+incompatible
 	github.com/jinzhu/gorm v1.9.15
 	github.com/ory/dockertest v3.3.5+incompatible
+	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/prometheus/client_golang v1.7.1
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/spf13/viper v1.7.0

@@ -39,7 +39,7 @@ func TestController_getRateByPriority(t *testing.T) {
 	db.WantedRatesError = nil
 	db.WantedRates = []models.Rate{rate, rate2, rate3}
 
-	c := setupController(t, db)
+	c := setupController(t, db, false)
 	assert.NotNil(t, c)
 
 	r, err := c.getRateByPriority("USD", context.Background())

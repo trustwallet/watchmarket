@@ -165,6 +165,8 @@ func TestController_normalizeTickers(t *testing.T) {
 		Timestamp:        12,
 	}
 
+	now := time.Now()
+
 	gotTicker1 := watchmarket.Ticker{
 		Coin:     0,
 		CoinName: "BTC",
@@ -175,12 +177,13 @@ func TestController_normalizeTickers(t *testing.T) {
 			Provider:  "coinmarketcap",
 			Value:     9360.20314131,
 		},
-		TokenId: "",
+		TokenId:    "",
+		LastUpdate: now,
 	}
 	db := getDbMock()
 	db.WantedRates = []models.Rate{modelRate2}
 
-	c := setupController(t, db)
+	c := setupController(t, db, false)
 	assert.NotNil(t, c)
 
 	result := c.normalizeTickers([]watchmarket.Ticker{gotTicker1}, rate, context.Background())
@@ -195,7 +198,8 @@ func TestController_normalizeTickers(t *testing.T) {
 			Provider:  "coinmarketcap",
 			Value:     8514.78959355037,
 		},
-		TokenId: "",
+		TokenId:    "",
+		LastUpdate: now,
 	}
 	assert.Equal(t, wanted, result[0])
 }
@@ -245,7 +249,7 @@ func TestController_normalizeTickers_advanced(t *testing.T) {
 	db := getDbMock()
 	db.WantedRates = []models.Rate{modelRate, modelRate2}
 
-	c := setupController(t, db)
+	c := setupController(t, db, false)
 	assert.NotNil(t, c)
 
 	result := c.normalizeTickers([]watchmarket.Ticker{gotTicker1}, rate, context.Background())

@@ -83,6 +83,8 @@ definitions:
         type: number
       provider:
         type: string
+      provider_url:
+        type: string
       total_supply:
         type: number
       volume_24:
@@ -115,6 +117,8 @@ definitions:
     properties:
       change_24h:
         type: number
+      currency:
+        type: string
       provider:
         type: string
       value:
@@ -133,8 +137,14 @@ definitions:
     properties:
       coin:
         type: integer
+      coin_name:
+        type: string
       error:
         type: string
+      last_update:
+        type: string
+      market_cap:
+        type: number
       price:
         $ref: '#/definitions/watchmarket.Price'
         type: object
@@ -142,22 +152,12 @@ definitions:
         type: string
       type:
         type: string
+      volume:
+        type: number
     type: object
   watchmarket.Tickers:
     items:
-      properties:
-        coin:
-          type: integer
-        error:
-          type: string
-        price:
-          $ref: '#/definitions/watchmarket.Price'
-          type: object
-        token_id:
-          type: string
-        type:
-          type: string
-      type: object
+      $ref: '#/definitions/watchmarket.Ticker'
     type: array
 info:
   contact: {}
@@ -250,7 +250,6 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/controllers.TickerRequest'
-          type: object
       produces:
       - application/json
       responses:
@@ -340,6 +339,11 @@ paths:
         name: id
         required: true
         type: string
+      - default: USD
+        description: The currency to show coin assets in
+        in: query
+        name: currency
+        type: string
       produces:
       - application/json
       responses:
@@ -351,11 +355,36 @@ paths:
       tags:
       - Tickers
   /v2/market/tickers:
-    post:
+    get:
       consumes:
       - application/json
       description: Get the tickers for list of ids
       operationId: get_tickers_v2
+      parameters:
+      - description: currency symbol
+        in: query
+        name: currency
+        type: string
+      - description: List of asset ids
+        in: query
+        name: assets
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controllers.TickerResponseV2'
+      summary: Get tickers for list of ids
+      tags:
+      - Tickers
+    post:
+      consumes:
+      - application/json
+      description: Get the tickers for list of ids
+      operationId: post_tickers_v2
       parameters:
       - description: Ticker
         in: body
@@ -363,7 +392,6 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/controllers.TickerRequestV2'
-          type: object
       produces:
       - application/json
       responses:

@@ -15,32 +15,29 @@ type (
 		Provider         string  `json:"provider,omitempty"`
 		Rate             float64 `json:"rate"`
 		Timestamp        int64   `json:"timestamp"`
+		ShowOption       int     `json:"-"`
 	}
 
 	Rates []Rate
 
 	CoinType string
 
-	Response struct {
-		Currency string  `json:"currency"`
-		Docs     Tickers `json:"docs"`
-	}
-
 	Ticker struct {
 		Coin       uint      `json:"coin"`
-		CoinName   string    `json:"-"`
+		CoinName   string    `json:"coin_name"`
 		TokenId    string    `json:"token_id,omitempty"`
 		CoinType   CoinType  `json:"type,omitempty"`
 		Price      Price     `json:"price,omitempty"`
-		LastUpdate time.Time `json:"-"`
+		LastUpdate time.Time `json:"last_update"`
 		Error      string    `json:"error,omitempty"`
-		Volume     float64   `json:"-"`
-		MarketCap  float64   `json:"-"`
+		Volume     float64   `json:"volume"`
+		MarketCap  float64   `json:"market_cap"`
+		ShowOption int       `json:"-"`
 	}
 
 	Price struct {
 		Change24h float64 `json:"change_24h"`
-		Currency  string  `json:"-"`
+		Currency  string  `json:"currency"`
 		Provider  string  `json:"provider,omitempty"`
 		Value     float64 `json:"value"`
 	}
@@ -108,6 +105,9 @@ func (d Chart) IsEmpty() bool {
 }
 
 func (i CoinDetails) IsEmpty() bool {
+	if i.Info == nil {
+		return true
+	}
 	return i.Info.Name == ""
 }
 
@@ -189,4 +189,31 @@ func BuildID(coin uint, token string) string {
 		return string(coinPrefix) + c + "_" + string(tokenPrefix) + token
 	}
 	return string(coinPrefix) + c
+}
+
+func IsRespectableValue(value, respValue float64) bool {
+	return value >= respValue
+}
+
+func IsSuitableUpdateTime(LastUpdate time.Time, maxDuration time.Duration) bool {
+	now := time.Now().Unix()
+	last := LastUpdate.Unix()
+	if now < last {
+		return true
+	}
+	diff := now - last
+	if diff < 0 {
+		return true
+	}
+	respectableTime := DurationToUnix(maxDuration)
+	return uint(diff) <= respectableTime
+}
+
+func IsFiatRate(currency string) bool {
+	switch currency {
+	case "AED", "AFN", "ALL", "AMD", "ANG", "AOA", "ARS", "AUD", "AWG", "AZN", "BAM", "BBD", "BDT", "BGN", "BHD", "BIF", "BMD", "BND", "BOB", "BRL", "BSD", "BTN", "BWP", "BYN", "BYR", "BZD", "CAD", "CDF", "CHF", "CLF", "CLP", "CNY", "COP", "CRC", "CUC", "CUP", "CVE", "CZK", "DJF", "DKK", "DOP", "DZD", "EGP", "ERN", "ETB", "EUR", "FJD", "FKP", "GBP", "GEL", "GGP", "GHS", "GIP", "GMD", "GNF", "GTQ", "GYD", "HKD", "HNL", "HRK", "HTG", "HUF", "IDR", "ILS", "IMP", "INR", "IQD", "IRR", "ISK", "JEP", "JMD", "JOD", "JPY", "KES", "KGS", "KHR", "KMF", "KPW", "KRW", "KWD", "KYD", "KZT", "LAK", "LBP", "LKR", "LRD", "LSL", "LTL", "LVL", "LYD", "MAD", "MDL", "MGA", "MKD", "MMK", "MNT", "MOP", "MRO", "MUR", "MVR", "MWK", "MXN", "MYR", "MZN", "NAD", "NGN", "NIO", "NOK", "NPR", "NZD", "OMR", "PAB", "PEN", "PGK", "PHP", "PKR", "PLN", "PYG", "QAR", "RON", "RSD", "RUB", "RWF", "SAR", "SBD", "SCR", "SDG", "SEK", "SGD", "SHP", "SLL", "SOS", "SRD", "STD", "SVC", "SYP", "SZL", "THB", "TJS", "TMT", "TND", "TOP", "TRY", "TTD", "TWD", "TZS", "UAH", "UGX", "USD", "UYU", "UZS", "VEF", "VND", "VUV", "WST", "XAF", "XAG", "XAU", "XCD", "XDR", "XOF", "XPF", "YER", "ZAR", "ZMK", "ZMW", "ZWL":
+		return true
+	default:
+	}
+	return false
 }

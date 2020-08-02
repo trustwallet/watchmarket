@@ -3,12 +3,10 @@ package worker
 import (
 	"context"
 	"github.com/trustwallet/blockatlas/pkg/logger"
-	"github.com/trustwallet/watchmarket/db/models"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"github.com/trustwallet/watchmarket/services/markets"
 	"go.elastic.co/apm"
 	"sync"
-	"time"
 )
 
 func (w Worker) FetchAndSaveRates() {
@@ -23,20 +21,6 @@ func (w Worker) FetchAndSaveRates() {
 	if err := w.db.AddRates(normalizedRates, w.configuration.Worker.BatchLimit, ctx); err != nil {
 		logger.Error(err)
 	}
-}
-
-func toRatesModel(rates watchmarket.Rates) []models.Rate {
-	result := make([]models.Rate, 0, len(rates))
-	for _, r := range rates {
-		result = append(result, models.Rate{
-			Currency:         r.Currency,
-			PercentChange24h: r.PercentChange24h,
-			Provider:         r.Provider,
-			Rate:             r.Rate,
-			LastUpdated:      time.Unix(r.Timestamp, 0),
-		})
-	}
-	return result
 }
 
 func fetchRates(ratesApis markets.RatesAPIs, ctx context.Context) watchmarket.Rates {

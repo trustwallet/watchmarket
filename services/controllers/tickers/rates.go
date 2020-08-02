@@ -2,6 +2,7 @@ package tickerscontroller
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"github.com/trustwallet/blockatlas/pkg/logger"
 	"github.com/trustwallet/watchmarket/db/models"
@@ -10,6 +11,18 @@ import (
 )
 
 func (c Controller) getRateByPriority(currency string, ctx context.Context) (watchmarket.Rate, error) {
+	if c.configuration.RestAPI.UseMemoryCache {
+		rawResult, err := c.cache.Get(currency, ctx)
+		if err != nil {
+			return watchmarket.Rate{}, err
+		}
+		var result watchmarket.Rate
+		if err = json.Unmarshal(rawResult, &result); err != nil {
+			return watchmarket.Rate{}, err
+		}
+		return result, nil
+	}
+
 	rates, err := c.database.GetRates(currency, ctx)
 	if err != nil {
 		logger.Error(err, "getRateByPriority")
@@ -29,7 +42,7 @@ ProvidersLoop:
 		}
 	}
 	emptyRate := models.Rate{}
-	if result == emptyRate || (isFiatRate(result.Currency) && result.Provider != "fixer") {
+	if result == emptyRate || (watchmarket.IsFiatRate(result.Currency) && result.Provider != "fixer") {
 		return watchmarket.Rate{}, errors.New(watchmarket.ErrNotFound)
 	}
 
@@ -67,13 +80,4 @@ func applyRateToTicker(t watchmarket.Ticker, rate watchmarket.Rate) watchmarket.
 		t.Price.Change24h -= rate.PercentChange24h // Look at it more detailed
 	}
 	return t
-}
-
-func isFiatRate(currency string) bool {
-	switch currency {
-	case "AED", "AFN", "ALL", "AMD", "ANG", "AOA", "ARS", "AUD", "AWG", "AZN", "BAM", "BBD", "BDT", "BGN", "BHD", "BIF", "BMD", "BND", "BOB", "BRL", "BSD", "BTN", "BWP", "BYN", "BYR", "BZD", "CAD", "CDF", "CHF", "CLF", "CLP", "CNY", "COP", "CRC", "CUC", "CUP", "CVE", "CZK", "DJF", "DKK", "DOP", "DZD", "EGP", "ERN", "ETB", "EUR", "FJD", "FKP", "GBP", "GEL", "GGP", "GHS", "GIP", "GMD", "GNF", "GTQ", "GYD", "HKD", "HNL", "HRK", "HTG", "HUF", "IDR", "ILS", "IMP", "INR", "IQD", "IRR", "ISK", "JEP", "JMD", "JOD", "JPY", "KES", "KGS", "KHR", "KMF", "KPW", "KRW", "KWD", "KYD", "KZT", "LAK", "LBP", "LKR", "LRD", "LSL", "LTL", "LVL", "LYD", "MAD", "MDL", "MGA", "MKD", "MMK", "MNT", "MOP", "MRO", "MUR", "MVR", "MWK", "MXN", "MYR", "MZN", "NAD", "NGN", "NIO", "NOK", "NPR", "NZD", "OMR", "PAB", "PEN", "PGK", "PHP", "PKR", "PLN", "PYG", "QAR", "RON", "RSD", "RUB", "RWF", "SAR", "SBD", "SCR", "SDG", "SEK", "SGD", "SHP", "SLL", "SOS", "SRD", "STD", "SVC", "SYP", "SZL", "THB", "TJS", "TMT", "TND", "TOP", "TRY", "TTD", "TWD", "TZS", "UAH", "UGX", "USD", "UYU", "UZS", "VEF", "VND", "VUV", "WST", "XAF", "XAG", "XAU", "XCD", "XDR", "XOF", "XPF", "YER", "ZAR", "ZMK", "ZMW", "ZWL":
-		return true
-	default:
-	}
-	return false
 }

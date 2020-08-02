@@ -2,9 +2,11 @@ package tickerscontroller
 
 import (
 	"context"
+	"encoding/json"
 	"github.com/trustwallet/blockatlas/pkg/logger"
 	"github.com/trustwallet/watchmarket/db/models"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
+	"strings"
 	"sync"
 )
 
@@ -16,6 +18,23 @@ type (
 )
 
 func (c Controller) getTickersByPriority(tickerQueries []models.TickerQuery, ctx context.Context) (watchmarket.Tickers, error) {
+	if c.configuration.RestAPI.UseMemoryCache {
+		var results watchmarket.Tickers
+		for _, tr := range tickerQueries {
+			key := strings.ToLower(watchmarket.BuildID(tr.Coin, tr.TokenId))
+			rawResult, err := c.cache.Get(key, ctx)
+			if err != nil {
+				continue
+			}
+			var result watchmarket.Ticker
+			if err = json.Unmarshal(rawResult, &result); err != nil {
+				continue
+			}
+			results = append(results, result)
+		}
+		return results, nil
+	}
+
 	dbTickers, err := c.database.GetTickersByQueries(tickerQueries, ctx)
 	if err != nil {
 		logger.Error(err, "getTickersByPriority")

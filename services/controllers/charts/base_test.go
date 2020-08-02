@@ -109,6 +109,7 @@ func TestNewController(t *testing.T) {
 func setupController(t *testing.T, d dbMock, ch cache.Provider, cm chartsMock) Controller {
 	c := config.Init("../../../config/test.yml")
 	assert.NotNil(t, c)
+	c.RestAPI.UseMemoryCache = false
 
 	chartsPriority := []string{"coinmarketcap"}
 	ratesPriority := c.Markets.Priority.Rates
@@ -118,7 +119,7 @@ func setupController(t *testing.T, d dbMock, ch cache.Provider, cm chartsMock) C
 	chartsAPIs := make(markets.ChartsAPIs, 1)
 	chartsAPIs[cm.GetProvider()] = cm
 
-	controller := NewController(ch, d, chartsPriority, coinInfoPriority, ratesPriority, tickerPriority, chartsAPIs, c)
+	controller := NewController(ch, ch, d, chartsPriority, coinInfoPriority, ratesPriority, tickerPriority, chartsAPIs, c)
 	assert.NotNil(t, controller)
 	return controller
 
@@ -150,6 +151,14 @@ func (d dbMock) AddRates(rates []models.Rate, batchLimit uint, ctx context.Conte
 
 func (d dbMock) AddTickers(tickers []models.Ticker, batchLimit uint, ctx context.Context) error {
 	return nil
+}
+
+func (d dbMock) GetAllTickers(ctx context.Context) ([]models.Ticker, error) {
+	return nil, nil
+}
+
+func (d dbMock) GetAllRates(ctx context.Context) ([]models.Rate, error) {
+	return nil, nil
 }
 
 func (d dbMock) GetTickers(coin uint, tokenId string, ctx context.Context) ([]models.Ticker, error) {

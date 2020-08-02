@@ -2,11 +2,14 @@ package tickerscontroller
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"github.com/stretchr/testify/assert"
 	"github.com/trustwallet/watchmarket/config"
 	"github.com/trustwallet/watchmarket/db/models"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
+	"github.com/trustwallet/watchmarket/services/cache"
+	"github.com/trustwallet/watchmarket/services/cache/memory"
 	"github.com/trustwallet/watchmarket/services/controllers"
 	"sort"
 	"testing"
@@ -87,7 +90,7 @@ func TestController_HandleTickersRequest(t *testing.T) {
 	db.WantedTickers = []models.Ticker{ticker60ACMC, ticker60ACG, ticker714ACG, ticker714ABNB}
 	db.WantedRatesError = nil
 	db.WantedRates = []models.Rate{rate, rate2, rate3}
-	c := setupController(t, db)
+	c := setupController(t, db, false)
 	assert.NotNil(t, c)
 
 	response, err := c.HandleTickersRequest(controllers.TickerRequest{Currency: "USD", Assets: []controllers.Coin{{Coin: 60, TokenId: "a"}, {Coin: 714, TokenId: "a"}}}, context.Background())
@@ -140,6 +143,39 @@ func TestController_HandleTickersRequest(t *testing.T) {
 	}
 	_, err = c.HandleTickersRequest(oversizeRequest, context.Background())
 	assert.Equal(t, errors.New(watchmarket.ErrBadRequest), err)
+
+	controllerWithCache := setupController(t, db, true)
+	assert.NotNil(t, controllerWithCache)
+	wantedTicker1Raw, err := json.Marshal(&wantedTicker1)
+	assert.Nil(t, err)
+	wantedTicker2Raw, err := json.Marshal(&wantedTicker2)
+	assert.Nil(t, err)
+	rateRaw, err := json.Marshal(&watchmarket.Rate{
+		Currency:         "USD",
+		PercentChange24h: 4,
+		Provider:         "fixer",
+		Rate:             6,
+		Timestamp:        timeUPD.Unix(),
+	})
+	assert.Nil(t, err)
+	err = controllerWithCache.cache.Set("c60_ta", wantedTicker1Raw, context.Background())
+	assert.Nil(t, err)
+	err = controllerWithCache.cache.Set("c714_ta", wantedTicker2Raw, context.Background())
+	assert.Nil(t, err)
+	err = controllerWithCache.cache.Set("USD", rateRaw, context.Background())
+	assert.Nil(t, err)
+
+	response2, err := controllerWithCache.HandleTickersRequest(controllers.TickerRequest{Currency: "USD", Assets: []controllers.Coin{{Coin: 60, TokenId: "a"}, {Coin: 714, TokenId: "a"}}}, context.Background())
+	assert.Nil(t, err)
+
+	sort.Slice(response2.Tickers, func(i, j int) bool {
+		return response2.Tickers[i].Coin < response2.Tickers[j].Coin
+	})
+	for i := range wantedResp.Tickers {
+		assert.True(t, wantedResp.Tickers[i].LastUpdate.Equal(response2.Tickers[i].LastUpdate))
+		wantedResp.Tickers[i].LastUpdate = response2.Tickers[i].LastUpdate
+	}
+	assert.Equal(t, wantedResp, response2)
 }
 
 func TestController_HandleTickersRequest_Negative(t *testing.T) {
@@ -147,7 +183,7 @@ func TestController_HandleTickersRequest_Negative(t *testing.T) {
 
 	db.WantedTickersError = nil
 	db.WantedRatesError = errors.New("not found")
-	c := setupController(t, db)
+	c := setupController(t, db, false)
 	assert.NotNil(t, c)
 
 	_, err := c.HandleTickersRequest(controllers.TickerRequest{}, context.Background())
@@ -228,7 +264,7 @@ func TestController_HandleTickersRequestV2(t *testing.T) {
 	db.WantedTickers = []models.Ticker{ticker60ACMC, ticker60ACG, ticker714ACG, ticker714ABNB}
 	db.WantedRatesError = nil
 	db.WantedRates = []models.Rate{rate, rate2, rate3}
-	c := setupController(t, db)
+	c := setupController(t, db, false)
 	assert.NotNil(t, c)
 
 	response, err := c.HandleTickersRequestV2(controllers.TickerRequestV2{Currency: "USD", Ids: []string{"c60_ta", "c714_ta"}}, context.Background())
@@ -267,20 +303,73 @@ func TestController_HandleTickersRequestV2(t *testing.T) {
 	}
 	_, err = c.HandleTickersRequestV2(oversizeRequest, context.Background())
 	assert.Equal(t, errors.New(watchmarket.ErrBadRequest), err)
+
+	controllerWithCache := setupController(t, db, true)
+	assert.NotNil(t, controllerWithCache)
+	wantedTicker1Raw, err := json.Marshal(&watchmarket.Ticker{
+		Coin:    60,
+		TokenId: "a",
+		Price: watchmarket.Price{
+			Change24h: 10,
+			Currency:  "USD",
+			Provider:  "coinmarketcap",
+			Value:     10,
+		},
+		LastUpdate: timeUPD,
+	})
+	assert.Nil(t, err)
+	wantedTicker2Raw, err := json.Marshal(&watchmarket.Ticker{
+		Coin:    714,
+		TokenId: "a",
+		Price: watchmarket.Price{
+			Change24h: 10,
+			Currency:  "USD",
+			Provider:  "coingecko",
+			Value:     100,
+		},
+		LastUpdate: timeUPD,
+	})
+	assert.Nil(t, err)
+	rateRaw, err := json.Marshal(&watchmarket.Rate{
+		Currency:         "USD",
+		PercentChange24h: 4,
+		Provider:         "fixer",
+		Rate:             6,
+		Timestamp:        timeUPD.Unix(),
+	})
+	assert.Nil(t, err)
+	err = controllerWithCache.cache.Set("c60_ta", wantedTicker1Raw, context.Background())
+	assert.Nil(t, err)
+	err = controllerWithCache.cache.Set("c714_ta", wantedTicker2Raw, context.Background())
+	assert.Nil(t, err)
+	err = controllerWithCache.cache.Set("USD", rateRaw, context.Background())
+	assert.Nil(t, err)
+
+	response2, err := controllerWithCache.HandleTickersRequestV2(controllers.TickerRequestV2{Currency: "USD", Ids: []string{"c60_ta", "c714_ta"}}, context.Background())
+	assert.Nil(t, err)
+
+	sort.Slice(response2.Tickers, func(i, j int) bool {
+		return response.Tickers[i].Price < response.Tickers[j].Price
+	})
+	assert.Equal(t, wantedResp, response2)
 }
 
 func TestNewController(t *testing.T) {
-	assert.NotNil(t, setupController(t, getDbMock()))
+	assert.NotNil(t, setupController(t, getDbMock(), false))
 }
 
-func setupController(t *testing.T, d dbMock) Controller {
+func setupController(t *testing.T, d dbMock, useMemoryCache bool) Controller {
 	c := config.Init("../../../config/test.yml")
 	assert.NotNil(t, c)
+	c.RestAPI.UseMemoryCache = useMemoryCache
 
 	ratesPriority := c.Markets.Priority.Rates
 	tickerPriority := c.Markets.Priority.Tickers
-
-	controller := NewController(d, ratesPriority, tickerPriority, c)
+	var ch cache.Provider
+	if useMemoryCache {
+		ch = memory.Init()
+	}
+	controller := NewController(d, ch, ratesPriority, tickerPriority, c)
 	assert.NotNil(t, controller)
 	return controller
 
@@ -312,6 +401,14 @@ func (d dbMock) AddRates(rates []models.Rate, batchLimit uint, ctx context.Conte
 
 func (d dbMock) AddTickers(tickers []models.Ticker, batchLimit uint, ctx context.Context) error {
 	return nil
+}
+
+func (d dbMock) GetAllTickers(ctx context.Context) ([]models.Ticker, error) {
+	return nil, nil
+}
+
+func (d dbMock) GetAllRates(ctx context.Context) ([]models.Rate, error) {
+	return nil, nil
 }
 
 func (d dbMock) GetTickers(coin uint, tokenId string, ctx context.Context) ([]models.Ticker, error) {

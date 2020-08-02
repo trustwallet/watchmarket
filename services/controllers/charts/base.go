@@ -14,7 +14,8 @@ import (
 )
 
 type Controller struct {
-	dataCache        cache.Provider
+	redisCache       cache.Provider
+	memoryCache      cache.Provider
 	database         db.Instance
 	chartsPriority   []string
 	coinInfoPriority []string
@@ -25,14 +26,16 @@ type Controller struct {
 }
 
 func NewController(
-	cache cache.Provider,
+	redisCache cache.Provider,
+	memoryCache cache.Provider,
 	database db.Instance,
 	chartsPriority, coinInfoPriority, ratesPriority, tickersPriority []string,
 	api markets.ChartsAPIs,
 	configuration config.Configuration,
 ) Controller {
 	return Controller{
-		cache,
+		redisCache,
+		memoryCache,
 		database,
 		chartsPriority,
 		coinInfoPriority,
@@ -51,9 +54,9 @@ func (c Controller) HandleChartsRequest(cr controllers.ChartRequest, ctx context
 		return ch, errors.New(watchmarket.ErrBadRequest)
 	}
 
-	key := c.dataCache.GenerateKey(charts + cr.CoinQuery + cr.Token + cr.Currency + cr.MaxItems)
+	key := c.redisCache.GenerateKey(charts + cr.CoinQuery + cr.Token + cr.Currency + cr.MaxItems)
 
-	cachedChartRaw, err := c.dataCache.GetWithTime(key, verifiedData.TimeStart, ctx)
+	cachedChartRaw, err := c.redisCache.GetWithTime(key, verifiedData.TimeStart, ctx)
 	if err == nil && len(cachedChartRaw) > 0 {
 		err = json.Unmarshal(cachedChartRaw, &ch)
 		if err == nil && len(ch.Prices) > 0 {
@@ -83,7 +86,7 @@ func (c Controller) HandleChartsRequest(cr controllers.ChartRequest, ctx context
 	}
 
 	if err == nil && len(chart.Prices) > 0 {
-		err = c.dataCache.SetWithTime(key, chartRaw, verifiedData.TimeStart, ctx)
+		err = c.redisCache.SetWithTime(key, chartRaw, verifiedData.TimeStart, ctx)
 		if err != nil {
 			logger.Error("failed to save cache", logger.Params{"err": err})
 		}

@@ -9,6 +9,7 @@ type TickerQuery struct {
 
 type Ticker struct {
 	BasicTimeModel
+	ID          string `sql:"index"`
 	Coin        uint   `gorm:"primary_key" sql:"index"`
 	CoinName    string `gorm:"primary_key"`
 	CoinType    string `gorm:"primary_key"`
