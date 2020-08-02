@@ -183,7 +183,7 @@ func TestController_normalizeTickers(t *testing.T) {
 	db := getDbMock()
 	db.WantedRates = []models.Rate{modelRate2}
 
-	c := setupController(t, db)
+	c := setupController(t, db, false)
 	assert.NotNil(t, c)
 
 	result := c.normalizeTickers([]watchmarket.Ticker{gotTicker1}, rate, context.Background())
@@ -249,7 +249,7 @@ func TestController_normalizeTickers_advanced(t *testing.T) {
 	db := getDbMock()
 	db.WantedRates = []models.Rate{modelRate, modelRate2}
 
-	c := setupController(t, db)
+	c := setupController(t, db, false)
 	assert.NotNil(t, c)
 
 	result := c.normalizeTickers([]watchmarket.Ticker{gotTicker1}, rate, context.Background())

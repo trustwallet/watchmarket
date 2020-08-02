@@ -54,7 +54,7 @@ func TestController_getTickersByPriority(t *testing.T) {
 
 	db.WantedTickersError = nil
 	db.WantedTickers = []models.Ticker{ticker60ACMC, ticker60ACG, ticker714ACG, ticker714ABNB}
-	c := setupController(t, db)
+	c := setupController(t, db, false)
 	assert.NotNil(t, c)
 
 	tickers, err := c.getTickersByPriority(makeTickerQueries(
@@ -97,7 +97,7 @@ func TestController_getTickersByPriority(t *testing.T) {
 	assert.Equal(t, 2, counter)
 	db2 := getDbMock()
 	db2.WantedTickers = []models.Ticker{ticker60ACMC, ticker60ACG}
-	c2 := setupController(t, db2)
+	c2 := setupController(t, db2, false)
 	tickers2, err := c2.getTickersByPriority(makeTickerQueries([]controllers.Coin{{Coin: 60, TokenId: "A"}}), context.Background())
 	assert.Nil(t, err)
 	assert.NotNil(t, tickers2)
