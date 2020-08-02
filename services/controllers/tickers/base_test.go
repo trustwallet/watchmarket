@@ -171,7 +171,7 @@ func TestController_HandleTickersRequest(t *testing.T) {
 	sort.Slice(response2.Tickers, func(i, j int) bool {
 		return response2.Tickers[i].Coin < response2.Tickers[j].Coin
 	})
-	for i, _ := range wantedResp.Tickers {
+	for i := range wantedResp.Tickers {
 		assert.True(t, wantedResp.Tickers[i].LastUpdate.Equal(response2.Tickers[i].LastUpdate))
 		wantedResp.Tickers[i].LastUpdate = response2.Tickers[i].LastUpdate
 	}
