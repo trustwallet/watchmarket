@@ -114,7 +114,7 @@ func createRatesMap(allRates []models.Rate, configuration config.Configuration) 
 			m[key] = fromModelToRate(rate)
 			continue
 		}
-		if rate.Provider != "fixer" {
+		if rate.Provider == "fixer" {
 			if !watchmarket.IsFiatRate(key) {
 				continue
 			}
