@@ -59,7 +59,7 @@ func toChartsRequestData(cr controllers.ChartRequest) (chartsNormalizedRequest, 
 func (c Controller) checkTickersAvailability(coin uint, token string, ctx context.Context) ([]models.Ticker, error) {
 	tr := []models.TickerQuery{{Coin: coin, TokenId: strings.ToLower(token)}}
 	if c.configuration.RestAPI.UseMemoryCache {
-		key := watchmarket.BuildID(coin, token)
+		key := strings.ToLower(watchmarket.BuildID(coin, token))
 		rawResult, err := c.memoryCache.Get(key, ctx)
 		if err != nil {
 			return nil, err
