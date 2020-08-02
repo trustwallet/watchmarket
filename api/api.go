@@ -41,10 +41,13 @@ func SetupChartsAPI(engine *gin.Engine, charts controllers.ChartsController, d t
 
 func SetupTickersAPI(engine *gin.Engine, tickers controllers.TickersController, d time.Duration) {
 	engine.POST("v2/market/tickers",
-		middleware.CacheControl(d, endpoint.GetTickersHandlerV2(tickers)))
+		middleware.CacheControl(d, endpoint.PostTickersHandlerV2(tickers)))
 
 	engine.GET("v2/market/ticker/:id",
 		middleware.CacheControl(d, endpoint.GetTickerHandlerV2(tickers)))
+
+	engine.GET("v2/market/tickers",
+		middleware.CacheControl(d, endpoint.GetTickersHandlerV2(tickers)))
 
 	engine.POST("v1/market/ticker",
 		middleware.CacheControl(d, endpoint.GetTickersHandler(tickers)))

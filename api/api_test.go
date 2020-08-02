@@ -124,6 +124,22 @@ func TestSetupTickersAPI(t *testing.T) {
 	assert.Equal(t, float64(1), givenV2Resp2.Tickers[0].Price)
 	assert.Equal(t, float64(2), givenV2Resp2.Tickers[0].Change24h)
 	assert.Equal(t, "coinmarketcap", givenV2Resp2.Tickers[0].Provider)
+
+	resp4, err := http.Get(server.URL + "/v2/market/tickers?assets=c60_ta")
+	assert.Nil(t, err)
+
+	body2, err := ioutil.ReadAll(resp4.Body)
+	assert.Nil(t, err)
+
+	givenV2Resp3 := controllers.TickerResponseV2{}
+
+	err = json.Unmarshal(body2, &givenV2Resp3)
+	assert.Nil(t, err)
+
+	assert.Equal(t, "c60_ta", givenV2Resp3.Tickers[0].ID)
+	assert.Equal(t, float64(1), givenV2Resp3.Tickers[0].Price)
+	assert.Equal(t, float64(2), givenV2Resp3.Tickers[0].Change24h)
+	assert.Equal(t, "coinmarketcap", givenV2Resp3.Tickers[0].Provider)
 }
 
 func TestSetupChartsAPI(t *testing.T) {

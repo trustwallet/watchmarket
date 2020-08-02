@@ -8,6 +8,7 @@ import (
 	"github.com/trustwallet/watchmarket/services/controllers"
 	"go.elastic.co/apm"
 	"net/http"
+	"strings"
 )
 
 // @Summary Get ticker values for a specific market
@@ -74,7 +75,7 @@ func GetTickerHandlerV2(controller controllers.TickersController) func(c *gin.Co
 }
 
 // @Summary Get tickers for list of ids
-// @Id get_tickers_v2
+// @Id post_tickers_v2
 // @Description Get the tickers for list of ids
 // @Accept json
 // @Produce json
@@ -82,7 +83,7 @@ func GetTickerHandlerV2(controller controllers.TickersController) func(c *gin.Co
 // @Param tickers body controllers.TickerRequestV2 true "Ticker"
 // @Success 200 {object} controllers.TickerResponseV2
 // @Router /v2/market/tickers [post]
-func GetTickersHandlerV2(controller controllers.TickersController) func(c *gin.Context) {
+func PostTickersHandlerV2(controller controllers.TickersController) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		tx := apm.DefaultTracer.StartTransaction("POST /v2/market/tickers", "request")
 		ctx := apm.ContextWithTransaction(context.Background(), tx)
@@ -93,6 +94,42 @@ func GetTickersHandlerV2(controller controllers.TickersController) func(c *gin.C
 			c.JSON(http.StatusBadRequest, errorResponse(errors.E("Invalid request payload")))
 			return
 		}
+		request.Ids = removeDuplicates(request.Ids)
+		response, err := controller.HandleTickersRequestV2(request, ctx)
+		if err != nil {
+			code, response := createErrorResponseAndStatusCode(err)
+			c.AbortWithStatusJSON(code, response)
+			return
+		}
+
+		c.JSON(http.StatusOK, response)
+	}
+}
+
+// @Summary Get tickers for list of ids
+// @Id get_tickers_v2
+// @Description Get the tickers for list of ids
+// @Accept json
+// @Produce json
+// @Tags Tickers
+// @Param name query string empty "currency symbol"
+// @Param coins query string true "List of asset ids"
+// @Success 200 {object} controllers.TickerResponseV2
+// @Router /v2/market/tickers [get]
+func GetTickersHandlerV2(controller controllers.TickersController) func(c *gin.Context) {
+	return func(c *gin.Context) {
+		tx := apm.DefaultTracer.StartTransaction("GET /v2/market/tickers", "request")
+		ctx := apm.ContextWithTransaction(context.Background(), tx)
+		defer tx.End()
+
+		currency := c.DefaultQuery("currency", watchmarket.DefaultCurrency)
+		assets := c.Query("assets")
+		if len(assets) == 0 {
+			c.JSON(http.StatusBadRequest, errorResponse(errors.E("Invalid request payload")))
+			return
+		}
+
+		request := controllers.TickerRequestV2{Currency: currency, Ids: removeDuplicates(strings.Split(assets, ","))}
 		response, err := controller.HandleTickersRequestV2(request, ctx)
 		if err != nil {
 			code, response := createErrorResponseAndStatusCode(err)
@@ -122,4 +159,16 @@ func handleTickersError(c *gin.Context, req controllers.TickerRequest) {
 	}
 	emptyResponse.Tickers = tickers
 	c.JSON(http.StatusOK, emptyResponse)
+}
+
+func removeDuplicates(values []string) []string {
+	keys := make(map[string]bool)
+	var list []string
+	for _, entry := range values {
+		if _, value := keys[entry]; !value {
+			keys[entry] = true
+			list = append(list, entry)
+		}
+	}
+	return list
 }
