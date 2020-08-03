@@ -97,6 +97,10 @@ func (c cacheMock) SetWithTime(key string, data []byte, time int64, ctx context.
 	return nil
 }
 
+func (c cacheMock) GetLenOfSavedItems() int {
+	return 0
+}
+
 func getChartsMock() chartsMock {
 	cm := chartsMock{}
 	return cm

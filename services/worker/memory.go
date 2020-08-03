@@ -20,7 +20,8 @@ func (w Worker) SaveTickersToMemory() {
 
 	allTickers, err := w.db.GetAllTickers(ctx)
 	if err != nil {
-		panic(err)
+		logger.Warn("Failed to get tickers: ", err.Error())
+		return
 	}
 
 	logger.Info("Memory Cache: got tickers From DB", logger.Params{"len": len(allTickers)})
@@ -51,7 +52,8 @@ func (w Worker) SaveRatesToMemory() {
 
 	allRates, err := w.db.GetAllRates(ctx)
 	if err != nil {
-		panic(err)
+		logger.Warn("Failed to get rates: ", err.Error())
+		return
 	}
 
 	logger.Info("Memory Cache: got rates From DB", logger.Params{"len": len(allRates)})

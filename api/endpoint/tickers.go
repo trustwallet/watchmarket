@@ -113,7 +113,7 @@ func PostTickersHandlerV2(controller controllers.TickersController) func(c *gin.
 // @Produce json
 // @Tags Tickers
 // @Param currency query string empty "currency symbol"
-// @Param assets query string true "List of asset ids"
+// @Param assets path string true "List of asset ids"
 // @Success 200 {object} controllers.TickerResponseV2
 // @Router /v2/market/tickers [get]
 func GetTickersHandlerV2(controller controllers.TickersController) func(c *gin.Context) {
@@ -123,7 +123,7 @@ func GetTickersHandlerV2(controller controllers.TickersController) func(c *gin.C
 		defer tx.End()
 
 		currency := c.DefaultQuery("currency", watchmarket.DefaultCurrency)
-		assets := c.Query("assets")
+		assets := c.Param("assets")
 		if len(assets) == 0 {
 			c.JSON(http.StatusBadRequest, errorResponse(errors.E("Invalid request payload")))
 			return

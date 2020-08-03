@@ -330,7 +330,7 @@ var doc = `{
                         "type": "string",
                         "description": "List of asset ids",
                         "name": "assets",
-                        "in": "query",
+                        "in": "path",
                         "required": true
                     }
                 ],
