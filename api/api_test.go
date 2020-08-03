@@ -125,7 +125,7 @@ func TestSetupTickersAPI(t *testing.T) {
 	assert.Equal(t, float64(2), givenV2Resp2.Tickers[0].Change24h)
 	assert.Equal(t, "coinmarketcap", givenV2Resp2.Tickers[0].Provider)
 
-	resp4, err := http.Get(server.URL + "/v2/market/tickers?assets=c60_ta")
+	resp4, err := http.Get(server.URL + "/v2/market/tickers/c60_ta")
 	assert.Nil(t, err)
 
 	body2, err := ioutil.ReadAll(resp4.Body)

@@ -366,7 +366,7 @@ paths:
         name: currency
         type: string
       - description: List of asset ids
-        in: query
+        in: path
         name: assets
         required: true
         type: string
