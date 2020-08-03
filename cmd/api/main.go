@@ -91,10 +91,10 @@ func main() {
 		w.AddOperation(c, configuration.RestAPI.UpdateTime.Tickers, w.SaveTickersToMemory)
 
 		c.Start()
-	}
 
-	if memoryCache.GetLenOfSavedItems() <= 0 {
-		panic("no items in memory cache")
+		if memoryCache.GetLenOfSavedItems() <= 0 {
+			panic("no items in memory cache")
+		}
 	}
 
 	if err := internal.InitAPI(engine, tickers, charts, info, configuration); err != nil {
