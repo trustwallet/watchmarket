@@ -49,3 +49,8 @@ func (i Instance) SetWithTime(key string, data []byte, time int64, ctx context.C
 func (i Instance) GetWithTime(key string, time int64, ctx context.Context) ([]byte, error) {
 	return nil, nil
 }
+
+func (i Instance) GetLenOfSavedItems() int {
+	items := i.Cache.Items()
+	return len(items)
+}

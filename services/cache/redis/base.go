@@ -48,3 +48,7 @@ func (i Instance) Set(key string, data []byte, ctx context.Context) error {
 	}
 	return nil
 }
+
+func (i Instance) GetLenOfSavedItems() int {
+	return 0
+}

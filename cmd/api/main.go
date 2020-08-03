@@ -69,6 +69,8 @@ func init() {
 		memoryCache = memory.Init()
 		c = cron.New(cron.WithChain(cron.Recover(cron.DefaultLogger)))
 		w = worker.Init(m.RatesAPIs, m.TickersAPIs, database, memoryCache, configuration)
+	} else {
+		go postgres.FatalWorker(time.Second*10, *database)
 	}
 
 	r := internal.InitRedis(configuration.Storage.Redis)
@@ -78,8 +80,6 @@ func init() {
 	info = infocontroller.NewController(redisCache, chartsPriority, coinInfoPriority, ratesPriority, tickerPriority, m.ChartsAPIs, configuration)
 	tickers = tickerscontroller.NewController(database, memoryCache, ratesPriority, tickerPriority, configuration)
 	engine = internal.InitEngine(configuration.RestAPI.Mode)
-
-	go postgres.FatalWorker(time.Second*10, *database)
 }
 
 func main() {
@@ -91,6 +91,10 @@ func main() {
 		w.AddOperation(c, configuration.RestAPI.UpdateTime.Tickers, w.SaveTickersToMemory)
 
 		c.Start()
+	}
+
+	if memoryCache.GetLenOfSavedItems() <= 0 {
+		panic("no items in memory cache")
 	}
 
 	if err := internal.InitAPI(engine, tickers, charts, info, configuration); err != nil {
