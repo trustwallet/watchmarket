@@ -4,7 +4,7 @@ import "github.com/trustwallet/watchmarket/services/assets"
 
 const (
 	id            = "coingecko"
-	bucketSize    = 500
+	bucketSize    = 200
 	chartDataSize = 2
 )
 
