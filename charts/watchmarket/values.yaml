@@ -3,9 +3,9 @@ replicaCount: 1
 image:
   repository: replace_me
   pullPolicy: IfNotPresent
-  worker-tag: replace_me
-  api-tag: replace_me
-  nginx-proxy-tag: replace_me
+  workerTag: replace_me
+  apiTag: replace_me
+  nginxProxyTag: replace_me
 
 imagePullSecrets: []
 nameOverride: ""

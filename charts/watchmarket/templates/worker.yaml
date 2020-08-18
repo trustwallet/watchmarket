@@ -43,7 +43,7 @@ spec:
         - secretRef:
             name: elastic
             optional: false
-        image: "{{ .Values.image.repository }}:{{ .Values.image.worker-tag }}"
+        image: "{{ .Values.image.repository }}:{{ .Values.image.workerTag }}"
         imagePullPolicy: Always
         name: worker
         resources: {}

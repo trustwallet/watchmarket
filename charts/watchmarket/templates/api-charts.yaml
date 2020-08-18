@@ -45,7 +45,7 @@ spec:
         - secretRef:
             name: elastic
             optional: false
-        image: "{{ .Values.image.repository }}:{{ .Values.image.api-tag }}"
+        image: "{{ .Values.image.repository }}:{{ .Values.image.apiTag }}"
         imagePullPolicy: Always
         name: api-charts
         ports:

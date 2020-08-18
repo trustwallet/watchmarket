@@ -39,11 +39,14 @@ spec:
           value: http://api-tickers:8421
         - name: API_SWAGGER_URI
           value: http://api-swagger:8421
-        image: "{{ .Values.image.repository }}:{{ .Values.image.nginx-proxy-tag }}"
+        image: "{{ .Values.image.repository }}:{{ .Values.image.nginxProxyTag }}"
         imagePullPolicy: Always
         name: nginx-proxy
         ports:
         - containerPort: 8080
+          name: http
+          protocol: TCP
+        - containerPort: 8081
           name: http
           protocol: TCP
         resources: {}
