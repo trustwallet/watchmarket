@@ -47,7 +47,7 @@ spec:
           name: http
           protocol: TCP
         - containerPort: 8081
-          name: http
+          name: swagger
           protocol: TCP
         resources: {}
         securityContext:

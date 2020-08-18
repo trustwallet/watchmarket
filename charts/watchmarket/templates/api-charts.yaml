@@ -68,6 +68,24 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      initContainers:
+      - envFrom:
+        - secretRef:
+            name: secrets
+        image: "{{ .Values.image.repository }}:{{ .Values.image.pgCheckTag }}"
+        imagePullPolicy: Always
+        name: postgres-check
+        resources: {}
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities: {}
+          privileged: false
+          readOnlyRootFilesystem: false
+          runAsNonRoot: false
+        stdin: true
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        tty: true
       restartPolicy: Always
       schedulerName: default-scheduler
       securityContext: {}

@@ -13,6 +13,6 @@ spec:
       name: http
     - port: 8081
       protocol: TCP
-      name: http
+      name: swagger
   selector:
       name: nginx-proxy

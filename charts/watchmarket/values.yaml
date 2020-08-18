@@ -6,6 +6,8 @@ image:
   workerTag: replace_me
   apiTag: replace_me
   nginxProxyTag: replace_me
+  seedTag: replace_me
+  pgCheckTag: replace_me
 
 imagePullSecrets: []
 nameOverride: ""
@@ -23,6 +25,9 @@ securityContext: {}
   # readOnlyRootFilesystem: true
   # runAsNonRoot: true
   # runAsUser: 1000
+
+seed:
+  enabled: false
 
 service:
   type: ClusterIP
