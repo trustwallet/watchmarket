@@ -7,9 +7,9 @@ require (
 	github.com/alicebob/miniredis/v2 v2.13.2
 	github.com/chenjiandongx/ginprom v0.0.0-20200410120253-7cfb22707fa6
 	github.com/gin-gonic/gin v1.6.3
-	github.com/go-playground/assert/v2 v2.0.1
 	github.com/go-redis/redis v6.15.9+incompatible
-	github.com/jinzhu/gorm v1.9.15
+	github.com/jinzhu/gorm v1.9.16
+	github.com/mattn/go-sqlite3 v2.0.1+incompatible // indirect
 	github.com/ory/dockertest v3.3.5+incompatible
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/prometheus/client_golang v1.7.1
@@ -18,7 +18,7 @@ require (
 	github.com/stretchr/testify v1.6.1
 	github.com/swaggo/gin-swagger v1.2.0
 	github.com/swaggo/swag v1.6.7
-	github.com/trustwallet/blockatlas v1.1.3-0.20200518232337-7495506f457c
+	github.com/trustwallet/blockatlas v1.1.5-0.20200817144730-bea0c7fa7df3
 	go.elastic.co/apm v1.8.0
 	go.elastic.co/apm/module/apmgin v1.8.0
 	go.elastic.co/apm/module/apmgoredis v1.8.0
