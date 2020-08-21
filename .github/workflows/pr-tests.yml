@@ -1,8 +1,6 @@
-name: CI
+name: PRTests
 
 on:
-  push:
-    branches: [ master ]
   pull_request:
     branches: [ master ]
 
@@ -41,17 +39,3 @@ jobs:
 
       - name: Integration Test
         run: make integration
-
-
-  deploy:
-    name: CD
-    runs-on: ubuntu-latest
-    needs: [test]
-    steps:
-      - name: CD Trigger
-        if: github.ref == 'refs/heads/master'
-        uses: Azure/pipelines@releases/v1
-        with:
-          azure-devops-project-url: 'https://dev.azure.com/TrustWallet/WatchMarket'
-          azure-pipeline-name: 'AutomaticCD'
-          azure-devops-token: '${{ secrets.AZURE_DEVOPS_TOKEN }}'
