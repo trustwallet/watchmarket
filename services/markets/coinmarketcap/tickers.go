@@ -87,6 +87,8 @@ func normalizeTicker(price Data, coinsMap []CoinMap, provider, currency string) 
 				Provider:  provider,
 			},
 			LastUpdate: price.LastUpdated,
+			Volume:     price.Quote.USD.Volume,
+			MarketCap:  price.Quote.USD.MarketCap,
 		})
 	}
 
