@@ -39,19 +39,6 @@ func (c Client) fetchPrices(currency string, ctx context.Context) (CoinPrices, e
 	return result, nil
 }
 
-func (c Client) fetchCoinMap(ctx context.Context) ([]CoinMap, error) {
-	var (
-		result []CoinMap
-		path   = "mapping.json"
-	)
-
-	err := c.assets.GetWithContext(&result, path, nil, ctx)
-	if err != nil {
-		return result, err
-	}
-	return result, nil
-}
-
 func (c Client) fetchChartsData(id uint, currency string, timeStart int64, timeEnd int64, interval string, ctx context.Context) (charts Charts, err error) {
 	values := url.Values{
 		"convert":    {currency},

@@ -14,12 +14,7 @@ func (p Provider) GetTickers(ctx context.Context) (watchmarket.Tickers, error) {
 		return nil, err
 	}
 
-	coinsMap, err := p.client.fetchCoinMap(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	return normalizeTickers(prices, coinsMap, p.id, p.currency), nil
+	return normalizeTickers(prices, p.cm, p.id, p.currency), nil
 }
 
 func normalizeTickers(prices CoinPrices, coinsMap []CoinMap, provider, currency string) watchmarket.Tickers {
