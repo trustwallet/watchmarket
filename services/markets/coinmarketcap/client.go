@@ -10,15 +10,13 @@ import (
 
 type Client struct {
 	api    blockatlas.Request
-	assets blockatlas.Request
 	web    blockatlas.Request
 	widget blockatlas.Request
 }
 
-func NewClient(proApi, assetsApi, webApi, widgetApi, key string) Client {
+func NewClient(proApi, webApi, widgetApi, key string) Client {
 	c := Client{
 		api:    blockatlas.InitClient(proApi),
-		assets: blockatlas.InitClient(assetsApi),
 		web:    blockatlas.InitClient(webApi),
 		widget: blockatlas.InitClient(widgetApi),
 	}

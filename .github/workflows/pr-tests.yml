@@ -1,4 +1,4 @@
-name: PRTests
+name: Tests
 
 on:
   pull_request:
@@ -24,12 +24,6 @@ jobs:
 
       - name: Lint
         run: make lint
-
-      - name: Swagger
-        run: make swag
-
-      - name: Build
-        run: make go-build
 
       - name: Unit Test
         run: make test
