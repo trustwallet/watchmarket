@@ -18,8 +18,8 @@ type Provider struct {
 	cm           []CoinMap
 }
 
-func InitProvider(proApi, assetsApi, webApi, widgetApi, key, currency string, info assets.Client) Provider {
-	cm, err := setupCoinMap()
+func InitProvider(proApi, assetsApi, webApi, widgetApi, key, currency, mappingPath string, info assets.Client) Provider {
+	cm, err := setupCoinMap(mappingPath)
 	if err != nil {
 		logger.Error("Init provider coin map: " + err.Error())
 	}
@@ -36,8 +36,8 @@ func (p Provider) GetProvider() string {
 	return p.id
 }
 
-func setupCoinMap() ([]CoinMap, error) {
-	file, err := ioutil.ReadFile("mapping.json")
+func setupCoinMap(path string) ([]CoinMap, error) {
+	file, err := ioutil.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}

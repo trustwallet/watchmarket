@@ -15,7 +15,7 @@ import (
 func TestProvider_GetTickers(t *testing.T) {
 	server := httptest.NewServer(createMockedAPI())
 	defer server.Close()
-	provider := InitProvider(server.URL, server.URL, server.URL, server.URL, server.URL, "USD", assets.Init("assets.api"))
+	provider := InitProvider(server.URL, server.URL, server.URL, server.URL, server.URL, "USD", "mapping.json", assets.Init("assets.api"))
 	data, err := provider.GetTickers(context.Background())
 	assert.Nil(t, err)
 	rawData, err := json.Marshal(data)

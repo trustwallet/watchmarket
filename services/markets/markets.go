@@ -76,6 +76,7 @@ func setupProviders(config config.Configuration, assets assets.Client) Providers
 		config.Markets.Coinmarketcap.WidgetAPI,
 		config.Markets.Coinmarketcap.Key,
 		config.Markets.Coinmarketcap.Currency,
+		config.Markets.Coinmarketcap.MappingPath,
 		assets)
 	cg := coingecko.InitProvider(config.Markets.Coingecko.API, config.Markets.Coingecko.Currency, assets)
 	f := fixer.InitProvider(config.Markets.Fixer.API, config.Markets.Fixer.Key, config.Markets.Fixer.Currency)
