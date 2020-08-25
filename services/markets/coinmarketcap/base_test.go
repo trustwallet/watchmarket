@@ -9,12 +9,11 @@ import (
 )
 
 func TestInitProvider(t *testing.T) {
-	provider := InitProvider("pro.api", "assets.api", "web.api", "widget.api", "key", "USD", "mapping.json", assets.Init("assets.api"))
+	provider := InitProvider("pro.api", "web.api", "widget.api", "key", "USD", assets.Init("assets.api"))
 	assert.NotNil(t, provider)
 	assert.Equal(t, "pro.api", provider.client.api.BaseUrl)
 	assert.Equal(t, "web.api", provider.client.web.BaseUrl)
 	assert.Equal(t, "widget.api", provider.client.widget.BaseUrl)
-	assert.Equal(t, "assets.api", provider.client.assets.BaseUrl)
 	assert.Equal(t, "assets.api", provider.info.BaseUrl)
 	assert.Equal(t, "USD", provider.currency)
 	assert.Equal(t, "coinmarketcap", provider.id)
@@ -22,7 +21,7 @@ func TestInitProvider(t *testing.T) {
 }
 
 func TestProvider_GetProvider(t *testing.T) {
-	provider := InitProvider("pro.api", "assets.api", "web.api", "widget.api", "key", "USD", "mapping.json",
+	provider := InitProvider("pro.api", "web.api", "widget.api", "key", "USD",
 		assets.Init("assets.api"))
 	assert.Equal(t, "coinmarketcap", provider.GetProvider())
 }

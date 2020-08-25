@@ -12,10 +12,8 @@ markets:
     api: https://pro-api.coinmarketcap.com
     key: #key
     currency: USD
-    mapping_path: ../../services/markets/coinmarketcap/mapping.json
     web_api: https://web-api.coinmarketcap.com
     widget_api: https://widgets.coinmarketcap.com
-    map_api: https://raw.githubusercontent.com/trustwallet/assets/master/pricing/coinmarketcap
 
   coingecko:
     currency: USD

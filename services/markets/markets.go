@@ -71,12 +71,10 @@ func setupProviders(config config.Configuration, assets assets.Client) Providers
 	b := binancedex.InitProvider(config.Markets.BinanceDex.API)
 	cmc := coinmarketcap.InitProvider(
 		config.Markets.Coinmarketcap.API,
-		config.Markets.Coinmarketcap.MapAPI,
 		config.Markets.Coinmarketcap.WebAPI,
 		config.Markets.Coinmarketcap.WidgetAPI,
 		config.Markets.Coinmarketcap.Key,
 		config.Markets.Coinmarketcap.Currency,
-		config.Markets.Coinmarketcap.MappingPath,
 		assets)
 	cg := coingecko.InitProvider(config.Markets.Coingecko.API, config.Markets.Coingecko.Currency, assets)
 	f := fixer.InitProvider(config.Markets.Fixer.API, config.Markets.Fixer.Key, config.Markets.Fixer.Currency)

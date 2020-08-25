@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"github.com/trustwallet/blockatlas/pkg/logger"
 	"github.com/trustwallet/watchmarket/services/assets"
-	"io/ioutil"
 )
 
 const (
@@ -18,15 +17,15 @@ type Provider struct {
 	cm           []CoinMap
 }
 
-func InitProvider(proApi, assetsApi, webApi, widgetApi, key, currency, mappingPath string, info assets.Client) Provider {
-	cm, err := setupCoinMap(mappingPath)
+func InitProvider(proApi, webApi, widgetApi, key, currency string, info assets.Client) Provider {
+	cm, err := setupCoinMap()
 	if err != nil {
 		logger.Error("Init provider coin map: " + err.Error())
 	}
 	return Provider{
 		id:       id,
 		currency: currency,
-		client:   NewClient(proApi, assetsApi, webApi, widgetApi, key),
+		client:   NewClient(proApi, webApi, widgetApi, key),
 		info:     info,
 		cm:       cm,
 	}
@@ -36,13 +35,9 @@ func (p Provider) GetProvider() string {
 	return p.id
 }
 
-func setupCoinMap(path string) ([]CoinMap, error) {
-	file, err := ioutil.ReadFile(path)
-	if err != nil {
-		return nil, err
-	}
+func setupCoinMap() ([]CoinMap, error) {
 	var result []CoinMap
-	err = json.Unmarshal(file, &result)
+	err := json.Unmarshal([]byte(mapping), &result)
 	if err != nil {
 		return nil, err
 	}
