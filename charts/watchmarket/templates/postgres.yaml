@@ -38,7 +38,7 @@ spec:
         - name: POSTGRES_DB
           value: my_db
         image: postgres
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         name: postgres
         ports:
         - containerPort: 5432

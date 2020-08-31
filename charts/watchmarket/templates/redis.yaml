@@ -32,7 +32,7 @@ spec:
       containers:
       - env:
         image: neojt/mredis
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         name: redis
         ports:
         - containerPort: 6379

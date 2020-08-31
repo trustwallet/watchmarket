@@ -1,0 +1,10 @@
+image:
+  repository: trust/watchmarket
+  workerTag: worker-local
+  apiTag: api-local
+  nginxProxyTag: proxy-local
+  seedTag: seed-local
+  pgCheckTag: pg-health-local
+
+seed:
+  enabled: true

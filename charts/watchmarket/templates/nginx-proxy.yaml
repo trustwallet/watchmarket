@@ -40,7 +40,7 @@ spec:
         - name: API_SWAGGER_URI
           value: http://api-swagger:8421
         image: "{{ .Values.image.repository }}:{{ .Values.image.nginxProxyTag }}"
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         name: nginx-proxy
         ports:
         - containerPort: 8080

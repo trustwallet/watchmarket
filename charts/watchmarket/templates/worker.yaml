@@ -44,7 +44,7 @@ spec:
             name: elastic
             optional: false
         image: "{{ .Values.image.repository }}:{{ .Values.image.workerTag }}"
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         name: worker
         resources: {}
         securityContext:
@@ -67,7 +67,7 @@ spec:
         - secretRef:
             name: secrets
         image: "{{ .Values.image.repository }}:{{ .Values.image.pgCheckTag }}"
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         name: postgres-check
         resources: {}
         securityContext:

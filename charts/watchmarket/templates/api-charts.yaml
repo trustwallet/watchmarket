@@ -46,7 +46,7 @@ spec:
             name: elastic
             optional: false
         image: "{{ .Values.image.repository }}:{{ .Values.image.apiTag }}"
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         name: api-charts
         ports:
         - containerPort: 8421
@@ -73,7 +73,7 @@ spec:
         - secretRef:
             name: secrets
         image: "{{ .Values.image.repository }}:{{ .Values.image.pgCheckTag }}"
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         name: postgres-check
         resources: {}
         securityContext:

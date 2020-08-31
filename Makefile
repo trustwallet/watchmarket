@@ -6,6 +6,9 @@ BUILD := $(shell git rev-parse --short HEAD)
 PROJECT_NAME := $(shell basename "$(PWD)")
 MARKET_SERVICE := worker
 MARKET_API := api
+MARKET_SEED_DB := seed
+MARKET_PROXY := proxy
+MARKET_PG_HEALTH := pg-health
 
 # Go related variables.
 GOBASE := $(shell pwd)
@@ -20,6 +23,9 @@ DOCKER_LOCAL_DB_IMAGE_NAME := test_db
 DOCKER_LOCAL_DB_USER :=user
 DOCKER_LOCAL_DB_PASS :=pass
 DOCKER_LOCAL_DB := my_db
+
+DOCKER_REPOSITORY := trust/watchmarket
+HASH ?= local
 
 # Environment variables
 CONFIG_FILE=config.yml
@@ -105,6 +111,27 @@ lint: go-lint-install go-lint
 ## docs: Generate swagger docs.
 docs: go-gen-docs
 
+## Local Development with Kubernetes
+k8s-build:
+	docker build -t $(DOCKER_REPOSITORY):$(MARKET_API)-$(HASH) --build-arg SERVICE=api .
+	docker build -t $(DOCKER_REPOSITORY):$(MARKET_SERVICE)-$(HASH) --build-arg SERVICE=worker .
+	docker build -t $(DOCKER_REPOSITORY):$(MARKET_SEED_DB)-$(HASH) -f seed/Dockerfile seed/
+	docker build -t $(DOCKER_REPOSITORY):$(MARKET_PROXY)-$(HASH) -f nginx/Dockerfile nginx/
+	docker build -t $(DOCKER_REPOSITORY):$(MARKET_PG_HEALTH)-$(HASH) -f scripts/pg-check/Dockerfile scripts/pg-check/
+
+k8s-purge:
+	kubectl delete namespace wm-local
+
+k8s-install:
+	kubectl create namespace wm-local
+	helm install --namespace wm-local -f charts/watchmarket/values.local.yaml wm-local charts/watchmarket
+	
+k8s-proxy:
+	kubectl --namespace wm-local port-forward $$(kubectl get pods --namespace wm-local -l "name=nginx-proxy" -o jsonpath\="{.items[0].metadata.name}") 9090:8081
+
+k8s-run: k8s-build k8s-purge k8s-install k8s-proxy
+
+k8s-deploy-only: k8s-purge k8s-install k8s-proxy
 
 docker-shutdown:
 	@echo "  >  Shutdown docker containers..."

@@ -46,7 +46,7 @@ spec:
             name: elastic
             optional: false
         image: "{{ .Values.image.repository }}:{{ .Values.image.apiTag }}"
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         name: api-swagger
         ports:
         - containerPort: 8421
