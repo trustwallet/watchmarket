@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/stretchr/testify/assert"
-	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"github.com/trustwallet/watchmarket/services/assets"
 	"net/http"
 	"testing"
@@ -22,25 +21,6 @@ func TestInitProvider(t *testing.T) {
 func TestProvider_GetProvider(t *testing.T) {
 	provider := InitProvider("web.api", "USD", assets.Init("assets.api"))
 	assert.Equal(t, "coingecko", provider.GetProvider())
-}
-
-func verifyTickers(t *testing.T, wantedTickers, givenTickers watchmarket.Tickers) bool {
-	assert.Equal(t, len(givenTickers), len(wantedTickers))
-	var counter = 0
-	for _, w := range wantedTickers {
-		for _, g := range givenTickers {
-			if w.CoinName == g.CoinName && w.TokenId == g.TokenId && w.Price == g.Price {
-				assert.Equal(t, w.Coin, g.Coin)
-				assert.Equal(t, w.TokenId, g.TokenId)
-				assert.Equal(t, w.Price, g.Price)
-				assert.Equal(t, w.CoinName, g.CoinName)
-				assert.Equal(t, w.Error, g.Error)
-				assert.Equal(t, w.CoinType, g.CoinType)
-				counter++
-			}
-		}
-	}
-	return counter == len(givenTickers)
 }
 
 func createMockedAPI() http.Handler {
