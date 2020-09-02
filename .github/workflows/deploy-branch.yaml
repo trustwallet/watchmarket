@@ -105,4 +105,4 @@ jobs:
           values: |
            name: foobar
           env:
-            KUBECONFIG_FILE: '$(cat /home/runner/dokubetemp/kubeconfig)'
+            KUBECONFIG_FILE: /home/runner/dokubetemp/kubeconfig
