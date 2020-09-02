@@ -93,4 +93,4 @@ jobs:
        - run: |
            kubectl delete namespace wm-local || true
            kubectl create namespace wm-local
-           helm3 install --namespace wm-local -f charts/watchmarket/values.local.yaml wm-local charts/watchmarket
+           helmv3 install --namespace wm-local -f charts/watchmarket/values.local.yaml wm-local charts/watchmarket
