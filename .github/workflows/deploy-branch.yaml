@@ -91,6 +91,7 @@ jobs:
            conftest: '0.18.2'
          id: setup
        - run: |
+           pwd
            kubectl delete namespace wm-local || true
            kubectl create namespace wm-local
            helmv3 install --namespace wm-local -f charts/watchmarket/values.local.yaml wm-local charts/watchmarket
