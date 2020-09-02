@@ -24,11 +24,11 @@ jobs:
       #      go-version: ^1.13
       #    id: go
 
-      #  - name: Check out code into the Go module directory
-      #    if: steps.check.outputs.has-permission
-      #    uses: actions/checkout@v2
-      #    with:
-      #     ref: ${{ github.head_ref }}
+       - name: Check out code into the Go module directory
+         if: steps.check.outputs.has-permission
+         uses: actions/checkout@v2
+         with:
+          ref: ${{ github.head_ref }}
 
       #  - name: Get short commit hash
       #    if: steps.check.outputs.has-permission
@@ -91,8 +91,6 @@ jobs:
            conftest: '0.18.2'
          id: setup
        - run: |
-           pwd
-           ls $(pws)/charts
            kubectl delete namespace wm-local || true
            kubectl create namespace wm-local
            helmv3 install --namespace wm-local -f charts/watchmarket/values.local.yaml wm-local charts/watchmarket
