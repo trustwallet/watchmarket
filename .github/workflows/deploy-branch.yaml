@@ -104,3 +104,5 @@ jobs:
              #token: '${{ github.token }}'
           values: |
            name: foobar
+          env:
+            KUBECONFIG_FILE: '$(cat /home/runner/dokubetemp/kubeconfig)'
