@@ -61,7 +61,7 @@ jobs:
          run: |
            docker build --build-arg SERVICE=api/api -f Dockerfile.runner -t $API_IMAGE .
            docker build --build-arg SERVICE=worker/worker -f Dockerfile.runner -t $WORKER_IMAGE .
-	         docker build -t $SEED_IMAGE -f seed/Dockerfile seed/
+	   docker build -t $SEED_IMAGE -f seed/Dockerfile seed/
            docker build -t $PROXY_IMAGE -f nginx/Dockerfile nginx/
            docker build -t $PG_CHECK_IMAGE -f scripts/pg-check/Dockerfile scripts/pg-check/
            docker push $API_IMAGE
