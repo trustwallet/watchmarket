@@ -78,3 +78,5 @@ jobs:
          
        - name: Get nodes
          run: kubectl get nodes > /dev/null
+
+         
