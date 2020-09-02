@@ -96,11 +96,11 @@ jobs:
       #      helmv3 install --namespace wm-local -f charts/watchmarket/values.local.yaml wm-local charts/watchmarket
 
        - name: 'Deploy'
-           uses: 'deliverybot/helm@v1'
-           with:
-             release: 'watchmarket'
-             namespace: 'wm-local'
-             chart: 'charts/watchmarket'
+         uses: 'deliverybot/helm@v1'
+         with:
+          release: 'watchmarket'
+          namespace: 'wm-local'
+          chart: 'charts/watchmarket'
              #token: '${{ github.token }}'
-             values: |
-               name: foobar
+          values: |
+           name: foobar
