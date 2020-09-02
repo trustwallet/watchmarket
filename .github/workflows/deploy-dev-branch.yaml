@@ -1,6 +1,6 @@
-name: Manual Deploy Dev Branch
+name: Deploy Dev Branch
 
-on: [workflow_dispatch]
+on: workflow_dispatch
 
 jobs:
   build:
@@ -79,4 +79,3 @@ jobs:
        - name: Get nodes
          run: kubectl get nodes > /dev/null
 
-         
