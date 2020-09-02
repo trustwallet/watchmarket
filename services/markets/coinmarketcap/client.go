@@ -10,15 +10,13 @@ import (
 
 type Client struct {
 	api    blockatlas.Request
-	assets blockatlas.Request
 	web    blockatlas.Request
 	widget blockatlas.Request
 }
 
-func NewClient(proApi, assetsApi, webApi, widgetApi, key string) Client {
+func NewClient(proApi, webApi, widgetApi, key string) Client {
 	c := Client{
 		api:    blockatlas.InitClient(proApi),
-		assets: blockatlas.InitClient(assetsApi),
 		web:    blockatlas.InitClient(webApi),
 		widget: blockatlas.InitClient(widgetApi),
 	}
@@ -33,19 +31,6 @@ func (c Client) fetchPrices(currency string, ctx context.Context) (CoinPrices, e
 	)
 
 	err := c.api.GetWithContext(&result, path, url.Values{"limit": {"5000"}, "convert": {currency}}, ctx)
-	if err != nil {
-		return result, err
-	}
-	return result, nil
-}
-
-func (c Client) fetchCoinMap(ctx context.Context) ([]CoinMap, error) {
-	var (
-		result []CoinMap
-		path   = "mapping.json"
-	)
-
-	err := c.assets.GetWithContext(&result, path, nil, ctx)
 	if err != nil {
 		return result, err
 	}

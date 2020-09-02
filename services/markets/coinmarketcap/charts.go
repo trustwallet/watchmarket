@@ -17,11 +17,7 @@ const (
 
 func (p Provider) GetChartData(coinID uint, token, currency string, timeStart int64, ctx context.Context) (watchmarket.Chart, error) {
 	chartsData := watchmarket.Chart{}
-	coinsFromCmc, err := p.client.fetchCoinMap(ctx)
-	if err != nil {
-		return chartsData, err
-	}
-	coinsFromCmcMap := CmcSlice(coinsFromCmc).coinToCmcMap()
+	coinsFromCmcMap := CmcSlice(p.cm).coinToCmcMap()
 	coinObj, err := coinsFromCmcMap.getCoinByContract(coinID, token)
 	if err != nil {
 		return chartsData, err
@@ -41,11 +37,7 @@ func (p Provider) GetChartData(coinID uint, token, currency string, timeStart in
 
 func (p Provider) GetCoinData(coinID uint, token, currency string, ctx context.Context) (watchmarket.CoinDetails, error) {
 	details := watchmarket.CoinDetails{}
-	coinsFromCmc, err := p.client.fetchCoinMap(ctx)
-	if err != nil {
-		return details, err
-	}
-	coinsFromCmcMap := CmcSlice(coinsFromCmc).coinToCmcMap()
+	coinsFromCmcMap := CmcSlice(p.cm).coinToCmcMap()
 	coinObj, err := coinsFromCmcMap.getCoinByContract(coinID, token)
 	if err != nil {
 		return details, err

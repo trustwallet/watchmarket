@@ -25,7 +25,6 @@ type Configuration struct {
 			Currency  string `mapstructure:"currency"`
 			WebAPI    string `mapstructure:"web_api"`
 			WidgetAPI string `mapstructure:"widget_api"`
-			MapAPI    string `mapstructure:"map_api"`
 		} `mapstructure:"coinmarketcap"`
 		Coingecko struct {
 			API      string `mapstructure:"api"`
