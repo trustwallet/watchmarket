@@ -120,7 +120,7 @@ k8s-build:
 	docker build -t $(DOCKER_REPOSITORY):$(MARKET_PG_HEALTH)-$(HASH) -f scripts/pg-check/Dockerfile scripts/pg-check/
 
 k8s-purge:
-	kubectl delete namespace wm-local
+	kubectl delete namespace wm-local || true
 
 k8s-install:
 	kubectl create namespace wm-local
