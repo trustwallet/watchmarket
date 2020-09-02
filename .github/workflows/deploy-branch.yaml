@@ -1,7 +1,11 @@
-name: Test Deploy
-
-on: [pull_request, workflow_dispatch]
-
+name: test workflow dispatch
+on:
+  workflow_dispatch:
+    inputs:
+      username:
+        description: 'Person to greet'
+        required: true
+        default: 'Mona the Octocat'
 
 jobs:
   example:
