@@ -90,7 +90,17 @@ jobs:
            kubeval: '0.14.0'
            conftest: '0.18.2'
          id: setup
-       - run: |
-           kubectl delete namespace wm-local || true
-           kubectl create namespace wm-local
-           helmv3 install --namespace wm-local -f charts/watchmarket/values.local.yaml wm-local charts/watchmarket
+      #  - run: |
+      #      kubectl delete namespace wm-local || true
+      #      kubectl create namespace wm-local
+      #      helmv3 install --namespace wm-local -f charts/watchmarket/values.local.yaml wm-local charts/watchmarket
+
+       - name: 'Deploy'
+           uses: 'deliverybot/helm@v1'
+           with:
+             release: 'watchmarket'
+             namespace: 'wm-local'
+             chart: 'charts/watchmarket'
+             #token: '${{ github.token }}'
+             values: |
+               name: foobar
