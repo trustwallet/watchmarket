@@ -1,0 +1,80 @@
+name: Manual Deploy Dev Branch
+
+on: [workflow_dispatch]
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+       - name: Check user permission
+         id: check
+         uses: scherermichael-oss/action-has-permission@master
+         with:
+           required-permission: write
+         env:
+           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                
+       - name: Set up Go 1.x
+         if: steps.check.outputs.has-permission
+         uses: actions/setup-go@v2
+         with:
+           go-version: ^1.13
+         id: go
+
+       - name: Check out code into the Go module directory
+         if: steps.check.outputs.has-permission
+         uses: actions/checkout@v2
+         with:
+          ref: ${{ github.head_ref }}
+
+       - name: Get short commit hash
+         if: steps.check.outputs.has-permission
+         id: hash
+         run: echo "::set-output name=sha7::$(echo $(git rev-parse --short HEAD) | cut -c1-7)"
+         
+       - name: Get dependencies
+         if: steps.check.outputs.has-permission
+         run: |
+           go get -v -t -d ./...
+
+       - name: Swagger
+         if: steps.check.outputs.has-permission
+         run: make swag
+
+       - name: Build
+         if: steps.check.outputs.has-permission
+         run: make go-build
+
+       - name: Login to DockerHub Registry
+         if: steps.check.outputs.has-permission
+         run: echo ${{ secrets.PUBLIC_REGISTRY_PASSWORD }} | docker login -u ${{ secrets.PUBLIC_REGISTRY_USERNAME }} --password-stdin
+
+       - name: Docker Build & Push Dev Images
+         if: steps.check.outputs.has-permission
+         env:
+           API_IMAGE: ${{ secrets.PUBLIC_REGISTRY }}:api-${{ steps.hash.outputs.sha7 }}
+           WORKER_IMAGE: ${{ secrets.PUBLIC_REGISTRY }}:worker-${{ steps.hash.outputs.sha7 }}
+           SEED_IMAGE: ${{ secrets.PUBLIC_REGISTRY }}:seed-${{ steps.hash.outputs.sha7 }}
+           PROXY_IMAGE: ${{ secrets.PUBLIC_REGISTRY }}:proxy-${{ steps.hash.outputs.sha7 }}
+           PG_CHECK_IMAGE: ${{ secrets.PUBLIC_REGISTRY }}:pg-health-${{ steps.hash.outputs.sha7 }}
+         run: |
+           docker build --build-arg SERVICE=api/api -f Dockerfile.runner -t $API_IMAGE .
+           docker build --build-arg SERVICE=worker/worker -f Dockerfile.runner -t $WORKER_IMAGE .
+	         docker build -t $SEED_IMAGE -f seed/Dockerfile seed/
+           docker build -t $PROXY_IMAGE -f nginx/Dockerfile nginx/
+           docker build -t $PG_CHECK_IMAGE -f scripts/pg-check/Dockerfile scripts/pg-check/
+           docker push $API_IMAGE
+           docker push $WORKER_IMAGE
+           docker push $SEED_IMAGE
+           docker push $PROXY_IMAGE
+           docker push $PG_CHECK_IMAGE
+
+        - name: Set up kubectl
+          uses: matootie/dokube@v1.3.2
+          with:
+            personalAccessToken: ${{ secrets.DIGITALOCEAN_TOKEN }}
+            clusterName: dev-cluster
+         
+        - name: Get nodes
+          run: kubectl get nodes > /dev/null
