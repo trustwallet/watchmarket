@@ -1,6 +1,8 @@
 name: Test Deploy
 
-on: [ workflow_dispatch ]
+on:
+  pull_request:
+    branches: [ master ]
 
 jobs:
   example:
