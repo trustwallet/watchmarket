@@ -1,12 +1,6 @@
-name: Deploy Dev Branch
+name: Test Deploy
 
-on: 
-  workflow_dispatch:
-    inputs:
-      version:
-        description: Bump Version
-        default: v2.0.0
-        required: true
+on: [ workflow_dispatch ]
 
 jobs:
   example:
