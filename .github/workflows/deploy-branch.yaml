@@ -1,11 +1,8 @@
-name: test workflow dispatch
+name: Deploy Dev Branch
 on:
+  push:
+    branches: [ maxUo/helm-setup ]
   workflow_dispatch:
-    inputs:
-      username:
-        description: 'Person to greet'
-        required: true
-        default: 'Mona the Octocat'
 
 jobs:
   example:
