@@ -48,9 +48,9 @@ jobs:
       #    if: steps.check.outputs.has-permission
       #    run: make go-build
 
-      #  - name: Login to DockerHub Registry
-      #    if: steps.check.outputs.has-permission
-      #    run: echo ${{ secrets.PUBLIC_REGISTRY_PASSWORD }} | docker login -u ${{ secrets.PUBLIC_REGISTRY_USERNAME }} --password-stdin
+       - name: Login to DockerHub Registry
+         if: steps.check.outputs.has-permission
+         run: echo ${{ secrets.PUBLIC_REGISTRY_PASSWORD }} | docker login -u ${{ secrets.PUBLIC_REGISTRY_USERNAME }} --password-stdin
 
       #  - name: Docker Build & Push Dev Images
       #    if: steps.check.outputs.has-permission
