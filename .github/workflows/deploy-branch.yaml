@@ -79,7 +79,7 @@ jobs:
           personalAccessToken: ${{ secrets.DIGITALOCEAN_TOKEN }}
           clusterName: dev-cluster
          
-       - name: Get nodes
+       - name: Check k8s connection
          if: steps.check.outputs.has-permission
          run: kubectl get nodes > /dev/null
        
