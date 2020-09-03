@@ -99,6 +99,14 @@ jobs:
           replace: "${{ secrets.PUBLIC_REGISTRY }}"
           include: "charts/watchmarket/values.local.yaml"
 
+       - name: Replace Dev Domain
+         if: steps.check.outputs.has-permission
+         uses: jacobtomlinson/gha-find-replace@0.1.2
+         with:
+          find: "nginx-swagger.local"
+          replace: "${{ steps.hash.outputs.sha7 }}.${{ secrets.PUBLIC_DEV_DOMAIN }}"
+          include: "charts/watchmarket/values.local.yaml"
+
        - uses: yokawasa/action-setup-kube-tools@v0.1.0
          if: steps.check.outputs.has-permission
          with:
@@ -110,7 +118,22 @@ jobs:
            conftest: '0.18.2'
 
        - name: Deploy to k8s
+         if: steps.check.outputs.has-permission
          run: |
           kubectl delete namespace wm-local || true
           kubectl create namespace wm-local
           helmv3 install --namespace wm-local -f charts/watchmarket/values.local.yaml wm-local charts/watchmarket
+
+       - name: Create DNS Record
+         if: steps.check.outputs.has-permission
+         run: |
+          curl --location --request POST 'https://api.cloudflare.com/client/v4/zones/${{ secrets.CF_DEV_ZONE_KEY }}/dns_records' \
+          --header 'Authorization: ${{ secrets.CF_DEV_API_KEY }}' \
+          --header 'Content-Type: application/json' \
+          --data-raw '{
+            "type":"A",
+            "name":"${{ steps.hash.outputs.sha7 }}.${{ secrets.PUBLIC_DEV_DOMAIN }}",
+            "content":"${{ secrets.PUBLIC_DEV_DOMAIN_IP }}",
+            "ttl":120,
+            "proxied":false
+          }' > /dev/null

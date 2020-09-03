@@ -1,0 +1,36 @@
+{{- if .Values.ingress.enabled -}}
+{{- if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion -}}
+apiVersion: networking.k8s.io/v1beta1
+{{- else -}}
+apiVersion: extensions/v1beta1
+{{- end }}
+kind: Ingress
+metadata:
+  name: nginx-proxy
+  labels:
+    chart: {{ template "watchmarket.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+  {{- with .Values.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  rules:
+  {{- if .Values.ingress.swaggerEnabled -}}
+    - host: {{ .Values.ingress.swaggerHost | quote }}
+      http:
+        paths:
+          - backend:
+              serviceName: nginx-proxy-swagger
+              servicePort: 8081
+  {{- end }}
+  {{- if .Values.ingress.proxyEnabled -}}
+    - host: {{ .Values.ingress.proxyHost | quote }}
+      http:
+        paths:
+          - backend:
+              serviceName: nginx-proxy
+              servicePort: 8080
+  {{- end }}
+{{- end }}
