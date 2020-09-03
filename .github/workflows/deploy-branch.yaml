@@ -93,7 +93,7 @@ jobs:
           replace: "${{ secrets.PUBLIC_REGISTRY }}"
           include: "charts/watchmarket/values.local.yaml"
 
-        - run: cat charts/watchmarket/values.local.yaml
+       - run: cat charts/watchmarket/values.local.yaml
       #  - uses: yokawasa/action-setup-kube-tools@v0.1.0
       #    with:
       #      kubectl: '1.17.1'
