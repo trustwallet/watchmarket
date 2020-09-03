@@ -17,12 +17,12 @@ jobs:
          env:
            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                 
-      #  - name: Set up Go 1.x
-      #    if: steps.check.outputs.has-permission
-      #    uses: actions/setup-go@v2
-      #    with:
-      #      go-version: ^1.13
-      #    id: go
+       - name: Set up Go 1.x
+         if: steps.check.outputs.has-permission
+         uses: actions/setup-go@v2
+         with:
+           go-version: ^1.13
+         id: go
 
        - name: Check out code into the Go module directory
          if: steps.check.outputs.has-permission
@@ -35,75 +35,82 @@ jobs:
          id: hash
          run: echo "::set-output name=sha7::$(echo $(git rev-parse --short HEAD) | cut -c1-7)"
          
-      #  - name: Get dependencies
-      #    if: steps.check.outputs.has-permission
-      #    run: |
-      #      go get -v -t -d ./...
+       - name: Get dependencies
+         if: steps.check.outputs.has-permission
+         run: |
+           go get -v -t -d ./...
 
-      # #  - name: Swagger
-      # #    if: steps.check.outputs.has-permission
-      # #    run: make swag
+       - name: Swagger
+         if: steps.check.outputs.has-permission
+         run: make swag
 
-      #  - name: Build
-      #    if: steps.check.outputs.has-permission
-      #    run: make go-build
+       - name: Build
+         if: steps.check.outputs.has-permission
+         run: make go-build
 
-      #  - name: Login to DockerHub Registry
-      #    if: steps.check.outputs.has-permission
-      #    run: echo ${{ secrets.PUBLIC_REGISTRY_PASSWORD }} | docker login -u ${{ secrets.PUBLIC_REGISTRY_USERNAME }} --password-stdin
+       - name: Login to DockerHub Registry
+         if: steps.check.outputs.has-permission
+         run: echo ${{ secrets.PUBLIC_REGISTRY_PASSWORD }} | docker login -u ${{ secrets.PUBLIC_REGISTRY_USERNAME }} --password-stdin
 
-      #  - name: Docker Build & Push Dev Images
-      #    if: steps.check.outputs.has-permission
-      #    env:
-      #      API_IMAGE: ${{ secrets.PUBLIC_REGISTRY }}:api-${{ steps.hash.outputs.sha7 }}
-      #      WORKER_IMAGE: ${{ secrets.PUBLIC_REGISTRY }}:worker-${{ steps.hash.outputs.sha7 }}
-      #      SEED_IMAGE: ${{ secrets.PUBLIC_REGISTRY }}:seed-${{ steps.hash.outputs.sha7 }}
-      #      PROXY_IMAGE: ${{ secrets.PUBLIC_REGISTRY }}:proxy-${{ steps.hash.outputs.sha7 }}
-      #      PG_CHECK_IMAGE: ${{ secrets.PUBLIC_REGISTRY }}:pg-health-${{ steps.hash.outputs.sha7 }}
-      #    run: |
-      #      docker build --build-arg SERVICE=api/api -f Dockerfile.runner -t $API_IMAGE .
-      #      docker build --build-arg SERVICE=worker/worker -f Dockerfile.runner -t $WORKER_IMAGE .
-      #      docker build -t $SEED_IMAGE -f seed/Dockerfile seed/
-      #      docker build -t $PROXY_IMAGE -f nginx/Dockerfile nginx/
-      #      docker build -t $PG_CHECK_IMAGE -f scripts/pg-check/Dockerfile scripts/pg-check/
-      #      docker push $API_IMAGE
-      #      docker push $WORKER_IMAGE
-      #      docker push $SEED_IMAGE
-      #      docker push $PROXY_IMAGE
-      #      docker push $PG_CHECK_IMAGE
+       - name: Docker Build & Push Dev Images
+         if: steps.check.outputs.has-permission
+         env:
+           API_IMAGE: ${{ secrets.PUBLIC_REGISTRY }}:api-${{ steps.hash.outputs.sha7 }}
+           WORKER_IMAGE: ${{ secrets.PUBLIC_REGISTRY }}:worker-${{ steps.hash.outputs.sha7 }}
+           SEED_IMAGE: ${{ secrets.PUBLIC_REGISTRY }}:seed-${{ steps.hash.outputs.sha7 }}
+           PROXY_IMAGE: ${{ secrets.PUBLIC_REGISTRY }}:proxy-${{ steps.hash.outputs.sha7 }}
+           PG_CHECK_IMAGE: ${{ secrets.PUBLIC_REGISTRY }}:pg-health-${{ steps.hash.outputs.sha7 }}
+         run: |
+           docker build --build-arg SERVICE=api/api -f Dockerfile.runner -t $API_IMAGE .
+           docker build --build-arg SERVICE=worker/worker -f Dockerfile.runner -t $WORKER_IMAGE .
+           docker build -t $SEED_IMAGE -f seed/Dockerfile seed/
+           docker build -t $PROXY_IMAGE -f nginx/Dockerfile nginx/
+           docker build -t $PG_CHECK_IMAGE -f scripts/pg-check/Dockerfile scripts/pg-check/
+           docker push $API_IMAGE
+           docker push $WORKER_IMAGE
+           docker push $SEED_IMAGE
+           docker push $PROXY_IMAGE
+           docker push $PG_CHECK_IMAGE
 
-      #  - name: Set up kubectl
-      #    uses: matootie/dokube@v1.3.2
-      #    with:
-      #     personalAccessToken: ${{ secrets.DIGITALOCEAN_TOKEN }}
-      #     clusterName: dev-cluster
+       - name: Set up kubectl
+         if: steps.check.outputs.has-permission
+         uses: matootie/dokube@v1.3.2
+         with:
+          personalAccessToken: ${{ secrets.DIGITALOCEAN_TOKEN }}
+          clusterName: dev-cluster
          
-      #  - name: Get nodes
-      #    run: kubectl get nodes > /dev/null
+       - name: Get nodes
+         if: steps.check.outputs.has-permission
+         run: kubectl get nodes > /dev/null
        
-       - uses: jacobtomlinson/gha-find-replace@master
+       - name: Replace image tag
+         if: steps.check.outputs.has-permission
+         uses: jacobtomlinson/gha-find-replace@master
          with:
           find: "local"
           replace: "${{ steps.hash.outputs.sha7 }}"
           include: "charts/watchmarket/values.local.yaml"
        
-       - uses: jacobtomlinson/gha-find-replace@master
+       - name: Replace image repository
+         if: steps.check.outputs.has-permission
+         uses: jacobtomlinson/gha-find-replace@master
          with:
           find: "trust/watchmarket"
           replace: "${{ secrets.PUBLIC_REGISTRY }}"
           include: "charts/watchmarket/values.local.yaml"
 
-       - run: cat charts/watchmarket/values.local.yaml
-      #  - uses: yokawasa/action-setup-kube-tools@v0.1.0
-      #    with:
-      #      kubectl: '1.17.1'
-      #      kustomize: '3.7.0'
-      #      helm: '2.16.7'
-      #      helmv3: '3.2.4'
-      #      kubeval: '0.14.0'
-      #      conftest: '0.18.2'
-      #    id: setup
-      #  - run: |
-      #      kubectl delete namespace wm-local || true
-      #      kubectl create namespace wm-local
-      #      helmv3 install --namespace wm-local -f charts/watchmarket/values.local.yaml wm-local charts/watchmarket
+       - uses: yokawasa/action-setup-kube-tools@v0.1.0
+         if: steps.check.outputs.has-permission
+         with:
+           kubectl: '1.17.1'
+           kustomize: '3.7.0'
+           helm: '2.16.7'
+           helmv3: '3.2.4'
+           kubeval: '0.14.0'
+           conftest: '0.18.2'
+
+       - name: Deploy to k8s
+         run: |
+          kubectl delete namespace wm-local || true
+          kubectl create namespace wm-local
+          helmv3 install --namespace wm-local -f charts/watchmarket/values.local.yaml wm-local charts/watchmarket
