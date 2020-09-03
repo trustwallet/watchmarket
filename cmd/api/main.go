@@ -15,6 +15,7 @@ import (
 	"github.com/trustwallet/watchmarket/services/controllers"
 	chartscontroller "github.com/trustwallet/watchmarket/services/controllers/charts"
 	infocontroller "github.com/trustwallet/watchmarket/services/controllers/info"
+	"github.com/trustwallet/watchmarket/services/controllers/rates"
 	tickerscontroller "github.com/trustwallet/watchmarket/services/controllers/tickers"
 	"github.com/trustwallet/watchmarket/services/markets"
 	"github.com/trustwallet/watchmarket/services/worker"
@@ -31,6 +32,7 @@ var (
 	engine         *gin.Engine
 	configuration  config.Configuration
 	tickers        controllers.TickersController
+	rates          controllers.RatesController
 	charts         controllers.ChartsController
 	info           controllers.InfoController
 	w              worker.Worker
@@ -79,6 +81,7 @@ func init() {
 	charts = chartscontroller.NewController(redisCache, memoryCache, database, chartsPriority, coinInfoPriority, ratesPriority, tickerPriority, m.ChartsAPIs, configuration)
 	info = infocontroller.NewController(redisCache, chartsPriority, coinInfoPriority, ratesPriority, tickerPriority, m.ChartsAPIs, configuration)
 	tickers = tickerscontroller.NewController(database, memoryCache, ratesPriority, tickerPriority, configuration)
+	rates = ratescontroller.NewController(database, memoryCache, ratesPriority, configuration)
 	engine = internal.InitEngine(configuration.RestAPI.Mode)
 }
 
@@ -97,7 +100,7 @@ func main() {
 		}
 	}
 
-	if err := internal.InitAPI(engine, tickers, charts, info, configuration); err != nil {
+	if err := internal.InitAPI(engine, tickers, rates, charts, info, configuration); err != nil {
 		panic(err)
 	}
 	internal.SetupGracefulShutdown(port, engine)
