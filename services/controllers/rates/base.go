@@ -67,7 +67,7 @@ ProvidersLoop:
 		}
 	}
 
-	if result == emptyRate || (watchmarket.IsFiatRate(result.Currency) && result.Provider != "fixer") {
+	if result == emptyRate {
 		return emptyRate, errors.New(watchmarket.ErrNotFound)
 	}
 

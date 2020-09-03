@@ -23,7 +23,7 @@ import (
 // @Router /v1/market/fiat/rate [get]
 func GetRate(controller controllers.RatesController) func(c *gin.Context) {
 	return func(c *gin.Context) {
-		tx := apm.DefaultTracer.StartTransaction("GET /rate", "request")
+		tx := apm.DefaultTracer.StartTransaction("GET /v1/market/fiat/rate ", "request")
 		ctx := apm.ContextWithTransaction(context.Background(), tx)
 		defer tx.End()
 
