@@ -7,10 +7,9 @@ apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: nginx-proxy
+  namespace: {{ .Release.Namespace }}
   labels:
     chart: {{ template "watchmarket.chart" . }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
   {{- with .Values.ingress.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
