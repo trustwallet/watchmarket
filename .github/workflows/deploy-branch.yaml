@@ -72,15 +72,20 @@ jobs:
       #      docker push $PROXY_IMAGE
       #      docker push $PG_CHECK_IMAGE
 
-       - name: Set up kubectl
-         uses: matootie/dokube@v1.3.2
+      #  - name: Set up kubectl
+      #    uses: matootie/dokube@v1.3.2
+      #    with:
+      #     personalAccessToken: ${{ secrets.DIGITALOCEAN_TOKEN }}
+      #     clusterName: dev-cluster
+         
+      #  - name: Get nodes
+      #    run: kubectl get nodes > /dev/null
+       
+       - uses: ./.github/actions/replace
          with:
-          personalAccessToken: ${{ secrets.DIGITALOCEAN_TOKEN }}
-          clusterName: dev-cluster
-         
-       - name: Get nodes
-         run: kubectl get nodes > /dev/null
-         
+           files: charts/watchmarket/values.local.yaml
+           replacements: 'local=${{ steps.hash.outputs.sha7 }},trust/watchmarket=${{ secrets.PUBLIC_REGISTRY }}'
+       - run: cat charts/watchmarket/values.local.yaml
       #  - uses: yokawasa/action-setup-kube-tools@v0.1.0
       #    with:
       #      kubectl: '1.17.1'
@@ -94,13 +99,3 @@ jobs:
       #      kubectl delete namespace wm-local || true
       #      kubectl create namespace wm-local
       #      helmv3 install --namespace wm-local -f charts/watchmarket/values.local.yaml wm-local charts/watchmarket
-       - run: export KUBECONFIG_FILE $KUBECONFIG
-       - name: 'Deploy'
-         uses: 'deliverybot/helm@v1'
-         with:
-          release: 'watchmarket'
-          namespace: 'wm-local'
-          chart: 'charts/watchmarket'
-             #token: '${{ github.token }}'
-          values: |
-           name: foobar
