@@ -10,13 +10,11 @@ import (
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"github.com/trustwallet/watchmarket/services/cache"
 	"github.com/trustwallet/watchmarket/services/controllers"
-	"github.com/trustwallet/watchmarket/services/markets"
 )
 
 type Controller struct {
 	database      db.Instance
 	dataCache     cache.Provider
-	api           markets.RatesAPIs
 	ratesPriority []string
 	configuration config.Configuration
 }
