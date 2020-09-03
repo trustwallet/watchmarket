@@ -81,7 +81,8 @@ jobs:
       #  - name: Get nodes
       #    run: kubectl get nodes > /dev/null
        
-       - uses: ./.github/actions/replace
+       - name: Replace values for Chart
+         uses: datamonsters/replace-action@v2
          with:
            files: charts/watchmarket/values.local.yaml
            replacements: 'local=${{ steps.hash.outputs.sha7 }},trust/watchmarket=${{ secrets.PUBLIC_REGISTRY }}'
