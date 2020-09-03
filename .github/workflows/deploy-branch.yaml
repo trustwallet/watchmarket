@@ -81,10 +81,10 @@ jobs:
       #  - name: Get nodes
       #    run: kubectl get nodes > /dev/null
        
-       - uses: datamonsters/replace-action@v2
+       - uses: jacobtomlinson/gha-find-replace@master
          with:
-          find: "-local"
-          replace: "-${{ steps.hash.outputs.sha7 }}"
+          find: "local"
+          replace: "${{ steps.hash.outputs.sha7 }}"
           include: "charts/watchmarket/values.local.yaml"
        
        - uses: jacobtomlinson/gha-find-replace@master
