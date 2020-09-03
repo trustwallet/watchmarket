@@ -30,10 +30,10 @@ jobs:
          with:
           ref: ${{ github.head_ref }}
 
-      #  - name: Get short commit hash
-      #    if: steps.check.outputs.has-permission
-      #    id: hash
-      #    run: echo "::set-output name=sha7::$(echo $(git rev-parse --short HEAD) | cut -c1-7)"
+       - name: Get short commit hash
+         if: steps.check.outputs.has-permission
+         id: hash
+         run: echo "::set-output name=sha7::$(echo $(git rev-parse --short HEAD) | cut -c1-7)"
          
       #  - name: Get dependencies
       #    if: steps.check.outputs.has-permission
@@ -81,17 +81,10 @@ jobs:
       #  - name: Get nodes
       #    run: kubectl get nodes > /dev/null
        
-       - uses: jacobtomlinson/gha-find-replace@master
+       - uses: datamonsters/replace-action@v2
          with:
-          find: "local"
-          replace: "${{ steps.hash.outputs.sha7 }}"
-          include: "charts/watchmarket/values.local.yaml"
-       
-       - uses: jacobtomlinson/gha-find-replace@master
-         with:
-          find: "trust/watchmarket"
-          replace: "${{ secrets.PUBLIC_REGISTRY }}"
-          include: "charts/watchmarket/values.local.yaml"
+          replacements: 'local=${{ steps.hash.outputs.sha7 }},trust/watchmarket=${{ secrets.PUBLIC_REGISTRY }}'
+          files: 'charts/watchmarket/values.local.yaml'
 
        - run: cat charts/watchmarket/values.local.yaml
       #  - uses: yokawasa/action-setup-kube-tools@v0.1.0
