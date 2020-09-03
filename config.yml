@@ -39,7 +39,7 @@ worker:
   batch_limit: 3000
 
 rest_api:
-  apis: [base, tickers, charts, info, swagger]
+  apis: [base, tickers, charts, info, swagger, rates]
   mode: release # Possible values: "debug", "release"
   port: 8421 # Possible values: "debug", "release"
   tickers:
