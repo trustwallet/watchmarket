@@ -83,8 +83,8 @@ jobs:
        
        - uses: datamonsters/replace-action@v2
          with:
-          find: "local"
-          replace: "${{ steps.hash.outputs.sha7 }}"
+          find: "-local"
+          replace: "-${{ steps.hash.outputs.sha7 }}"
           include: "charts/watchmarket/values.local.yaml"
        
        - uses: jacobtomlinson/gha-find-replace@master
