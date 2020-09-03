@@ -52,3 +52,7 @@ func SetupTickersAPI(engine *gin.Engine, tickers controllers.TickersController, 
 	engine.POST("v1/market/ticker",
 		middleware.CacheControl(d, endpoint.GetTickersHandler(tickers)))
 }
+
+func SetupRatesAPI(engine *gin.Engine, rates controllers.RatesController) {
+	engine.GET("/v1/market/fiat/rate", endpoint.GetRate(rates))
+}

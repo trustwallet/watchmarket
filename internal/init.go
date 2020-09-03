@@ -38,6 +38,7 @@ func InitRedis(host string) *redis.Redis {
 func InitAPI(
 	engine *gin.Engine,
 	tickers controllers.TickersController,
+	rates controllers.RatesController,
 	charts controllers.ChartsController,
 	info controllers.InfoController,
 	configuration config.Configuration,
@@ -60,6 +61,10 @@ func InitAPI(
 		case "info":
 			logger.Info("Running info api")
 			api.SetupInfoAPI(engine, info, configuration.RestAPI.Info.CacheControl)
+			counter++
+		case "rates":
+			logger.Info("Running rates api")
+			api.SetupRatesAPI(engine, rates)
 			counter++
 		case "swagger":
 			logger.Info("Running swagger api")
