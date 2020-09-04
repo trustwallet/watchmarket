@@ -133,6 +133,53 @@ var doc = `{
                 }
             }
         },
+        "/v1/market/rate": {
+            "get": {
+                "description": "Get rate",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Rates"
+                ],
+                "summary": "Get rate",
+                "operationId": "get_rate",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "default": "USD",
+                        "description": "From",
+                        "name": "from",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "default": "RUB",
+                        "description": "To",
+                        "name": "to",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "default": "100",
+                        "description": "Amount",
+                        "name": "amount",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.RateResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/v1/market/ticker": {
             "post": {
                 "description": "Get the ticker values from many market and coin/token",
@@ -390,6 +437,14 @@ var doc = `{
                 },
                 "type": {
                     "type": "string"
+                }
+            }
+        },
+        "controllers.RateResponse": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "number"
                 }
             }
         },

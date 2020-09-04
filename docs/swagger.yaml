@@ -8,6 +8,11 @@ definitions:
       type:
         type: string
     type: object
+  controllers.RateResponse:
+    properties:
+      amount:
+        type: number
+    type: object
   controllers.TickerPrice:
     properties:
       change_24h:
@@ -237,6 +242,38 @@ paths:
       summary: Get charts coin assets data for a specific coin
       tags:
       - Info
+  /v1/market/rate:
+    get:
+      consumes:
+      - application/json
+      description: Get rate
+      operationId: get_rate
+      parameters:
+      - default: USD
+        description: From
+        in: query
+        name: from
+        type: string
+      - default: RUB
+        description: To
+        in: query
+        name: to
+        type: string
+      - default: "100"
+        description: Amount
+        in: query
+        name: amount
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controllers.RateResponse'
+      summary: Get rate
+      tags:
+      - Rates
   /v1/market/ticker:
     post:
       consumes:
