@@ -20,7 +20,7 @@ import (
 // @Param to query string false "To" default(RUB)
 // @Param amount query string false "Amount" default(100)
 // @Success 200 {object} controllers.RateResponse
-// @Router /v1/market/fiat/rate [get]
+// @Router /v1/market/rate [get]
 func GetRate(controller controllers.RatesController) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		tx := apm.DefaultTracer.StartTransaction("GET /v1/market/fiat/rate ", "request")

@@ -8,6 +8,7 @@ import (
 	"github.com/trustwallet/watchmarket/db/postgres"
 	_ "github.com/trustwallet/watchmarket/docs"
 	"github.com/trustwallet/watchmarket/internal"
+	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"github.com/trustwallet/watchmarket/services/assets"
 	"github.com/trustwallet/watchmarket/services/cache"
 	"github.com/trustwallet/watchmarket/services/cache/memory"
@@ -87,12 +88,18 @@ func init() {
 
 func main() {
 	if configuration.RestAPI.UseMemoryCache {
-		w.SaveRatesToMemory()
-		w.SaveTickersToMemory()
+		if watchmarket.Exists("rates", configuration.RestAPI.APIs) &&
+			!watchmarket.Exists("tickers", configuration.RestAPI.APIs) {
+			w.SaveRatesToMemory()
 
-		w.AddOperation(c, configuration.RestAPI.UpdateTime.Rates, w.SaveRatesToMemory)
-		w.AddOperation(c, configuration.RestAPI.UpdateTime.Tickers, w.SaveTickersToMemory)
+			w.AddOperation(c, configuration.RestAPI.UpdateTime.Rates, w.SaveRatesToMemory)
+		} else {
+			w.SaveRatesToMemory()
+			w.SaveTickersToMemory()
 
+			w.AddOperation(c, configuration.RestAPI.UpdateTime.Rates, w.SaveRatesToMemory)
+			w.AddOperation(c, configuration.RestAPI.UpdateTime.Tickers, w.SaveTickersToMemory)
+		}
 		c.Start()
 
 		if memoryCache.GetLenOfSavedItems() <= 0 {

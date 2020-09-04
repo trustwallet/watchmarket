@@ -54,5 +54,5 @@ func SetupTickersAPI(engine *gin.Engine, tickers controllers.TickersController, 
 }
 
 func SetupRatesAPI(engine *gin.Engine, rates controllers.RatesController) {
-	engine.GET("/v1/market/fiat/rate", endpoint.GetRate(rates))
+	engine.GET("/v1/market/rate", endpoint.GetRate(rates))
 }
