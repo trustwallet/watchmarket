@@ -13,7 +13,7 @@ if os.name == 'nt':
 local_resource(
   'ci',
   compile_cmd,
-  deps=['go'])
+  deps=['./cmd'])
 
 docker_build_with_restart(
   'trust/watchmarket:api-local',
