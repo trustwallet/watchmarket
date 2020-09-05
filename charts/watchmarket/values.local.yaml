@@ -11,9 +11,7 @@ seed:
 
 ingress:
   enabled: true
-  swaggerEnabled: true
   swaggerHost: nginx-swagger.local
-  proxyEnabled: false
   proxyHost: nginx-proxy.local
   annotations:
     kubernetes.io/ingress.class: nginx

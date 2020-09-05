@@ -16,20 +16,16 @@ metadata:
   {{- end }}
 spec:
   rules:
-  {{- if .Values.ingress.swaggerEnabled -}}
     - host: {{ .Values.ingress.swaggerHost | quote }}
       http:
         paths:
           - backend:
               serviceName: nginx-proxy-swagger
               servicePort: 8081
-  {{- end }}
-  {{- if .Values.ingress.proxyEnabled -}}
     - host: {{ .Values.ingress.proxyHost | quote }}
       http:
         paths:
           - backend:
               serviceName: nginx-proxy
               servicePort: 8080
-  {{- end }}
 {{- end }}

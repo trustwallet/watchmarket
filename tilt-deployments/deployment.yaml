@@ -1,0 +1,870 @@
+---
+# Source: watchmarket/templates/elastic.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: elastic
+  namespace: default
+  labels:
+    app: watchmarket
+    chart: watchmarket-0.0.9
+    release: local-dev
+    heritage: Helm
+type: Opaque
+data:
+  admin-user: "aHlGenMzNnBsYjNJUlkxSnVlTnpuUnZKaFNHbGg0Vlk5U3dVTEYxUQ=="
+  admin-password: "V0RyU2YyYld4WFdDazkwVnV2TlFhUHRqblF4NGNQNFZFbHZkd1dCbA=="
+---
+# Source: watchmarket/templates/secrets.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: secrets
+  namespace: default
+  labels:
+    app: watchmarket
+    chart: watchmarket-0.0.9
+    release: local-dev
+    heritage: Helm
+type: Opaque
+data:
+  MARKETS_COINMARKETCAP_KEY: c29tZQ==
+  MARKETS_FIXER_KEY: c29tZQ==
+  STORAGE_POSTGRES_URI: cG9zdGdyZXNxbDovL3VzZXI6cGFzc0Bwb3N0Z3Jlcy9teV9kYj9zc2xtb2RlPWRpc2FibGU=
+  STORAGE_REDIS: cmVkaXM6Ly9yZWRpczo2Mzc5
+---
+# Source: watchmarket/templates/config.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  annotations: {}
+  name: config
+  namespace: default
+data:
+  MARKETS_COINGECKO_CURRENCY: USD
+  MARKETS_COINMARKETCAP_CURRENCY: USD
+  MARKETS_COINMARKETCAP_WEB_API: https://web-api.coinmarketcap.com
+  MARKETS_FIXER_CURRENCY: USD
+  REST_API_CACHE: 15m
+  REST_API_MODE: release
+  REST_API_PORT: "8421"
+  REST_API_TICKERS_RESPECTABLE_MARKET_CAP: "10000"
+  REST_API_TICKERS_RESPECTABLE_UPDATE_TIME: 72h
+  REST_API_TICKERS_RESPECTABLE_VOLUME: "10000"
+  STORAGE_POSTGRES_ENV: prod
+  STORAGE_POSTGRES_LOGS: "false"
+  WORKER_BATCH_LIMIT: "2000"
+  WORKER_RATES: 15m
+  WORKER_TICKERS: 5m
+---
+# Source: watchmarket/templates/api-charts-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-charts
+  namespace: default
+  labels:
+    helm.sh/chart: watchmarket-0.0.9
+    app.kubernetes.io/name: watchmarket
+    app.kubernetes.io/instance: local-dev
+    app.kubernetes.io/version: "1"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8421
+      protocol: TCP
+      name: http
+  selector:
+      name: api-charts
+---
+# Source: watchmarket/templates/api-info-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-info
+  namespace: default
+  labels:
+    helm.sh/chart: watchmarket-0.0.9
+    app.kubernetes.io/name: watchmarket
+    app.kubernetes.io/instance: local-dev
+    app.kubernetes.io/version: "1"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8421
+      protocol: TCP
+      name: http
+  selector:
+      name: api-info
+---
+# Source: watchmarket/templates/api-swagger-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-swagger
+  namespace: default
+  labels:
+    helm.sh/chart: watchmarket-0.0.9
+    app.kubernetes.io/name: watchmarket
+    app.kubernetes.io/instance: local-dev
+    app.kubernetes.io/version: "1"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8421
+      protocol: TCP
+      name: http
+  selector:
+      name: api-swagger
+---
+# Source: watchmarket/templates/api-tickers-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-tickers
+  namespace: default
+  labels:
+    helm.sh/chart: watchmarket-0.0.9
+    app.kubernetes.io/name: watchmarket
+    app.kubernetes.io/instance: local-dev
+    app.kubernetes.io/version: "1"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8421
+      protocol: TCP
+      name: http
+  selector:
+      name: api-tickers
+---
+# Source: watchmarket/templates/nginx-proxy-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-proxy
+  namespace: default
+  labels:
+    helm.sh/chart: watchmarket-0.0.9
+    app.kubernetes.io/name: watchmarket
+    app.kubernetes.io/instance: local-dev
+    app.kubernetes.io/version: "1"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8080
+      protocol: TCP
+      name: http
+  selector:
+      name: nginx-proxy
+---
+# Source: watchmarket/templates/nginx-proxy-swagger-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-proxy-swagger
+  namespace: default
+  labels:
+    helm.sh/chart: watchmarket-0.0.9
+    app.kubernetes.io/name: watchmarket
+    app.kubernetes.io/instance: local-dev
+    app.kubernetes.io/version: "1"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8081
+      protocol: TCP
+      name: swagger
+  selector:
+      name: nginx-proxy
+---
+# Source: watchmarket/templates/postgres-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  namespace: default
+  labels:
+    helm.sh/chart: watchmarket-0.0.9
+    app.kubernetes.io/name: watchmarket
+    app.kubernetes.io/instance: local-dev
+    app.kubernetes.io/version: "1"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  type: ClusterIP
+  ports:
+    - port: 5432
+      protocol: TCP
+      name: postgres
+  selector:
+      name: postgres
+---
+# Source: watchmarket/templates/redis-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+  namespace: default
+  labels:
+    helm.sh/chart: watchmarket-0.0.9
+    app.kubernetes.io/name: watchmarket
+    app.kubernetes.io/instance: local-dev
+    app.kubernetes.io/version: "1"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  type: ClusterIP
+  ports:
+    - port: 6379
+      protocol: TCP
+      name: redis
+  selector:
+      name: redis
+---
+# Source: watchmarket/templates/api-charts.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-charts
+  namespace: default
+  labels:
+    app: api-charts
+    chart: watchmarket-0.0.9
+    release: local-dev
+    heritage: Helm
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      name: api-charts
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        name: api-charts
+    spec:
+      containers:
+      - env:
+        - name: ELASTIC_APM_SERVICE_NAME
+          value: watchmarket-api-helm
+        - name: REST_API_APIS
+          value: base,charts
+        envFrom:
+        - secretRef:
+            name: secrets
+            optional: false
+        - configMapRef:
+            name: config
+            optional: false
+        - secretRef:
+            name: elastic
+            optional: false
+        image: "trust/watchmarket:api-local"
+        imagePullPolicy: IfNotPresent
+        name: api-charts
+        ports:
+        - containerPort: 8421
+          name: http
+          protocol: TCP
+        resources: {}
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities: {}
+          privileged: false
+          readOnlyRootFilesystem: false
+          runAsNonRoot: false
+        stdin: true
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        tty: true
+      dnsPolicy: ClusterFirst
+      initContainers:
+      - envFrom:
+        - secretRef:
+            name: secrets
+        image: "trust/watchmarket:pg-health-local"
+        imagePullPolicy: IfNotPresent
+        name: postgres-check
+        resources: {}
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities: {}
+          privileged: false
+          readOnlyRootFilesystem: false
+          runAsNonRoot: false
+        stdin: true
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        tty: true
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+---
+# Source: watchmarket/templates/api-info.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-info
+  namespace: default
+  labels:
+    app: api-info
+    chart: watchmarket-0.0.9
+    release: local-dev
+    heritage: Helm
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      name: api-info
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        name: api-info
+    spec:
+      containers:
+      - env:
+        - name: ELASTIC_APM_SERVICE_NAME
+          value: watchmarket-api-helm
+        - name: REST_API_APIS
+          value: base,info
+        envFrom:
+        - secretRef:
+            name: secrets
+            optional: false
+        - configMapRef:
+            name: config
+            optional: false
+        - secretRef:
+            name: elastic
+            optional: false
+        image: "trust/watchmarket:api-local"
+        imagePullPolicy: IfNotPresent
+        name: api-info
+        ports:
+        - containerPort: 8421
+          name: 8421tcp
+          protocol: TCP
+        resources: {}
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities: {}
+          privileged: false
+          readOnlyRootFilesystem: false
+          runAsNonRoot: false
+        stdin: true
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        tty: true
+      dnsPolicy: ClusterFirst
+      initContainers:
+      - envFrom:
+        - secretRef:
+            name: secrets
+        image: "trust/watchmarket:pg-health-local"
+        imagePullPolicy: IfNotPresent
+        name: postgres-check
+        resources: {}
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities: {}
+          privileged: false
+          readOnlyRootFilesystem: false
+          runAsNonRoot: false
+        stdin: true
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        tty: true
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+---
+# Source: watchmarket/templates/api-swagger.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-swagger
+  namespace: default
+  labels:
+    app: api-swagger
+    chart: watchmarket-0.0.9
+    release: local-dev
+    heritage: Helm
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      name: api-swagger
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        name: api-swagger
+    spec:
+      containers:
+      - env:
+        - name: ELASTIC_APM_SERVICE_NAME
+          value: watchmarket-api-helm
+        - name: REST_API_APIS
+          value: base,swagger
+        envFrom:
+        - secretRef:
+            name: secrets
+            optional: false
+        - configMapRef:
+            name: config
+            optional: false
+        - secretRef:
+            name: elastic
+            optional: false
+        image: "trust/watchmarket:api-local"
+        imagePullPolicy: IfNotPresent
+        name: api-swagger
+        ports:
+        - containerPort: 8421
+          name: 8421tcp01
+          protocol: TCP
+        resources: {}
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities: {}
+          privileged: false
+          readOnlyRootFilesystem: false
+          runAsNonRoot: false
+        stdin: true
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        tty: true
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+---
+# Source: watchmarket/templates/api-tickers.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-tickers
+  namespace: default
+  labels:
+    app: api-tickers
+    chart: watchmarket-0.0.9
+    release: local-dev
+    heritage: Helm
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      name: api-tickers
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        name: api-tickers
+    spec:
+      containers:
+      - env:
+        - name: ELASTIC_APM_SERVICE_NAME
+          value: watchmarket-api-helm
+        - name: REST_API_APIS
+          value: base,tickers
+        envFrom:
+        - secretRef:
+            name: secrets
+            optional: false
+        - configMapRef:
+            name: config
+            optional: false
+        - secretRef:
+            name: elastic
+            optional: false
+        image: "trust/watchmarket:api-local"
+        imagePullPolicy: IfNotPresent
+        name: api-tickers
+        ports:
+        - containerPort: 8421
+          name: 8421tcp01
+          protocol: TCP
+        resources: {}
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities: {}
+          privileged: false
+          readOnlyRootFilesystem: false
+          runAsNonRoot: false
+        stdin: true
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        tty: true
+      dnsPolicy: ClusterFirst
+      initContainers:
+      - envFrom:
+        - secretRef:
+            name: secrets
+        image: "trust/watchmarket:pg-health-local"
+        imagePullPolicy: IfNotPresent
+        name: postgres-check
+        resources: {}
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities: {}
+          privileged: false
+          readOnlyRootFilesystem: false
+          runAsNonRoot: false
+        stdin: true
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        tty: true
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+---
+# Source: watchmarket/templates/nginx-proxy.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-proxy
+  namespace: default
+  labels:
+    app: nginx-proxy
+    chart: watchmarket-0.0.9
+    release: local-dev
+    heritage: Helm
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      name: nginx-proxy
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        name: nginx-proxy
+    spec:
+      containers:
+      - env:
+        - name: API_CHARTS_URI
+          value: http://api-charts:8421
+        - name: API_INFO_URI
+          value: http://api-info:8421
+        - name: API_TICKERS_URI
+          value: http://api-tickers:8421
+        - name: API_SWAGGER_URI
+          value: http://api-swagger:8421
+        image: "trust/watchmarket:proxy-local"
+        imagePullPolicy: IfNotPresent
+        name: nginx-proxy
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+        - containerPort: 8081
+          name: swagger
+          protocol: TCP
+        resources: {}
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities: {}
+          privileged: false
+          readOnlyRootFilesystem: false
+          runAsNonRoot: false
+        stdin: true
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        tty: true
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+---
+# Source: watchmarket/templates/postgres.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+  namespace: default
+  labels:
+    app: postgres
+    chart: watchmarket-0.0.9
+    release: local-dev
+    heritage: Helm
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      name: postgres
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        name: postgres
+    spec:
+      containers:
+      - env:
+        - name: POSTGRES_USER
+          value: user
+        - name: POSTGRES_PASSWORD
+          value: pass
+        - name: POSTGRES_DB
+          value: my_db
+        image: postgres
+        imagePullPolicy: IfNotPresent
+        name: postgres
+        ports:
+        - containerPort: 5432
+          name: 5432tcp
+          protocol: TCP
+        resources: {}
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities: {}
+          privileged: false
+          readOnlyRootFilesystem: false
+          runAsNonRoot: false
+        stdin: true
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        tty: true
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+---
+# Source: watchmarket/templates/redis.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+  namespace: default
+  labels:
+    app: redis
+    chart: watchmarket-0.0.9
+    release: local-dev
+    heritage: Helm
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      name: redis
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        name: redis
+    spec:
+      containers:
+      - env:
+        image: neojt/mredis
+        imagePullPolicy: IfNotPresent
+        name: redis
+        ports:
+        - containerPort: 6379
+          name: 6379tcp
+          protocol: TCP
+        resources: {}
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities: {}
+          privileged: false
+          readOnlyRootFilesystem: false
+          runAsNonRoot: false
+        stdin: true
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        tty: true
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+---
+# Source: watchmarket/templates/worker.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker
+  namespace: default
+  labels:
+    app: worker
+    chart: watchmarket-0.0.9
+    release: local-dev
+    heritage: Helm
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: watchmarket
+      app.kubernetes.io/instance: local-dev
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: watchmarket
+        app.kubernetes.io/instance: local-dev
+    spec:
+      containers:
+      - env:
+        - name: ELASTIC_APM_SERVICE_NAME
+          value: watchmarket-worker-helm
+        envFrom:
+        - secretRef:
+            name: secrets
+            optional: false
+        - configMapRef:
+            name: config
+            optional: false
+        - secretRef:
+            name: elastic
+            optional: false
+        image: "trust/watchmarket:worker-local"
+        imagePullPolicy: IfNotPresent
+        name: worker
+        resources: {}
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities: {}
+          privileged: false
+          readOnlyRootFilesystem: false
+          runAsNonRoot: false
+        stdin: true
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        tty: true
+      dnsPolicy: ClusterFirst
+      initContainers:
+      - envFrom:
+        - secretRef:
+            name: secrets
+        image: "trust/watchmarket:pg-health-local"
+        imagePullPolicy: IfNotPresent
+        name: postgres-check
+        resources: {}
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities: {}
+          privileged: false
+          readOnlyRootFilesystem: false
+          runAsNonRoot: false
+        stdin: true
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        tty: true
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+---
+# Source: watchmarket/templates/ingress.yaml
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: nginx-proxy
+  namespace: default
+  labels:
+    chart: watchmarket-0.0.9
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+    - host: "nginx-swagger.local"
+      http:
+        paths:
+          - backend:
+              serviceName: nginx-proxy-swagger
+              servicePort: 8081
+    - host: "nginx-proxy.local"
+      http:
+        paths:
+          - backend:
+              serviceName: nginx-proxy
+              servicePort: 8080
+---
+# Source: watchmarket/templates/seed-job.yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: seed-job
+  namespace: default
+  labels:
+    app: api-charts
+    chart: watchmarket-0.0.9
+    release: local-dev
+    heritage: Helm
+  annotations:
+    "helm.sh/hook": post-install,post-upgrade
+    "helm.sh/hook-weight": "10"
+    "helm.sh/hook-delete-policy": hook-succeeded
+spec:
+  template:
+    metadata:
+      name: seed-job
+      labels:
+        name: seed-job
+    spec:
+      containers:
+      - name: seed-job
+        envFrom:
+        - secretRef:
+            name: secrets
+            optional: false
+        image: "trust/watchmarket:seed-local"
+      restartPolicy: Never
+  backoffLimit: 20

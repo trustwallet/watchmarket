@@ -37,9 +37,7 @@ ingress:
   annotations:
     kubernetes.io/ingress.class: nginx
   enabled: true
-  swaggerEnabled: false
   swaggerHost: nginx-swagger.local
-  proxyEnabled: true
   proxyHost: nginx-proxy.local
 
 resources: {}
