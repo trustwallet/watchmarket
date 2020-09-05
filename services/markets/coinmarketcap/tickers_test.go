@@ -3,7 +3,6 @@ package coinmarketcap
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"github.com/stretchr/testify/assert"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"github.com/trustwallet/watchmarket/services/assets"
@@ -21,7 +20,6 @@ func TestProvider_GetTickers(t *testing.T) {
 	assert.Nil(t, err)
 	rawData, err := json.Marshal(data)
 	assert.Nil(t, err)
-	fmt.Println(string(rawData))
 	assert.Equal(t, wantedTickers, string(rawData))
 }
 
