@@ -32,6 +32,7 @@ docker_build_with_restart(
   ],
   live_update=[
     sync('./bin/api','/app/main'),
+    run('chmod +x /app/main')
   ],
 )
 
@@ -46,6 +47,7 @@ docker_build_with_restart(
   ],
   live_update=[
     sync('./bin/worker','/app/main'),
+    run('chmod +x /app/main')
   ],
 )
 
