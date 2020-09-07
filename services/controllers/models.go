@@ -29,6 +29,16 @@ type (
 		Tickers  []TickerPrice `json:"tickers"`
 	}
 
+	RateRequest struct {
+		From   string  `json:"from"`
+		To     string  `json:"to"`
+		Amount float64 `json:"amount"`
+	}
+
+	RateResponse struct {
+		Amount float64 `json:"amount"`
+	}
+
 	TickerPrice struct {
 		Change24h float64 `json:"change_24h"`
 		Provider  string  `json:"provider"`

@@ -217,3 +217,11 @@ func IsFiatRate(currency string) bool {
 	}
 	return false
 }
+
+func Exists(value string, values []string) bool {
+	m := make(map[string]bool, len(values))
+	for _, v := range values {
+		m[v] = true
+	}
+	return m[value]
+}

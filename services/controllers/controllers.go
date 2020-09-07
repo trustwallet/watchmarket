@@ -11,6 +11,10 @@ type (
 		HandleTickersRequestV2(tr TickerRequestV2, ctx context.Context) (TickerResponseV2, error)
 	}
 
+	RatesController interface {
+		HandleRatesRequest(r RateRequest, ctx context.Context) (RateResponse, error)
+	}
+
 	ChartsController interface {
 		HandleChartsRequest(cr ChartRequest, ctx context.Context) (watchmarket.Chart, error)
 	}
