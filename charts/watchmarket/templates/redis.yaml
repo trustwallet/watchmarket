@@ -31,7 +31,7 @@ spec:
     spec:
       containers:
       - env:
-        image: neojt/mredis
+        image: redis
         imagePullPolicy: IfNotPresent
         name: redis
         ports:
