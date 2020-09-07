@@ -1,18 +1,23 @@
 # -*- mode: Python -*-
 
-# For more on Extensions, see: https://docs.tilt.dev/extensions.html
 load('ext://restart_process', 'docker_build_with_restart')
 
 local_resource(
   'api-build',
   'CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./bin/linux/api ./cmd/api/main.go',
-  deps=['./cmd']
+  deps=['./cmd','./api','./config','./db','./internal','./pkg','./redis','./services']
 )
 
 local_resource(
   'worker-build',
   'CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./bin/linux/worker ./cmd/worker/main.go',
-  deps=['./cmd']
+  deps=['./cmd','./api','./config','./db','./internal','./pkg','./redis','./services']
+)
+
+local_resource(
+  'ci-test',
+  'make go-test & make go-integration',
+  trigger_mode=TRIGGER_MODE_MANUAL, auto_init=False
 )
 
 docker_build("trust/watchmarket:seed-local", "seed", dockerfile="seed/Dockerfile")
@@ -61,3 +66,7 @@ local('kubectl create namespace tilt-watchmarket-local || true')
 k8s_yaml(yaml)
 k8s_resource('nginx-proxy', port_forwards=8081, 
              resource_deps=['api-build', 'worker-build'])
+
+k8s_resource('postgres', port_forwards=8585)
+
+k8s_resource('redis', port_forwards=8586)
