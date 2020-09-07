@@ -2,15 +2,13 @@
 
 load('ext://restart_process', 'docker_build_with_restart')
 
-local_resource(
-  'api-build',
-  'CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./bin/linux/api ./cmd/api/main.go',
-  deps=['./cmd','./api','./config','./db','./internal','./pkg','./redis','./services']
-)
+go_compile_cmd = 'tilt-build/go-build.sh'
+if os.name == 'nt':
+  go_compile_cmd = 'tilt-build\\go-build.bat'
 
 local_resource(
-  'worker-build',
-  'CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./bin/linux/worker ./cmd/worker/main.go',
+  'go-build',
+  go_compile_cmd,
   deps=['./cmd','./api','./config','./db','./internal','./pkg','./redis','./services']
 )
 
@@ -61,11 +59,16 @@ yaml = helm(
   # The values file to substitute into the chart.
   values=['./charts/watchmarket/values.local.yaml']
   )
+  
+# k8s namespace bootstrap
+k8s_namespace_create = 'kubectl create namespace tilt-watchmarket-local || true'
+if os.name == 'nt':
+  k8s_namespace_create = 'kubectl create namespace tilt-watchmarket-local || echo 1'
+local(k8s_namespace_create)
 
-local('kubectl create namespace tilt-watchmarket-local || true')
 k8s_yaml(yaml)
 k8s_resource('nginx-proxy', port_forwards=8081, 
-             resource_deps=['api-build', 'worker-build'])
+             resource_deps=['go-build'])
 
 k8s_resource('postgres', port_forwards=8585)
 
