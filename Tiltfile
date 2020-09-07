@@ -3,37 +3,17 @@
 # For more on Extensions, see: https://docs.tilt.dev/extensions.html
 load('ext://restart_process', 'docker_build_with_restart')
 
-# Records the current time, then kicks off a server update.
-# Normally, you would let Tilt do deploys automatically, but this
-# shows you how to set up a custom workflow that measures it.
-# compile_cmd = 'CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o build/api ./cmd/api/api && go build -o build/worker'
-# if os.name == 'nt':
-#   compile_cmd = 'build.bat'
-
-# local_resource(
-#   'ci',
-#   compile_cmd,
-#   deps=['./cmd'])
-
-# go build -o ./bin/api ./cmd/api/main.go
-# go build -o ./bin/worker ./cmd/worker/main.go
-# docker build -t trust/watchmarket:seed-local -f seed/Dockerfile seed/
-# docker build -t trust/watchmarket:proxy-local -f nginx/Dockerfile nginx/
-# docker build -t trust/watchmarket:pg-health-local -f scripts/pg-check/Dockerfile scripts/pg-check/
-
 # building go binary
-build_api = 'CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./bin/api ./cmd/api/main.go'
-build_worker = 'CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./bin/worker ./cmd/worker/main.go'
 
 local_resource(
   'api-build',
-  build_api,
+  'CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./bin/api ./cmd/api/main.go',
   deps=['./cmd']
 )
 
 local_resource(
   'worker-build',
-  build_worker,
+  'CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./bin/worker ./cmd/worker/main.go',
   deps=['./cmd']
 )
 
@@ -80,4 +60,5 @@ yaml = helm(
   )
 
 k8s_yaml(yaml)
-k8s_resource('nginx-proxy', port_forwards=8081)
+k8s_resource('nginx-proxy', port_forwards=8081, 
+             resource_deps=['api-build', 'worker-build'])
