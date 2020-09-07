@@ -3,17 +3,15 @@
 # For more on Extensions, see: https://docs.tilt.dev/extensions.html
 load('ext://restart_process', 'docker_build_with_restart')
 
-# building go binary
-
 local_resource(
   'api-build',
-  'CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./bin/api ./cmd/api/main.go',
+  'CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./bin/linux/api ./cmd/api/main.go',
   deps=['./cmd']
 )
 
 local_resource(
   'worker-build',
-  'CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./bin/worker ./cmd/worker/main.go',
+  'CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./bin/linux/worker ./cmd/worker/main.go',
   deps=['./cmd']
 )
 
@@ -24,31 +22,29 @@ docker_build("trust/watchmarket:pg-health-local", "scripts/pg-check", dockerfile
 docker_build_with_restart(
   'trust/watchmarket:api-local',
   '.',
-  build_args={"SERVICE":"api"},
+  build_args={"SERVICE":"linux/api"},
   entrypoint=["/app/main", "-c", "/config/config.yml"],
   dockerfile='Dockerfile.runner',
   only=[
-    './bin/','./config.yml',
+    './bin/linux/api','./config.yml',
   ],
   live_update=[
-    sync('./bin/api','/app/main'),
-    run('chmod +x /app/main')
-  ],
+    sync('./bin/linux/api','/app/main')
+  ]
 )
 
 docker_build_with_restart(
   'trust/watchmarket:worker-local',
   '.',
-  build_args={"SERVICE":"worker"},
+  build_args={"SERVICE":"linux/worker"},
   entrypoint=["/app/main", "-c", "/config/config.yml"],
   dockerfile='Dockerfile.runner',
   only=[
-    './bin/','./config.yml',
+    './bin/linux/worker','./config.yml',
   ],
   live_update=[
-    sync('./bin/worker','/app/main'),
-    run('chmod +x /app/main')
-  ],
+    sync('./bin/linux/worker','/app/main')
+  ]
 )
 
 yaml = helm(
@@ -56,11 +52,12 @@ yaml = helm(
   # The release name, equivalent to helm --name
   name='local',
   # The namespace to install in, equivalent to helm --namespace
-  namespace='default',
+  namespace='tilt-watchmarket-local',
   # The values file to substitute into the chart.
   values=['./charts/watchmarket/values.local.yaml']
   )
 
+local('kubectl create namespace tilt-watchmarket-local || true')
 k8s_yaml(yaml)
 k8s_resource('nginx-proxy', port_forwards=8081, 
              resource_deps=['api-build', 'worker-build'])

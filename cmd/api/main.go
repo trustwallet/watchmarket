@@ -55,7 +55,7 @@ func init() {
 	if err != nil {
 		logger.Fatal(err)
 	}
-
+   
 	database, err := postgres.New(
 		configuration.Storage.Postgres.Uri,
 		configuration.Storage.Postgres.Env,

@@ -4,5 +4,4 @@ ARG SERVICE
 
 COPY ./bin/$SERVICE /app/main
 COPY ./config.yml /config/
-RUN chmod +x /app/main
 ENTRYPOINT ["/app/main", "-c", "/config/config.yml"]
