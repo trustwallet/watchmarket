@@ -21,7 +21,7 @@ func TestProvider_GetTickers(t *testing.T) {
 	assert.Nil(t, err)
 	res, err := json.Marshal(data)
 	assert.Nil(t, err)
-	assert.True(t, wantedTickers == string(res) || wantedTickers2 == string(res))
+	assert.True(t, wantedTickers == string(res) || wantedTickers2 == string(res) || wantedTickers3 == string(res))
 }
 
 func Test_normalizeTickers(t *testing.T) {
