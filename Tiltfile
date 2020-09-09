@@ -13,8 +13,8 @@ local_resource(
 )
 
 local_resource(
-  'ci',
-  'make go-lint && make go-test & make go-integration',
+  'lint+tests',
+  'make go-lint & make go-test & make go-integration',
   trigger_mode=TRIGGER_MODE_MANUAL, auto_init=False
 )
 
@@ -69,7 +69,6 @@ local(k8s_namespace_create)
 k8s_yaml(yaml)
 k8s_resource('nginx-proxy', port_forwards=8080, 
              resource_deps=['api-charts'])
-
 k8s_resource('postgres', port_forwards=8585)
 
 k8s_resource('redis', port_forwards=8586)
