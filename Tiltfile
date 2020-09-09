@@ -14,7 +14,7 @@ local_resource(
 
 local_resource(
   'lint+tests',
-  'make go-lint & make go-test & make go-integration',
+  'make go-lint && make go-test && make go-integration',
   trigger_mode=TRIGGER_MODE_MANUAL, auto_init=False
 )
 
