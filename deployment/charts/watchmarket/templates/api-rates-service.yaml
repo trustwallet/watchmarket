@@ -1,15 +1,15 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: nginx-proxy-swagger
+  name: api-rates
   namespace: {{ .Release.Namespace }}
   labels:
     {{- include "watchmarket.labels" . | nindent 4 }}
 spec:
-  type: ClusterIP
+  type: {{ .Values.service.type }}
   ports:
-    - port: 8081
+    - port: 8421
       protocol: TCP
-      name: swagger
+      name: http
   selector:
-      name: nginx-proxy
+      name: api-rates

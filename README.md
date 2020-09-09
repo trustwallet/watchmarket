@@ -70,18 +70,22 @@ Run `make` to see a list of all available build directives.
 
 ## Local development with Kubernetes
 
-### Setup 
-1. Install [Docker+Kubernetes](https://docs.docker.com/docker-for-mac/#kubernetes) & Enable Kubernetes Option in Preferences
-2. Install [Helm3](https://helm.sh/docs/intro/install/)
-
-### How to use?
-1. Use `make k8s-run` to build & run.
-2. Use `make k8s-purge` to clean up.
-3. Use `make k8s-proxy` if watchmarket already deployed.
-4. Use `make k8s-deploy-only` if you need to deploy containers only without build.
-
-### Development with Tilt 
+### Setup Docs
 1. Install [Tilt](https://docs.tilt.dev/install.html)
 2. Install [Docker+Kubernetes](https://docs.docker.com/docker-for-mac/#kubernetes)
 3. Install [Helm3](https://helm.sh/docs/intro/install/)
-4. Run `tilt up`
+
+### Setup for MacOS
+1. [Enable Kubernetes in Docker Desktop preferences](https://docs.docker.com/docker-for-mac/#kubernetes)
+2. `kubectl config use-context docker-desktop`
+3.  `curl -fsSL https://raw.githubusercontent.com/tilt-dev/tilt/master/scripts/install.sh | bash`
+4. `curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash`
+
+### Development with Tilt 
+#### Start
+1. Run `tilt up` to start the project
+2. Press `space` to open browser
+
+#### Cleanup
+1. Press `Ctrl+C` to stop tilt local server
+2. Run `tilt down` to stop and clear allocated resources in local kubernetes

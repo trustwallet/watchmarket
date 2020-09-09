@@ -40,7 +40,7 @@ var (
 	c              *cron.Cron
 	memoryCache    cache.Provider
 )
-
+  
 func init() {
 	port, confPath = internal.ParseArgs(defaultPort, defaultConfigPath)
 

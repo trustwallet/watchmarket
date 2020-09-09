@@ -1,10 +1,10 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: api-swagger
+  name: nginx-proxy
   namespace: {{ .Release.Namespace }}
   labels:
-    app: api-swagger
+    app: nginx-proxy
     chart: {{ template "watchmarket.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
@@ -14,7 +14,7 @@ spec:
   revisionHistoryLimit: 10
   selector:
     matchLabels:
-      name: api-swagger
+      name: nginx-proxy
   strategy:
     rollingUpdate:
       maxSurge: 1
@@ -27,30 +27,26 @@ spec:
         {{- toYaml . | nindent 8 }}
     {{- end }}
       labels:
-        name: api-swagger
+        name: nginx-proxy
     spec:
       containers:
       - env:
-        - name: ELASTIC_APM_SERVICE_NAME
-          value: watchmarket-api-helm
-        - name: REST_API_APIS
-          value: base,swagger
-        envFrom:
-        - secretRef:
-            name: secrets
-            optional: false
-        - configMapRef:
-            name: config
-            optional: false
-        - secretRef:
-            name: elastic
-            optional: false
-        image: "{{ .Values.image.repository }}:{{ .Values.image.apiTag }}"
+        - name: API_CHARTS_URI
+          value: http://api-charts:8421
+        - name: API_INFO_URI
+          value: http://api-info:8421
+        - name: API_TICKERS_URI
+          value: http://api-tickers:8421
+        - name: API_SWAGGER_URI
+          value: http://api-swagger:8421
+        - name: API_RATES_URI
+          value: http://api-rates:8421
+        image: "{{ .Values.image.repository }}:{{ .Values.image.nginxProxyTag }}"
         imagePullPolicy: IfNotPresent
-        name: api-swagger
+        name: nginx-proxy
         ports:
-        - containerPort: 8421
-          name: 8421tcp01
+        - containerPort: 8080
+          name: http
           protocol: TCP
         resources: {}
         securityContext:

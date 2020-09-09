@@ -10,7 +10,7 @@ seed:
   enabled: true
 
 ingress:
-  enabled: true
+  enabled: false
   swaggerHost: nginx-swagger.local
   proxyHost: nginx-proxy.local
   annotations:
