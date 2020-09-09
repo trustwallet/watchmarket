@@ -2,7 +2,7 @@
 
 load('ext://restart_process', 'docker_build_with_restart')
 
-go_compile_cmd = 'deployment/local/tilt-build/go-build.sh'
+go_compile_cmd = 'sh deployment/local/tilt-build/go-build.sh'
 if os.name == 'nt':
   go_compile_cmd = 'deployment\\local\\tilt-build\\go-build.bat'
 
