@@ -5,14 +5,11 @@ metadata:
   name: seed-job
   namespace: {{ .Release.Namespace }}
   labels:
-    app: api-charts
+    app: seed-job
     chart: {{ template "watchmarket.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
-  annotations:
-    "helm.sh/hook": post-install,post-upgrade
-    "helm.sh/hook-weight": "10"
-    "helm.sh/hook-delete-policy": hook-succeeded
+  annotations: {}
 spec:
   template:
     metadata:

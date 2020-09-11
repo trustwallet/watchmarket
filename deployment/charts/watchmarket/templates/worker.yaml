@@ -9,9 +9,7 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
-  progressDeadlineSeconds: 600
   replicas: 1
-  revisionHistoryLimit: 10
   selector:
     matchLabels:
       {{- include "watchmarket.selectorLabels" . | nindent 6 }}
@@ -44,20 +42,15 @@ spec:
             name: elastic
             optional: false
         image: "{{ .Values.image.repository }}:{{ .Values.image.workerTag }}"
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
         name: worker
         resources: {}
         securityContext:
-          allowPrivilegeEscalation: false
-          capabilities: {}
-          privileged: false
-          readOnlyRootFilesystem: false
-          runAsNonRoot: false
+            {{- toYaml .Values.securityContext | nindent 12 }}
         stdin: true
         terminationMessagePath: /dev/termination-log
         terminationMessagePolicy: File
         tty: true
-      dnsPolicy: ClusterFirst
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
@@ -67,20 +60,27 @@ spec:
         - secretRef:
             name: secrets
         image: "{{ .Values.image.repository }}:{{ .Values.image.pgCheckTag }}"
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
         name: postgres-check
         resources: {}
         securityContext:
-          allowPrivilegeEscalation: false
-          capabilities: {}
-          privileged: false
-          readOnlyRootFilesystem: false
-          runAsNonRoot: false
+            {{- toYaml .Values.securityContext | nindent 12 }}
         stdin: true
         terminationMessagePath: /dev/termination-log
         terminationMessagePolicy: File
         tty: true
       restartPolicy: Always
-      schedulerName: default-scheduler
-      securityContext: {}
-      terminationGracePeriodSeconds: 30
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
