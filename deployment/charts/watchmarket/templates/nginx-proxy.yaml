@@ -9,7 +9,7 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.nginxProxyReplicaCount }}
   selector:
     matchLabels:
       name: nginx-proxy
@@ -46,7 +46,8 @@ spec:
         - containerPort: 8080
           name: http
           protocol: TCP
-        resources: {}
+        resources:
+            {{- toYaml .Values.nginxProxyResources | nindent 12 }}
         securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
         stdin: true

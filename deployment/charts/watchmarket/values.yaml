@@ -1,4 +1,11 @@
-replicaCount: 1
+# scaling
+apiChartsReplicaCount: 1
+apiInfoReplicaCount: 1
+apiRatesReplicaCount: 1
+apiSwaggerReplicaCount: 1
+apiTickersReplicaCount: 1
+apiNginxProxyReplicaCount: 1
+workerReplicaCount: 1
 
 image:
   repository: replace_me
@@ -13,21 +20,15 @@ imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 
-podAnnotations: {}
-
-podSecurityContext: {}
-  # fsGroup: 2000
-
-securityContext: {}
-  # capabilities:
-  #   drop:
-  #   - ALL
-  # readOnlyRootFilesystem: true
-  # runAsNonRoot: true
-  # runAsUser: 1000
-
+# Enable postgres seed job
 seed:
   enabled: false
+# Enable postgres-test deployment. If disabled - provide external postgres connection string
+posgtres:
+  enabled: true
+# Enable redis-test deployment. If disabled - provide external redis connection string
+redis:
+  enabled: true
 
 service:
   type: ClusterIP
@@ -40,20 +41,32 @@ ingress:
   swaggerHost: nginx-swagger.local
   proxyHost: nginx-proxy.local
 
-resources: {}
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
+# Resources request/limit example
+# someResources:
+#   limits:
+#     cpu: 100m
+#     memory: 128Mi
+#   requests:
+#     cpu: 100m
+#     memory: 128Mi
+
+apiChartsResources: {}
+apiInfoResources: {}
+apiRatesResources: {}
+apiTickersResources: {}
+apiSwaggerResources: {}
+nginxProxyResources: {}
+postgresResources: {}
+redisResources: {}
+workerResources: {}
 
 nodeSelector: {}
-
 tolerations: []
-
 affinity: {}
+
+podAnnotations: {}
+podSecurityContext: {}
+securityContext: {}
+
+config: []
+secrets: []

@@ -9,7 +9,7 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.apiTickersReplicaCount }}
   selector:
     matchLabels:
       name: api-tickers
@@ -50,7 +50,8 @@ spec:
         - containerPort: 8421
           name: 8421tcp01
           protocol: TCP
-        resources: {}
+        resources:
+            {{- toYaml .Values.apiTickersResources | nindent 12 }}
         securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
         stdin: true

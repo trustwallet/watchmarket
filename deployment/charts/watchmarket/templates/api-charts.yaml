@@ -10,7 +10,7 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.apiChartsReplicaCount }}
   selector:
     matchLabels:
       name: api-charts
@@ -51,7 +51,8 @@ spec:
         - containerPort: 8421
           name: http
           protocol: TCP
-        resources: {}
+        resources:
+            {{- toYaml .Values.apiChartsResources | nindent 12 }}
         securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
         stdin: true

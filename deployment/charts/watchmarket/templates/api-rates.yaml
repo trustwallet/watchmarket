@@ -9,7 +9,7 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.apiRatesReplicaCount }}
   selector:
     matchLabels:
       name: api-rates
@@ -50,7 +50,8 @@ spec:
         - containerPort: 8421
           name: http
           protocol: TCP
-        resources: {}
+        resources:
+            {{- toYaml .Values.apiRatesResources | nindent 12 }}
         securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
         stdin: true

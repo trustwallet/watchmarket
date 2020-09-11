@@ -9,7 +9,7 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.workerReplicaCount }}
   selector:
     matchLabels:
       {{- include "watchmarket.selectorLabels" . | nindent 6 }}
@@ -44,7 +44,8 @@ spec:
         image: "{{ .Values.image.repository }}:{{ .Values.image.workerTag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         name: worker
-        resources: {}
+        resources:
+            {{- toYaml .Values.workerResources | nindent 12 }}
         securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
         stdin: true

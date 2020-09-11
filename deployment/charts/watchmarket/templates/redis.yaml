@@ -1,3 +1,4 @@
+{{- if .Values.redis.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -36,7 +37,8 @@ spec:
         - containerPort: 6379
           name: 6379tcp
           protocol: TCP
-        resources: {}
+        resources:
+            {{- toYaml .Values.redisResources | nindent 12 }}
         securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
         stdin: true
@@ -78,3 +80,4 @@ spec:
       name: redis
   selector:
       name: redis
+{{- end }}
