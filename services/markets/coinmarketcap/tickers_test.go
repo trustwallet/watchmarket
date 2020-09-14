@@ -17,6 +17,9 @@ func TestProvider_GetTickers(t *testing.T) {
 	defer server.Close()
 	provider := InitProvider(server.URL, server.URL, server.URL, server.URL, "USD", assets.Init("assets.api"))
 	data, err := provider.GetTickers(context.Background())
+	cm, err := setupCoinMap(testMapping)
+	assert.Nil(t, err)
+	provider.Cm = cm
 	assert.Nil(t, err)
 	rawData, err := json.Marshal(data)
 	assert.Nil(t, err)

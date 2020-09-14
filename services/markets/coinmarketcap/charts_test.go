@@ -17,6 +17,9 @@ func TestProvider_GetCoinData(t *testing.T) {
 	server := httptest.NewServer(createMockedAPI())
 	defer server.Close()
 	provider := InitProvider(server.URL, server.URL, server.URL, server.URL, "USD", assets.Init(server.URL))
+	cm, err := setupCoinMap(testMapping)
+	assert.Nil(t, err)
+	provider.Cm = cm
 	data, _ := provider.GetCoinData(60, "", "USD", context.Background())
 	rawData, err := json.Marshal(data)
 	assert.Nil(t, err)
@@ -27,6 +30,9 @@ func TestProvider_GetChartData(t *testing.T) {
 	server := httptest.NewServer(createMockedAPI())
 	defer server.Close()
 	provider := InitProvider(server.URL, server.URL, server.URL, server.URL, "USD", assets.Init(server.URL))
+	cm, err := setupCoinMap(testMapping)
+	assert.Nil(t, err)
+	provider.Cm = cm
 	data, _ := provider.GetChartData(60, "", "USD", 1577871126, context.Background())
 	rawData, err := json.Marshal(data)
 	assert.Nil(t, err)
