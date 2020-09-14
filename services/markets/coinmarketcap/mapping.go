@@ -1,6 +1,6 @@
 package coinmarketcap
 
-const mapping = `[
+const Mapping = `[
     {
         "coin": 0,
         "type": "coin",
