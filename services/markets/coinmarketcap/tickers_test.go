@@ -17,6 +17,7 @@ func TestProvider_GetTickers(t *testing.T) {
 	defer server.Close()
 	provider := InitProvider(server.URL, server.URL, server.URL, server.URL, "USD", assets.Init("assets.api"))
 	data, err := provider.GetTickers(context.Background())
+	assert.Nil(t, err)
 	cm, err := setupCoinMap(testMapping)
 	assert.Nil(t, err)
 	provider.Cm = cm
