@@ -51,7 +51,6 @@ func init() {
 	ratesPriority := configuration.Markets.Priority.Rates
 	tickerPriority := configuration.Markets.Priority.Tickers
 	coinInfoPriority := configuration.Markets.Priority.CoinInfo
-
 	a := assets.Init(configuration.Markets.Assets)
 
 	m, err := markets.Init(configuration, a)

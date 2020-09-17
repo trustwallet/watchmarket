@@ -13,16 +13,11 @@ image:
   workerTag: replace_me
   apiTag: replace_me
   nginxProxyTag: replace_me
-  seedTag: replace_me
-  pgCheckTag: replace_me
 
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 
-# Enable postgres seed job
-seed:
-  enabled: false
 # Enable postgres-test deployment. If disabled - provide external postgres connection string
 posgtres:
   enabled: true
@@ -31,13 +26,12 @@ redis:
   enabled: true
 
 service:
-  type: ClusterIP
-  port: 80
+  type: NodePort
 
 ingress:
   annotations:
     kubernetes.io/ingress.class: nginx
-  enabled: true
+  enabled: false
   swaggerHost: nginx-swagger.local
   proxyHost: nginx-proxy.local
 

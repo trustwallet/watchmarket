@@ -30,7 +30,7 @@ spec:
       containers:
       - env:
         - name: ELASTIC_APM_SERVICE_NAME
-          value: watchmarket-api-helm
+          value: watchmarket-api-swagger
         - name: REST_API_APIS
           value: swagger
         envFrom:
@@ -39,9 +39,6 @@ spec:
             optional: false
         - configMapRef:
             name: config
-            optional: false
-        - secretRef:
-            name: elastic
             optional: false
         image: "{{ .Values.image.repository }}:{{ .Values.image.apiTag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}

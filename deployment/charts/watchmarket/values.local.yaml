@@ -3,35 +3,6 @@ image:
   workerTag: worker-local
   apiTag: api-local
   nginxProxyTag: proxy-local
-  seedTag: seed-local
-  pgCheckTag: pg-health-local
-
-seed:
-  enabled: false
-
-ingress:
-  enabled: false
-  swaggerHost: nginx-swagger.local
-  proxyHost: nginx-proxy.local
-  annotations:
-    kubernetes.io/ingress.class: nginx
-
-config:
-  - MARKETS_COINGECKO_CURRENCY: USD
-  - MARKETS_COINMARKETCAP_CURRENCY: USD
-  - MARKETS_COINMARKETCAP_WEB_API: https://web-api.coinmarketcap.com
-  - MARKETS_FIXER_CURRENCY: USD
-  - REST_API_CACHE: 15m
-  - REST_API_MODE: release
-  - REST_API_PORT: 8421
-  - REST_API_TICKERS_RESPECTABLE_MARKET_CAP: 10000
-  - REST_API_TICKERS_RESPECTABLE_UPDATE_TIME: 72h
-  - REST_API_TICKERS_RESPECTABLE_VOLUME: 10000
-  - STORAGE_POSTGRES_ENV: local
-  - STORAGE_POSTGRES_LOGS: false
-  - WORKER_BATCH_LIMIT: 2000
-  - WORKER_RATES: 15m
-  - WORKER_TICKERS: 5m
 
 secrets:
   - STORAGE_POSTGRES_URI: postgresql://user:pass@postgres/my_db?sslmode=disable
