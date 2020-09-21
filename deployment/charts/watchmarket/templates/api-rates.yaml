@@ -38,9 +38,9 @@ spec:
             name: secrets
             optional: false
         - configMapRef:
-            name: config
+            name: configs
             optional: false
-        image: "{{ .Values.image.repository }}:{{ .Values.image.apiTag }}"
+        image: "{{ .Values.image.repository }}:api-{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         name: api-rates
         ports:

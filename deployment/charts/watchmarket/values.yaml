@@ -10,9 +10,7 @@ workerReplicaCount: 1
 image:
   repository: repositoryToReplace
   pullPolicy: IfNotPresent
-  workerTag: tagToReplace
-  apiTag: tagToReplace
-  nginxProxyTag: tagToReplace
+  tag: tagToReplace
 
 imagePullSecrets: []
 nameOverride: ""

@@ -36,9 +36,9 @@ spec:
             name: secrets
             optional: false
         - configMapRef:
-            name: config
+            name: configs
             optional: false
-        image: "{{ .Values.image.repository }}:{{ .Values.image.workerTag }}"
+        image: "{{ .Values.image.repository }}:worker-{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         name: worker
         resources:

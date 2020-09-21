@@ -1,8 +1,6 @@
 image:
   repository: trust/watchmarket
-  workerTag: worker-local
-  apiTag: api-local
-  nginxProxyTag: proxy-local
+  tag: local
 
 secrets:
   - STORAGE_POSTGRES_URI: postgresql://user:pass@postgres/my_db?sslmode=disable

@@ -9,10 +9,7 @@ workerReplicaCount: 1
 
 image:
   repository: repositoryToReplace
-  pullPolicy: IfNotPresent
-  workerTag: tagToReplace
-  apiTag: tagToReplace
-  nginxProxyTag: tagToReplace
+  tag: tagToReplace
 
 posgtres:
   enabled: false
@@ -22,15 +19,6 @@ config:
   enabled: false
 secret:
   enabled: false
-
-# Resources request/limit example
-# someResources:
-#   limits:
-#     cpu: 100m
-#     memory: 128Mi
-#   requests:
-#     cpu: 100m
-#     memory: 128Mi
 
 apiChartsResources: 
   limits:
