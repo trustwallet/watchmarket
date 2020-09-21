@@ -1,0 +1,77 @@
+# scaling
+apiChartsReplicaCount: 2
+apiInfoReplicaCount: 1
+apiRatesReplicaCount: 1
+apiSwaggerReplicaCount: 1
+apiTickersReplicaCount: 4
+nginxProxyReplicaCount: 3
+workerReplicaCount: 1
+
+image:
+  repository: repositoryToReplace
+  pullPolicy: IfNotPresent
+  workerTag: tagToReplace
+  apiTag: tagToReplace
+  nginxProxyTag: tagToReplace
+
+posgtres:
+  enabled: false
+redis:
+  enabled: false
+config:
+  enabled: false
+secret:
+  enabled: false
+
+# Resources request/limit example
+# someResources:
+#   limits:
+#     cpu: 100m
+#     memory: 128Mi
+#   requests:
+#     cpu: 100m
+#     memory: 128Mi
+
+apiChartsResources: 
+  limits:
+    cpu: 300m
+    memory: 900Mi
+  requests:
+    cpu: 300m
+    memory: 900Mi
+apiInfoResources: 
+  limits:
+    cpu: 50m
+    memory: 250Mi
+  requests:
+    cpu: 50m
+    memory: 250Mi
+apiRatesResources: {}
+apiTickersResources:
+  limits:
+    cpu: 500m
+    memory: 500Mi
+  requests:
+    cpu: 500m
+    memory: 500Mi
+apiSwaggerResources:
+  limits:
+    cpu: 10m
+    memory: 90Mi
+  requests:
+    cpu: 10m
+    memory: 90Mi
+nginxProxyResources: 
+  limits:
+    cpu: 50m
+    memory: 60Mi
+  requests:
+    cpu: 50m
+    memory: 60Mi
+workerResources: 
+  limits:
+    cpu: 50m
+    memory: 200Mi
+  requests:
+    cpu: 50m
+    memory: 200Mi

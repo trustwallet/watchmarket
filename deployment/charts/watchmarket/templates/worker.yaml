@@ -30,7 +30,7 @@ spec:
       containers:
       - env:
         - name: ELASTIC_APM_SERVICE_NAME
-          value: watchmarket-worker-helm
+          value: watchmarket-worker
         envFrom:
         - secretRef:
             name: secrets

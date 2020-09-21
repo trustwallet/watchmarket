@@ -4,29 +4,35 @@ apiInfoReplicaCount: 1
 apiRatesReplicaCount: 1
 apiSwaggerReplicaCount: 1
 apiTickersReplicaCount: 1
-apiNginxProxyReplicaCount: 1
+nginxProxyReplicaCount: 1
 workerReplicaCount: 1
 
 image:
-  repository: replace_me
+  repository: repositoryToReplace
   pullPolicy: IfNotPresent
-  workerTag: replace_me
-  apiTag: replace_me
-  nginxProxyTag: replace_me
+  workerTag: tagToReplace
+  apiTag: tagToReplace
+  nginxProxyTag: tagToReplace
 
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 
-# Enable postgres-test deployment. If disabled - provide external postgres connection string
+# Enable postgres-test deployment. If disabled - provide external postgres connection string.
 posgtres:
   enabled: true
-# Enable redis-test deployment. If disabled - provide external redis connection string
+# Enable redis-test deployment. If disabled - provide external redis connection string.
 redis:
+  enabled: true
+# Enable ConfigMap deployment generation. Disable if you need to manually create the ConfigMap later.
+config:
+  enabled: true
+# Enable Secret deployment generation. Disable if you need to manually create the Secret later.
+secret:
   enabled: true
 
 service:
-  type: NodePort
+  type: ClusterIP
 
 ingress:
   annotations:
@@ -62,5 +68,5 @@ podAnnotations: {}
 podSecurityContext: {}
 securityContext: {}
 
-config: []
+configs: []
 secrets: []

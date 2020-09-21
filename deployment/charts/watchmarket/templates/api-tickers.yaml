@@ -30,7 +30,7 @@ spec:
       containers:
       - env:
         - name: ELASTIC_APM_SERVICE_NAME
-          value: watchmarket-api-helm
+          value: watchmarket-api-tickers
         - name: REST_API_APIS
           value: base,tickers
         envFrom:
