@@ -32,7 +32,7 @@ spec:
         - name: ELASTIC_APM_SERVICE_NAME
           value: watchmarket-api-swagger
         - name: REST_API_USE_MEMORY_CACHE
-          value: false
+          value: "false"
         - name: REST_API_APIS
           value: swagger
         envFrom:
