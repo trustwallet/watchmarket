@@ -4,6 +4,7 @@ ENV API_CHARTS_URI=
 ENV API_INFO_URI=
 ENV API_TICKERS_URI=
 ENV API_SWAGGER_URI=
+ENV API_RATES_URI=
 
 RUN apk update && apk --no-cache add gettext
 
