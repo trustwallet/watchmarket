@@ -21,6 +21,7 @@ config_*.yml
 *~
 coverage.txt
 mocks
+tilt_modules/*
 
 ### macOS ###
 *.DS_Store

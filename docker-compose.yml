@@ -1,16 +1,99 @@
 version: '3.7'
 services:
-  api:
-    container_name: api
+  api-charts:
+    container_name: api-charts
     build:
       context: .
       args:
         - SERVICE=api
-    ports:
-      - 8421:8421
+    environment: 
+        - REST_API_API=base,charts
+        - STORAGE_POSTGRES_URI=postgresql://user:pass@postgres/my_db?sslmode=disable
+        - STORAGE_REDIS=redis://redis:6379
+    links:
+        - redis
+        - postgres
+    restart: on-failure
+
+  api-tickers:
+    container_name: api-tickers
+    build:
+      context: .
+      args:
+        - SERVICE=api
+    environment: 
+        - REST_API_API=base,tickers
+        - STORAGE_POSTGRES_URI=postgresql://user:pass@postgres/my_db?sslmode=disable
+        - STORAGE_REDIS=redis://redis:6379
     links:
       - redis
       - postgres
+    restart: on-failure
+  
+  api-rates:
+    container_name: api-rates
+    build:
+      context: .
+      args:
+        - SERVICE=api
+    environment: 
+        - REST_API_API=base,rates
+        - STORAGE_POSTGRES_URI=postgresql://user:pass@postgres/my_db?sslmode=disable
+        - STORAGE_REDIS=redis://redis:6379
+    links:
+      - redis
+      - postgres
+    restart: on-failure
+
+  api-info:
+    container_name: api-info
+    build:
+      context: .
+      args:
+        - SERVICE=api
+    environment: 
+        - REST_API_API=base,info
+        - STORAGE_POSTGRES_URI=postgresql://user:pass@postgres/my_db?sslmode=disable
+        - STORAGE_REDIS=redis://redis:6379
+    links:
+      - redis
+      - postgres
+    restart: on-failure
+
+  api-swagger:
+    container_name: api-swagger
+    build:
+      context: .
+      args:
+        - SERVICE=api
+    environment: 
+        - REST_API_API=base,swagger
+        - STORAGE_POSTGRES_URI=postgresql://user:pass@postgres/my_db?sslmode=disable
+        - STORAGE_REDIS=redis://redis:6379
+    links:
+      - redis
+      - postgres
+    restart: on-failure
+
+  nginx-proxy:
+    container_name: nginx-proxy
+    build:
+      context: deployment/utils/nginx
+    environment: 
+        - API_CHARTS_URI=http://api-charts:8421
+        - API_INFO_URI=http://api-info:8421
+        - API_TICKERS_URI=http://api-tickers:8421
+        - API_SWAGGER_URI=http://api-swagger:8421
+        - API_RATES_URI=http://api-rates:8421
+    ports:
+        - 8081:8080
+    links:
+      - api-charts
+      - api-info
+      - api-tickers
+      - api-swagger
+      - api-rates
+    restart: on-failure
 
   worker:
     container_name: worker
@@ -18,14 +101,30 @@ services:
       context: .
       args:
         - SERVICE=worker
+    environment: 
+        - STORAGE_POSTGRES_URI=postgresql://user:pass@postgres/my_db?sslmode=disable
+        - STORAGE_REDIS=redis://redis:6379
     links:
       - postgres
+    restart: on-failure
+
+  seed:
+    container_name: seed
+    build:
+      context: .
+      dockerfile: deployment/utils/seed/Dockerfile
+    environment: 
+        - STORAGE_POSTGRES_URI=postgresql://user:pass@postgres/my_db?sslmode=disable
+    links:
+      - postgres
+    restart: on-failure
 
   redis:
     container_name: redis
-    image: neojt/mredis
+    image: redis
     ports:
       - 6379:6379
+    restart: on-failure
 
   postgres:
     container_name: postgres
@@ -36,8 +135,4 @@ services:
       - POSTGRES_DB=my_db
     ports:
       - 5432:5432
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5432"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
+    restart: on-failure

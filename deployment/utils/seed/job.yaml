@@ -1,0 +1,24 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: seed-job
+  namespace: tilt-watchmarket-local
+  labels:
+    app: seed-job
+  annotations: {}
+spec:
+  template:
+    metadata:
+      name: seed-job
+      labels:
+        name: seed-job
+    spec:
+      containers:
+      - name: seed-job
+        envFrom:
+        - secretRef:
+            name: secrets
+            optional: false
+        image: "trust/watchmarket:seed-local"
+      restartPolicy: Never
+  backoffLimit: 20
