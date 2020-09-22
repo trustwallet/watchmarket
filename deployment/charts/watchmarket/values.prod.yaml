@@ -1,7 +1,7 @@
 # scaling
 apiChartsReplicaCount: 2
 apiInfoReplicaCount: 1
-apiRatesReplicaCount: 1
+apiRatesReplicaCount: 2
 apiSwaggerReplicaCount: 1
 apiTickersReplicaCount: 4
 nginxProxyReplicaCount: 3
@@ -34,7 +34,13 @@ apiInfoResources:
   requests:
     cpu: 50m
     memory: 250Mi
-apiRatesResources: {}
+apiRatesResources:
+  limits:
+    cpu: 50m
+    memory: 250Mi
+  requests:
+    cpu: 50m
+    memory: 250Mi
 apiTickersResources:
   limits:
     cpu: 500m
