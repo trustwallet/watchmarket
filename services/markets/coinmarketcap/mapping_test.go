@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-type Mapping []struct {
+type MappingTest []struct {
 	Coin    int    `json:"coin"`
 	Type    string `json:"type"`
 	ID      int    `json:"id"`
@@ -14,8 +14,8 @@ type Mapping []struct {
 }
 
 func TestMapping(t *testing.T) {
-	var r Mapping
-	err := json.Unmarshal([]byte(mapping), &r)
+	var r MappingTest
+	err := json.Unmarshal([]byte(Mapping), &r)
 	assert.Nil(t, err)
 	assert.NotNil(t, r)
 }

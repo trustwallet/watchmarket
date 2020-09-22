@@ -45,6 +45,8 @@ github.com/alicebob/gopher-json v0.0.0-20200520072559-a9ecdc9d1d3a h1:HbKu58rmZp
 github.com/alicebob/gopher-json v0.0.0-20200520072559-a9ecdc9d1d3a/go.mod h1:SGnFV6hVsYE877CKEZ6tDNTjaSXYUk6QqoIK6PrAtcc=
 github.com/alicebob/miniredis/v2 v2.13.2 h1:qHd8pHjZsgovOjOFH6JZAR3quqL3E6R4vWLALTLjSGc=
 github.com/alicebob/miniredis/v2 v2.13.2/go.mod h1:uS970Sw5Gs9/iK3yBg0l9Uj9s25wXxSpQUE9EaJ/Blg=
+github.com/alicebob/miniredis/v2 v2.13.3 h1:kohgdtN58KW/r9ZDVmMJE3MrfbumwsDQStd0LPAGmmw=
+github.com/alicebob/miniredis/v2 v2.13.3/go.mod h1:uS970Sw5Gs9/iK3yBg0l9Uj9s25wXxSpQUE9EaJ/Blg=
 github.com/andybalholm/cascadia v1.1.0/go.mod h1:GsXiBklL0woXo1j/WYWtSYYC4ouU9PqHO0sqidkEA4Y=
 github.com/apache/thrift v0.12.0/go.mod h1:cp2SuWMxlEZw2r+iP2GNCdIi4C1qmUzdZFSVb+bacwQ=
 github.com/armon/circbuf v0.0.0-20150827004946-bbbad097214e/go.mod h1:3U/XgcO3hCbHZ8TKRvWD2dDTCfh9M9ya+I9JpbB7O8o=
@@ -435,8 +437,10 @@ github.com/t-tiger/gorm-bulk-insert v1.3.0/go.mod h1:ruDlk8xDl+8sX4bA7PQuYly9YEb
 github.com/tmc/grpc-websocket-proxy v0.0.0-20190109142713-0ad062ec5ee5/go.mod h1:ncp9v5uamzpCO7NfCPTXjqaC+bZgJeR0sMTm6dMHP7U=
 github.com/trustwallet/blockatlas v1.1.7-0.20200831100332-b573ace18512 h1:+0Lj2I5QJIVXU+Nu6L34Mb+0CbQryn1O5TRrAn+phN8=
 github.com/trustwallet/blockatlas v1.1.7-0.20200831100332-b573ace18512/go.mod h1:rq6APqrT+vR58h+WWrCyadT80QDKmDEJvHDllWSUwnM=
-github.com/trustwallet/blockatlas v1.1.11 h1:twwISBuV5b0TFh8/U+4c5Yw7M2jKwo21J6Pkhs3QEAM=
-github.com/trustwallet/blockatlas v1.1.11/go.mod h1:XiOeF7xyhbdAIkM/ssNVlLO5Dk5lFEqUpwwlfztctiQ=
+github.com/trustwallet/blockatlas v1.1.12 h1:1vm3puYBGmoNHlCqJXuyGUfpCc3MHnNXCWPPv4+YCJM=
+github.com/trustwallet/blockatlas v1.1.12/go.mod h1:XiOeF7xyhbdAIkM/ssNVlLO5Dk5lFEqUpwwlfztctiQ=
+github.com/trustwallet/blockatlas v1.1.13 h1:VxObiotGxWQ2D1sXzMWYYLPHEIJolXzbH7LsPSZAcJ0=
+github.com/trustwallet/blockatlas v1.1.13/go.mod h1:XiOeF7xyhbdAIkM/ssNVlLO5Dk5lFEqUpwwlfztctiQ=
 github.com/trustwallet/ens-coincodec v1.0.6/go.mod h1:hTZCauB3S2Gt9M3FiRNva+xpLJXFqLyODKFF+UvH1lw=
 github.com/trustwallet/watchmarket v1.1.1/go.mod h1:DvqzLzxXOaZajbkryVZcNgBS4yibZhk3rCc41ZSJEBs=
 github.com/ugorji/go v1.1.4/go.mod h1:uQMGLiO92mf5W77hV/PUCpI3pbzQx3CRekS0kk+RGrc=

@@ -16,6 +16,9 @@ func TestProvider_GetRates(t *testing.T) {
 	server := httptest.NewServer(createMockedAPI())
 	defer server.Close()
 	provider := InitProvider(server.URL, server.URL, server.URL, server.URL, watchmarket.DefaultCurrency, assets.Init("assets.api"))
+	cm, err := setupCoinMap(testMapping)
+	assert.Nil(t, err)
+	provider.Cm = cm
 	data, err := provider.GetRates(context.Background())
 	assert.Nil(t, err)
 	rawData, err := json.Marshal(data)
