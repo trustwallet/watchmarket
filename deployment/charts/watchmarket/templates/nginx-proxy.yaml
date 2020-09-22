@@ -39,6 +39,12 @@ spec:
           value: http://api-swagger:8421
         - name: API_RATES_URI
           value: http://api-rates:8421
+        - name: API_TEST_RATES_URI
+          value: http://api-rates:8421
+        - name: API_TEST2_RATES_URI
+          value: http://api-rates:8421
+        - name: SOME_TEST
+          value: http://api-rates:8421
         image: "{{ .Values.image.repository }}:proxy-{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         name: nginx-proxy
