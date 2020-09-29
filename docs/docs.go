@@ -353,43 +353,6 @@ var doc = `{
             }
         },
         "/v2/market/tickers": {
-            "get": {
-                "description": "Get the tickers for list of ids",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Tickers"
-                ],
-                "summary": "Get tickers for list of ids",
-                "operationId": "get_tickers_v2",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "currency symbol",
-                        "name": "currency",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "List of asset ids",
-                        "name": "assets",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/controllers.TickerResponseV2"
-                        }
-                    }
-                }
-            },
             "post": {
                 "description": "Get the tickers for list of ids",
                 "consumes": [
@@ -412,6 +375,45 @@ var doc = `{
                         "schema": {
                             "$ref": "#/definitions/controllers.TickerRequestV2"
                         }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.TickerResponseV2"
+                        }
+                    }
+                }
+            }
+        },
+        "/v2/market/tickers/{assets}": {
+            "get": {
+                "description": "Get the tickers for list of ids",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Tickers"
+                ],
+                "summary": "Get tickers for list of ids",
+                "operationId": "get_tickers_v2",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "List of asset ids",
+                        "name": "assets",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Currency symbol",
+                        "name": "currency",
+                        "in": "query"
                     }
                 ],
                 "responses": {

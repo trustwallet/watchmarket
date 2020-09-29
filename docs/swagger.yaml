@@ -392,31 +392,6 @@ paths:
       tags:
       - Tickers
   /v2/market/tickers:
-    get:
-      consumes:
-      - application/json
-      description: Get the tickers for list of ids
-      operationId: get_tickers_v2
-      parameters:
-      - description: currency symbol
-        in: query
-        name: currency
-        type: string
-      - description: List of asset ids
-        in: path
-        name: assets
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/controllers.TickerResponseV2'
-      summary: Get tickers for list of ids
-      tags:
-      - Tickers
     post:
       consumes:
       - application/json
@@ -429,6 +404,32 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/controllers.TickerRequestV2'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controllers.TickerResponseV2'
+      summary: Get tickers for list of ids
+      tags:
+      - Tickers
+  /v2/market/tickers/{assets}:
+    get:
+      consumes:
+      - application/json
+      description: Get the tickers for list of ids
+      operationId: get_tickers_v2
+      parameters:
+      - description: List of asset ids
+        in: path
+        name: assets
+        required: true
+        type: string
+      - description: Currency symbol
+        in: query
+        name: currency
+        type: string
       produces:
       - application/json
       responses:
