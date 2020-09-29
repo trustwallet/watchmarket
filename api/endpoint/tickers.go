@@ -112,10 +112,10 @@ func PostTickersHandlerV2(controller controllers.TickersController) func(c *gin.
 // @Accept json
 // @Produce json
 // @Tags Tickers
-// @Param currency query string empty "currency symbol"
 // @Param assets path string true "List of asset ids"
+// @Param currency query string empty "Currency symbol"
 // @Success 200 {object} controllers.TickerResponseV2
-// @Router /v2/market/tickers [get]
+// @Router /v2/market/tickers/{assets} [get]
 func GetTickersHandlerV2(controller controllers.TickersController) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		tx := apm.DefaultTracer.StartTransaction("GET /v2/market/tickers", "request")
