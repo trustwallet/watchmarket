@@ -22,7 +22,7 @@ DOCKER_REDIS_IMAGE_NAME := redis
 DOCKER_LOCAL_DB_IMAGE_NAME := test_db
 DOCKER_LOCAL_DB_USER :=user
 DOCKER_LOCAL_DB_PASS :=pass
-DOCKER_LOCAL_DB := my_db
+DOCKER_LOCAL_DB := watchmarket
 
 DOCKER_REPOSITORY := trust/watchmarket
 HASH ?= local

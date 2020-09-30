@@ -14,7 +14,6 @@ local_resource(
  
 docker_build("trust/watchmarket:api-local", ".", build_args={"SERVICE":"api"})
 docker_build("trust/watchmarket:worker-local", ".", build_args={"SERVICE":"worker"})
-docker_build("trust/watchmarket:proxy-local", "deployment/utils/nginx", dockerfile="deployment/utils/nginx/Dockerfile")
 
 yaml = helm(
   'deployment/charts/watchmarket',
@@ -27,8 +26,7 @@ yaml = helm(
 local('kubectl create namespace tilt-watchmarket-local || echo 1')
 
 k8s_yaml(yaml)
-k8s_resource('nginx-proxy', port_forwards=8080, 
-             resource_deps=['api-charts','api-info', 'api-rates', 'api-tickers'])
+k8s_resource('api', port_forwards=8421)
 
 k8s_resource('postgres', port_forwards=8585)
 k8s_resource('redis', port_forwards=8586)

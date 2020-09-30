@@ -1,9 +1,9 @@
 markets:
   priority: # for each data type: [first in queue, next, ...]
-    charts: [coinmarketcap, coingecko]
-    coin_info: [coinmarketcap, coingecko]
-    tickers: [coinmarketcap, coingecko, binancedex]
-    rates: [fixer, coinmarketcap, coingecko]
+    charts: [ coinmarketcap, coingecko ]
+    coin_info: [ coinmarketcap, coingecko ]
+    tickers: [ coinmarketcap, coingecko, binancedex ]
+    rates: [ fixer, coinmarketcap, coingecko ]
 
   binancedex:
     api: https://dex.binance.org/api
@@ -29,9 +29,9 @@ markets:
 storage:
   redis: redis://localhost:6379
   postgres:
-    uri: postgresql://user:pass@localhost/my_db?sslmode=disable
+    uri: postgresql://user:pass@localhost/watchmarket?sslmode=disable
     logs: false
-    env: prod
+    apm: true
 
 worker:
   tickers: 5m
@@ -39,7 +39,6 @@ worker:
   batch_limit: 3000
 
 rest_api:
-  apis: [base, tickers, charts, info, swagger]
   mode: release # Possible values: "debug", "release"
   port: 8420 # Possible values: "debug", "release"
   tickers:
@@ -48,11 +47,11 @@ rest_api:
     respectable_volume: 0
     respectable_update_time: 72h
   charts:
-      cache_control: 1m
+    cache_control: 1m
   info:
-      cache_control: 1m
-  cache:  15m
-  request_limit:  300
+    cache_control: 1m
+  cache: 15m
+  request_limit: 300
   use_memory_cache: true
   update_time:
     memory_cache_tickers: 30s

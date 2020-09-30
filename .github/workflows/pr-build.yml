@@ -62,11 +62,8 @@ jobs:
          env:
            API_IMAGE: ${{ secrets.REGISTRY }}:api-${{ steps.hash.outputs.sha7 }}
            WORKER_IMAGE: ${{ secrets.REGISTRY }}:worker-${{ steps.hash.outputs.sha7 }}
-           PROXY_IMAGE: ${{ secrets.REGISTRY }}:proxy-${{ steps.hash.outputs.sha7 }}
          run: |
            docker build --build-arg SERVICE=api/api -f Dockerfile.runner -t $API_IMAGE .
            docker build --build-arg SERVICE=worker/worker -f Dockerfile.runner -t $WORKER_IMAGE .
-           docker build -f deployment/utils/nginx/Dockerfile -t $PROXY_IMAGE deployment/utils/nginx
            docker push $API_IMAGE
            docker push $WORKER_IMAGE
-           docker push $PROXY_IMAGE
