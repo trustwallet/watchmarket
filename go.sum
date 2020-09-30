@@ -437,8 +437,6 @@ github.com/t-tiger/gorm-bulk-insert v1.3.0/go.mod h1:ruDlk8xDl+8sX4bA7PQuYly9YEb
 github.com/tmc/grpc-websocket-proxy v0.0.0-20190109142713-0ad062ec5ee5/go.mod h1:ncp9v5uamzpCO7NfCPTXjqaC+bZgJeR0sMTm6dMHP7U=
 github.com/trustwallet/blockatlas v1.1.7-0.20200831100332-b573ace18512 h1:+0Lj2I5QJIVXU+Nu6L34Mb+0CbQryn1O5TRrAn+phN8=
 github.com/trustwallet/blockatlas v1.1.7-0.20200831100332-b573ace18512/go.mod h1:rq6APqrT+vR58h+WWrCyadT80QDKmDEJvHDllWSUwnM=
-github.com/trustwallet/blockatlas v1.1.12 h1:1vm3puYBGmoNHlCqJXuyGUfpCc3MHnNXCWPPv4+YCJM=
-github.com/trustwallet/blockatlas v1.1.12/go.mod h1:XiOeF7xyhbdAIkM/ssNVlLO5Dk5lFEqUpwwlfztctiQ=
 github.com/trustwallet/blockatlas v1.1.13 h1:VxObiotGxWQ2D1sXzMWYYLPHEIJolXzbH7LsPSZAcJ0=
 github.com/trustwallet/blockatlas v1.1.13/go.mod h1:XiOeF7xyhbdAIkM/ssNVlLO5Dk5lFEqUpwwlfztctiQ=
 github.com/trustwallet/ens-coincodec v1.0.6/go.mod h1:hTZCauB3S2Gt9M3FiRNva+xpLJXFqLyODKFF+UvH1lw=

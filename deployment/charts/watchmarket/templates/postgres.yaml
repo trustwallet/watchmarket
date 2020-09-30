@@ -35,7 +35,7 @@ spec:
         - name: POSTGRES_PASSWORD
           value: pass
         - name: POSTGRES_DB
-          value: my_db
+          value: watchmarket
         image: postgres
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         name: postgres

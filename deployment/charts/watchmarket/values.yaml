@@ -1,10 +1,5 @@
 # scaling
-apiChartsReplicaCount: 1
-apiInfoReplicaCount: 1
-apiRatesReplicaCount: 1
-apiSwaggerReplicaCount: 1
-apiTickersReplicaCount: 1
-nginxProxyReplicaCount: 1
+apiReplicaCount: 1
 workerReplicaCount: 1
 
 image:
@@ -48,12 +43,7 @@ ingress:
 #     cpu: 100m
 #     memory: 128Mi
 
-apiChartsResources: {}
-apiInfoResources: {}
-apiRatesResources: {}
-apiTickersResources: {}
-apiSwaggerResources: {}
-nginxProxyResources: {}
+apiResources: {}
 postgresResources: {}
 redisResources: {}
 workerResources: {}
