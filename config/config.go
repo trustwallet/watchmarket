@@ -43,7 +43,7 @@ type Configuration struct {
 		Postgres struct {
 			Uri  string `mapstructure:"uri"`
 			Logs bool   `mapstructure:"logs"`
-			Env  string `mapstructure:"env"`
+			APM  bool `mapstructure:"apm"`
 		} `mapstructure:"postgres"`
 	} `mapstructure:"storage"`
 
@@ -54,7 +54,6 @@ type Configuration struct {
 	} `mapstructure:"worker"`
 
 	RestAPI struct {
-		APIs    []string `mapstructure:"apis"`
 		Mode    string   `mapstructure:"mode"`
 		Port    string   `mapstructure:"port"`
 		Tickers struct {

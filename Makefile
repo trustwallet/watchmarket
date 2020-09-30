@@ -6,6 +6,9 @@ BUILD := $(shell git rev-parse --short HEAD)
 PROJECT_NAME := $(shell basename "$(PWD)")
 MARKET_SERVICE := worker
 MARKET_API := api
+MARKET_SEED_DB := seed
+MARKET_PROXY := proxy
+MARKET_PG_HEALTH := pg-health
 
 # Go related variables.
 GOBASE := $(shell pwd)
@@ -19,7 +22,10 @@ DOCKER_REDIS_IMAGE_NAME := redis
 DOCKER_LOCAL_DB_IMAGE_NAME := test_db
 DOCKER_LOCAL_DB_USER :=user
 DOCKER_LOCAL_DB_PASS :=pass
-DOCKER_LOCAL_DB := my_db
+DOCKER_LOCAL_DB := watchmarket
+
+DOCKER_REPOSITORY := trust/watchmarket
+HASH ?= local
 
 # Environment variables
 CONFIG_FILE=config.yml
@@ -104,7 +110,6 @@ lint: go-lint-install go-lint
 
 ## docs: Generate swagger docs.
 docs: go-gen-docs
-
 
 docker-shutdown:
 	@echo "  >  Shutdown docker containers..."

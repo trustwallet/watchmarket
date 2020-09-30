@@ -1,0 +1,7 @@
+image:
+  repository: trust/watchmarket
+  tag: local
+
+secrets:
+  - STORAGE_POSTGRES_URI: postgresql://user:pass@postgres/watchmarket?sslmode=disable
+  - STORAGE_REDIS: redis://redis:6379

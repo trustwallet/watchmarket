@@ -14,13 +14,13 @@ type Instance struct {
 	Gorm *gorm.DB
 }
 
-func New(uri, env string, logMode bool) (*Instance, error) {
+func New(uri string, apm, logMode bool) (*Instance, error) {
 	var (
 		g   *gorm.DB
 		err error
 	)
 
-	if env == "prod" {
+	if apm {
 		g, err = apmgorm.Open("postgres", uri)
 		if err != nil {
 			return nil, err

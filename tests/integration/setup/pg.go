@@ -15,7 +15,7 @@ import (
 const (
 	pgUser = "user"
 	pgPass = "pass"
-	pgDB   = "my_db"
+	pgDB   = "watchmarket"
 )
 
 var (
@@ -41,7 +41,7 @@ func runPgContainerAndInitConnection() (*postgres.Instance, error) {
 		err    error
 	)
 	if err := pool.Retry(func() error {
-		dbConn, err = postgres.New(uri, "dev", false)
+		dbConn, err = postgres.New(uri, false, false)
 		return err
 	}); err != nil {
 		return nil, err

@@ -36,7 +36,7 @@ func init() {
 
 	database, err := postgres.New(
 		configuration.Storage.Postgres.Uri,
-		configuration.Storage.Postgres.Env,
+		configuration.Storage.Postgres.APM,
 		configuration.Storage.Postgres.Logs,
 	)
 	if err != nil {

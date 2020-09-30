@@ -8,7 +8,6 @@ import (
 	"github.com/trustwallet/watchmarket/db/postgres"
 	_ "github.com/trustwallet/watchmarket/docs"
 	"github.com/trustwallet/watchmarket/internal"
-	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"github.com/trustwallet/watchmarket/services/assets"
 	"github.com/trustwallet/watchmarket/services/cache"
 	"github.com/trustwallet/watchmarket/services/cache/memory"
@@ -40,7 +39,7 @@ var (
 	c              *cron.Cron
 	memoryCache    cache.Provider
 )
-
+  
 func init() {
 	port, confPath = internal.ParseArgs(defaultPort, defaultConfigPath)
 
@@ -51,17 +50,16 @@ func init() {
 	ratesPriority := configuration.Markets.Priority.Rates
 	tickerPriority := configuration.Markets.Priority.Tickers
 	coinInfoPriority := configuration.Markets.Priority.CoinInfo
-
 	a := assets.Init(configuration.Markets.Assets)
 
 	m, err := markets.Init(configuration, a)
 	if err != nil {
 		logger.Fatal(err)
 	}
-
+   
 	database, err := postgres.New(
 		configuration.Storage.Postgres.Uri,
-		configuration.Storage.Postgres.Env,
+		configuration.Storage.Postgres.APM,
 		configuration.Storage.Postgres.Logs,
 	)
 	if err != nil {
@@ -88,18 +86,12 @@ func init() {
 
 func main() {
 	if configuration.RestAPI.UseMemoryCache {
-		if watchmarket.Exists("rates", configuration.RestAPI.APIs) &&
-			!watchmarket.Exists("tickers", configuration.RestAPI.APIs) {
-			w.SaveRatesToMemory()
+		w.SaveRatesToMemory()
+		w.SaveTickersToMemory()
 
-			w.AddOperation(c, configuration.RestAPI.UpdateTime.Rates, w.SaveRatesToMemory)
-		} else {
-			w.SaveRatesToMemory()
-			w.SaveTickersToMemory()
+		w.AddOperation(c, configuration.RestAPI.UpdateTime.Rates, w.SaveRatesToMemory)
+		w.AddOperation(c, configuration.RestAPI.UpdateTime.Tickers, w.SaveTickersToMemory)
 
-			w.AddOperation(c, configuration.RestAPI.UpdateTime.Rates, w.SaveRatesToMemory)
-			w.AddOperation(c, configuration.RestAPI.UpdateTime.Tickers, w.SaveTickersToMemory)
-		}
 		c.Start()
 
 		if memoryCache.GetLenOfSavedItems() <= 0 {

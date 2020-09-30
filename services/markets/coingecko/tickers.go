@@ -180,6 +180,8 @@ func getCoinId(platformName string) uint {
 		return coin.Icon().ID
 	case strings.ToLower(coin.Polkadot().Handle):
 		return coin.Polkadot().ID
+	case strings.ToLower(coin.Elrond().Handle):
+		return coin.Elrond().ID
 	}
 
 	return watchmarket.UnknownCoinID

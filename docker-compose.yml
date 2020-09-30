@@ -6,11 +6,15 @@ services:
       context: .
       args:
         - SERVICE=api
+    environment:
+      - STORAGE_POSTGRES_URI=postgresql://user:pass@postgres/watchmarket?sslmode=disable
+      - STORAGE_REDIS=redis://redis:6379
     ports:
       - 8421:8421
     links:
       - redis
       - postgres
+    restart: on-failure
 
   worker:
     container_name: worker
@@ -18,14 +22,19 @@ services:
       context: .
       args:
         - SERVICE=worker
+    environment:
+      - STORAGE_POSTGRES_URI=postgresql://user:pass@postgres/watchmarket?sslmode=disable
+      - STORAGE_REDIS=redis://redis:6379
     links:
       - postgres
+    restart: on-failure
 
   redis:
     container_name: redis
-    image: neojt/mredis
+    image: redis
     ports:
       - 6379:6379
+    restart: on-failure
 
   postgres:
     container_name: postgres
@@ -33,11 +42,7 @@ services:
     environment:
       - POSTGRES_USER=user
       - POSTGRES_PASSWORD=pass
-      - POSTGRES_DB=my_db
+      - POSTGRES_DB=watchmarket
     ports:
       - 5432:5432
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5432"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
+    restart: on-failure

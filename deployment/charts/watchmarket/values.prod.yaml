@@ -1,0 +1,31 @@
+# scaling
+apiReplicaCount: 3
+workerReplicaCount: 1
+
+image:
+  repository: repositoryToReplace
+  tag: tagToReplace
+
+posgtres:
+  enabled: false
+redis:
+  enabled: false
+config:
+  enabled: false
+secret:
+  enabled: false
+
+apiResources: 
+  limits:
+    cpu: 500m
+    memory: 1000Mi
+  requests:
+    cpu: 500m
+    memory: 1000Mi
+workerResources: 
+  limits:
+    cpu: 100m
+    memory: 200Mi
+  requests:
+    cpu: 100m
+    memory: 200Mi
