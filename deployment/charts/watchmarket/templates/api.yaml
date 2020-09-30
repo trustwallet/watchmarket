@@ -9,7 +9,7 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
-  replicas: {{ .Values.apiChartsReplicaCount }}
+  replicas: {{ .Values.apiReplicaCount }}
   selector:
     matchLabels:
       name: api
@@ -46,7 +46,7 @@ spec:
           name: http
           protocol: TCP
         resources:
-            {{- toYaml .Values.apiChartsResources | nindent 12 }}
+            {{- toYaml .Values.apiResources | nindent 12 }}
         securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
         stdin: true
