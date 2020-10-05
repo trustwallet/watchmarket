@@ -2413,7 +2413,7 @@ const Mapping = `[
     {
         "coin": 60,
         "type": "token",
-        "token_id": "0x70a72833d6bF7F508C8224CE59ea1Ef3d0Ea3A38",
+        "token_id": "0xdc9Ac3C20D1ed0B540dF9b1feDC10039Df13F99c",
         "id": 2320
     },
     {
