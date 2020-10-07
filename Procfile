@@ -1,2 +1,2 @@
-web: bin/api -c ../../config.yml
-worker: bin/worker -c ../../config.yml 
+web: bin/api -c $HOME/config.yml
+worker: bin/worker -c $HOME/config.yml
