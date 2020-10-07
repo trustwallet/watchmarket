@@ -1,13 +1,19 @@
 {
   "addons": [
     "heroku-postgresql:hobby-dev",
-    "heroku-postgresql:hobby-dev"
+    "heroku-redis:hobby-dev"
   ],
   "environments": {
     "review": {
       "addons": [
-        "heroku-postgresql:hobby-dev",
-        "heroku-postgresql:hobby-dev"
+        {
+          "heroku-postgresql":"hobby-dev",
+          "as":"STORAGE_POSTGRES_URI"
+        },
+        {
+          "plan":"heroku-redis:hobby-dev",
+          "as":"STORAGE_REDIS"
+        }
       ]
     }
   }
