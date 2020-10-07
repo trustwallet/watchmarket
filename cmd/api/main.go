@@ -58,7 +58,7 @@ func init() {
 	}
 
 	database, err := postgres.New(
-		configuration.Storage.Postgres.Uri,
+		configuration.Storage.Postgres.Url,
 		configuration.Storage.Postgres.APM,
 		configuration.Storage.Postgres.Logs,
 	)
@@ -74,7 +74,7 @@ func init() {
 		go postgres.FatalWorker(time.Second*10, *database)
 	}
 
-	r := internal.InitRedis(configuration.Storage.Redis)
+	r := internal.InitRedis(configuration.Storage.Redis.Url)
 	redisCache := rediscache.Init(*r, configuration.RestAPI.Cache)
 
 	charts = chartscontroller.NewController(redisCache, memoryCache, database, chartsPriority, coinInfoPriority, ratesPriority, tickerPriority, m.ChartsAPIs, configuration)

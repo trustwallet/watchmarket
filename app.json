@@ -1,4 +1,10 @@
 {
+  "name": "watchmarket",
+  "buildpacks":[
+    {
+      "url":"heroku/go"
+    }
+  ],
   "addons": [
     "heroku-postgresql:hobby-dev",
     "heroku-redis:hobby-dev"
@@ -8,7 +14,7 @@
       "addons": [
         {
           "plan":"heroku-postgresql:hobby-dev",
-          "as":"STORAGE_POSTGRES_URI"
+          "as":"STORAGE_POSTGRES"
         },
         {
           "plan":"heroku-redis:hobby-dev",
