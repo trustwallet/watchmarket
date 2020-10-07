@@ -7,7 +7,7 @@
     "review": {
       "addons": [
         {
-          "heroku-postgresql":"hobby-dev",
+          "plan":"heroku-postgresql:hobby-dev",
           "as":"STORAGE_POSTGRES_URI"
         },
         {
