@@ -94,9 +94,7 @@ func main() {
 
 		c.Start()
 
-		if memoryCache.GetLenOfSavedItems() <= 0 {
-			panic("no items in memory cache")
-		}
+		logger.Info("No items in memory cache")
 	}
 
 	internal.InitAPI(engine, tickers, rates, charts, info, configuration)
