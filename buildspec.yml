@@ -8,8 +8,8 @@ phases:
     commands:
       - echo Building the Go code...
       - cd $CODEBUILD_SRC_DIR
-      - go build -o bin/watchmarket cmd/api
+      - go build -o bin/api cmd/api
 
 artifacts:
   files:
-    - bin/watchmarket
+    - bin/api
