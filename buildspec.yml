@@ -12,4 +12,6 @@ phases:
 
 artifacts:
   files:
+    - Procfile
+    - config.yml
     - bin/api
