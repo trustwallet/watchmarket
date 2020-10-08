@@ -31,11 +31,11 @@ storage:
     url: redis://localhost:6379
   postgres:
     url: postgresql://user:pass@localhost/watchmarket?sslmode=disable
-    logs: true
+    logs: false
     apm: false
 
 worker:
-  tickers: 1m
+  tickers: 5m
   rates: 5m
   batch_limit: 3000
 
