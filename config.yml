@@ -10,7 +10,7 @@ markets:
 
   coinmarketcap:
     api: https://pro-api.coinmarketcap.com
-    key: 30b12bbb-5c15-4d03-8569-bfa6afd2089d
+    key: #key
     currency: USD
     web_api: https://web-api.coinmarketcap.com
     widget_api: https://widgets.coinmarketcap.com
