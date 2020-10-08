@@ -55,5 +55,5 @@ rest_api:
   request_limit: 500
   use_memory_cache: true
   update_time:
-    memory_cache_tickers: 30s
-    memory_cache_rates: 30s
+    memory_cache_tickers: 5m
+    memory_cache_rates: 5m
