@@ -759,6 +759,12 @@ const Mapping = `[
         "id": 1518
     },
     {
+        "coin": 20000714,
+        "type": "token",
+        "token_id": "0x5f0Da599BB2ccCfcf6Fdfd7D81743B6020864350",
+        "id": 1518
+    },
+    {
         "coin": 141,
         "type": "coin",
         "id": 1521
@@ -2358,6 +2364,12 @@ const Mapping = `[
         "id": 2299
     },
     {
+        "coin": 20000714,
+        "type": "token",
+        "token_id": "0xa3f020a5C92e15be13CAF0Ee5C95cF79585EeCC9",
+        "id": 2299
+    },
+    {
         "coin": 60,
         "type": "token",
         "token_id": "0x72dD4b6bd852A3AA172Be4d6C5a6dbEc588cf131",
@@ -2564,6 +2576,12 @@ const Mapping = `[
         "coin": 60,
         "type": "token",
         "token_id": "0x4824A7b64E3966B0133f4f4FFB1b9D6bEb75FFF7",
+        "id": 2364
+    },
+    {
+        "coin": 20000714,
+        "type": "token",
+        "token_id": "0xCA0a9Df6a8cAD800046C1DDc5755810718b65C44",
         "id": 2364
     },
     {
@@ -4170,6 +4188,12 @@ const Mapping = `[
     {
         "coin": 304,
         "type": "coin",
+        "id": 2777
+    },
+    {
+        "coin": 20000714,
+        "type": "token",
+        "token_id": "0x9678E42ceBEb63F23197D726B29b1CB20d0064E5",
         "id": 2777
     },
     {
@@ -11243,6 +11267,12 @@ const Mapping = `[
         "id": 5692
     },
     {
+        "coin": 20000714,
+        "type": "token",
+        "token_id": "0x52CE071Bd9b1C4B00A0b92D298c512478CaD67e8",
+        "id": 5692
+    },
+    {
         "coin": 60,
         "type": "token",
         "token_id": "0x256845e721C0c46d54E6afBD4FA3B52CB72353EA",
@@ -13468,6 +13498,18 @@ const Mapping = `[
         "coin": 508,
         "type": "coin",
         "id": 6892
+    },
+    {
+        "coin": 60,
+        "type": "token",
+        "token_id": "0xA91ac63D040dEB1b7A5E4d4134aD23eb0ba07e14",
+        "id": 6928
+    },
+    {
+        "coin": 20000714,
+        "type": "token",
+        "token_id": "0x8443f091997f06a61670B735ED92734F5628692F",
+        "id": 6928
     },
     {
         "coin": 60,
