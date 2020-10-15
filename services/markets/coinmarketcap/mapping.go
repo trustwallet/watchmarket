@@ -7007,7 +7007,7 @@ const Mapping = `[
     {
         "coin": 60,
         "type": "token",
-        "token_id": "0x1D287CC25dAD7cCaF76a26bc660c5F7C8E2a05BD",
+        "token_id": "0xaea46A60368A7bD060eec7DF8CBa43b7EF41Ad85",
         "id": 3773
     },
     {
