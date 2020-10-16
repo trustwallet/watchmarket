@@ -931,6 +931,12 @@ const Mapping = `[
         "id": 1697
     },
     {
+        "coin": 20000714,
+        "type": "token",
+        "token_id": "0x101d82428437127bF1608F699CD651e6Abf9766E",
+        "id": 1697
+    },
+    {
         "coin": 121,
         "type": "coin",
         "id": 1698
@@ -2288,6 +2294,12 @@ const Mapping = `[
         "id": 2280
     },
     {
+        "coin": 20000714,
+        "type": "token",
+        "token_id": "0x0D8Ce2A99Bb6e3B7Db580eD848240e4a0F9aE153",
+        "id": 2280
+    },
+    {
         "coin": 1688,
         "type": "coin",
         "id": 2281
@@ -3454,6 +3466,12 @@ const Mapping = `[
         "id": 2586
     },
     {
+        "coin": 20000714,
+        "type": "token",
+        "token_id": "0x9Ac983826058b8a9C7Aa1C9171441191232E8404",
+        "id": 2586
+    },
+    {
         "coin": 60,
         "type": "token",
         "token_id": "0xA4e8C3Ec456107eA67d3075bF9e3DF3A75823DB0",
@@ -4178,6 +4196,12 @@ const Mapping = `[
         "coin": 714,
         "type": "token",
         "token_id": "AVA-645",
+        "id": 2776
+    },
+    {
+        "coin": 20000714,
+        "type": "token",
+        "token_id": "0x13616F44Ba82D63c8C0DC3Ff843D36a8ec1c05a9",
         "id": 2776
     },
     {
@@ -8749,6 +8773,12 @@ const Mapping = `[
         "id": 4279
     },
     {
+        "coin": 20000714,
+        "type": "token",
+        "token_id": "0x47BEAd2563dCBf3bF2c9407fEa4dC236fAbA485A",
+        "id": 4279
+    },
+    {
         "coin": 60,
         "type": "token",
         "token_id": "0x525794473F7ab5715C81d06d10f52d11cC052804",
@@ -11758,6 +11788,12 @@ const Mapping = `[
         "id": 5864
     },
     {
+        "coin": 20000714,
+        "type": "token",
+        "token_id": "0x88f1A5ae2A3BF98AEAF342D26B30a79438c9142e",
+        "id": 5864
+    },
+    {
         "coin": 235,
         "type": "coin",
         "id": 5865
@@ -13166,6 +13202,12 @@ const Mapping = `[
         "id": 6535
     },
     {
+        "coin": 20000714,
+        "type": "token",
+        "token_id": "0x1Fa4a73a3F0133f0025378af00236f3aBDEE5D63",
+        "id": 6535
+    },
+    {
         "coin": 60,
         "type": "token",
         "token_id": "0x2baEcDf43734F22FD5c152DB08E3C27233F0c7d2",
@@ -13539,6 +13581,12 @@ const Mapping = `[
         "type": "token",
         "token_id": "TKkeiboTkxXKJpbmVFbv4a8ov5rAfRDMf9",
         "id": 6990
+    },
+    {
+        "coin": 20000714,
+        "type": "token",
+        "token_id": "0xBf5140A22578168FD562DCcF235E5D43A02ce9B1",
+        "id": 7083
     },
     {
         "coin": 20000714,
