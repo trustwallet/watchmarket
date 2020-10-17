@@ -32,7 +32,7 @@ func TestInit(t *testing.T) {
 	assert.Equal(t, "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains", c.Markets.Assets)
 
 	assert.Equal(t, "redis://localhost:6379", c.Storage.Redis)
-	assert.Equal(t, "postgresql://user:pass@localhost/watchmarket?sslmode=disable", c.Storage.Postgres.Uri)
+	assert.Equal(t, "postgresql://user:pass@localhost/watchmarket?sslmode=disable", c.Storage.Postgres.Url)
 	assert.Equal(t, false, c.Storage.Postgres.Logs)
 	assert.Equal(t, true, c.Storage.Postgres.APM)
 
