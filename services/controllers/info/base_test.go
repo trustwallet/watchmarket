@@ -48,7 +48,7 @@ func TestNewController(t *testing.T) {
 }
 
 func setupController(t *testing.T, ch cache.Provider, cm chartsMock) Controller {
-	c := config.Init("../../../config/test.yml")
+	c := config.Init("../../../config.yml")
 	assert.NotNil(t, c)
 
 	chartsPriority := []string{"coinmarketcap"}
