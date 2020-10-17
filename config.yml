@@ -27,14 +27,15 @@ markets:
   assets: https://raw.githubusercontent.com/trustwallet/assets/master/blockchains # Assets url - details about TW tokens
 
 storage:
-  redis: redis://localhost:6379
+  redis:
+    url: redis://localhost:6379
   postgres:
-    uri: postgresql://user:pass@localhost/watchmarket?sslmode=disable
-    logs: true
+    url: postgresql://user:pass@localhost/watchmarket?sslmode=disable
+    logs: false
     apm: false
 
 worker:
-  tickers: 1m
+  tickers: 5m
   rates: 5m
   batch_limit: 3000
 
@@ -54,5 +55,5 @@ rest_api:
   request_limit: 500
   use_memory_cache: true
   update_time:
-    memory_cache_tickers: 30s
-    memory_cache_rates: 30s
+    memory_cache_tickers: 5m
+    memory_cache_rates: 5m
