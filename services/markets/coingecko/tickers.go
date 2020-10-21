@@ -2,8 +2,8 @@ package coingecko
 
 import (
 	"context"
-	"github.com/trustwallet/blockatlas/coin"
 	"github.com/trustwallet/blockatlas/pkg/errors"
+	"github.com/trustwallet/golibs/coin"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"strings"
 )
@@ -182,6 +182,8 @@ func getCoinId(platformName string) uint {
 		return coin.Polkadot().ID
 	case strings.ToLower(coin.Elrond().Handle):
 		return coin.Elrond().ID
+	case strings.ToLower(coin.Filecoin().Handle):
+		return coin.Filecoin().ID
 	}
 
 	return watchmarket.UnknownCoinID
