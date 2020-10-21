@@ -2,8 +2,8 @@ package coinmarketcap
 
 import (
 	"context"
-	"github.com/trustwallet/blockatlas/coin"
 	"github.com/trustwallet/blockatlas/pkg/errors"
+	"github.com/trustwallet/golibs/coin"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"strings"
 )
