@@ -13,7 +13,7 @@ import (
 )
 
 func TestWorker_SaveRatesToMemory(t *testing.T) {
-	c := config.Init("../../config/test.yml")
+	c := config.Init("../../config.yml")
 	assert.NotNil(t, c)
 
 	testRatesBasic(t, c)
@@ -161,7 +161,7 @@ func testRatesShowOptionNever(t *testing.T, c config.Configuration) {
 }
 
 func TestWorker_SaveTickersToMemory(t *testing.T) {
-	c := config.Init("../../config/test.yml")
+	c := config.Init("../../config.yml")
 	assert.NotNil(t, c)
 
 	testTickersBasic(t, c)

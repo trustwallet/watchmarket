@@ -42,22 +42,11 @@ func InitAPI(
 	info controllers.InfoController,
 	configuration config.Configuration,
 ) {
-	logger.Info("Running base api")
 	api.SetupBasicAPI(engine)
-
-	logger.Info("Running tickers api")
 	api.SetupTickersAPI(engine, tickers, configuration.RestAPI.Tickers.CacheControl)
-
-	logger.Info("Running charts api")
 	api.SetupChartsAPI(engine, charts, configuration.RestAPI.Charts.CacheControl)
-
-	logger.Info("Running info api")
 	api.SetupInfoAPI(engine, info, configuration.RestAPI.Info.CacheControl)
-
-	logger.Info("Running rates api")
 	api.SetupRatesAPI(engine, rates)
-
-	logger.Info("Running swagger api")
 	api.SetupSwaggerAPI(engine)
 }
 

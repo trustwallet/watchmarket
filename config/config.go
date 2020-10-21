@@ -39,9 +39,11 @@ type Configuration struct {
 	} `mapstructure:"markets"`
 
 	Storage struct {
-		Redis    string `mapstructure:"redis"`
+		Redis struct {
+			Url  string `mapstructure:"url"`
+		} `mapstructure:"redis"`
 		Postgres struct {
-			Uri  string `mapstructure:"uri"`
+			Url  string `mapstructure:"url"`
 			Logs bool   `mapstructure:"logs"`
 			APM  bool   `mapstructure:"apm"`
 		} `mapstructure:"postgres"`
