@@ -2,10 +2,11 @@ package coingecko
 
 import (
 	"context"
+	"strings"
+
 	"github.com/trustwallet/blockatlas/pkg/errors"
 	"github.com/trustwallet/golibs/coin"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
-	"strings"
 )
 
 func (p Provider) GetTickers(ctx context.Context) (watchmarket.Tickers, error) {
