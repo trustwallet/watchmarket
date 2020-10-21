@@ -7,8 +7,8 @@ services:
       args:
         - SERVICE=api
     environment:
-      - STORAGE_POSTGRES_URI=postgresql://user:pass@postgres/watchmarket?sslmode=disable
-      - STORAGE_REDIS=redis://redis:6379
+      - STORAGE_POSTGRES_URL=postgresql://user:pass@postgres/watchmarket?sslmode=disable
+      - STORAGE_REDIS_URL=redis://redis:6379
     ports:
       - 8421:8421
     links:
@@ -23,8 +23,8 @@ services:
       args:
         - SERVICE=worker
     environment:
-      - STORAGE_POSTGRES_URI=postgresql://user:pass@postgres/watchmarket?sslmode=disable
-      - STORAGE_REDIS=redis://redis:6379
+      - STORAGE_POSTGRES_URL=postgresql://user:pass@postgres/watchmarket?sslmode=disable
+      - STORAGE_REDIS_URL=redis://redis:6379
     links:
       - postgres
     restart: on-failure
