@@ -1,7 +1,7 @@
 package coinmarketcap
 
 import (
-	"github.com/trustwallet/blockatlas/coin"
+	"github.com/trustwallet/golibs/coin"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"time"
 )
