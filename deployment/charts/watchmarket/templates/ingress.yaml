@@ -6,7 +6,7 @@ apiVersion: extensions/v1beta1
 {{- end }}
 kind: Ingress
 metadata:
-  name: nginx-proxy
+  name: api
   namespace: {{ .Release.Namespace }}
   labels:
     chart: {{ template "watchmarket.chart" . }}
@@ -16,10 +16,10 @@ metadata:
   {{- end }}
 spec:
   rules:
-    - host: {{ .Values.ingress.proxyHost | quote }}
+    - host: {{ .Values.ingress.apiHost | quote }}
       http:
         paths:
           - backend:
-              serviceName: nginx-proxy
-              servicePort: 8080
+              serviceName: api
+              servicePort: 8421
 {{- end }}
