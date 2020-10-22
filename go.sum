@@ -440,6 +440,8 @@ github.com/trustwallet/blockatlas v1.1.7-0.20200831100332-b573ace18512/go.mod h1
 github.com/trustwallet/blockatlas v1.1.13 h1:VxObiotGxWQ2D1sXzMWYYLPHEIJolXzbH7LsPSZAcJ0=
 github.com/trustwallet/blockatlas v1.1.13/go.mod h1:XiOeF7xyhbdAIkM/ssNVlLO5Dk5lFEqUpwwlfztctiQ=
 github.com/trustwallet/ens-coincodec v1.0.6/go.mod h1:hTZCauB3S2Gt9M3FiRNva+xpLJXFqLyODKFF+UvH1lw=
+github.com/trustwallet/golibs v0.0.6 h1:PHLjPqg4O3Kqer7lSCmGwvtowSzLwRUzFaW4m2FkVtc=
+github.com/trustwallet/golibs v0.0.6/go.mod h1:CPMyKGd47hAabNDEZXRdY6b4vWR1qmZQ0rN7bqFcNAE=
 github.com/trustwallet/watchmarket v1.1.1/go.mod h1:DvqzLzxXOaZajbkryVZcNgBS4yibZhk3rCc41ZSJEBs=
 github.com/ugorji/go v1.1.4/go.mod h1:uQMGLiO92mf5W77hV/PUCpI3pbzQx3CRekS0kk+RGrc=
 github.com/ugorji/go v1.1.5-pre/go.mod h1:FwP/aQVg39TXzItUBMwnWp9T9gPQnXw4Poh4/oBQZ/0=
