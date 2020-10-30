@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"github.com/trustwallet/golibs/asset"
 	"github.com/trustwallet/golibs/coin"
 	"github.com/trustwallet/watchmarket/db/models"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
@@ -59,7 +60,7 @@ func toChartsRequestData(cr controllers.ChartRequest) (chartsNormalizedRequest, 
 func (c Controller) checkTickersAvailability(coin uint, token string, ctx context.Context) ([]models.Ticker, error) {
 	tr := []models.TickerQuery{{Coin: coin, TokenId: strings.ToLower(token)}}
 	if c.configuration.RestAPI.UseMemoryCache {
-		key := strings.ToLower(watchmarket.BuildID(coin, token))
+		key := strings.ToLower(asset.BuildID(coin, token))
 		rawResult, err := c.memoryCache.Get(key, ctx)
 		if err != nil {
 			return nil, err

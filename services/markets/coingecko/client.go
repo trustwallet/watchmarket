@@ -3,8 +3,8 @@ package coingecko
 import (
 	"context"
 	"fmt"
+	log "github.com/sirupsen/logrus"
 	"github.com/trustwallet/blockatlas/pkg/blockatlas"
-	"github.com/trustwallet/blockatlas/pkg/logger"
 	"net/url"
 	"strconv"
 	"strings"
@@ -58,7 +58,7 @@ func (c Client) fetchRates(coins Coins, currency string, ctx context.Context) (p
 
 			cp, err := c.fetchMarkets(ids, currency, ctx)
 			if err != nil {
-				logger.Error(err)
+				log.Error(err)
 				return
 			}
 			prChan <- cp

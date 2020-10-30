@@ -5,8 +5,8 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/gin-gonic/gin"
+	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
-	"github.com/trustwallet/blockatlas/pkg/logger"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"github.com/trustwallet/watchmarket/services/controllers"
 	"io/ioutil"
@@ -24,7 +24,7 @@ func TestSetupBasicAPI(t *testing.T) {
 
 	go func() {
 		if err := e.Run(":8080"); err != nil {
-			logger.Error(err)
+			log.Error(err)
 		}
 	}()
 
@@ -64,7 +64,7 @@ func TestSetupTickersAPI(t *testing.T) {
 
 	go func() {
 		if err := e.Run(":8083"); err != nil {
-			logger.Error(err)
+			log.Error(err)
 		}
 	}()
 
@@ -154,7 +154,7 @@ func TestSetupChartsAPI(t *testing.T) {
 
 	go func() {
 		if err := e.Run(":8082"); err != nil {
-			logger.Error(err)
+			log.Error(err)
 		}
 	}()
 
@@ -217,7 +217,7 @@ func TestSetupInfoAPI(t *testing.T) {
 
 	go func() {
 		if err := e.Run(":8081"); err != nil {
-			logger.Error(err)
+			log.Error(err)
 		}
 	}()
 
@@ -255,7 +255,7 @@ func TestSetupSwaggerAPI(t *testing.T) {
 	SetupSwaggerAPI(e)
 	go func() {
 		if err := e.Run(":8084"); err != nil {
-			logger.Error(err)
+			log.Error(err)
 		}
 	}()
 
