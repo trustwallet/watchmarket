@@ -93,7 +93,7 @@ func main() {
 
 		c.Start()
 
-		logger.Info("No items in memory cache")
+		log.Info("No items in memory cache")
 	}
 
 	internal.InitAPI(engine, tickers, rates, charts, info, configuration)
