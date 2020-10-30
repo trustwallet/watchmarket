@@ -47,22 +47,6 @@ func InitAPI(
 	api.SetupChartsAPI(engine, charts, configuration.RestAPI.Charts.CacheControl)
 	api.SetupInfoAPI(engine, info, configuration.RestAPI.Info.CacheControl)
 	api.SetupRatesAPI(engine, rates)
-	log.Info("Running base api")
-	api.SetupBasicAPI(engine)
-
-	log.Info("Running tickers api")
-	api.SetupTickersAPI(engine, tickers, configuration.RestAPI.Tickers.CacheControl)
-
-	log.Info("Running charts api")
-	api.SetupChartsAPI(engine, charts, configuration.RestAPI.Charts.CacheControl)
-
-	log.Info("Running info api")
-	api.SetupInfoAPI(engine, info, configuration.RestAPI.Info.CacheControl)
-
-	log.Info("Running rates api")
-	api.SetupRatesAPI(engine, rates)
-
-	log.Info("Running swagger api")
 	api.SetupSwaggerAPI(engine)
 }
 
