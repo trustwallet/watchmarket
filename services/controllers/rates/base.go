@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"github.com/trustwallet/blockatlas/pkg/logger"
+	log "github.com/sirupsen/logrus"
 	"github.com/trustwallet/watchmarket/config"
 	"github.com/trustwallet/watchmarket/db"
 	"github.com/trustwallet/watchmarket/db/models"
@@ -66,7 +66,7 @@ func (c Controller) getRateByCurrency(currency string, ctx context.Context) (wat
 	emptyRate := watchmarket.Rate{}
 	rates, err := c.database.GetRates(currency, ctx)
 	if err != nil {
-		logger.Error(err, "getRateByPriority")
+		log.Error(err, "getRateByPriority")
 		return emptyRate, err
 	}
 

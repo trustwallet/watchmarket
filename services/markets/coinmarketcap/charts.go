@@ -3,8 +3,8 @@ package coinmarketcap
 import (
 	"context"
 	"fmt"
+	log "github.com/sirupsen/logrus"
 	"github.com/trustwallet/blockatlas/pkg/errors"
-	"github.com/trustwallet/blockatlas/pkg/logger"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"sort"
 	"strings"
@@ -48,7 +48,7 @@ func (p Provider) GetCoinData(coinID uint, token, currency string, ctx context.C
 	}
 	assetsData, err := p.info.GetCoinInfo(coinID, token, ctx)
 	if err != nil {
-		logger.Warn("No assets assets about that coinID", logger.Params{"coinID": coinID, "token": token})
+		log.WithFields(log.Fields{"coinID": coinID, "token": token}).Warn("No assets assets about that coinID")
 	}
 
 	return normalizeInfo(currency, coinObj.Id, priceData, &assetsData)

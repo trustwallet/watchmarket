@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/robfig/cron/v3"
-	"github.com/trustwallet/blockatlas/pkg/logger"
+	log "github.com/sirupsen/logrus"
 	"github.com/trustwallet/watchmarket/config"
 	"github.com/trustwallet/watchmarket/db/postgres"
 	"github.com/trustwallet/watchmarket/internal"
@@ -31,7 +31,7 @@ func init() {
 
 	m, err := markets.Init(configuration, assets)
 	if err != nil {
-		logger.Fatal(err)
+		log.Fatal(err)
 	}
 
 	database, err := postgres.New(
@@ -40,12 +40,11 @@ func init() {
 		configuration.Storage.Postgres.Logs,
 	)
 	if err != nil {
-		logger.Fatal(err)
+		log.Fatal(err)
 	}
 
 	w = worker.Init(m.RatesAPIs, m.TickersAPIs, database, nil, configuration)
 	c = cron.New(cron.WithChain(cron.Recover(cron.DefaultLogger)))
-	logger.InitLogger()
 
 	go postgres.FatalWorker(time.Second*10, *database)
 }
@@ -61,7 +60,7 @@ func main() {
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
-	logger.Info("Shutdown worker gracefully...")
+	log.Info("Shutdown worker gracefully...")
 	ctx := c.Stop()
 	<-ctx.Done()
 }

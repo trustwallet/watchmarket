@@ -3,9 +3,10 @@ package coingecko
 import (
 	"context"
 	"fmt"
+	log "github.com/sirupsen/logrus"
 	"github.com/trustwallet/blockatlas/pkg/errors"
-	"github.com/trustwallet/blockatlas/pkg/logger"
 	"github.com/trustwallet/golibs/coin"
+
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"sort"
 	"strings"
@@ -57,7 +58,7 @@ func (p Provider) GetCoinData(coinID uint, token, currency string, ctx context.C
 
 	infoData, err := p.info.GetCoinInfo(coinID, token, ctx)
 	if err != nil {
-		logger.Warn("No assets assets about that coin", logger.Params{"coin": coinID, "token": token})
+		log.WithFields(log.Fields{"coin": coinID, "token": token}).Warn("No assets assets about that coin")
 	}
 	return normalizeInfo(ratesData[0], infoData), nil
 }

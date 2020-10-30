@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"github.com/trustwallet/blockatlas/pkg/logger"
+	log "github.com/sirupsen/logrus"
 	"github.com/trustwallet/watchmarket/config"
 	"github.com/trustwallet/watchmarket/db"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
@@ -82,13 +82,13 @@ func (c Controller) HandleChartsRequest(cr controllers.ChartRequest, ctx context
 
 	chartRaw, err := json.Marshal(&chart)
 	if err != nil {
-		logger.Error(err)
+		log.Error(err)
 	}
 
 	if err == nil && len(chart.Prices) > 0 {
 		err = c.redisCache.SetWithTime(key, chartRaw, verifiedData.TimeStart, ctx)
 		if err != nil {
-			logger.Error("failed to save cache", logger.Params{"err": err})
+			log.WithFields(log.Fields{"err": err}).Error("failed to save cache")
 		}
 	}
 

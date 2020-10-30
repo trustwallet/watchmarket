@@ -2,7 +2,8 @@ package tickerscontroller
 
 import (
 	"context"
-	"github.com/trustwallet/blockatlas/pkg/logger"
+	log "github.com/sirupsen/logrus"
+	"github.com/trustwallet/golibs/asset"
 	"github.com/trustwallet/watchmarket/config"
 	"github.com/trustwallet/watchmarket/db/models"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
@@ -29,9 +30,9 @@ func createResponseV2(tr controllers.TickerRequestV2, tickers watchmarket.Ticker
 	}
 	tickersPrices := make([]controllers.TickerPrice, 0, len(tickers))
 	for _, ticker := range tickers {
-		id, ok := findIDInRequest(tr, watchmarket.BuildID(ticker.Coin, ticker.TokenId))
+		id, ok := findIDInRequest(tr, asset.BuildID(ticker.Coin, ticker.TokenId))
 		if !ok {
-			logger.Error("Cannot find ID in request")
+			log.Error("Cannot find ID in request")
 		}
 		tp := controllers.TickerPrice{
 			Change24h: ticker.Price.Change24h,
@@ -59,7 +60,7 @@ func makeTickerQueries(coins []controllers.Coin) []models.TickerQuery {
 func makeTickerQueriesV2(ids []string) []models.TickerQuery {
 	tickerQueries := make([]models.TickerQuery, 0, len(ids))
 	for _, id := range ids {
-		coin, token, err := watchmarket.ParseID(id)
+		coin, token, err := asset.ParseID(id)
 		if err != nil {
 			continue
 		}
@@ -88,11 +89,11 @@ func (c Controller) normalizeTickers(tickers watchmarket.Tickers, rate watchmark
 
 func findIDInRequest(request controllers.TickerRequestV2, id string) (string, bool) {
 	for _, i := range request.Ids {
-		givenCoin, givenToken, err := watchmarket.ParseID(i)
+		givenCoin, givenToken, err := asset.ParseID(i)
 		if err != nil {
 			continue
 		}
-		coin, token, err := watchmarket.ParseID(id)
+		coin, token, err := asset.ParseID(id)
 		if err != nil {
 			continue
 		}

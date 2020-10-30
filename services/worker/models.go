@@ -1,6 +1,7 @@
 package worker
 
 import (
+	"github.com/trustwallet/golibs/asset"
 	"github.com/trustwallet/watchmarket/db/models"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"sync"
@@ -46,7 +47,7 @@ func toTickersModel(tickers watchmarket.Tickers) []models.Ticker {
 	result := make([]models.Ticker, 0, len(tickers))
 	for _, t := range tickers {
 		result = append(result, models.Ticker{
-			ID:          watchmarket.BuildID(t.Coin, t.TokenId),
+			ID:          asset.BuildID(t.Coin, t.TokenId),
 			Coin:        t.Coin,
 			CoinName:    t.CoinName,
 			CoinType:    string(t.CoinType),

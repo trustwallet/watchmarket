@@ -3,7 +3,7 @@ package worker
 import (
 	"context"
 	"encoding/json"
-	"github.com/trustwallet/blockatlas/pkg/logger"
+	log "github.com/sirupsen/logrus"
 	"github.com/trustwallet/watchmarket/config"
 	"github.com/trustwallet/watchmarket/db/models"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
@@ -15,31 +15,31 @@ func (w Worker) SaveTickersToMemory() {
 	ctx := apm.ContextWithTransaction(context.Background(), tx)
 	defer tx.End()
 
-	logger.Info("---------------------------------------")
-	logger.Info("Memory Cache: request to DB for tickers ...")
+	log.Info("---------------------------------------")
+	log.Info("Memory Cache: request to DB for tickers ...")
 
 	allTickers, err := w.db.GetAllTickers(ctx)
 	if err != nil {
-		logger.Warn("Failed to get tickers: ", err.Error())
+		log.Warn("Failed to get tickers: ", err.Error())
 		return
 	}
 
-	logger.Info("Memory Cache: got tickers From DB", logger.Params{"len": len(allTickers)})
+	log.WithFields(log.Fields{"len": len(allTickers)}).Info("Memory Cache: got tickers From DB")
 	tickersMap := createTickersMap(allTickers, w.configuration)
 	for key, val := range tickersMap {
 		rawVal, err := json.Marshal(val)
 		if err != nil {
-			logger.Error(err)
+			log.Error(err)
 			continue
 		}
 		if err = w.cache.Set(key, rawVal, ctx); err != nil {
-			logger.Error(err)
+			log.Error(err)
 			continue
 		}
 	}
 
-	logger.Info("Memory Cache: tickers saved to the cache", logger.Params{"len": len(tickersMap)})
-	logger.Info("---------------------------------------")
+	log.WithFields(log.Fields{"len": len(tickersMap)}).Info("Memory Cache: tickers saved to the cache")
+	log.Info("---------------------------------------")
 }
 
 func (w Worker) SaveRatesToMemory() {
@@ -47,32 +47,32 @@ func (w Worker) SaveRatesToMemory() {
 	ctx := apm.ContextWithTransaction(context.Background(), tx)
 	defer tx.End()
 
-	logger.Info("---------------------------------------")
-	logger.Info("Memory Cache: request to DB for rates ...")
+	log.Info("---------------------------------------")
+	log.Info("Memory Cache: request to DB for rates ...")
 
 	allRates, err := w.db.GetAllRates(ctx)
 	if err != nil {
-		logger.Warn("Failed to get rates: ", err.Error())
+		log.Warn("Failed to get rates: ", err.Error())
 		return
 	}
 
-	logger.Info("Memory Cache: got rates From DB", logger.Params{"len": len(allRates)})
+	log.WithFields(log.Fields{"len": len(allRates)}).Info("Memory Cache: got rates From DB")
 
 	ratesMap := createRatesMap(allRates, w.configuration)
 	for key, val := range ratesMap {
 		rawVal, err := json.Marshal(val)
 		if err != nil {
-			logger.Error(err)
+			log.Error(err)
 			continue
 		}
 		if err = w.cache.Set(key, rawVal, ctx); err != nil {
-			logger.Error(err)
+			log.Error(err)
 			continue
 		}
 	}
 
-	logger.Info("Memory Cache: rates saved to the cache", logger.Params{"len": len(ratesMap)})
-	logger.Info("---------------------------------------")
+	log.WithFields(log.Fields{"len": len(ratesMap)}).Info("Memory Cache: rates saved to the cache")
+	log.Info("---------------------------------------")
 }
 
 func createTickersMap(allTickers []models.Ticker, configuration config.Configuration) map[string]watchmarket.Ticker {
