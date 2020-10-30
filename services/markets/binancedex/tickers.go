@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/trustwallet/blockatlas/pkg/errors"
+	"errors"
 	"github.com/trustwallet/golibs/coin"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 )
@@ -40,20 +40,17 @@ func normalizeTicker(price CoinPrice, provider string) (watchmarket.Ticker, erro
 	var t watchmarket.Ticker
 
 	if price.QuoteAssetName != BNBAsset && price.BaseAssetName != BNBAsset {
-		return t, errors.E("invalid quote/base asset",
-			errors.Params{"Symbol": price.BaseAssetName, "QuoteAsset": price.QuoteAssetName})
+		return t, errors.New("invalid quote/base asset")
 	}
 
 	value, err := strconv.ParseFloat(price.LastPrice, 64)
 	if err != nil {
-		return t, errors.E(err, "normalizeTicker parse value error",
-			errors.Params{"LastPrice": price.LastPrice, "Symbol": price.BaseAssetName})
+		return t, errors.New(err.Error() + " normalizeTicker parse value error")
 	}
 
 	value24h, err := strconv.ParseFloat(price.PriceChangePercent, 64)
 	if err != nil {
-		return t, errors.E(err, "normalizeTicker parse value24h error",
-			errors.Params{"PriceChange": price.PriceChangePercent, "Symbol": price.BaseAssetName})
+		return t, errors.New(err.Error() + " normalizeTicker parse value24h error")
 	}
 
 	tokenId := price.BaseAssetName

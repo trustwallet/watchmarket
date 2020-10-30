@@ -3,7 +3,7 @@ package rediscache
 import (
 	"context"
 	"encoding/json"
-	"github.com/trustwallet/blockatlas/pkg/errors"
+	"errors"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"strconv"
 )
@@ -31,15 +31,15 @@ func (i Instance) GetWithTime(key string, time int64, ctx context.Context) ([]by
 
 	err = i.redis.Delete(keyInterval, ctx)
 	if err != nil {
-		return data, errors.E("invalid cache is not deleted")
+		return data, errors.New("invalid cache is not deleted")
 	}
 
-	return data, errors.E("cache is not valid")
+	return data, errors.New("cache is not valid")
 }
 
 func (i Instance) SetWithTime(key string, data []byte, time int64, ctx context.Context) error {
 	if data == nil {
-		return errors.E("data is empty")
+		return errors.New("data is empty")
 	}
 
 	cachingKey := i.GenerateKey(key + strconv.Itoa(int(time)))
@@ -86,7 +86,7 @@ func (i Instance) getIntervalKey(key string, time int64, ctx context.Context) (s
 	}
 
 	if len(results) == 0 {
-		return "", errors.E("no suitable intervals")
+		return "", errors.New("no suitable intervals")
 	}
 	return results[0], nil
 }
@@ -95,7 +95,7 @@ func (i Instance) updateInterval(key string, interval CachedInterval, ctx contex
 	var currentIntervals []CachedInterval
 
 	rawIntervals, err := i.redis.Get(key, ctx)
-	if err != nil && err.Error() != "Not found" {
+	if err != nil && err.Error() != "not found" {
 		return err
 	}
 

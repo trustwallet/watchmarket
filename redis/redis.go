@@ -2,8 +2,8 @@ package redis
 
 import (
 	"context"
+	"errors"
 	"github.com/go-redis/redis"
-	"github.com/trustwallet/blockatlas/pkg/errors"
 	"go.elastic.co/apm/module/apmgoredis"
 	"time"
 )
@@ -29,7 +29,7 @@ func (db Redis) Get(key string, ctx context.Context) ([]byte, error) {
 	client := apmgoredis.Wrap(&db.client).WithContext(ctx)
 	cmd := client.Get(key)
 	if cmd.Err() == redis.Nil {
-		return nil, errors.E("Not found", errors.Params{"key": key})
+		return nil, errors.New("not found")
 	} else if cmd.Err() != nil {
 		return nil, cmd.Err()
 	}

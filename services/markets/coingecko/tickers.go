@@ -4,7 +4,7 @@ import (
 	"context"
 	"strings"
 
-	"github.com/trustwallet/blockatlas/pkg/errors"
+	"errors"
 	"github.com/trustwallet/golibs/coin"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 )
@@ -69,7 +69,7 @@ func (p Provider) normalizeTicker(price CoinPrice, coinsMap map[string][]CoinRes
 func getCgCoinsById(coinsMap map[string][]CoinResult, id string) ([]CoinResult, error) {
 	coins, ok := coinsMap[id]
 	if !ok {
-		return nil, errors.E("No coin found by id", errors.Params{"id": id})
+		return nil, errors.New("no coin found by id")
 	}
 	return coins, nil
 }
