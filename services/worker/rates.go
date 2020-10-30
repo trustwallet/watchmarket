@@ -2,7 +2,7 @@ package worker
 
 import (
 	"context"
-	"github.com/trustwallet/blockatlas/pkg/logger"
+	log "github.com/sirupsen/logrus"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"github.com/trustwallet/watchmarket/services/markets"
 	"go.elastic.co/apm"
@@ -14,12 +14,12 @@ func (w Worker) FetchAndSaveRates() {
 	ctx := apm.ContextWithTransaction(context.Background(), tx)
 	defer tx.End()
 
-	logger.Info("Fetching Rates ...")
+	log.Info("Fetching Rates ...")
 	fetchedRates := fetchRates(w.ratesApis, ctx)
 	normalizedRates := toRatesModel(fetchedRates)
 
 	if err := w.db.AddRates(normalizedRates, w.configuration.Worker.BatchLimit, ctx); err != nil {
-		logger.Error(err)
+		log.Error(err)
 	}
 }
 
@@ -40,11 +40,11 @@ func fetchRatesByProvider(r markets.RatesAPI, wg *sync.WaitGroup, s *rates, ctx 
 
 	rates, err := r.GetRates(ctx)
 	if err != nil {
-		logger.Error("Failed to fetch rates", logger.Params{"provider": r.GetProvider(), "details": err})
+		log.WithFields(log.Fields{"provider": r.GetProvider(), "details": err}).Error("Failed to fetch rates")
 		return
 	}
 
-	logger.Info("Rates fetching done", logger.Params{"provider": r.GetProvider(), "rates": len(rates)})
+	log.WithFields(log.Fields{"provider": r.GetProvider(), "rates": len(rates)}).Info("Rates fetching done")
 
 	s.Add(rates)
 }

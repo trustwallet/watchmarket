@@ -3,7 +3,7 @@ package internal
 import (
 	"context"
 	"github.com/gin-gonic/gin"
-	"github.com/trustwallet/blockatlas/pkg/logger"
+	log "github.com/sirupsen/logrus"
 	"net/http"
 	"os"
 	"os/signal"
@@ -21,19 +21,19 @@ func SetupGracefulShutdown(port string, engine *gin.Engine) {
 	defer cancel()
 	defer func() {
 		if err := server.Shutdown(ctx); err != nil {
-			logger.Fatal("Server Shutdown: ", err)
+			log.Fatal("Server Shutdown: ", err)
 		}
 	}()
 
 	go func() {
 		if err := server.ListenAndServe(); err != nil {
-			logger.Fatal("Application failed", err)
+			log.Fatal("Application failed", err)
 		}
 	}()
-	logger.Info("Running application", logger.Params{"bind": port})
+	log.WithFields(log.Fields{"bind": port}).Info("Running application")
 
 	WaitingForExitSignal()
-	logger.Info("Waiting for all jobs to stop")
+	log.Info("Waiting for all jobs to stop")
 }
 
 func WaitingForExitSignal() {
@@ -44,5 +44,5 @@ func WaitingForExitSignal() {
 		syscall.SIGTERM,
 		syscall.SIGQUIT)
 	stop := <-signalForExit
-	logger.Info("Stop signal Received", stop)
+	log.Info("Stop signal Received", stop)
 }

@@ -16,12 +16,13 @@ require (
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/prometheus/client_golang v1.7.1
 	github.com/robfig/cron/v3 v3.0.1
+	github.com/sirupsen/logrus v1.6.0
 	github.com/spf13/viper v1.7.1
 	github.com/stretchr/testify v1.6.1
 	github.com/swaggo/gin-swagger v1.2.0
 	github.com/swaggo/swag v1.6.7
 	github.com/trustwallet/blockatlas v1.1.13
-	github.com/trustwallet/golibs v0.0.6
+	github.com/trustwallet/golibs v0.0.9
 	go.elastic.co/apm v1.8.0
 	go.elastic.co/apm/module/apmgin v1.8.0
 	go.elastic.co/apm/module/apmgoredis v1.8.0

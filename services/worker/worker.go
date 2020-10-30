@@ -3,7 +3,7 @@ package worker
 import (
 	"fmt"
 	"github.com/robfig/cron/v3"
-	"github.com/trustwallet/blockatlas/pkg/logger"
+	log "github.com/sirupsen/logrus"
 	"github.com/trustwallet/watchmarket/config"
 	"github.com/trustwallet/watchmarket/db"
 	"github.com/trustwallet/watchmarket/services/cache"
@@ -40,6 +40,6 @@ func (w Worker) AddOperation(c *cron.Cron, updateTime string, f func()) {
 	spec := fmt.Sprintf("@every %s", updateTime)
 
 	if _, err := c.AddFunc(spec, f); err != nil {
-		logger.Fatal(err)
+		log.Fatal(err)
 	}
 }

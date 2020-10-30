@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/robfig/cron/v3"
-	"github.com/trustwallet/blockatlas/pkg/logger"
+	log "github.com/sirupsen/logrus"
 	"github.com/trustwallet/watchmarket/config"
 	"github.com/trustwallet/watchmarket/db/postgres"
 	_ "github.com/trustwallet/watchmarket/docs"
@@ -44,7 +44,6 @@ func init() {
 	port, confPath = internal.ParseArgs(defaultPort, defaultConfigPath)
 
 	configuration = internal.InitConfig(confPath)
-	logger.InitLogger()
 	port = configuration.RestAPI.Port
 	chartsPriority := configuration.Markets.Priority.Charts
 	ratesPriority := configuration.Markets.Priority.Rates
@@ -54,7 +53,7 @@ func init() {
 
 	m, err := markets.Init(configuration, a)
 	if err != nil {
-		logger.Fatal(err)
+		log.Fatal(err)
 	}
 
 	database, err := postgres.New(
@@ -63,7 +62,7 @@ func init() {
 		configuration.Storage.Postgres.Logs,
 	)
 	if err != nil {
-		logger.Fatal(err)
+		log.Fatal(err)
 	}
 
 	if configuration.RestAPI.UseMemoryCache {
@@ -94,7 +93,7 @@ func main() {
 
 		c.Start()
 
-		logger.Info("No items in memory cache")
+		log.Info("No items in memory cache")
 	}
 
 	internal.InitAPI(engine, tickers, rates, charts, info, configuration)

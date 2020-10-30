@@ -2,10 +2,11 @@ package coingecko
 
 import (
 	"context"
-	"errors"
 	"fmt"
-	"github.com/trustwallet/blockatlas/pkg/logger"
+	log "github.com/sirupsen/logrus"
+	"github.com/trustwallet/blockatlas/pkg/errors"
 	"github.com/trustwallet/golibs/coin"
+
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"sort"
 	"strings"
@@ -52,12 +53,12 @@ func (p Provider) GetCoinData(coinID uint, token, currency string, ctx context.C
 
 	ratesData := p.client.fetchRates(Coins{coinResult}, currency, ctx)
 	if len(ratesData) == 0 {
-		return watchmarket.CoinDetails{}, errors.New("no rates found")
+		return watchmarket.CoinDetails{}, errors.E("No rates found", errors.Params{"id": coinResult.Id})
 	}
 
 	infoData, err := p.info.GetCoinInfo(coinID, token, ctx)
 	if err != nil {
-		logger.Warn("No assets assets about that coin", logger.Params{"coin": coinID, "token": token})
+		log.WithFields(log.Fields{"coin": coinID, "token": token}).Warn("No assets assets about that coin")
 	}
 	return normalizeInfo(ratesData[0], infoData), nil
 }
@@ -106,7 +107,7 @@ func getCoinByID(coinMap map[string]Coin, coinId uint, token string) (Coin, erro
 	c := Coin{}
 	coinObj, ok := coin.Coins[coinId]
 	if !ok {
-		return c, errors.New("coin not found")
+		return c, errors.E("Coin not found", errors.Params{"coindId": coinId})
 	}
 
 	c, err := getCoinByParams(coinMap, coinObj.Symbol, token)
@@ -120,7 +121,7 @@ func getCoinByID(coinMap map[string]Coin, coinId uint, token string) (Coin, erro
 func getCoinByParams(coinMap map[string]Coin, symbol, token string) (Coin, error) {
 	c, ok := coinMap[createID(symbol, token)]
 	if !ok {
-		return c, errors.New("no coin found by symbol")
+		return c, errors.E("No coin found by symbol", errors.Params{"symbol": symbol, "token": token})
 	}
 	return c, nil
 }

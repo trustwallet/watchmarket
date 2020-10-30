@@ -3,8 +3,8 @@ package internal
 import (
 	"flag"
 	"github.com/gin-gonic/gin"
+	log "github.com/sirupsen/logrus"
 	"github.com/trustwallet/blockatlas/api/middleware"
-	"github.com/trustwallet/blockatlas/pkg/logger"
 	"github.com/trustwallet/watchmarket/api"
 	"github.com/trustwallet/watchmarket/config"
 	"github.com/trustwallet/watchmarket/redis"
@@ -29,7 +29,7 @@ func ParseArgs(defaultPort, defaultConfigPath string) (string, string) {
 func InitRedis(host string) *redis.Redis {
 	c, err := redis.Init(host)
 	if err != nil {
-		logger.Fatal(err)
+		log.Fatal(err)
 	}
 	return &c
 }
@@ -57,7 +57,7 @@ func InitAssets(assetsHost string) assets.Client {
 func InitConfig(confPath string) config.Configuration {
 	confPath, err := filepath.Abs(confPath)
 	if err != nil {
-		logger.Fatal(err)
+		log.Fatal(err)
 	}
 
 	return config.Init(confPath)

@@ -3,6 +3,7 @@ package endpoint
 import (
 	"context"
 	"github.com/gin-gonic/gin"
+	"github.com/trustwallet/golibs/asset"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"github.com/trustwallet/watchmarket/services/controllers"
 	"go.elastic.co/apm"
@@ -59,7 +60,7 @@ func GetCoinInfoHandlerV2(controller controllers.InfoController) func(c *gin.Con
 		ctx := apm.ContextWithTransaction(context.Background(), tx)
 		defer tx.End()
 
-		coin, token, err := watchmarket.ParseID(c.Param("id"))
+		coin, token, err := asset.ParseID(c.Param("id"))
 		if err != nil {
 			code, response := createErrorResponseAndStatusCode(err)
 			c.AbortWithStatusJSON(code, response)

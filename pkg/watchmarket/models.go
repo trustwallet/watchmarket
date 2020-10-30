@@ -2,11 +2,7 @@ package watchmarket
 
 import (
 	"math"
-	"strconv"
-	"strings"
 	"time"
-
-	"errors"
 )
 
 type (
@@ -96,9 +92,6 @@ const (
 	ErrNotFound   = "not found"
 	ErrBadRequest = "bad request"
 	ErrInternal   = "internal"
-
-	coinPrefix  = 'c'
-	tokenPrefix = 't'
 )
 
 func (d Chart) IsEmpty() bool {
@@ -127,69 +120,6 @@ func UnixToDuration(unixTime uint) time.Duration {
 
 func DurationToUnix(duration time.Duration) uint {
 	return uint(duration.Seconds())
-}
-
-func ParseID(id string) (uint, string, error) {
-	rawResult := strings.Split(id, "_")
-	resLen := len(rawResult)
-	if resLen < 1 {
-		return 0, "", errors.New("bad ID")
-	}
-
-	coin, err := findCoinID(rawResult)
-	if err != nil {
-		return 0, "", errors.New("bad ID")
-	}
-
-	token := findTokenID(rawResult)
-
-	if token != "" {
-		return coin, token, nil
-	}
-
-	return coin, "", nil
-}
-
-func findCoinID(words []string) (uint, error) {
-	for _, w := range words {
-		if w[0] == coinPrefix {
-			rawCoin := removeFirstChar(w)
-			coin, err := strconv.Atoi(rawCoin)
-			if err != nil {
-				return 0, errors.New("bad coin")
-			}
-			return uint(coin), nil
-		}
-	}
-	return 0, errors.New("no coin")
-}
-
-func findTokenID(words []string) string {
-	for _, w := range words {
-		if w[0] == tokenPrefix {
-			token := removeFirstChar(w)
-			if len(token) > 0 {
-				return token
-			}
-			return ""
-		}
-	}
-	return ""
-}
-
-func removeFirstChar(input string) string {
-	if len(input) <= 1 {
-		return ""
-	}
-	return string([]rune(input)[1:])
-}
-
-func BuildID(coin uint, token string) string {
-	c := strconv.Itoa(int(coin))
-	if token != "" {
-		return string(coinPrefix) + c + "_" + string(tokenPrefix) + token
-	}
-	return string(coinPrefix) + c
 }
 
 func IsRespectableValue(value, respValue float64) bool {

@@ -2,9 +2,9 @@ package coinmarketcap
 
 import (
 	"context"
-	"errors"
 	"fmt"
-	"github.com/trustwallet/blockatlas/pkg/logger"
+	log "github.com/sirupsen/logrus"
+	"github.com/trustwallet/blockatlas/pkg/errors"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"sort"
 	"strings"
@@ -48,7 +48,7 @@ func (p Provider) GetCoinData(coinID uint, token, currency string, ctx context.C
 	}
 	assetsData, err := p.info.GetCoinInfo(coinID, token, ctx)
 	if err != nil {
-		logger.Warn("No assets assets about that coinID", logger.Params{"coinID": coinID, "token": token})
+		log.WithFields(log.Fields{"coinID": coinID, "token": token}).Warn("No assets assets about that coinID")
 	}
 
 	return normalizeInfo(currency, coinObj.Id, priceData, &assetsData)
@@ -86,7 +86,7 @@ func normalizeInfo(currency string, cmcCoin uint, priceData ChartInfo, assetsDat
 	details := watchmarket.CoinDetails{}
 	quote, ok := priceData.Data.Quotes[currency]
 	if !ok {
-		return details, errors.New("cannot get coin details")
+		return details, errors.E("Cant get coin details", errors.Params{"cmcCoin": cmcCoin, "currency": currency})
 	}
 	return watchmarket.CoinDetails{
 		Provider:          id,
@@ -110,7 +110,7 @@ func (c CmcSlice) coinToCmcMap() (m CoinMapping) {
 func (cm CoinMapping) getCoinByContract(coinId uint, contract string) (c CoinMap, err error) {
 	c, ok := cm[createID(coinId, contract)]
 	if !ok {
-		err = errors.New("no coin found")
+		err = errors.E("No coin found", errors.Params{"coin": coinId, "token": contract})
 	}
 
 	return

@@ -2,7 +2,7 @@ package coinmarketcap
 
 import (
 	"encoding/json"
-	"github.com/trustwallet/blockatlas/pkg/logger"
+	log "github.com/sirupsen/logrus"
 	"github.com/trustwallet/watchmarket/services/assets"
 )
 
@@ -20,7 +20,7 @@ type Provider struct {
 func InitProvider(proApi, webApi, widgetApi, key, currency string, info assets.Client) Provider {
 	cm, err := setupCoinMap(Mapping)
 	if err != nil {
-		logger.Error("Init provider coin map: " + err.Error())
+		log.Error("Init provider coin map: " + err.Error())
 	}
 	return Provider{
 		id:       id,

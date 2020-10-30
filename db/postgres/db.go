@@ -3,7 +3,7 @@ package postgres
 import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
-	"github.com/trustwallet/blockatlas/pkg/logger"
+	log "github.com/sirupsen/logrus"
 	"github.com/trustwallet/watchmarket/db/models"
 	"go.elastic.co/apm/module/apmgorm"
 	_ "go.elastic.co/apm/module/apmgorm/dialects/postgres"
@@ -45,7 +45,7 @@ func New(uri string, apm, logMode bool) (*Instance, error) {
 }
 
 func FatalWorker(timeout time.Duration, i Instance) {
-	logger.Info("Run PG RestoreConnectionWorker")
+	log.Info("Run PG RestoreConnectionWorker")
 	for {
 		dbWriteErr := i.Gorm.DB().Ping()
 		if dbWriteErr != nil {
