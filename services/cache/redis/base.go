@@ -4,7 +4,7 @@ import (
 	"context"
 	"crypto/sha1"
 	"encoding/base64"
-	"github.com/trustwallet/blockatlas/pkg/errors"
+	"errors"
 	"github.com/trustwallet/watchmarket/redis"
 	"time"
 )
@@ -40,7 +40,7 @@ func (i Instance) Get(key string, ctx context.Context) ([]byte, error) {
 
 func (i Instance) Set(key string, data []byte, ctx context.Context) error {
 	if data == nil {
-		return errors.E("data is empty")
+		return errors.New("data is empty")
 	}
 	err := i.redis.Set(key, data, i.cachingPeriod, ctx)
 	if err != nil {

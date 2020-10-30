@@ -2,8 +2,8 @@ package coinmarketcap
 
 import (
 	"context"
+	"errors"
 	"fmt"
-	"github.com/trustwallet/blockatlas/pkg/errors"
 	"github.com/trustwallet/blockatlas/pkg/logger"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"sort"
@@ -86,7 +86,7 @@ func normalizeInfo(currency string, cmcCoin uint, priceData ChartInfo, assetsDat
 	details := watchmarket.CoinDetails{}
 	quote, ok := priceData.Data.Quotes[currency]
 	if !ok {
-		return details, errors.E("Cant get coin details", errors.Params{"cmcCoin": cmcCoin, "currency": currency})
+		return details, errors.New("cannot get coin details")
 	}
 	return watchmarket.CoinDetails{
 		Provider:          id,
@@ -110,7 +110,7 @@ func (c CmcSlice) coinToCmcMap() (m CoinMapping) {
 func (cm CoinMapping) getCoinByContract(coinId uint, contract string) (c CoinMap, err error) {
 	c, ok := cm[createID(coinId, contract)]
 	if !ok {
-		err = errors.E("No coin found", errors.Params{"coin": coinId, "token": contract})
+		err = errors.New("no coin found")
 	}
 
 	return

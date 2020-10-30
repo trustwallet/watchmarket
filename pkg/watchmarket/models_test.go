@@ -1,8 +1,8 @@
 package watchmarket
 
 import (
+	"errors"
 	"github.com/stretchr/testify/assert"
-	"github.com/trustwallet/blockatlas/pkg/errors"
 	"testing"
 	"time"
 )
@@ -51,7 +51,7 @@ func TestParseID(t *testing.T) {
 			0,
 			"",
 			Coin,
-			errors.E("bad ID"),
+			errors.New("bad ID"),
 		},
 		{"c714_TWT-8C2",
 			714,
@@ -127,10 +127,10 @@ func Test_findCoinID(t *testing.T) {
 		expectedErr error
 	}{
 		{"Normal case", []string{"c100", "t60", "e30"}, 100, nil},
-		{"Empty coin", []string{"d100", "t60", "e30"}, 0, errors.E("no coin")},
-		{"Empty words", []string{}, 0, errors.E("no coin")},
-		{"Bad coin", []string{"cd100", "t60", "e30"}, 0, errors.E("bad coin")},
-		{"Bad coin #2", []string{"c", "t60", "e30"}, 0, errors.E("bad coin")},
+		{"Empty coin", []string{"d100", "t60", "e30"}, 0, errors.New("no coin")},
+		{"Empty words", []string{}, 0, errors.New("no coin")},
+		{"Bad coin", []string{"cd100", "t60", "e30"}, 0, errors.New("bad coin")},
+		{"Bad coin #2", []string{"c", "t60", "e30"}, 0, errors.New("bad coin")},
 	}
 
 	for _, tt := range tests {

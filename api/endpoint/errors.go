@@ -1,7 +1,7 @@
 package endpoint
 
 import (
-	"github.com/trustwallet/blockatlas/pkg/errors"
+	"errors"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"net/http"
 )
@@ -30,12 +30,12 @@ func errorResponse(err error) ErrorResponse {
 func createErrorResponseAndStatusCode(err error) (int, ErrorResponse) {
 	switch err.Error() {
 	case watchmarket.ErrInternal:
-		return http.StatusInternalServerError, errorResponse(errors.E("Internal Fail"))
+		return http.StatusInternalServerError, errorResponse(errors.New("Internal Fail"))
 	case watchmarket.ErrBadRequest:
-		return http.StatusBadRequest, errorResponse(errors.E("Invalid request payload"))
+		return http.StatusBadRequest, errorResponse(errors.New("Invalid request payload"))
 	case watchmarket.ErrNotFound:
-		return http.StatusNotFound, errorResponse(errors.E("Not found"))
+		return http.StatusNotFound, errorResponse(errors.New("Not found"))
 	default:
-		return http.StatusBadRequest, errorResponse(errors.E("Invalid request payload"))
+		return http.StatusBadRequest, errorResponse(errors.New("Invalid request payload"))
 	}
 }

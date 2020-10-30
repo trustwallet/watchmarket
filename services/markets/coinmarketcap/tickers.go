@@ -2,7 +2,7 @@ package coinmarketcap
 
 import (
 	"context"
-	"github.com/trustwallet/blockatlas/pkg/errors"
+	"errors"
 	"github.com/trustwallet/golibs/coin"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"strings"
@@ -102,7 +102,7 @@ func findCoin(rawCoins []CoinMap, coinId uint) ([]CoinResult, error) {
 
 	mappedCoins, ok := coinMap[coinId]
 	if !ok {
-		return nil, errors.E("findCoin coinId notFound", errors.Params{"coin_ID": coinId})
+		return nil, errors.New("findCoin coinId notFound")
 	}
 
 	result := make([]CoinResult, 0)

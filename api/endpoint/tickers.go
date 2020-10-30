@@ -2,8 +2,8 @@ package endpoint
 
 import (
 	"context"
+	"errors"
 	"github.com/gin-gonic/gin"
-	"github.com/trustwallet/blockatlas/pkg/errors"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"github.com/trustwallet/watchmarket/services/controllers"
 	"go.elastic.co/apm"
@@ -28,7 +28,7 @@ func GetTickersHandler(controller controllers.TickersController) func(c *gin.Con
 
 		request := controllers.TickerRequest{Currency: watchmarket.DefaultCurrency}
 		if err := c.BindJSON(&request); err != nil {
-			c.JSON(http.StatusBadRequest, errorResponse(errors.E("Invalid request payload")))
+			c.JSON(http.StatusBadRequest, errorResponse(errors.New("Invalid request payload")))
 			return
 		}
 		response, err := controller.HandleTickersRequest(request, ctx)
@@ -91,7 +91,7 @@ func PostTickersHandlerV2(controller controllers.TickersController) func(c *gin.
 
 		request := controllers.TickerRequestV2{Currency: watchmarket.DefaultCurrency}
 		if err := c.BindJSON(&request); err != nil {
-			c.JSON(http.StatusBadRequest, errorResponse(errors.E("Invalid request payload")))
+			c.JSON(http.StatusBadRequest, errorResponse(errors.New("Invalid request payload")))
 			return
 		}
 		request.Ids = removeDuplicates(request.Ids)
@@ -125,7 +125,7 @@ func GetTickersHandlerV2(controller controllers.TickersController) func(c *gin.C
 		currency := c.DefaultQuery("currency", watchmarket.DefaultCurrency)
 		assets := c.Param("assets")
 		if len(assets) == 0 {
-			c.JSON(http.StatusBadRequest, errorResponse(errors.E("Invalid request payload")))
+			c.JSON(http.StatusBadRequest, errorResponse(errors.New("Invalid request payload")))
 			return
 		}
 		assetsIds := removeDuplicates(strings.Split(assets, ","))
@@ -143,7 +143,7 @@ func GetTickersHandlerV2(controller controllers.TickersController) func(c *gin.C
 
 func handleTickersError(c *gin.Context, req controllers.TickerRequest) {
 	if len(req.Assets) == 0 || req.Assets == nil {
-		c.JSON(http.StatusBadRequest, errorResponse(errors.E("Invalid request payload")))
+		c.JSON(http.StatusBadRequest, errorResponse(errors.New("Invalid request payload")))
 		return
 	}
 	emptyResponse := controllers.TickerResponse{

@@ -2,9 +2,9 @@ package assets
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/trustwallet/blockatlas/pkg/blockatlas"
-	"github.com/trustwallet/blockatlas/pkg/errors"
 	"github.com/trustwallet/golibs/coin"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 )
@@ -20,7 +20,7 @@ func Init(api string) Client {
 func (c Client) GetCoinInfo(coinId uint, token string, ctx context.Context) (watchmarket.Info, error) {
 	coinObject, ok := coin.Coins[coinId]
 	if !ok {
-		return watchmarket.Info{}, errors.E("coin not found", errors.Params{"coin": coinObject.Handle, "token": token})
+		return watchmarket.Info{}, errors.New("coin not found " + "token " + token)
 	}
 
 	var (

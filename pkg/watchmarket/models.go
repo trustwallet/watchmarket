@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/trustwallet/blockatlas/pkg/errors"
+	"errors"
 )
 
 type (
@@ -133,12 +133,12 @@ func ParseID(id string) (uint, string, error) {
 	rawResult := strings.Split(id, "_")
 	resLen := len(rawResult)
 	if resLen < 1 {
-		return 0, "", errors.E("bad ID")
+		return 0, "", errors.New("bad ID")
 	}
 
 	coin, err := findCoinID(rawResult)
 	if err != nil {
-		return 0, "", errors.E("bad ID")
+		return 0, "", errors.New("bad ID")
 	}
 
 	token := findTokenID(rawResult)
@@ -156,12 +156,12 @@ func findCoinID(words []string) (uint, error) {
 			rawCoin := removeFirstChar(w)
 			coin, err := strconv.Atoi(rawCoin)
 			if err != nil {
-				return 0, errors.E("bad coin")
+				return 0, errors.New("bad coin")
 			}
 			return uint(coin), nil
 		}
 	}
-	return 0, errors.E("no coin")
+	return 0, errors.New("no coin")
 }
 
 func findTokenID(words []string) string {
