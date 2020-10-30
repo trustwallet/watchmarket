@@ -68,7 +68,7 @@ func TestInstance_GetCharts_notExistingKey(t *testing.T) {
 	seedDbCharts(t, i)
 
 	d, err := i.GetWithTime("testKEY+1", 1, context.Background())
-	assert.Equal(t, "Not found", err.Error())
+	assert.Equal(t, "not found", err.Error())
 	assert.Equal(t, "", string(d))
 }
 
