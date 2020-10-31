@@ -2,7 +2,6 @@ package coinmarketcap
 
 import (
 	"context"
-	"encoding/json"
 	"github.com/stretchr/testify/assert"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"github.com/trustwallet/watchmarket/services/assets"
@@ -22,9 +21,31 @@ func TestProvider_GetTickers(t *testing.T) {
 	assert.Nil(t, err)
 	provider.Cm = cm
 	assert.Nil(t, err)
-	rawData, err := json.Marshal(data)
-	assert.Nil(t, err)
-	assert.Equal(t, wantedTickers, string(rawData))
+
+	wantedTicker := watchmarket.Ticker{
+		Coin:     0,
+		CoinName: "BTC",
+		TokenId:  "",
+		CoinType: "coin",
+		Price: watchmarket.Price{
+			Change24h: 5.47477,
+			Currency:  "USD",
+			Provider:  "coinmarketcap",
+			Value:     9862.53985763,
+		},
+		LastUpdate: time.Time{},
+		Error:      "",
+		Volume:     0,
+		MarketCap:  0,
+		ShowOption: 0,
+	}
+	var isOk bool
+	for _, d := range data {
+		if d.Coin == wantedTicker.Coin && d.CoinName == wantedTicker.CoinName && d.Price == wantedTicker.Price {
+			isOk = true
+		}
+	}
+	assert.True(t, isOk)
 }
 
 func Test_normalizeTickers(t *testing.T) {
