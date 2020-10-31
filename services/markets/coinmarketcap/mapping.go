@@ -7,6 +7,12 @@ const Mapping = `[
         "id": 1
     },
     {
+        "coin": 60,
+        "type": "token",
+        "token_id": "0x9BE89D2a4cd102D8Fecc6BF9dA793be995C22541",
+        "id": 1
+    },
+    {
         "coin": 2,
         "type": "coin",
         "id": 2
@@ -2291,6 +2297,12 @@ const Mapping = `[
     {
         "coin": 461,
         "type": "coin",
+        "id": 2280
+    },
+    {
+        "coin": 60,
+        "type": "token",
+        "token_id": "0x8E16bf47065Fe843A82f4399bAF5aBac4E0822B7",
         "id": 2280
     },
     {
@@ -10150,6 +10162,12 @@ const Mapping = `[
         "id": 5158
     },
     {
+        "coin": 60,
+        "type": "token",
+        "token_id": "0xFF0a024B66739357c4ED231fB3DBC0c8C22749F5",
+        "id": 5161
+    },
+    {
         "coin": 714,
         "type": "token",
         "token_id": "WRX-ED1",
@@ -13491,6 +13509,12 @@ const Mapping = `[
     {
         "coin": 354,
         "type": "coin",
+        "id": 6636
+    },
+    {
+        "coin": 60,
+        "type": "token",
+        "token_id": "0x7884F51dC1410387371ce61747CB6264E1dAeE0B",
         "id": 6636
     },
     {
