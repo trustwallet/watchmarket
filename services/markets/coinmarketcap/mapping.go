@@ -2306,6 +2306,12 @@ const Mapping = `[
         "id": 2280
     },
     {
+        "coin": 714,
+        "type": "token",
+        "token_id": "FIL-E2C",
+        "id": 2280
+    },
+    {
         "coin": 20000714,
         "type": "token",
         "token_id": "0x0D8Ce2A99Bb6e3B7Db580eD848240e4a0F9aE153",
