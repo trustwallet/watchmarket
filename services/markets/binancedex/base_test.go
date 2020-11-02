@@ -10,7 +10,7 @@ import (
 func TestInitProvider(t *testing.T) {
 	provider := InitProvider("demo.api")
 	assert.NotNil(t, provider)
-	assert.Equal(t, "demo.api", provider.client.BaseUrl)
+	assert.Equal(t, "demo.api", provider.client.baseURL)
 	assert.Equal(t, "binancedex", provider.id)
 }
 

@@ -15,9 +15,9 @@ func TestInitProvider(t *testing.T) {
 	cm, err := setupCoinMap(testMapping)
 	assert.Nil(t, err)
 	provider.Cm = cm
-	assert.Equal(t, "pro.api", provider.client.api.BaseUrl)
-	assert.Equal(t, "web.api", provider.client.web.BaseUrl)
-	assert.Equal(t, "widget.api", provider.client.widget.BaseUrl)
+	assert.Equal(t, "pro.api", provider.client.proApiURL)
+	assert.Equal(t, "web.api", provider.client.webApiURL)
+	assert.Equal(t, "widget.api", provider.client.widgetApiURL)
 	assert.Equal(t, "assets.api", provider.info.BaseUrl)
 	assert.Equal(t, "USD", provider.currency)
 	assert.Equal(t, "coinmarketcap", provider.id)

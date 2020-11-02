@@ -3,8 +3,8 @@ package coingecko
 import (
 	"context"
 	"fmt"
+	"github.com/imroc/req"
 	log "github.com/sirupsen/logrus"
-	"github.com/trustwallet/blockatlas/pkg/blockatlas"
 	"net/url"
 	"strconv"
 	"strings"
@@ -13,28 +13,36 @@ import (
 )
 
 type Client struct {
-	blockatlas.Request
+	baseURL    string
 	bucketSize int
+	r          *req.Req
 }
 
 func NewClient(api string, bucketSize int) Client {
-	c := Client{Request: blockatlas.InitClient(api), bucketSize: bucketSize}
-	c.SetTimeout(time.Minute)
+	r := req.New()
+	c := Client{r: r, bucketSize: bucketSize, baseURL: api}
+	c.r.SetTimeout(time.Minute)
 	return c
 }
 
 func (c Client) fetchCharts(id, currency string, timeStart, timeEnd int64, ctx context.Context) (Charts, error) {
 	var (
 		result Charts
-		values = url.Values{
-			"vs_currency": {currency},
-			"from":        {strconv.FormatInt(timeStart, 10)},
-			"to":          {strconv.FormatInt(timeEnd, 10)},
+		values = req.Param{
+			"vs_currency": currency,
+			"from":        strconv.FormatInt(timeStart, 10),
+			"to":          strconv.FormatInt(timeEnd, 10),
 		}
 	)
-	err := c.GetWithContext(&result, fmt.Sprintf("v3/coins/%s/market_chart/range", id), values, ctx)
+	resp, err := c.r.Get(c.baseURL+fmt.Sprintf("/v3/coins/%s/market_chart/range", id), values, ctx)
 	if err != nil {
-		return result, err
+		return Charts{}, err
+	}
+	err = resp.ToJSON(&result)
+	if err != nil {
+		log.Error("URL: " + resp.Request().URL.String())
+		log.Error("Status code: " + resp.Response().Status)
+		return Charts{}, err
 	}
 	return result, nil
 }
@@ -85,18 +93,30 @@ func (c Client) fetchMarkets(ids, currency string, ctx context.Context) (CoinPri
 		values = url.Values{"vs_currency": {currency}, "sparkline": {"false"}, "ids": {ids}}
 	)
 
-	err := c.GetWithContext(&result, "v3/coins/markets", values, ctx)
+	resp, err := c.r.Get(c.baseURL+"/v3/coins/markets", values, ctx)
 	if err != nil {
-		return nil, err
+		return CoinPrices{}, err
+	}
+	err = resp.ToJSON(&result)
+	if err != nil {
+		log.Error("URL: " + resp.Request().URL.String())
+		log.Error("Status code: " + resp.Response().Status)
+		return CoinPrices{}, err
 	}
 	return result, nil
 }
 
 func (c Client) fetchCoins(ctx context.Context) (Coins, error) {
 	var result Coins
-	err := c.GetWithCacheAndContext(&result, "v3/coins/list", url.Values{"include_platform": {"true"}}, time.Minute*10, ctx)
+	resp, err := c.r.Get(c.baseURL+"/v3/coins/list", req.Param{"include_platform": "true"}, ctx)
 	if err != nil {
-		return nil, err
+		return Coins{}, err
+	}
+	err = resp.ToJSON(&result)
+	if err != nil {
+		log.Error("URL: " + resp.Request().URL.String())
+		log.Error("Status code: " + resp.Response().Status)
+		return Coins{}, err
 	}
 	return result, nil
 }

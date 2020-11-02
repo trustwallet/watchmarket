@@ -2,24 +2,32 @@ package binancedex
 
 import (
 	"context"
-	"github.com/trustwallet/blockatlas/pkg/blockatlas"
-	"net/url"
+	"github.com/imroc/req"
+	log "github.com/sirupsen/logrus"
 )
 
 type Client struct {
-	blockatlas.Request
+	baseURL string
+	r       *req.Req
 }
 
 func NewClient(api string) Client {
 	return Client{
-		blockatlas.InitClient(api),
+		baseURL: api,
+		r:       req.New(),
 	}
 }
 
 func (c Client) fetchPrices(ctx context.Context) ([]CoinPrice, error) {
-	var result []CoinPrice
-	err := c.GetWithContext(&result, "v1/ticker/24hr", url.Values{"limit": {"1000"}}, ctx)
+	resp, err := c.r.Get(c.baseURL+"/v1/ticker/24hr", req.Param{"limit": "1000"}, ctx)
 	if err != nil {
+		return nil, err
+	}
+	var result []CoinPrice
+	err = resp.ToJSON(&result)
+	if err != nil {
+		log.Error("URL: " + resp.Request().URL.String())
+		log.Error("Status code: " + resp.Response().Status)
 		return nil, err
 	}
 	return result, nil
