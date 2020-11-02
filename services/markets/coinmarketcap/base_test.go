@@ -18,7 +18,6 @@ func TestInitProvider(t *testing.T) {
 	assert.Equal(t, "pro.api", provider.client.proApiURL)
 	assert.Equal(t, "web.api", provider.client.webApiURL)
 	assert.Equal(t, "widget.api", provider.client.widgetApiURL)
-	assert.Equal(t, "assets.api", provider.info.BaseUrl)
 	assert.Equal(t, "USD", provider.currency)
 	assert.Equal(t, "coinmarketcap", provider.id)
 	assert.Less(t, 1, len(provider.Cm))

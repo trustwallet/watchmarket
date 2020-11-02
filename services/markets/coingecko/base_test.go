@@ -13,7 +13,6 @@ func TestInitProvider(t *testing.T) {
 	provider := InitProvider("web.api", "USD", assets.Init("assets.api"))
 	assert.NotNil(t, provider)
 	assert.Equal(t, "web.api", provider.client.baseURL)
-	assert.Equal(t, "assets.api", provider.info.BaseUrl)
 	assert.Equal(t, "USD", provider.currency)
 	assert.Equal(t, "coingecko", provider.id)
 }

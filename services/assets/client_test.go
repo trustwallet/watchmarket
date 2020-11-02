@@ -14,7 +14,7 @@ import (
 func TestInit(t *testing.T) {
 	c := Init("url")
 	assert.NotNil(t, c)
-	assert.Equal(t, c.BaseUrl, "url")
+	assert.Equal(t, c.api, "url")
 }
 
 func TestClient_GetCoinInfo(t *testing.T) {
