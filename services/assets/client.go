@@ -4,17 +4,20 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/trustwallet/blockatlas/pkg/blockatlas"
+
+	"github.com/imroc/req"
+	log "github.com/sirupsen/logrus"
 	"github.com/trustwallet/golibs/coin"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 )
 
 type Client struct {
-	blockatlas.Request
+	api string
+	r   *req.Req
 }
 
 func Init(api string) Client {
-	return Client{blockatlas.InitClient(api)}
+	return Client{r: req.New(), api: api}
 }
 
 func (c Client) GetCoinInfo(coinId uint, token string, ctx context.Context) (watchmarket.Info, error) {
@@ -24,15 +27,20 @@ func (c Client) GetCoinInfo(coinId uint, token string, ctx context.Context) (wat
 	}
 
 	var (
-		path   = fmt.Sprintf("%s/info.json", getPathForCoin(coinObject, token))
+		path   = c.api + fmt.Sprintf("/%s/info.json", getPathForCoin(coinObject, token))
 		result watchmarket.Info
 	)
 
-	err := c.GetWithContext(&result, path, nil, ctx)
+	resp, err := c.r.Get(path, ctx)
 	if err != nil {
-		return result, err
+		return watchmarket.Info{}, err
 	}
-
+	err = resp.ToJSON(&result)
+	if err != nil {
+		log.Error("URL: " + resp.Request().URL.String())
+		log.Error("Status code: " + resp.Response().Status)
+		return watchmarket.Info{}, err
+	}
 	return result, nil
 }
 

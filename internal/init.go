@@ -4,7 +4,7 @@ import (
 	"flag"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
-	"github.com/trustwallet/blockatlas/api/middleware"
+	"github.com/trustwallet/golibs-networking/middleware"
 	"github.com/trustwallet/watchmarket/api"
 	"github.com/trustwallet/watchmarket/config"
 	"github.com/trustwallet/watchmarket/redis"
