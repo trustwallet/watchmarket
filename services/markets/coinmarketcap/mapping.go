@@ -13,6 +13,12 @@ const Mapping = `[
         "id": 1
     },
     {
+        "coin": 20000714,
+        "type": "token",
+        "token_id": "0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c",
+        "id": 1
+    },
+    {
         "coin": 2,
         "type": "coin",
         "id": 2
@@ -1253,12 +1259,6 @@ const Mapping = `[
         "type": "token",
         "token_id": "0xe9e7cea3dedca5984780bafc599bd69add087d56",
         "id": 4687
-    },
-    {
-        "coin": 10000714,
-        "type": "token",
-        "token_id": "0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c",
-        "id": 4023
     },
     {
         "coin": 10000714,
@@ -8051,12 +8051,6 @@ const Mapping = `[
         "coin": 714,
         "type": "token",
         "token_id": "BTCB-1DE",
-        "id": 4023
-    },
-    {
-        "coin": 20000714,
-        "type": "token",
-        "token_id": "0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c",
         "id": 4023
     },
     {
