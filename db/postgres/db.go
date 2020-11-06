@@ -1,45 +1,39 @@
 package postgres
 
 import (
-	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/postgres"
-	log "github.com/sirupsen/logrus"
 	"github.com/trustwallet/watchmarket/db/models"
-	"go.elastic.co/apm/module/apmgorm"
-	_ "go.elastic.co/apm/module/apmgorm/dialects/postgres"
+	"gorm.io/gorm/logger"
 	"time"
+
+	log "github.com/sirupsen/logrus"
+
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
 type Instance struct {
 	Gorm *gorm.DB
 }
 
-func New(uri string, apm, logMode bool) (*Instance, error) {
-	var (
-		g   *gorm.DB
-		err error
-	)
-
-	if apm {
-		g, err = apmgorm.Open("postgres", uri)
-		if err != nil {
-			return nil, err
-		}
+func New(url string, logMode bool) (*Instance, error) {
+	var cfg *gorm.Config
+	if logMode {
+		cfg = &gorm.Config{Logger: logger.Default.LogMode(logger.Info)}
 	} else {
-		g, err = gorm.Open("postgres", uri)
-		if err != nil {
-			return nil, err
-		}
+		cfg = &gorm.Config{Logger: logger.Default.LogMode(logger.Silent)}
 	}
 
-	g.LogMode(logMode)
+	db, err := gorm.Open(postgres.Open(url), cfg)
+	if err != nil {
+		return nil, err
+	}
 
-	g.AutoMigrate(
+	db.AutoMigrate(
 		&models.Rate{},
 		&models.Ticker{},
 	)
 
-	i := &Instance{Gorm: g}
+	i := &Instance{Gorm: db}
 
 	return i, nil
 }
@@ -47,7 +41,12 @@ func New(uri string, apm, logMode bool) (*Instance, error) {
 func FatalWorker(timeout time.Duration, i Instance) {
 	log.Info("Run PG RestoreConnectionWorker")
 	for {
-		dbWriteErr := i.Gorm.DB().Ping()
+		db, err := i.Gorm.DB()
+		if err != nil {
+			panic("PG is not available now")
+		}
+
+		dbWriteErr := db.Ping()
 		if dbWriteErr != nil {
 			panic("PG is not available now")
 		}

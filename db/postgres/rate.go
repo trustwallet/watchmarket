@@ -2,27 +2,15 @@ package postgres
 
 import (
 	"context"
-	"fmt"
-	"github.com/jinzhu/gorm"
 	"github.com/trustwallet/watchmarket/db/models"
-	"go.elastic.co/apm"
-	"go.elastic.co/apm/module/apmgorm"
-	"strings"
-	"time"
-)
-
-const (
-	rawBulkRatesInsert = `INSERT INTO rates(updated_at,created_at,currency,percent_change24h,provider,rate,last_updated,show_option) VALUES %s ON CONFLICT ON CONSTRAINT rates_pkey DO UPDATE SET rate = excluded.rate, percent_change24h = excluded.percent_change24h, updated_at = excluded.updated_at, last_updated = excluded.last_updated`
+	"gorm.io/gorm/clause"
 )
 
 func (i *Instance) AddRates(rates []models.Rate, batchLimit uint, ctx context.Context) error {
-	g := apmgorm.WithContext(ctx, i.Gorm)
-	span, _ := apm.StartSpan(ctx, "AddRates", "postgresql")
-	defer span.End()
 	normalizedRates := normalizeRates(rates)
 	batch := toRatesBatch(normalizedRates, batchLimit)
 	for _, b := range batch {
-		err := bulkCreateRate(g, b)
+		err := i.Gorm.Clauses(clause.OnConflict{DoNothing: true}).Create(&b).Error
 		if err != nil {
 			return err
 		}
@@ -31,9 +19,8 @@ func (i *Instance) AddRates(rates []models.Rate, batchLimit uint, ctx context.Co
 }
 
 func (i *Instance) GetRates(currency string, ctx context.Context) ([]models.Rate, error) {
-	g := apmgorm.WithContext(ctx, i.Gorm)
 	var rates []models.Rate
-	if err := g.Where("currency = ?", currency).
+	if err := i.Gorm.Where("currency = ?", currency).
 		Find(&rates).Error; err != nil {
 		return nil, err
 	}
@@ -41,9 +28,8 @@ func (i *Instance) GetRates(currency string, ctx context.Context) ([]models.Rate
 }
 
 func (i *Instance) GetAllRates(ctx context.Context) ([]models.Rate, error) {
-	g := apmgorm.WithContext(ctx, i.Gorm)
 	var rates []models.Rate
-	if err := g.Find(&rates).Error; err != nil {
+	if err := i.Gorm.Find(&rates).Error; err != nil {
 		return nil, err
 	}
 	return rates, nil
@@ -77,31 +63,4 @@ func toRatesBatch(rates []models.Rate, sizeUint uint) [][]models.Rate {
 		lo, hi = hi, hi+size
 	}
 	return result
-}
-
-func bulkCreateRate(db *gorm.DB, dataList []models.Rate) error {
-	var (
-		valueStrings []string
-		valueArgs    []interface{}
-	)
-
-	for _, d := range dataList {
-		valueStrings = append(valueStrings, "(?, ? ,?, ?, ?, ?, ?, ?)")
-
-		valueArgs = append(valueArgs, time.Now())
-		valueArgs = append(valueArgs, time.Now())
-		valueArgs = append(valueArgs, d.Currency)
-		valueArgs = append(valueArgs, d.PercentChange24h)
-		valueArgs = append(valueArgs, d.Provider)
-		valueArgs = append(valueArgs, d.Rate)
-		valueArgs = append(valueArgs, d.LastUpdated)
-		valueArgs = append(valueArgs, d.ShowOption)
-	}
-
-	smt := fmt.Sprintf(rawBulkRatesInsert, strings.Join(valueStrings, ","))
-	if err := db.Exec(smt, valueArgs...).Error; err != nil {
-		return err
-	}
-
-	return nil
 }

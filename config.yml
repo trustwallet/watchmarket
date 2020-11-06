@@ -32,7 +32,6 @@ storage:
   postgres:
     url: postgresql://user:pass@localhost/watchmarket?sslmode=disable
     logs: false
-    apm: false
 
 worker:
   tickers: 5m
