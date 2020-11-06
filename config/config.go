@@ -40,12 +40,11 @@ type Configuration struct {
 
 	Storage struct {
 		Redis struct {
-			Url  string `mapstructure:"url"`
+			Url string `mapstructure:"url"`
 		} `mapstructure:"redis"`
 		Postgres struct {
 			Url  string `mapstructure:"url"`
 			Logs bool   `mapstructure:"logs"`
-			APM  bool   `mapstructure:"apm"`
 		} `mapstructure:"postgres"`
 	} `mapstructure:"storage"`
 

@@ -8,6 +8,7 @@ import (
 	"github.com/trustwallet/watchmarket/db"
 	"github.com/trustwallet/watchmarket/db/models"
 	"github.com/trustwallet/watchmarket/tests/integration/setup"
+
 	"testing"
 )
 
