@@ -14,7 +14,6 @@ var databaseInstance *postgres.Instance
 
 func TestMain(m *testing.M) {
 	databaseInstance = setup.RunPgContainer()
-	databaseInstance.Gorm.LogMode(true)
 	code := m.Run()
 	setup.StopPgContainer()
 	os.Exit(code)

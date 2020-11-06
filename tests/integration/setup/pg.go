@@ -4,10 +4,11 @@ package setup
 
 import (
 	"fmt"
-	"github.com/jinzhu/gorm"
 	"github.com/ory/dockertest"
 	"github.com/trustwallet/watchmarket/db/models"
 	"github.com/trustwallet/watchmarket/db/postgres"
+
+	"gorm.io/gorm"
 
 	"log"
 )
@@ -41,7 +42,7 @@ func runPgContainerAndInitConnection() (*postgres.Instance, error) {
 		err    error
 	)
 	if err := pool.Retry(func() error {
-		dbConn, err = postgres.New(uri, false, false)
+		dbConn, err = postgres.New(uri, false)
 		return err
 	}); err != nil {
 		return nil, err
@@ -52,7 +53,9 @@ func runPgContainerAndInitConnection() (*postgres.Instance, error) {
 }
 
 func CleanupPgContainer(dbConn *gorm.DB) {
-	dbConn.DropTable(tables...)
+	if err := dbConn.Migrator().DropTable(tables...); err != nil {
+		log.Fatal(err)
+	}
 	autoMigrate(dbConn)
 }
 
