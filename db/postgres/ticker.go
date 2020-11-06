@@ -10,7 +10,29 @@ import (
 func (i *Instance) AddTickers(tickers []models.Ticker, batchLimit uint, ctx context.Context) error {
 	batch := toTickersBatch(normalizeTickers(tickers), batchLimit)
 	for _, b := range batch {
-		err := i.Gorm.Clauses(clause.OnConflict{DoNothing: true}).Create(&b).Error
+		err := i.Gorm.Clauses(clause.OnConflict{
+			Columns: []clause.Column{
+				{
+					Name: "coin",
+				},
+				{
+					Name: "coin_name",
+				},
+				{
+					Name: "coin_type",
+				},
+				{
+					Name: "token_id",
+				},
+				{
+					Name: "currency",
+				},
+				{
+					Name: "provider",
+				},
+			},
+			DoUpdates: clause.AssignmentColumns([]string{"value", "change24h", "volume", "market_cap", "last_updated", "updated_at"}),
+		}).Create(&b).Error
 		if err != nil {
 			return err
 		}

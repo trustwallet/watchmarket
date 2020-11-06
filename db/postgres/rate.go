@@ -10,7 +10,17 @@ func (i *Instance) AddRates(rates []models.Rate, batchLimit uint, ctx context.Co
 	normalizedRates := normalizeRates(rates)
 	batch := toRatesBatch(normalizedRates, batchLimit)
 	for _, b := range batch {
-		err := i.Gorm.Clauses(clause.OnConflict{DoNothing: true}).Create(&b).Error
+		err := i.Gorm.Clauses(clause.OnConflict{
+			Columns: []clause.Column{
+				{
+					Name: "currency",
+				},
+				{
+					Name: "provider",
+				},
+			},
+			DoUpdates: clause.AssignmentColumns([]string{"rate", "percent_change24h", "last_updated", "updated_at"}),
+		}).Create(&b).Error
 		if err != nil {
 			return err
 		}
