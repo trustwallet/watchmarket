@@ -28,10 +28,13 @@ func New(url string, logMode bool) (*Instance, error) {
 		return nil, err
 	}
 
-	db.AutoMigrate(
+	err = db.AutoMigrate(
 		&models.Rate{},
 		&models.Ticker{},
 	)
+	if err != nil {
+		log.Error(err)
+	}
 
 	i := &Instance{Gorm: db}
 
