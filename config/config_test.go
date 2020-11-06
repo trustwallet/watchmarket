@@ -34,7 +34,6 @@ func TestInit(t *testing.T) {
 	assert.Equal(t, "redis://localhost:6379", c.Storage.Redis.Url)
 	assert.Equal(t, "postgresql://user:pass@localhost/watchmarket?sslmode=disable", c.Storage.Postgres.Url)
 	assert.Equal(t, false, c.Storage.Postgres.Logs)
-	assert.Equal(t, false, c.Storage.Postgres.APM)
 
 	assert.Equal(t, "5m", c.Worker.Tickers)
 	assert.Equal(t, "5m", c.Worker.Rates)
@@ -42,8 +41,8 @@ func TestInit(t *testing.T) {
 	assert.Equal(t, time.Hour*72, c.RestAPI.Tickers.RespectableUpdateTime)
 
 	assert.Equal(t, time.Minute, c.RestAPI.Tickers.CacheControl)
-	assert.Equal(t, time.Minute * 10, c.RestAPI.Charts.CacheControl)
-	assert.Equal(t, time.Minute * 10, c.RestAPI.Info.CacheControl)
+	assert.Equal(t, time.Minute*10, c.RestAPI.Charts.CacheControl)
+	assert.Equal(t, time.Minute*10, c.RestAPI.Info.CacheControl)
 
 	assert.Equal(t, "release", c.RestAPI.Mode)
 	assert.Equal(t, "8421", c.RestAPI.Port)
