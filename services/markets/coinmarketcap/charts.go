@@ -51,7 +51,7 @@ func (p Provider) GetCoinData(coinID uint, token, currency string, ctx context.C
 		log.WithFields(log.Fields{"coinID": coinID, "token": token}).Warn("No assets assets about that coinID")
 	}
 
-	return normalizeInfo(currency, coinObj.Id, priceData, &assetsData)
+	return normalizeInfo(priceData, &assetsData)
 }
 
 func normalizeCharts(currency string, c Charts) watchmarket.Chart {
@@ -82,20 +82,11 @@ func normalizeCharts(currency string, c Charts) watchmarket.Chart {
 	return chartsData
 }
 
-func normalizeInfo(currency string, cmcCoin uint, priceData ChartInfo, assetsData *watchmarket.Info) (watchmarket.CoinDetails, error) {
-	details := watchmarket.CoinDetails{}
-	quote, ok := priceData.Data.Quotes[currency]
-	if !ok {
-		return details, errors.New("Cant get coin details")
-	}
+func normalizeInfo(priceData ChartInfo, assetsData *watchmarket.Info) (watchmarket.CoinDetails, error) {
 	return watchmarket.CoinDetails{
-		Provider:          id,
-		ProviderURL:       getUrl(priceData.Data.Slug),
-		Vol24:             quote.Volume24,
-		MarketCap:         quote.MarketCap,
-		CirculatingSupply: priceData.Data.CirculatingSupply,
-		TotalSupply:       priceData.Data.TotalSupply,
-		Info:              assetsData,
+		Provider:    id,
+		ProviderURL: getUrl(priceData.Data.Slug),
+		Info:        assetsData,
 	}, nil
 }
 

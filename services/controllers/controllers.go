@@ -20,6 +20,6 @@ type (
 	}
 
 	InfoController interface {
-		HandleInfoRequest(dr DetailsRequest, ctx context.Context) (watchmarket.CoinDetails, error)
+		HandleInfoRequest(dr DetailsRequest, ctx context.Context) (InfoResponse, error)
 	}
 )

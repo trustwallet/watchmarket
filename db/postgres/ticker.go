@@ -31,7 +31,7 @@ func (i *Instance) AddTickers(tickers []models.Ticker, batchLimit uint, ctx cont
 					Name: "provider",
 				},
 			},
-			DoUpdates: clause.AssignmentColumns([]string{"value", "change24h", "volume", "market_cap", "last_updated", "updated_at"}),
+			DoUpdates: clause.AssignmentColumns([]string{"value", "change24h", "volume", "total_supply", "circulating_supply", "market_cap", "last_updated", "updated_at"}),
 		}).Create(&b).Error
 		if err != nil {
 			return err

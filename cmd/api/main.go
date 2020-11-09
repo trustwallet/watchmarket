@@ -76,7 +76,7 @@ func init() {
 	redisCache := rediscache.Init(*r, configuration.RestAPI.Cache)
 
 	charts = chartscontroller.NewController(redisCache, memoryCache, database, chartsPriority, coinInfoPriority, ratesPriority, tickerPriority, m.ChartsAPIs, configuration)
-	info = infocontroller.NewController(redisCache, chartsPriority, coinInfoPriority, ratesPriority, tickerPriority, m.ChartsAPIs, configuration)
+	info = infocontroller.NewController(database, memoryCache, chartsPriority, coinInfoPriority, ratesPriority, tickerPriority, m.ChartsAPIs, configuration)
 	tickers = tickerscontroller.NewController(database, memoryCache, ratesPriority, tickerPriority, configuration)
 	rates = ratescontroller.NewController(database, memoryCache, ratesPriority, configuration)
 	engine = internal.InitEngine(configuration.RestAPI.Mode)
