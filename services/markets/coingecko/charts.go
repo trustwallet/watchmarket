@@ -154,13 +154,9 @@ func normalizeCharts(c Charts) watchmarket.Chart {
 
 func normalizeInfo(data CoinPrice, info watchmarket.Info) watchmarket.CoinDetails {
 	return watchmarket.CoinDetails{
-		Vol24:             data.TotalVolume,
-		MarketCap:         data.MarketCap,
-		CirculatingSupply: data.CirculatingSupply,
-		TotalSupply:       data.TotalSupply,
-		Info:              &info,
-		Provider:          id,
-		ProviderURL:       getUrl(data.Id),
+		Info:        &info,
+		Provider:    id,
+		ProviderURL: getUrl(data.Id),
 	}
 }
 

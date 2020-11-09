@@ -14,11 +14,7 @@ import (
 func TestController_HandleDetailsRequest(t *testing.T) {
 	cm := getChartsMock()
 	wantedD := watchmarket.CoinDetails{
-		Provider:          "coinmarketcap",
-		Vol24:             1,
-		MarketCap:         2,
-		CirculatingSupply: 3,
-		TotalSupply:       4,
+		Provider: "coinmarketcap",
 		Info: &watchmarket.Info{
 			Name:             "2",
 			Website:          "2",
@@ -59,7 +55,7 @@ func setupController(t *testing.T, ch cache.Provider, cm chartsMock) Controller 
 	chartsAPIs := make(markets.ChartsAPIs, 1)
 	chartsAPIs[cm.GetProvider()] = cm
 
-	controller := NewController(ch, chartsPriority, coinInfoPriority, ratesPriority, tickerPriority, chartsAPIs, c)
+	controller := NewController(nil, ch, chartsPriority, coinInfoPriority, ratesPriority, tickerPriority, chartsAPIs, c)
 	assert.NotNil(t, controller)
 	return controller
 

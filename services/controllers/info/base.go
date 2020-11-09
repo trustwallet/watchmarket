@@ -6,6 +6,7 @@ import (
 	"errors"
 	log "github.com/sirupsen/logrus"
 	"github.com/trustwallet/watchmarket/config"
+	"github.com/trustwallet/watchmarket/db"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"github.com/trustwallet/watchmarket/services/cache"
 	"github.com/trustwallet/watchmarket/services/controllers"
@@ -13,7 +14,8 @@ import (
 )
 
 type Controller struct {
-	dataCache        cache.Provider
+	database         db.Instance
+	cache            cache.Provider
 	chartsPriority   []string
 	coinInfoPriority []string
 	ratesPriority    []string
@@ -23,12 +25,14 @@ type Controller struct {
 }
 
 func NewController(
+	database db.Instance,
 	cache cache.Provider,
 	chartsPriority, coinInfoPriority, ratesPriority, tickersPriority []string,
 	api markets.ChartsAPIs,
 	configuration config.Configuration,
 ) Controller {
 	return Controller{
+		database,
 		cache,
 		chartsPriority,
 		coinInfoPriority,
@@ -39,17 +43,17 @@ func NewController(
 	}
 }
 
-func (c Controller) HandleInfoRequest(dr controllers.DetailsRequest, ctx context.Context) (watchmarket.CoinDetails, error) {
-	var cd watchmarket.CoinDetails
+func (c Controller) HandleInfoRequest(dr controllers.DetailsRequest, ctx context.Context) (controllers.InfoResponse, error) {
+	var cd controllers.InfoResponse
 
 	req, err := toDetailsRequestData(dr)
 	if err != nil {
 		return cd, errors.New(watchmarket.ErrBadRequest)
 	}
 
-	key := c.dataCache.GenerateKey(info + dr.CoinQuery + dr.Token + dr.Currency)
+	key := c.cache.GenerateKey(info + dr.CoinQuery + dr.Token + dr.Currency)
 
-	cachedDetails, err := c.dataCache.Get(key, ctx)
+	cachedDetails, err := c.cache.Get(key, ctx)
 	if err == nil && len(cachedDetails) > 0 {
 		if json.Unmarshal(cachedDetails, &cd) == nil {
 			return cd, nil
@@ -58,10 +62,10 @@ func (c Controller) HandleInfoRequest(dr controllers.DetailsRequest, ctx context
 
 	result, err := c.getDetailsByPriority(req, ctx)
 	if err != nil {
-		return watchmarket.CoinDetails{}, errors.New(watchmarket.ErrInternal)
+		return controllers.InfoResponse{}, errors.New(watchmarket.ErrInternal)
 	}
 
-	if result.Info != nil && result.IsEmpty() {
+	if result.Info != nil && result.Vol24 != 0 && result.TotalSupply != 0 && result.CirculatingSupply != 0 {
 		result.Info = nil
 	}
 
@@ -71,7 +75,7 @@ func (c Controller) HandleInfoRequest(dr controllers.DetailsRequest, ctx context
 	}
 
 	if result.Info != nil {
-		err = c.dataCache.Set(key, newCache, ctx)
+		err = c.cache.Set(key, newCache, ctx)
 		if err != nil {
 			log.WithFields(log.Fields{"err": err}).Error("failed to save cache")
 		}

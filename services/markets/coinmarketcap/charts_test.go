@@ -72,12 +72,8 @@ func Test_normalizeInfo(t *testing.T) {
 				},
 			},
 			watchmarket.CoinDetails{
-				Provider:          id,
-				ProviderURL:       "https://coinmarketcap.com/currencies/test/",
-				Vol24:             444,
-				MarketCap:         555,
-				CirculatingSupply: 111,
-				TotalSupply:       222,
+				Provider:    id,
+				ProviderURL: "https://coinmarketcap.com/currencies/test/",
 			},
 		},
 		{
@@ -98,18 +94,14 @@ func Test_normalizeInfo(t *testing.T) {
 				},
 			},
 			watchmarket.CoinDetails{
-				Provider:          id,
-				ProviderURL:       "https://coinmarketcap.com/currencies/test/",
-				Vol24:             444,
-				MarketCap:         555,
-				CirculatingSupply: 111,
-				TotalSupply:       222,
+				Provider:    id,
+				ProviderURL: "https://coinmarketcap.com/currencies/test/",
 			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			gotInfo, err := normalizeInfo(tt.args.currency, tt.args.cmcCoin, tt.args.data, nil)
+			gotInfo, err := normalizeInfo(tt.args.data, nil)
 			assert.Nil(t, err)
 			assert.True(t, reflect.DeepEqual(tt.wantInfo, gotInfo))
 		})

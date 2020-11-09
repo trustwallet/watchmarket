@@ -55,13 +55,9 @@ type (
 	}
 
 	CoinDetails struct {
-		Provider          string  `json:"provider,omitempty"`
-		ProviderURL       string  `json:"provider_url,omitempty"`
-		Vol24             float64 `json:"volume_24"`
-		MarketCap         float64 `json:"market_cap"`
-		CirculatingSupply float64 `json:"circulating_supply"`
-		TotalSupply       float64 `json:"total_supply"`
-		Info              *Info   `json:"info,omitempty"`
+		Provider    string `json:"provider,omitempty"`
+		ProviderURL string `json:"provider_url,omitempty"`
+		Info        *Info  `json:"info,omitempty"`
 	}
 
 	Info struct {
