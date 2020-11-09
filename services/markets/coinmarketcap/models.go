@@ -25,9 +25,11 @@ type (
 
 	Data struct {
 		Coin
-		LastUpdated time.Time `json:"last_updated"`
-		Platform    Platform  `json:"platform"`
-		Quote       Quote     `json:"quote"`
+		LastUpdated       time.Time `json:"last_updated"`
+		CirculatingSupply float64   `json:"circulating_supply"`
+		TotalSupply       float64   `json:"total_supply"`
+		Platform          Platform  `json:"platform"`
+		Quote             Quote     `json:"quote"`
 	}
 
 	Platform struct {

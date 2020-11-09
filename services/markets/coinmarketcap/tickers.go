@@ -57,9 +57,11 @@ func normalizeTicker(price Data, coinsMap []CoinMap, provider, currency string) 
 				Currency:  currency,
 				Provider:  provider,
 			},
-			LastUpdate: price.LastUpdated,
-			Volume:     price.Quote.USD.Volume,
-			MarketCap:  price.Quote.USD.MarketCap,
+			LastUpdate:        price.LastUpdated,
+			Volume:            price.Quote.USD.Volume,
+			MarketCap:         price.Quote.USD.MarketCap,
+			TotalSupply:       price.TotalSupply,
+			CirculatingSupply: price.CirculatingSupply,
 		})
 		return tickersList
 	}
@@ -81,9 +83,11 @@ func normalizeTicker(price Data, coinsMap []CoinMap, provider, currency string) 
 				Currency:  currency,
 				Provider:  provider,
 			},
-			LastUpdate: price.LastUpdated,
-			Volume:     price.Quote.USD.Volume,
-			MarketCap:  price.Quote.USD.MarketCap,
+			LastUpdate:        price.LastUpdated,
+			Volume:            price.Quote.USD.Volume,
+			MarketCap:         price.Quote.USD.MarketCap,
+			TotalSupply:       price.TotalSupply,
+			CirculatingSupply: price.CirculatingSupply,
 		})
 	}
 
