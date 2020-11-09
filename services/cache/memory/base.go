@@ -7,6 +7,7 @@ import (
 	"errors"
 	gocache "github.com/patrickmn/go-cache"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
+	"time"
 )
 
 type Instance struct {
@@ -17,7 +18,7 @@ type Instance struct {
 const id = "memory"
 
 func Init() Instance {
-	return Instance{id: id, Cache: gocache.New(gocache.NoExpiration, gocache.NoExpiration)}
+	return Instance{id: id, Cache: gocache.New(time.Hour, time.Hour*10)}
 }
 
 func (i Instance) GetID() string {
