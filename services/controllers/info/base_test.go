@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/stretchr/testify/assert"
 	"github.com/trustwallet/watchmarket/config"
+	"github.com/trustwallet/watchmarket/db/models"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"github.com/trustwallet/watchmarket/services/cache"
 	"github.com/trustwallet/watchmarket/services/controllers"
@@ -28,34 +29,45 @@ func TestController_HandleDetailsRequest(t *testing.T) {
 		},
 	}
 	cm.wantedDetails = wantedD
-	c := setupController(t, getCacheMock(), cm)
+
+	db := getDbMock()
+	db.WantedTickers = []models.Ticker{{CirculatingSupply: 1, TotalSupply: 1, MarketCap: 1, Volume: 1, Provider: "coinmarketcap"}}
+	db.WantedRates = []models.Rate{{Currency: "RUB", Rate: 10, Provider: "fixer"}}
+	c := setupController(t, db, getCacheMock(), cm)
 	assert.NotNil(t, c)
 	details, err := c.HandleInfoRequest(controllers.DetailsRequest{
 		CoinQuery: "0",
 		Token:     "2",
-		Currency:  "3",
+		Currency:  "RUB",
 	}, context.Background())
 	assert.Nil(t, err)
-	assert.Equal(t, wantedD, details)
+	assert.Equal(t, controllers.InfoResponse{
+		Provider:          wantedD.Provider,
+		ProviderURL:       wantedD.ProviderURL,
+		Vol24:             0.1,
+		MarketCap:         0.1,
+		CirculatingSupply: 1,
+		TotalSupply:       1,
+	}, details)
 }
 
 func TestNewController(t *testing.T) {
-	assert.NotNil(t, setupController(t, getCacheMock(), getChartsMock()))
+	assert.NotNil(t, setupController(t, getDbMock(), getCacheMock(), getChartsMock()))
 }
 
-func setupController(t *testing.T, ch cache.Provider, cm chartsMock) Controller {
+func setupController(t *testing.T, db dbMock, ch cache.Provider, cm chartsMock) Controller {
 	c := config.Init("../../../config.yml")
 	assert.NotNil(t, c)
 
 	chartsPriority := []string{"coinmarketcap"}
-	ratesPriority := c.Markets.Priority.Rates
-	tickerPriority := c.Markets.Priority.Tickers
-	coinInfoPriority := c.Markets.Priority.CoinInfo
+	ratesPriority := []string{"coinmarketcap"}
+	tickerPriority := []string{"coinmarketcap"}
+	coinInfoPriority := []string{"coinmarketcap"}
 
 	chartsAPIs := make(markets.ChartsAPIs, 1)
 	chartsAPIs[cm.GetProvider()] = cm
 
-	controller := NewController(nil, ch, chartsPriority, coinInfoPriority, ratesPriority, tickerPriority, chartsAPIs, c)
+	controller := NewController(db, ch, chartsPriority, coinInfoPriority, ratesPriority, tickerPriority, chartsAPIs, c)
 	assert.NotNil(t, controller)
 	return controller
 
@@ -117,4 +129,49 @@ func (cm chartsMock) GetCoinData(coinID uint, token, currency string, ctx contex
 
 func (cm chartsMock) GetProvider() string {
 	return "coinmarketcap"
+}
+
+func getDbMock() dbMock {
+	return dbMock{}
+}
+
+type dbMock struct {
+	WantedRates        []models.Rate
+	WantedTickers      []models.Ticker
+	WantedTickersError error
+	WantedRatesError   error
+}
+
+func (d dbMock) GetRates(currency string, ctx context.Context) ([]models.Rate, error) {
+	res := make([]models.Rate, 0)
+	for _, r := range d.WantedRates {
+		if r.Currency == currency {
+			res = append(res, r)
+		}
+	}
+	return res, d.WantedRatesError
+}
+
+func (d dbMock) AddRates(rates []models.Rate, batchLimit uint, ctx context.Context) error {
+	return nil
+}
+
+func (d dbMock) AddTickers(tickers []models.Ticker, batchLimit uint, ctx context.Context) error {
+	return nil
+}
+
+func (d dbMock) GetAllTickers(ctx context.Context) ([]models.Ticker, error) {
+	return nil, nil
+}
+
+func (d dbMock) GetAllRates(ctx context.Context) ([]models.Rate, error) {
+	return nil, nil
+}
+
+func (d dbMock) GetTickers(coin uint, tokenId string, ctx context.Context) ([]models.Ticker, error) {
+	return d.WantedTickers, d.WantedTickersError
+}
+
+func (d dbMock) GetTickersByQueries(tickerQueries []models.TickerQuery, ctx context.Context) ([]models.Ticker, error) {
+	return d.WantedTickers, d.WantedTickersError
 }
