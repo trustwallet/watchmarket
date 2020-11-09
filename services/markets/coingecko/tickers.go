@@ -141,9 +141,11 @@ func createTicker(price CoinPrice, coinType watchmarket.CoinType, coinID uint, c
 			Currency:  currency,
 			Provider:  provider,
 		},
-		LastUpdate: price.LastUpdated,
-		MarketCap:  price.MarketCap,
-		Volume:     price.TotalVolume,
+		LastUpdate:        price.LastUpdated,
+		MarketCap:         price.MarketCap,
+		Volume:            price.TotalVolume,
+		CirculatingSupply: price.CirculatingSupply,
+		TotalSupply:       price.TotalSupply,
 	}
 }
 
