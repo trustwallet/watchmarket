@@ -92,10 +92,8 @@ func (c Controller) getDetailsByPriority(data detailsNormalizedRequest, ctx cont
 		if err != nil {
 			return controllers.InfoResponse{}, err
 		}
-		result.CirculatingSupply *= 1 / rate
 		result.MarketCap *= 1 / rate
 		result.Vol24 *= 1 / rate
-		result.TotalSupply *= 1 / rate
 	}
 	return result, nil
 }
