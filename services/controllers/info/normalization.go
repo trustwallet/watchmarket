@@ -75,13 +75,12 @@ func (c Controller) getDetailsByPriority(data detailsNormalizedRequest, ctx cont
 	if err != nil {
 		return controllers.InfoResponse{}, err
 	}
+	result.CirculatingSupply = tickerData.CirculatingSupply
+	result.MarketCap = tickerData.MarketCap
+	result.Vol24 = tickerData.Vol24
+	result.TotalSupply = tickerData.TotalSupply
 
-	if data.Currency == watchmarket.DefaultCurrency {
-		result.CirculatingSupply = tickerData.CirculatingSupply
-		result.MarketCap = tickerData.MarketCap
-		result.Vol24 = tickerData.Vol24
-		result.TotalSupply = tickerData.TotalSupply
-	} else {
+	if data.Currency != watchmarket.DefaultCurrency {
 		rates, err := c.database.GetRates(data.Currency, ctx)
 		if err != nil {
 			return controllers.InfoResponse{}, err
