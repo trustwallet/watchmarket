@@ -190,12 +190,8 @@ func TestSetupInfoAPI(t *testing.T) {
 	e := setupEngine()
 	server := httptest.NewServer(e)
 	defer server.Close()
-	wantedInfo := watchmarket.CoinDetails{
-		Provider:          "coinmarketcap",
-		Vol24:             1,
-		MarketCap:         2,
-		CirculatingSupply: 3,
-		TotalSupply:       4,
+	wantedInfo := controllers.InfoResponse{
+		Provider: "coinmarketcap",
 		Info: &watchmarket.Info{
 			Name:             "a",
 			Website:          "b",
@@ -224,7 +220,7 @@ func TestSetupInfoAPI(t *testing.T) {
 	resp, err := http.Get(server.URL + "/v2/market/info/c60_ta")
 	assert.Nil(t, err)
 
-	givenResp := watchmarket.CoinDetails{}
+	givenResp := controllers.InfoResponse{}
 
 	body, err := ioutil.ReadAll(resp.Body)
 	assert.Nil(t, err)
@@ -237,7 +233,7 @@ func TestSetupInfoAPI(t *testing.T) {
 	resp2, err := http.Get(server.URL + "/v1/market/info?coin=60&token=a")
 	assert.Nil(t, err)
 
-	givenResp2 := watchmarket.CoinDetails{}
+	givenResp2 := controllers.InfoResponse{}
 
 	body2, err := ioutil.ReadAll(resp2.Body)
 	assert.Nil(t, err)
@@ -278,7 +274,7 @@ type (
 	}
 
 	infoControllerMock struct {
-		wantedInfo  watchmarket.CoinDetails
+		wantedInfo  controllers.InfoResponse
 		wantedError error
 	}
 )
@@ -290,7 +286,7 @@ func getChartsMock(wantedCharts watchmarket.Chart, wantedError error) controller
 	}
 }
 
-func getInfoMock(wantedInfo watchmarket.CoinDetails, wantedError error) controllers.InfoController {
+func getInfoMock(wantedInfo controllers.InfoResponse, wantedError error) controllers.InfoController {
 	return infoControllerMock{
 		wantedInfo,
 		wantedError,
@@ -309,7 +305,7 @@ func (c chartsControllerMock) HandleChartsRequest(cr controllers.ChartRequest, c
 	return c.wantedCharts, c.wantedError
 }
 
-func (c infoControllerMock) HandleInfoRequest(dr controllers.DetailsRequest, ctx context.Context) (watchmarket.CoinDetails, error) {
+func (c infoControllerMock) HandleInfoRequest(dr controllers.DetailsRequest, ctx context.Context) (controllers.InfoResponse, error) {
 	return c.wantedInfo, c.wantedError
 }
 
