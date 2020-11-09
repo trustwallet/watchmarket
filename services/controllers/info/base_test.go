@@ -48,6 +48,7 @@ func TestController_HandleDetailsRequest(t *testing.T) {
 		MarketCap:         0.1,
 		CirculatingSupply: 1,
 		TotalSupply:       1,
+		Info:              wantedD.Info,
 	}, details)
 }
 

@@ -8,6 +8,7 @@ import (
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"github.com/trustwallet/watchmarket/services/controllers"
 	"strconv"
+	"strings"
 )
 
 type (
@@ -64,7 +65,7 @@ func (c Controller) getDetailsByPriority(data detailsNormalizedRequest, ctx cont
 	result.Provider = details.Provider
 	result.ProviderURL = details.ProviderURL
 
-	dbTickers, err := c.database.GetTickersByQueries([]models.TickerQuery{{Coin: data.Coin, TokenId: data.Token}}, ctx)
+	dbTickers, err := c.database.GetTickersByQueries([]models.TickerQuery{{Coin: data.Coin, TokenId: strings.ToLower(data.Token)}}, ctx)
 	if err != nil {
 		return controllers.InfoResponse{}, err
 	}

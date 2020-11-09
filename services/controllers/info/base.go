@@ -65,7 +65,7 @@ func (c Controller) HandleInfoRequest(dr controllers.DetailsRequest, ctx context
 		return controllers.InfoResponse{}, errors.New(watchmarket.ErrInternal)
 	}
 
-	if result.Info != nil && result.Vol24 != 0 && result.TotalSupply != 0 && result.CirculatingSupply != 0 {
+	if result.Info != nil && result.Vol24 == 0 && result.TotalSupply == 0 && result.CirculatingSupply == 0 {
 		result.Info = nil
 	}
 
