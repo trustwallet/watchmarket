@@ -17,6 +17,7 @@ type (
 		GetTickersByQueries(tickerQueries []models.TickerQuery, ctx context.Context) ([]models.Ticker, error)
 
 		GetAssetsFromAlerts(interval models.Interval, ctx context.Context) ([]string, error)
+		GetAlertsByIntervalToUpdate(interval models.Interval, ctx context.Context) ([]models.Alert, error)
 		AddNewAlerts(alerts []models.Alert, ctx context.Context) error
 	}
 )

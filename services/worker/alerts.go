@@ -7,25 +7,27 @@ import (
 )
 
 func (w Worker) AlertsIndexer() {
-	err := w.initAssetsListForDB()
+	intervals := []models.Interval{models.Hour, models.Day, models.Week}
+
+	err := w.initAssetsListForDB(intervals)
 	if err != nil {
 		log.Error(err)
 		return
 	}
 
-	assets, err := w.getAssetsToUpdate()
+	alerts, err := w.getAlertsToUpdate(intervals)
 	if err != nil {
 		log.Error(err)
 		return
 	}
 
-	currentPrices, err := w.getCurrentPrices()
+	currentPrices, err := w.getCurrentPrices(alerts)
 	if err != nil {
 		log.Error(err)
 		return
 	}
 
-	oldPrices, err := w.getOldPrices()
+	oldPrices, err := w.getOldPrices(alerts)
 	if err != nil {
 		log.Error(err)
 		return
@@ -37,7 +39,7 @@ func (w Worker) AlertsIndexer() {
 		return
 	}
 
-	log.Info(assets)
+	log.Info(alerts)
 	log.Info(currentPrices)
 	log.Info(oldPrices)
 	log.Info(priceDifference)
@@ -49,10 +51,8 @@ func (w Worker) AlertsIndexer() {
 	}
 }
 
-func (w Worker) initAssetsListForDB() error {
+func (w Worker) initAssetsListForDB(intervals []models.Interval) error {
 	ctx := context.Background()
-	intervals := []models.Interval{models.Hour, models.Day, models.Week}
-
 	var intervalsToInit []models.Interval
 
 	for _, interval := range intervals {
@@ -95,15 +95,24 @@ func (w Worker) initAssetsListForDB() error {
 	return nil
 }
 
-func (w Worker) getAssetsToUpdate() ([]string, error) {
+func (w Worker) getAlertsToUpdate(intervals []models.Interval) ([]models.Alert, error) {
+	// get all assets where now - updated_at >= interval
+	var result []models.Alert
+	for _, interval := range intervals {
+		a, err := w.db.GetAlertsByIntervalToUpdate(interval, context.Background())
+		if err != nil {
+			return nil, err
+		}
+		result = append(result, a...)
+	}
+	return result, nil
+}
+
+func (w Worker) getCurrentPrices(alerts []models.Alert) (map[string]float64, error) {
 	return nil, nil
 }
 
-func (w Worker) getCurrentPrices() (map[string]float64, error) {
-	return nil, nil
-}
-
-func (w Worker) getOldPrices() (map[string]float64, error) {
+func (w Worker) getOldPrices(alerts []models.Alert) (map[string]float64, error) {
 	return nil, nil
 }
 
