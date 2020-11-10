@@ -5,9 +5,9 @@ import "time"
 type Interval string
 
 type Alert struct {
-	UpdatedAt time.Time
-	AssetID   string
-	Interval
+	UpdatedAt  time.Time
+	AssetID    string   `gorm:"primaryKey; index:,"`
+	Interval   Interval `gorm:"primaryKey; index:,"`
 	Price      float64
 	Difference float64
 }

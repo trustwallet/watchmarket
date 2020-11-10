@@ -5,6 +5,8 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/trustwallet/golibs/asset"
 	"github.com/trustwallet/watchmarket/db/models"
+	"github.com/trustwallet/watchmarket/pkg/watchmarket"
+	"time"
 )
 
 func (w Worker) AlertsIndexer() {
@@ -28,17 +30,13 @@ func (w Worker) AlertsIndexer() {
 		return
 	}
 
-	updatedAlerts, err := w.getUpdatedAlerts(currentPrices, alerts)
+	updatedAlerts, err := w.updateAlerts(currentPrices, alerts)
 	if err != nil {
 		log.Error(err)
 		return
 	}
 
-	log.Info(alerts)
-	log.Info(currentPrices)
-	log.Info(updatedAlerts)
-
-	err = w.updateAlerts()
+	err = w.db.AddNewAlerts(updatedAlerts, context.Background())
 	if err != nil {
 		log.Error(err)
 		return
@@ -56,9 +54,8 @@ func (w Worker) initAssetsListForDB(intervals []models.Interval) error {
 			continue
 		}
 		if len(assets) == 0 {
-			continue
+			intervalsToInit = append(intervalsToInit, interval)
 		}
-		intervalsToInit = append(intervalsToInit, interval)
 	}
 
 	if len(intervalsToInit) == 0 {
@@ -133,20 +130,43 @@ func (w Worker) getCurrentPrices(alerts []models.Alert) (map[string]float64, err
 	return result, nil
 }
 
-func (w Worker) getUpdatedAlerts(currentPrices map[string]float64, alerts []models.Alert) (map[string]float64, error) {
-	result := make(map[string]float64)
+func (w Worker) updateAlerts(currentPrices map[string]float64, alerts []models.Alert) ([]models.Alert, error) {
+	result := make([]models.Alert, 0, len(alerts))
 	for _, a := range alerts {
 		oldPrice := a.Price
 		newPrice, ok := currentPrices[a.AssetID]
 		if !ok {
 			continue
 		}
-		difference := newPrice * 100 / oldPrice
-		result[a.AssetID] = difference
+		difference := calculatePriceDifference(oldPrice, newPrice)
+		a.Difference = watchmarket.TruncateWithPrecision(difference, 2)
+
+		if time.Now().Unix()-a.UpdatedAt.Unix() >= intervalToUnix("1") {
+			a.Price = newPrice
+		}
+		result = append(result, a)
 	}
 	return result, nil
 }
 
-func (w Worker) updateAlerts() error {
-	return nil
+func intervalToUnix(interval models.Interval) int64 {
+	switch interval {
+	case models.Day:
+		return 24 * 60 * 60
+	case models.Week:
+		return 7 * 24 * 60 * 60
+	case models.Hour:
+		return 60 * 60
+	default:
+		return 0
+	}
+}
+
+func calculatePriceDifference(old, new float64) float64 {
+	difference := old - new
+	if difference < 0 {
+		return -(difference / 100)
+	} else {
+		return difference / 100
+	}
 }

@@ -51,10 +51,12 @@ func init() {
 func main() {
 	w.AddOperation(c, configuration.Worker.Rates, w.FetchAndSaveRates)
 	w.AddOperation(c, configuration.Worker.Tickers, w.FetchAndSaveTickers)
+	w.AddOperation(c, configuration.Worker.Tickers, w.AlertsIndexer)
 
 	go c.Start()
 	go w.FetchAndSaveRates()
 	go w.FetchAndSaveTickers()
+	go w.AlertsIndexer()
 
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
