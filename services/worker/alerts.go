@@ -28,7 +28,7 @@ func (w Worker) AlertsIndexer() {
 		return
 	}
 
-	priceDifference, err := w.getUpdatedAlerts(currentPrices, alerts)
+	updatedAlerts, err := w.getUpdatedAlerts(currentPrices, alerts)
 	if err != nil {
 		log.Error(err)
 		return
@@ -36,7 +36,7 @@ func (w Worker) AlertsIndexer() {
 
 	log.Info(alerts)
 	log.Info(currentPrices)
-	log.Info(priceDifference)
+	log.Info(updatedAlerts)
 
 	err = w.updateAlerts()
 	if err != nil {
@@ -65,7 +65,7 @@ func (w Worker) initAssetsListForDB(intervals []models.Interval) error {
 		return nil
 	}
 
-	allTickers, err := w.db.GetAllTickers(ctx)
+	allTickers, err := w.db.GetTickersByQueries([]models.TickerQuery{{Coin: 714}, {Coin: 0}, {Coin: 60}}, ctx)
 	if err != nil {
 		return err
 	}
@@ -73,12 +73,15 @@ func (w Worker) initAssetsListForDB(intervals []models.Interval) error {
 	for _, interval := range intervalsToInit {
 		var alerts []models.Alert
 		for _, ticker := range allTickers {
+			// will need to resolve multiple providers later
+			if ticker.Provider == "coingecko" {
+				continue
+			}
 			a := models.Alert{
 				AssetID:    ticker.ID,
 				Interval:   interval,
 				Difference: 0,
 				Price:      ticker.Value,
-				Display:    false,
 			}
 			alerts = append(alerts, a)
 		}
@@ -91,7 +94,6 @@ func (w Worker) initAssetsListForDB(intervals []models.Interval) error {
 }
 
 func (w Worker) getAlertsToUpdate(intervals []models.Interval) ([]models.Alert, error) {
-	// get all assets where now - updated_at >= interval
 	var result []models.Alert
 	for _, interval := range intervals {
 		a, err := w.db.GetAlertsByIntervalToUpdate(interval, context.Background())
@@ -122,6 +124,10 @@ func (w Worker) getCurrentPrices(alerts []models.Alert) (map[string]float64, err
 	}
 	result := make(map[string]float64)
 	for _, t := range tickers {
+		// will need to resolve multiple providers later
+		if t.Provider == "coingecko" {
+			continue
+		}
 		result[t.ID] = t.Value
 	}
 	return result, nil

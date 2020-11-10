@@ -10,7 +10,6 @@ type Alert struct {
 	Interval
 	Price      float64
 	Difference float64
-	Display    bool
 }
 
 const (

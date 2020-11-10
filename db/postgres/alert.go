@@ -10,6 +10,7 @@ func (i *Instance) GetAlertsToShow(currency string, ctx context.Context) ([]stri
 }
 
 func (i *Instance) GetAssetsFromAlerts(interval models.Interval, ctx context.Context) ([]string, error) {
+
 	return nil, nil
 }
 
