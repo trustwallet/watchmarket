@@ -106,6 +106,21 @@ func (c cacheMock) SetWithTime(key string, data []byte, time int64, ctx context.
 	return nil
 }
 
+func (d dbMock) GetAssetsFromAlerts(interval models.Interval, ctx context.Context) ([]string, error) {
+	return nil, nil
+}
+func (d dbMock) GetAlertsByInterval(interval models.Interval, ctx context.Context) ([]models.Alert, error) {
+	return nil, nil
+}
+func (d dbMock) GetAlertsByIntervalWithDifference(interval models.Interval,
+	difference float64, ctx context.Context) ([]models.Alert, error) {
+	return nil, nil
+}
+
+func (d dbMock) AddNewAlerts(alerts []models.Alert, ctx context.Context) error {
+	return nil
+}
+
 func (c cacheMock) GetLenOfSavedItems() int {
 	return 0
 }

@@ -411,6 +411,21 @@ func (d dbMock) GetAllRates(ctx context.Context) ([]models.Rate, error) {
 	return nil, nil
 }
 
+func (d dbMock) GetAssetsFromAlerts(interval models.Interval, ctx context.Context) ([]string, error) {
+	return nil, nil
+}
+func (d dbMock) GetAlertsByInterval(interval models.Interval, ctx context.Context) ([]models.Alert, error) {
+	return nil, nil
+}
+func (d dbMock) GetAlertsByIntervalWithDifference(interval models.Interval,
+	difference float64, ctx context.Context) ([]models.Alert, error) {
+	return nil, nil
+}
+
+func (d dbMock) AddNewAlerts(alerts []models.Alert, ctx context.Context) error {
+	return nil
+}
+
 func (d dbMock) GetTickers(coin uint, tokenId string, ctx context.Context) ([]models.Ticker, error) {
 	return d.WantedTickers, d.WantedTickersError
 }

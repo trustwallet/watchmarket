@@ -32,7 +32,7 @@ storage:
     url: redis://localhost:6379
   postgres:
     url: postgresql://user:pass@localhost/watchmarket?sslmode=disable
-    logs: true
+    logs: false
 
 worker:
   tickers: 5m
