@@ -1,6 +1,10 @@
 package worker
 
-import log "github.com/sirupsen/logrus"
+import (
+	"context"
+	log "github.com/sirupsen/logrus"
+	"github.com/trustwallet/watchmarket/db/models"
+)
 
 func (w Worker) AlertsIndexer() {
 	err := w.initAssetsListForDB()
@@ -46,6 +50,48 @@ func (w Worker) AlertsIndexer() {
 }
 
 func (w Worker) initAssetsListForDB() error {
+	ctx := context.Background()
+	intervals := []models.Interval{models.Hour, models.Day, models.Week}
+
+	var intervalsToInit []models.Interval
+
+	for _, interval := range intervals {
+		assets, err := w.db.GetAssetsFromAlerts(interval, ctx)
+		if err != nil {
+			log.Error(err)
+			continue
+		}
+		if len(assets) == 0 {
+			continue
+		}
+		intervalsToInit = append(intervalsToInit, interval)
+	}
+
+	if len(intervalsToInit) == 0 {
+		return nil
+	}
+
+	allTickers, err := w.db.GetAllTickers(ctx)
+	if err != nil {
+		return err
+	}
+
+	for _, interval := range intervalsToInit {
+		var alerts []models.Alert
+		for _, ticker := range allTickers {
+			a := models.Alert{
+				AssetID:    ticker.ID,
+				Interval:   interval,
+				Difference: 0,
+				Display:    false,
+			}
+			alerts = append(alerts, a)
+		}
+		err = w.db.AddNewAlerts(alerts, ctx)
+		if err != nil {
+			return err
+		}
+	}
 	return nil
 }
 

@@ -15,5 +15,8 @@ type (
 		GetTickers(coin uint, tokenId string, ctx context.Context) ([]models.Ticker, error)
 		GetAllTickers(ctx context.Context) ([]models.Ticker, error)
 		GetTickersByQueries(tickerQueries []models.TickerQuery, ctx context.Context) ([]models.Ticker, error)
+
+		GetAssetsFromAlerts(interval models.Interval, ctx context.Context) ([]string, error)
+		AddNewAlerts(alerts []models.Alert, ctx context.Context) error
 	}
 )
