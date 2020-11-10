@@ -8,6 +8,7 @@ type Alert struct {
 	UpdatedAt time.Time
 	AssetID   string
 	Interval
+	Price      float64
 	Difference float64
 	Display    bool
 }
