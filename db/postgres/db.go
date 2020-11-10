@@ -31,6 +31,7 @@ func New(url string, logMode bool) (*Instance, error) {
 	err = db.AutoMigrate(
 		&models.Rate{},
 		&models.Ticker{},
+		&models.Alert{},
 	)
 	if err != nil {
 		log.Error(err)
