@@ -40,6 +40,7 @@ func InitAPI(
 	rates controllers.RatesController,
 	charts controllers.ChartsController,
 	info controllers.InfoController,
+	alerts controllers.AlertsController,
 	configuration config.Configuration,
 ) {
 	api.SetupBasicAPI(engine)
@@ -47,6 +48,7 @@ func InitAPI(
 	api.SetupChartsAPI(engine, charts, configuration.RestAPI.Charts.CacheControl)
 	api.SetupInfoAPI(engine, info, configuration.RestAPI.Info.CacheControl)
 	api.SetupRatesAPI(engine, rates)
+	api.SetupAlertsAPI(engine, alerts)
 	api.SetupSwaggerAPI(engine)
 }
 

@@ -41,9 +41,22 @@ func (i Instance) AddNewAlerts(alerts []models.Alert, ctx context.Context) error
 	return nil
 }
 
-func (i Instance) GetAlertsByIntervalToUpdate(interval models.Interval, ctx context.Context) ([]models.Alert, error) {
+func (i Instance) GetAlertsByInterval(interval models.Interval, ctx context.Context) ([]models.Alert, error) {
 	var alerts []models.Alert
 	err := i.Gorm.Model(&models.Alert{}).Where("interval = ?", interval).Find(&alerts).Error
+	if err != nil {
+		return nil, err
+	}
+	return alerts, nil
+}
+
+func (i Instance) GetAlertsByIntervalWithDifference(interval models.Interval,
+	difference float64, ctx context.Context) ([]models.Alert, error) {
+	var alerts []models.Alert
+	err := i.Gorm.
+		Model(&models.Alert{}).
+		Where("interval = ? and difference >=", interval, difference).
+		Find(&alerts).Error
 	if err != nil {
 		return nil, err
 	}

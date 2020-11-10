@@ -22,4 +22,8 @@ type (
 	InfoController interface {
 		HandleInfoRequest(dr DetailsRequest, ctx context.Context) (InfoResponse, error)
 	}
+
+	AlertsController interface {
+		HandleAlertsRequest(ar AlertsRequest, ctx context.Context) (AlertsResponse, error)
+	}
 )

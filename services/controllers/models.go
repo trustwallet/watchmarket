@@ -63,4 +63,17 @@ type (
 		TotalSupply       float64           `json:"total_supply"`
 		Info              *watchmarket.Info `json:"info,omitempty"`
 	}
+
+	AlertsRequest struct {
+		Interval string `json:"interval"`
+	}
+
+	AlertsResponse struct {
+		Assets map[string]AlertsDetails
+	}
+
+	AlertsDetails struct {
+		PriceDifference float64 `json:"price_difference"`
+		UpdatedAt       int64   `json:"updated_at"`
+	}
 )

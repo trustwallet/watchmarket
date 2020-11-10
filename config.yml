@@ -1,9 +1,9 @@
 markets:
   priority: # for each data type: [first in queue, next, ...]
-    charts: [coinmarketcap, coingecko]
-    coin_info: [coinmarketcap, coingecko]
-    tickers: [coinmarketcap, coingecko, binancedex]
-    rates: [fixer, coinmarketcap, coingecko]
+    charts: [ coinmarketcap, coingecko ]
+    coin_info: [ coinmarketcap, coingecko ]
+    tickers: [ coinmarketcap, coingecko, binancedex ]
+    rates: [ fixer, coinmarketcap, coingecko ]
 
   binancedex:
     api: https://dex.binance.org/api
@@ -26,6 +26,7 @@ markets:
 
   assets: https://raw.githubusercontent.com/trustwallet/assets/master/blockchains # Assets url - details about TW tokens
 
+
 storage:
   redis:
     url: redis://localhost:6379
@@ -36,6 +37,7 @@ storage:
 worker:
   tickers: 5m
   rates: 5m
+  alerts: 2m
   batch_limit: 3000
 
 rest_api:
@@ -50,9 +52,12 @@ rest_api:
     cache_control: 10m
   info:
     cache_control: 10m
-  cache:  15m
+  cache: 15m
   request_limit: 500
   use_memory_cache: true
   update_time:
     memory_cache_tickers: 5m
     memory_cache_rates: 5m
+  alerts:
+    # minimum price difference to show it in alerts
+    price_difference: 10

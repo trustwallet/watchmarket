@@ -93,7 +93,7 @@ func (w Worker) initAssetsListForDB(intervals []models.Interval) error {
 func (w Worker) getAlertsToUpdate(intervals []models.Interval) ([]models.Alert, error) {
 	var result []models.Alert
 	for _, interval := range intervals {
-		a, err := w.db.GetAlertsByIntervalToUpdate(interval, context.Background())
+		a, err := w.db.GetAlertsByInterval(interval, context.Background())
 		if err != nil {
 			return nil, err
 		}
@@ -141,7 +141,7 @@ func (w Worker) updateAlerts(currentPrices map[string]float64, alerts []models.A
 		difference := calculatePriceDifference(oldPrice, newPrice)
 		a.Difference = watchmarket.TruncateWithPrecision(difference, 2)
 
-		if time.Now().Unix()-a.UpdatedAt.Unix() >= intervalToUnix("1") {
+		if time.Now().Unix()-a.UpdatedAt.Unix() >= intervalToUnix(a.Interval) {
 			a.Price = newPrice
 		}
 		result = append(result, a)

@@ -51,6 +51,7 @@ type Configuration struct {
 	Worker struct {
 		Tickers    string `mapstructure:"tickers"`
 		Rates      string `mapstructure:"rates"`
+		Alerts     string `mapstructure:"alerts"`
 		BatchLimit uint   `mapstructure:"batch_limit"`
 	} `mapstructure:"worker"`
 
@@ -76,6 +77,9 @@ type Configuration struct {
 			Tickers string `mapstructure:"memory_cache_tickers"`
 			Rates   string `mapstructure:"memory_cache_rates"`
 		} `mapstructure:"update_time"`
+		Alerts struct {
+			PriceDifference float64 `mapstructure:"price_difference"`
+		} `mapstructure:"alerts"`
 	} `mapstructure:"rest_api"`
 }
 
