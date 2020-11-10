@@ -69,7 +69,7 @@ type (
 	}
 
 	AlertsResponse struct {
-		Assets map[string]AlertsDetails
+		Assets map[string]AlertsDetails `json:"assets"`
 	}
 
 	AlertsDetails struct {

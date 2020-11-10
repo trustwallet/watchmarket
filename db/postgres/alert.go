@@ -55,7 +55,8 @@ func (i Instance) GetAlertsByIntervalWithDifference(interval models.Interval,
 	var alerts []models.Alert
 	err := i.Gorm.
 		Model(&models.Alert{}).
-		Where("interval = ? and difference >=", interval, difference).
+		Where("interval = ? and difference >= ?", interval, difference).
+		Or("interval = ? and difference <= ?", interval, -difference).
 		Find(&alerts).Error
 	if err != nil {
 		return nil, err

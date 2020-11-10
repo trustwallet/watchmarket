@@ -34,12 +34,14 @@ func (c Controller) HandleAlertsRequest(ar controllers.AlertsRequest, ctx contex
 
 func normalizeAlerts(alerts []models.Alert) controllers.AlertsResponse {
 	var result controllers.AlertsResponse
+	details := make(map[string]controllers.AlertsDetails)
 	for _, a := range alerts {
-		details := controllers.AlertsDetails{
+		d := controllers.AlertsDetails{
 			PriceDifference: a.Difference,
 			UpdatedAt:       a.UpdatedAt.Unix(),
 		}
-		result.Assets[a.AssetID] = details
+		details[a.AssetID] = d
 	}
+	result.Assets = details
 	return result
 }

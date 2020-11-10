@@ -32,7 +32,7 @@ storage:
     url: redis://localhost:6379
   postgres:
     url: postgresql://user:pass@localhost/watchmarket?sslmode=disable
-    logs: false
+    logs: true
 
 worker:
   tickers: 5m
@@ -60,4 +60,4 @@ rest_api:
     memory_cache_rates: 5m
   alerts:
     # minimum price difference to show it in alerts
-    price_difference: 10
+    price_difference: 0.1
