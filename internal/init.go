@@ -2,6 +2,10 @@ package internal
 
 import (
 	"flag"
+	"fmt"
+	"path/filepath"
+	"time"
+
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 	"github.com/trustwallet/golibs-networking/middleware"
@@ -11,7 +15,6 @@ import (
 	"github.com/trustwallet/watchmarket/services/assets"
 	"github.com/trustwallet/watchmarket/services/controllers"
 	"go.elastic.co/apm/module/apmgin"
-	"path/filepath"
 )
 
 func ParseArgs(defaultPort, defaultConfigPath string) (string, string) {
@@ -67,9 +70,25 @@ func InitEngine(ginMode string) *gin.Engine {
 	gin.SetMode(ginMode)
 	engine := gin.New()
 	engine.Use(middleware.CORSMiddleware())
-	engine.Use(gin.Logger())
+	engine.Use(Logger())
 	engine.Use(middleware.Prometheus())
 	engine.Use(apmgin.Middleware(engine))
 
 	return engine
+}
+
+func Logger() gin.HandlerFunc {
+	return gin.LoggerWithFormatter(func(param gin.LogFormatterParams) string {
+		return fmt.Sprintf("%s - [%s] \"%s %s %s %d %s \"%s\" %s\"\n",
+			param.ClientIP,
+			param.TimeStamp.Format(time.RFC1123),
+			param.Method,
+			param.Path,
+			param.Request.Proto,
+			param.StatusCode,
+			param.Latency,
+			param.Request.UserAgent(),
+			param.ErrorMessage,
+		)
+	})
 }
