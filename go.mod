@@ -34,7 +34,7 @@ require (
 	github.com/swaggo/gin-swagger v1.2.0
 	github.com/swaggo/swag v1.6.7
 	github.com/trustwallet/golibs v0.0.9
-	github.com/trustwallet/golibs-networking v0.0.0-20201031085909-9b9533057b2e
+	github.com/trustwallet/golibs-networking v0.0.2
 	go.elastic.co/apm v1.8.0
 	go.elastic.co/apm/module/apmgin v1.8.0
 	go.elastic.co/apm/module/apmgoredis v1.8.0

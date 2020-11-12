@@ -2,7 +2,6 @@ package internal
 
 import (
 	"flag"
-	"fmt"
 	"path/filepath"
 
 	"github.com/gin-gonic/gin"
@@ -69,24 +68,9 @@ func InitEngine(ginMode string) *gin.Engine {
 	gin.SetMode(ginMode)
 	engine := gin.New()
 	engine.Use(middleware.CORSMiddleware())
-	engine.Use(Logger())
+	engine.Use(middleware.Logger())
 	engine.Use(middleware.Prometheus())
 	engine.Use(apmgin.Middleware(engine))
 
 	return engine
-}
-
-func Logger() gin.HandlerFunc {
-	return gin.LoggerWithFormatter(func(param gin.LogFormatterParams) string {
-		return fmt.Sprintf("%s - \"%s %s %s %d %s \"%s\" %s\"\n",
-			param.ClientIP,
-			param.Method,
-			param.Path,
-			param.Request.Proto,
-			param.StatusCode,
-			param.Latency,
-			param.Request.UserAgent(),
-			param.ErrorMessage,
-		)
-	})
 }
