@@ -21,8 +21,6 @@ require (
 	github.com/go-redis/redis v6.15.9+incompatible
 	github.com/gotestyourself/gotestyourself v2.2.0+incompatible // indirect
 	github.com/imroc/req v0.3.0
-	github.com/jinzhu/gorm v1.9.16
-	github.com/mattn/go-sqlite3 v2.0.1+incompatible // indirect
 	github.com/mitchellh/mapstructure v1.3.3 // indirect
 	github.com/opencontainers/image-spec v1.0.1 // indirect
 	github.com/opencontainers/runc v0.1.1 // indirect
@@ -36,7 +34,7 @@ require (
 	github.com/swaggo/gin-swagger v1.2.0
 	github.com/swaggo/swag v1.6.7
 	github.com/trustwallet/golibs v0.0.9
-	github.com/trustwallet/golibs-networking v0.0.0-20201031085909-9b9533057b2e
+	github.com/trustwallet/golibs-networking v0.0.2
 	go.elastic.co/apm v1.8.0
 	go.elastic.co/apm/module/apmgin v1.8.0
 	go.elastic.co/apm/module/apmgoredis v1.8.0
