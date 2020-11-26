@@ -1,17 +1,18 @@
 package api
 
 import (
+	"net/http"
+	"time"
+
 	"github.com/chenjiandongx/ginprom"
 	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"github.com/swaggo/gin-swagger/swaggerFiles"
+	"github.com/trustwallet/golibs-networking/middleware"
 	"github.com/trustwallet/watchmarket/api/endpoint"
-	"github.com/trustwallet/watchmarket/api/middleware"
 	_ "github.com/trustwallet/watchmarket/docs"
 	"github.com/trustwallet/watchmarket/services/controllers"
-	"net/http"
-	"time"
 )
 
 func SetupBasicAPI(engine *gin.Engine) {
