@@ -1,6 +1,8 @@
-name: Tests
+name: Master CI
 
 on:
+  push:
+    branches: [ master ]
   pull_request:
     branches: [ master ]
 
@@ -21,15 +23,20 @@ jobs:
       - name: Get dependencies
         run: |
           go get -v -t -d ./...
+      - name: Build
+          run: make go-build
+
+      - name: Unit Test
+          run: make test
 
       - name: Lint
         run: make lint
 
-      - name: Unit Test
-        run: make test
-
-      - name: Upload coverage
-        run: bash <(curl -s https://codecov.io/bash) -f coverage.txt
+      - name: Swagger
+        run: make swag
 
       - name: Integration Test
         run: make integration
+
+      - name: Upload coverage
+        run: bash <(curl -s https://codecov.io/bash) -f coverage.txt
