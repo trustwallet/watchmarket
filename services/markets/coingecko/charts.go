@@ -116,7 +116,6 @@ func getCoinByID(coinMap map[string]Coin, coinId uint, token string) (Coin, erro
 	if !ok {
 		return c, errors.New("no coin found by symbol")
 	}
-
 	return c, nil
 }
 
