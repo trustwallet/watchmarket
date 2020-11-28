@@ -112,16 +112,7 @@ func getCoinByID(coinMap map[string]Coin, coinId uint, token string) (Coin, erro
 		return c, errors.New("coin not found")
 	}
 
-	c, err := getCoinByParams(coinMap, coinObj.Symbol, token)
-	if err != nil {
-		return c, err
-	}
-
-	return c, nil
-}
-
-func getCoinByParams(coinMap map[string]Coin, symbol, token string) (Coin, error) {
-	c, ok := coinMap[createID(symbol, token)]
+	c, ok = coinMap[createID(coinObj.Symbol, token)]
 	if !ok {
 		return c, errors.New("no coin found by symbol")
 	}
