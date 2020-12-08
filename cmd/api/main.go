@@ -52,7 +52,7 @@ func init() {
 	tickerPriority := configuration.Markets.Priority.Tickers
 	coinInfoPriority := configuration.Markets.Priority.CoinInfo
 
-	err := middleware.SetupSentry(configuration.Log.Sentry.DSN)
+	err := middleware.SetupSentry(configuration.Sentry.DSN)
 	if err != nil {
 		log.Error(err)
 	}

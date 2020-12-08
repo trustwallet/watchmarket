@@ -31,7 +31,7 @@ func init() {
 	_, confPath := internal.ParseArgs("", defaultConfigPath)
 	configuration = internal.InitConfig(confPath)
 
-	err := middleware.SetupSentry(configuration.Log.Sentry.DSN)
+	err := middleware.SetupSentry(configuration.Sentry.DSN)
 	if err != nil {
 		log.Error(err)
 	}

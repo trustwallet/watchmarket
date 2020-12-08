@@ -4,6 +4,7 @@ import (
 	"flag"
 	"path/filepath"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 	"github.com/trustwallet/golibs-networking/middleware"
@@ -67,9 +68,8 @@ func InitConfig(confPath string) config.Configuration {
 func InitEngine(ginMode string) *gin.Engine {
 	gin.SetMode(ginMode)
 	engine := gin.New()
-	engine.Use(middleware.CORSMiddleware())
+	engine.Use(cors.Default())
 	engine.Use(middleware.Logger())
-	engine.Use(middleware.Prometheus())
 	engine.Use(apmgin.Middleware(engine))
 
 	return engine

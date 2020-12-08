@@ -79,11 +79,9 @@ type Configuration struct {
 		} `mapstructure:"update_time"`
 	} `mapstructure:"rest_api"`
 
-	Log struct {
-		Sentry struct {
-			DSN string `mapstructure:"dsn"`
-		} `mapstructure:"sentry"`
-	} `mapstructure:"log"`
+	Sentry struct {
+		DSN string `mapstructure:"dsn"`
+	} `mapstructure:"sentry"`
 }
 
 func Init(confPath string) Configuration {
