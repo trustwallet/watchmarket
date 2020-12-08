@@ -1,6 +1,13 @@
 package main
 
 import (
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
+
+	"github.com/trustwallet/golibs-networking/middleware"
+
 	"github.com/robfig/cron/v3"
 	log "github.com/sirupsen/logrus"
 	"github.com/trustwallet/watchmarket/config"
@@ -8,10 +15,6 @@ import (
 	"github.com/trustwallet/watchmarket/internal"
 	"github.com/trustwallet/watchmarket/services/markets"
 	"github.com/trustwallet/watchmarket/services/worker"
-	"os"
-	"os/signal"
-	"syscall"
-	"time"
 )
 
 const (
@@ -27,6 +30,12 @@ var (
 func init() {
 	_, confPath := internal.ParseArgs("", defaultConfigPath)
 	configuration = internal.InitConfig(confPath)
+
+	err := middleware.SetupSentry(configuration.Log.Sentry.DSN)
+	if err != nil {
+		log.Error(err)
+	}
+
 	assets := internal.InitAssets(configuration.Markets.Assets)
 
 	m, err := markets.Init(configuration, assets)

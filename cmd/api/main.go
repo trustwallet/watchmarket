@@ -1,9 +1,12 @@
 package main
 
 import (
+	"time"
+
 	"github.com/gin-gonic/gin"
 	"github.com/robfig/cron/v3"
 	log "github.com/sirupsen/logrus"
+	"github.com/trustwallet/golibs-networking/middleware"
 	"github.com/trustwallet/watchmarket/config"
 	"github.com/trustwallet/watchmarket/db/postgres"
 	_ "github.com/trustwallet/watchmarket/docs"
@@ -15,11 +18,10 @@ import (
 	"github.com/trustwallet/watchmarket/services/controllers"
 	chartscontroller "github.com/trustwallet/watchmarket/services/controllers/charts"
 	infocontroller "github.com/trustwallet/watchmarket/services/controllers/info"
-	"github.com/trustwallet/watchmarket/services/controllers/rates"
+	ratescontroller "github.com/trustwallet/watchmarket/services/controllers/rates"
 	tickerscontroller "github.com/trustwallet/watchmarket/services/controllers/tickers"
 	"github.com/trustwallet/watchmarket/services/markets"
 	"github.com/trustwallet/watchmarket/services/worker"
-	"time"
 )
 
 const (
@@ -49,6 +51,12 @@ func init() {
 	ratesPriority := configuration.Markets.Priority.Rates
 	tickerPriority := configuration.Markets.Priority.Tickers
 	coinInfoPriority := configuration.Markets.Priority.CoinInfo
+
+	err := middleware.SetupSentry(configuration.Log.Sentry.DSN)
+	if err != nil {
+		log.Error(err)
+	}
+
 	a := assets.Init(configuration.Markets.Assets)
 
 	m, err := markets.Init(configuration, a)
