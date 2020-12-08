@@ -37,8 +37,12 @@ func (c Client) GetCoinInfo(coinId uint, token string, ctx context.Context) (wat
 	}
 	err = resp.ToJSON(&result)
 	if err != nil {
-		log.Error("URL: " + resp.Request().URL.String())
-		log.Error("Status code: " + resp.Response().Status)
+		log.WithFields(log.Fields{
+			"url":      resp.Request().URL.String(),
+			"status":   resp.Response().Status,
+			"response": resp,
+		}).Error("Assets Get Coin Info: ", resp.Response().Status)
+
 		return watchmarket.Info{}, err
 	}
 	return result, nil

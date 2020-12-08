@@ -2,6 +2,7 @@ package fixer
 
 import (
 	"context"
+
 	"github.com/imroc/req"
 	log "github.com/sirupsen/logrus"
 )
@@ -26,8 +27,11 @@ func (c Client) FetchRates(ctx context.Context) (Rate, error) {
 	}
 	err = resp.ToJSON(&result)
 	if err != nil {
-		log.Error("URL: " + resp.Request().URL.String())
-		log.Error("Status code: " + resp.Response().Status)
+		log.WithFields(log.Fields{
+			"url":      resp.Request().URL.String(),
+			"status":   resp.Response().Status,
+			"response": resp,
+		}).Error("Fixer Fetch Rates: ", resp.Response().Status)
 		return Rate{}, err
 	}
 	return result, nil

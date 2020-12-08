@@ -3,9 +3,10 @@ package coinmarketcap
 import (
 	"context"
 	"fmt"
+	"strconv"
+
 	"github.com/imroc/req"
 	log "github.com/sirupsen/logrus"
-	"strconv"
 )
 
 type Client struct {
@@ -39,8 +40,7 @@ func (c Client) fetchPrices(currency string, ctx context.Context) (CoinPrices, e
 	}
 	err = resp.ToJSON(&result)
 	if err != nil {
-		log.Error("URL: " + resp.Request().URL.String())
-		log.Error("Status code: " + resp.Response().Status)
+
 		return CoinPrices{}, err
 	}
 	return result, nil
@@ -62,8 +62,11 @@ func (c Client) fetchChartsData(id uint, currency string, timeStart int64, timeE
 	}
 	err = resp.ToJSON(&result)
 	if err != nil {
-		log.Error("URL: " + resp.Request().URL.String())
-		log.Error("Status code: " + resp.Response().Status)
+		log.WithFields(log.Fields{
+			"url":      resp.Request().URL.String(),
+			"status":   resp.Response().Status,
+			"response": resp,
+		}).Error("CoinMarketCap Fetch Charts Data: ", resp.Response().Status)
 		return Charts{}, err
 	}
 	return result, nil
@@ -81,8 +84,11 @@ func (c Client) fetchCoinData(id uint, currency string, ctx context.Context) (Ch
 	}
 	err = resp.ToJSON(&result)
 	if err != nil {
-		log.Error("URL: " + resp.Request().URL.String())
-		log.Error("Status code: " + resp.Response().Status)
+		log.WithFields(log.Fields{
+			"url":      resp.Request().URL.String(),
+			"status":   resp.Response().Status,
+			"response": resp,
+		}).Error("CoinMarketCap Fetch Coin Data: ", resp.Response().Status)
 		return ChartInfo{}, err
 	}
 	return result, nil

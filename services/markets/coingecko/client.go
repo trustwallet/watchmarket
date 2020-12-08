@@ -3,13 +3,14 @@ package coingecko
 import (
 	"context"
 	"fmt"
-	"github.com/imroc/req"
-	log "github.com/sirupsen/logrus"
 	"net/url"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/imroc/req"
+	log "github.com/sirupsen/logrus"
 )
 
 type Client struct {
@@ -40,8 +41,11 @@ func (c Client) fetchCharts(id, currency string, timeStart, timeEnd int64, ctx c
 	}
 	err = resp.ToJSON(&result)
 	if err != nil {
-		log.Error("URL: " + resp.Request().URL.String())
-		log.Error("Status code: " + resp.Response().Status)
+		log.WithFields(log.Fields{
+			"url":      resp.Request().URL.String(),
+			"status":   resp.Response().Status,
+			"response": resp,
+		}).Error("CoinGecko Fetch Charts: ", resp.Response().Status)
 		return Charts{}, err
 	}
 	return result, nil
@@ -99,8 +103,11 @@ func (c Client) fetchMarkets(ids, currency string, ctx context.Context) (CoinPri
 	}
 	err = resp.ToJSON(&result)
 	if err != nil {
-		log.Error("URL: " + resp.Request().URL.String())
-		log.Error("Status code: " + resp.Response().Status)
+		log.WithFields(log.Fields{
+			"url":      resp.Request().URL.String(),
+			"status":   resp.Response().Status,
+			"response": resp,
+		}).Error("CoinGecko Markets: ", resp.Response().Status)
 		return CoinPrices{}, err
 	}
 	return result, nil
@@ -114,8 +121,11 @@ func (c Client) fetchCoins(ctx context.Context) (Coins, error) {
 	}
 	err = resp.ToJSON(&result)
 	if err != nil {
-		log.Error("URL: " + resp.Request().URL.String())
-		log.Error("Status code: " + resp.Response().Status)
+		log.WithFields(log.Fields{
+			"url":      resp.Request().URL.String(),
+			"status":   resp.Response().Status,
+			"response": resp,
+		}).Error("CoinGecko Fetch Coins: ", resp.Response().Status)
 		return Coins{}, err
 	}
 	return result, nil
