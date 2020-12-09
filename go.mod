@@ -41,7 +41,7 @@ require (
 	go.elastic.co/fastjson v1.1.0 // indirect
 	golang.org/x/tools v0.0.0-20200513175351-0951661448da // indirect
 	gorm.io/driver/postgres v1.0.5
-	gorm.io/gorm v1.20.5
+	gorm.io/gorm v1.20.8
 	gotest.tools v2.2.0+incompatible // indirect
 	howett.net/plist v0.0.0-20200419221736-3b63eb3a43b5 // indirect
 )
