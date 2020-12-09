@@ -40,7 +40,11 @@ func (c Client) fetchPrices(currency string, ctx context.Context) (CoinPrices, e
 	}
 	err = resp.ToJSON(&result)
 	if err != nil {
-
+		log.WithFields(log.Fields{
+			"url":      resp.Request().URL.String(),
+			"status":   resp.Response().Status,
+			"response": resp,
+		}).Error("CoinMarketCap Fetch Prices: ", err)
 		return CoinPrices{}, err
 	}
 	return result, nil
@@ -66,8 +70,7 @@ func (c Client) fetchChartsData(id uint, currency string, timeStart int64, timeE
 			"url":      resp.Request().URL.String(),
 			"status":   resp.Response().Status,
 			"response": resp,
-			"error":    err,
-		}).Error("CoinMarketCap Fetch Charts Data: ", resp.Response().Status)
+		}).Error("CoinMarketCap Fetch Charts Data: ", err)
 		return Charts{}, err
 	}
 	return result, nil
@@ -89,7 +92,7 @@ func (c Client) fetchCoinData(id uint, currency string, ctx context.Context) (Ch
 			"url":      resp.Request().URL.String(),
 			"status":   resp.Response().Status,
 			"response": resp,
-		}).Error("CoinMarketCap Fetch Coin Data: ", resp.Response().Status)
+		}).Error("CoinMarketCap Fetch Coin Data: ", err)
 		return ChartInfo{}, err
 	}
 	return result, nil
