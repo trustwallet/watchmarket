@@ -66,6 +66,7 @@ func (c Client) fetchChartsData(id uint, currency string, timeStart int64, timeE
 			"url":      resp.Request().URL.String(),
 			"status":   resp.Response().Status,
 			"response": resp,
+			"error":    err,
 		}).Error("CoinMarketCap Fetch Charts Data: ", resp.Response().Status)
 		return Charts{}, err
 	}
