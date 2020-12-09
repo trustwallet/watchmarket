@@ -580,6 +580,7 @@ github.com/yuin/gopher-lua v0.0.0-20191220021717-ab39c6098bdb/go.mod h1:gqRgreBU
 github.com/zenazn/goji v0.9.0/go.mod h1:7S9M489iMyHBNxwZnk9/EHS098H4/F6TATF2mIxtB1Q=
 go.elastic.co/apm v1.8.0 h1:AWEKpHwRal0yCMd4K8Oxy1HAa7xid+xq1yy+XjgoVU0=
 go.elastic.co/apm v1.8.0/go.mod h1:tCw6CkOJgkWnzEthFN9HUP1uL3Gjc/Ur6m7gRPLaoH0=
+go.elastic.co/apm v1.9.0/go.mod h1:qoOSi09pnzJDh5fKnfY7bPmQgl8yl2tULdOu03xhui0=
 go.elastic.co/apm/module/apmgin v1.8.0 h1:QcXVtFhqAcSGqC/ywzqZBHdWzJG3wyrBxgvCvAZ98do=
 go.elastic.co/apm/module/apmgin v1.8.0/go.mod h1:heH2rXaOluBb+ucwlG3FBCGrx56qHqoxb1KI7uBLlAk=
 go.elastic.co/apm/module/apmgoredis v1.8.0 h1:9A345CcyqkPgHOkzRCyqOklvw4Td+jAIyz1lSEYg8sQ=

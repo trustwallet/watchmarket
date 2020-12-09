@@ -35,7 +35,7 @@ require (
 	github.com/swaggo/swag v1.6.7
 	github.com/trustwallet/golibs v0.0.9
 	github.com/trustwallet/golibs-networking v0.0.2
-	go.elastic.co/apm v1.8.0
+	go.elastic.co/apm v1.9.0
 	go.elastic.co/apm/module/apmgin v1.8.0
 	go.elastic.co/apm/module/apmgoredis v1.8.0
 	go.elastic.co/fastjson v1.1.0 // indirect
