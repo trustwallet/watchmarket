@@ -70,7 +70,10 @@ func (c Client) fetchRates(coins Coins, currency string, ctx context.Context) (p
 
 			cp, err := c.fetchMarkets(ids, currency, ctx)
 			if err != nil {
-				log.Error(err)
+				log.WithFields(log.Fields{
+					"ids":      ids,
+					"currency": currency,
+				}).Error("CoinGecko Fetch Rates")
 				return
 			}
 			prChan <- cp
