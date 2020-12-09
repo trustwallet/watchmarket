@@ -10,7 +10,7 @@ require (
 	github.com/Microsoft/go-winio v0.4.14 // indirect
 	github.com/Nvveen/Gotty v0.0.0-20120604004816-cd527374f1e5 // indirect
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
-	github.com/alicebob/miniredis/v2 v2.13.3
+	github.com/alicebob/miniredis/v2 v2.14.1
 	github.com/chenjiandongx/ginprom v0.0.0-20200410120253-7cfb22707fa6
 	github.com/containerd/continuity v0.0.0-20200413184840-d3ef23f19fbb // indirect
 	github.com/docker/go-connections v0.4.0 // indirect
