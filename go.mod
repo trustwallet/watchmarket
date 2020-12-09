@@ -32,14 +32,13 @@ require (
 	github.com/spf13/viper v1.7.1
 	github.com/stretchr/testify v1.6.1
 	github.com/swaggo/gin-swagger v1.2.0
-	github.com/swaggo/swag v1.6.7
+	github.com/swaggo/swag v1.7.0
 	github.com/trustwallet/golibs v0.0.9
 	github.com/trustwallet/golibs-networking v0.0.2
 	go.elastic.co/apm v1.8.0
 	go.elastic.co/apm/module/apmgin v1.8.0
 	go.elastic.co/apm/module/apmgoredis v1.8.0
 	go.elastic.co/fastjson v1.1.0 // indirect
-	golang.org/x/tools v0.0.0-20200513175351-0951661448da // indirect
 	gorm.io/driver/postgres v1.0.5
 	gorm.io/gorm v1.20.5
 	gotest.tools v2.2.0+incompatible // indirect
