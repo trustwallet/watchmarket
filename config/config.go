@@ -1,11 +1,12 @@
 package config
 
 import (
-	log "github.com/sirupsen/logrus"
-	"github.com/spf13/viper"
 	"reflect"
 	"strings"
 	"time"
+
+	log "github.com/sirupsen/logrus"
+	"github.com/spf13/viper"
 )
 
 type Configuration struct {
@@ -77,6 +78,10 @@ type Configuration struct {
 			Rates   string `mapstructure:"memory_cache_rates"`
 		} `mapstructure:"update_time"`
 	} `mapstructure:"rest_api"`
+
+	Sentry struct {
+		DSN string `mapstructure:"dsn"`
+	} `mapstructure:"sentry"`
 }
 
 func Init(confPath string) Configuration {

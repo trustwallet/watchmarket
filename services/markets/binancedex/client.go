@@ -25,8 +25,11 @@ func (c Client) fetchPrices() ([]CoinPrice, error) {
 	var result []CoinPrice
 	err = resp.ToJSON(&result)
 	if err != nil {
-		log.Error("URL: " + resp.Request().URL.String())
-		log.Error("Status code: " + resp.Response().Status)
+		log.WithFields(log.Fields{
+			"url":      resp.Request().URL.String(),
+			"status":   resp.Response().Status,
+			"response": resp,
+		}).Error("BinanceDEX Fetch Prices: ", resp.Response().Status)
 		return nil, err
 	}
 	return result, nil

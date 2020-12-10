@@ -37,6 +37,3 @@ jobs:
 
       - name: Integration Test
         run: make integration
-
-      - name: Upload coverage
-        run: bash <(curl -s https://codecov.io/bash) -f coverage.txt

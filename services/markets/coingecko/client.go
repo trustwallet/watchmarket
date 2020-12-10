@@ -40,8 +40,11 @@ func (c Client) fetchCharts(id, currency string, timeStart, timeEnd int64) (Char
 	}
 	err = resp.ToJSON(&result)
 	if err != nil {
-		log.Error("URL: " + resp.Request().URL.String())
-		log.Error("Status code: " + resp.Response().Status)
+		log.WithFields(log.Fields{
+			"url":      resp.Request().URL.String(),
+			"status":   resp.Response().Status,
+			"response": resp,
+		}).Error("CoinGecko Fetch Charts: ", resp.Response().Status)
 		return Charts{}, err
 	}
 	return result, nil
@@ -66,7 +69,10 @@ func (c Client) fetchRates(coins Coins, currency string) (prices CoinPrices) {
 
 			cp, err := c.fetchMarkets(ids, currency)
 			if err != nil {
-				log.Error(err)
+				log.WithFields(log.Fields{
+					"ids":      ids,
+					"currency": currency,
+				}).Error("CoinGecko Fetch Rates")
 				return
 			}
 			prChan <- cp
@@ -99,8 +105,11 @@ func (c Client) fetchMarkets(ids, currency string) (CoinPrices, error) {
 	}
 	err = resp.ToJSON(&result)
 	if err != nil {
-		log.Error("URL: " + resp.Request().URL.String())
-		log.Error("Status code: " + resp.Response().Status)
+		log.WithFields(log.Fields{
+			"url":      resp.Request().URL.String(),
+			"status":   resp.Response().Status,
+			"response": resp,
+		}).Error("CoinGecko Markets: ", resp.Response().Status)
 		return CoinPrices{}, err
 	}
 	return result, nil
@@ -114,8 +123,11 @@ func (c Client) fetchCoins() (Coins, error) {
 	}
 	err = resp.ToJSON(&result)
 	if err != nil {
-		log.Error("URL: " + resp.Request().URL.String())
-		log.Error("Status code: " + resp.Response().Status)
+		log.WithFields(log.Fields{
+			"url":      resp.Request().URL.String(),
+			"status":   resp.Response().Status,
+			"response": resp,
+		}).Error("CoinGecko Fetch Coins: ", resp.Response().Status)
 		return Coins{}, err
 	}
 	return result, nil
