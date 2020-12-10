@@ -1,6 +1,7 @@
 package coingecko
 
 import (
+	"fmt"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"time"
 )
@@ -57,4 +58,8 @@ func (coins Coins) coinIds() []string {
 		coinIds = append(coinIds, coin.Id)
 	}
 	return coinIds
+}
+
+func (cp CoinPrice) getUrl() string {
+	return fmt.Sprintf("https://www.coingecko.com/en/coins/%s", cp.Id)
 }

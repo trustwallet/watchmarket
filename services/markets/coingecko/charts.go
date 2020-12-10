@@ -3,7 +3,6 @@ package coingecko
 import (
 	"context"
 	"errors"
-	"fmt"
 	"sort"
 	"strings"
 	"time"
@@ -62,7 +61,11 @@ func (p Provider) GetCoinData(coinID uint, token, currency string, ctx context.C
 	if err != nil {
 		log.WithFields(log.Fields{"coin": coinID, "token": token}).Warn("No assets assets about that coin")
 	}
-	return normalizeInfo(ratesData[0], infoData), nil
+	return watchmarket.CoinDetails{
+		Info:        &infoData,
+		Provider:    id,
+		ProviderURL: ratesData[0].getUrl(),
+	}, nil
 }
 
 func createSymbolsMap(coins Coins) map[string]Coin {
@@ -120,37 +123,21 @@ func getCoinByID(coinMap map[string]Coin, coinId uint, token string) (Coin, erro
 }
 
 func normalizeCharts(c Charts) watchmarket.Chart {
-	chartsData := watchmarket.Chart{}
 	prices := make([]watchmarket.ChartPrice, 0)
 	for _, quote := range c.Prices {
-		if len(quote) != chartDataSize {
-			continue
+		if len(quote) == chartDataSize {
+			prices = append(prices, watchmarket.ChartPrice{
+				Price: quote[1],
+				Date:  time.Unix(int64(quote[0])/1000, 0).Unix(),
+			})
 		}
-
-		date := time.Unix(int64(quote[0])/1000, 0)
-		prices = append(prices, watchmarket.ChartPrice{
-			Price: quote[1],
-			Date:  date.Unix(),
-		})
 	}
 	sort.Slice(prices, func(i, j int) bool {
 		return prices[i].Date < prices[j].Date
 	})
 
-	chartsData.Prices = prices
-	chartsData.Provider = id
-
-	return chartsData
-}
-
-func normalizeInfo(data CoinPrice, info watchmarket.Info) watchmarket.CoinDetails {
-	return watchmarket.CoinDetails{
-		Info:        &info,
-		Provider:    id,
-		ProviderURL: getUrl(data.Id),
+	return watchmarket.Chart{
+		Prices:   prices,
+		Provider: id,
 	}
-}
-
-func getUrl(id string) string {
-	return fmt.Sprintf("https://www.coingecko.com/en/coins/%s", id)
 }
