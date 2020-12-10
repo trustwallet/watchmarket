@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/robfig/cron/v3"
 	log "github.com/sirupsen/logrus"
-	"github.com/trustwallet/golibs-networking/middleware"
+	"github.com/trustwallet/golibs/middleware"
 	"github.com/trustwallet/watchmarket/config"
 	"github.com/trustwallet/watchmarket/db/postgres"
 	_ "github.com/trustwallet/watchmarket/docs"
