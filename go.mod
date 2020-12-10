@@ -33,7 +33,6 @@ require (
 	github.com/swaggo/gin-swagger v1.2.0
 	github.com/swaggo/swag v1.6.7
 	github.com/trustwallet/golibs v0.0.19
-	github.com/trustwallet/golibs-networking v0.0.5
 	golang.org/x/tools v0.0.0-20200513175351-0951661448da // indirect
 	gorm.io/driver/postgres v1.0.5
 	gorm.io/gorm v1.20.5
