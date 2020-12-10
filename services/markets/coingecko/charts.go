@@ -1,7 +1,6 @@
 package coingecko
 
 import (
-	"context"
 	"errors"
 	"sort"
 	"strings"
@@ -14,10 +13,10 @@ import (
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 )
 
-func (p Provider) GetChartData(coinID uint, token, currency string, timeStart int64, ctx context.Context) (watchmarket.Chart, error) {
+func (p Provider) GetChartData(coinID uint, token, currency string, timeStart int64) (watchmarket.Chart, error) {
 	chartsData := watchmarket.Chart{}
 
-	coins, err := p.client.fetchCoins(ctx)
+	coins, err := p.client.fetchCoins()
 	if err != nil {
 		return chartsData, err
 	}
@@ -31,7 +30,7 @@ func (p Provider) GetChartData(coinID uint, token, currency string, timeStart in
 
 	timeEndDate := time.Now().Unix()
 
-	c, err := p.client.fetchCharts(coinResult.Id, currency, timeStart, timeEndDate, ctx)
+	c, err := p.client.fetchCharts(coinResult.Id, currency, timeStart, timeEndDate)
 	if err != nil {
 		return chartsData, err
 	}
@@ -39,8 +38,8 @@ func (p Provider) GetChartData(coinID uint, token, currency string, timeStart in
 	return normalizeCharts(c), nil
 }
 
-func (p Provider) GetCoinData(coinID uint, token, currency string, ctx context.Context) (watchmarket.CoinDetails, error) {
-	coins, err := p.client.fetchCoins(ctx)
+func (p Provider) GetCoinData(coinID uint, token, currency string) (watchmarket.CoinDetails, error) {
+	coins, err := p.client.fetchCoins()
 	if err != nil {
 		return watchmarket.CoinDetails{}, err
 	}
@@ -52,12 +51,12 @@ func (p Provider) GetCoinData(coinID uint, token, currency string, ctx context.C
 		return watchmarket.CoinDetails{}, err
 	}
 
-	ratesData := p.client.fetchRates(Coins{coinResult}, currency, ctx)
+	ratesData := p.client.fetchRates(Coins{coinResult}, currency)
 	if len(ratesData) == 0 {
 		return watchmarket.CoinDetails{}, errors.New("no rates found")
 	}
 
-	infoData, err := p.info.GetCoinInfo(coinID, token, ctx)
+	infoData, err := p.info.GetCoinInfo(coinID, token)
 	if err != nil {
 		log.WithFields(log.Fields{"coin": coinID, "token": token}).Warn("No assets assets about that coin")
 	}

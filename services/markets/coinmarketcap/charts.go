@@ -1,21 +1,21 @@
 package coinmarketcap
 
 import (
-	"context"
 	"errors"
 	"fmt"
-	log "github.com/sirupsen/logrus"
-	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"sort"
 	"strings"
 	"time"
+
+	log "github.com/sirupsen/logrus"
+	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 )
 
 const (
 	chartDataSize = 3
 )
 
-func (p Provider) GetChartData(coinID uint, token, currency string, timeStart int64, ctx context.Context) (watchmarket.Chart, error) {
+func (p Provider) GetChartData(coinID uint, token, currency string, timeStart int64) (watchmarket.Chart, error) {
 	chartsData := watchmarket.Chart{}
 	coinsFromCmcMap := CmcSlice(p.Cm).coinToCmcMap()
 	coinObj, err := coinsFromCmcMap.getCoinByContract(coinID, token)
@@ -28,25 +28,25 @@ func (p Provider) GetChartData(coinID uint, token, currency string, timeStart in
 	timeStartDate := time.Unix(timeStart, 0)
 	days := int(time.Since(timeStartDate).Hours() / 24)
 	timeEnd := time.Now().Unix()
-	c, err := p.client.fetchChartsData(coinObj.Id, currency, timeStart, timeEnd, getInterval(days), ctx)
+	c, err := p.client.fetchChartsData(coinObj.Id, currency, timeStart, timeEnd, getInterval(days))
 	if err != nil {
 		return chartsData, err
 	}
 	return normalizeCharts(currency, c), nil
 }
 
-func (p Provider) GetCoinData(coinID uint, token, currency string, ctx context.Context) (watchmarket.CoinDetails, error) {
+func (p Provider) GetCoinData(coinID uint, token, currency string) (watchmarket.CoinDetails, error) {
 	details := watchmarket.CoinDetails{}
 	coinsFromCmcMap := CmcSlice(p.Cm).coinToCmcMap()
 	coinObj, err := coinsFromCmcMap.getCoinByContract(coinID, token)
 	if err != nil {
 		return details, err
 	}
-	priceData, err := p.client.fetchCoinData(coinObj.Id, currency, ctx)
+	priceData, err := p.client.fetchCoinData(coinObj.Id, currency)
 	if err != nil {
 		return details, err
 	}
-	assetsData, err := p.info.GetCoinInfo(coinID, token, ctx)
+	assetsData, err := p.info.GetCoinInfo(coinID, token)
 	if err != nil {
 		log.WithFields(log.Fields{"coinID": coinID, "token": token}).Warn("No assets assets about that coinID")
 	}

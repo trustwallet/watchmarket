@@ -15,8 +15,7 @@ require (
 	github.com/containerd/continuity v0.0.0-20200413184840-d3ef23f19fbb // indirect
 	github.com/docker/go-connections v0.4.0 // indirect
 	github.com/docker/go-units v0.4.0 // indirect
-	github.com/elastic/go-sysinfo v1.3.0 // indirect
-	github.com/elastic/go-windows v1.0.1 // indirect
+	github.com/gin-contrib/cors v1.3.1
 	github.com/gin-gonic/gin v1.6.3
 	github.com/go-redis/redis v6.15.9+incompatible
 	github.com/gotestyourself/gotestyourself v2.2.0+incompatible // indirect
@@ -33,15 +32,10 @@ require (
 	github.com/stretchr/testify v1.6.1
 	github.com/swaggo/gin-swagger v1.2.0
 	github.com/swaggo/swag v1.6.7
-	github.com/trustwallet/golibs v0.0.9
-	github.com/trustwallet/golibs-networking v0.0.2
-	go.elastic.co/apm v1.8.0
-	go.elastic.co/apm/module/apmgin v1.8.0
-	go.elastic.co/apm/module/apmgoredis v1.8.0
-	go.elastic.co/fastjson v1.1.0 // indirect
+	github.com/trustwallet/golibs v0.0.19
+	github.com/trustwallet/golibs-networking v0.0.5
 	golang.org/x/tools v0.0.0-20200513175351-0951661448da // indirect
 	gorm.io/driver/postgres v1.0.5
 	gorm.io/gorm v1.20.5
 	gotest.tools v2.2.0+incompatible // indirect
-	howett.net/plist v0.0.0-20200419221736-3b63eb3a43b5 // indirect
 )

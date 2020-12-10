@@ -1,15 +1,15 @@
 package coingecko
 
 import (
-	"context"
 	"encoding/json"
-	"github.com/stretchr/testify/assert"
-	"github.com/trustwallet/watchmarket/pkg/watchmarket"
-	"github.com/trustwallet/watchmarket/services/assets"
 	"net/http/httptest"
 	"sort"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/trustwallet/watchmarket/pkg/watchmarket"
+	"github.com/trustwallet/watchmarket/services/assets"
 )
 
 func TestProvider_GetTickers(t *testing.T) {
@@ -17,7 +17,7 @@ func TestProvider_GetTickers(t *testing.T) {
 	defer server.Close()
 
 	provider := InitProvider(server.URL, "USD", assets.Init("assets.api"))
-	data, err := provider.GetTickers(context.Background())
+	data, err := provider.GetTickers()
 	assert.Nil(t, err)
 	res, err := json.Marshal(data)
 	assert.Nil(t, err)

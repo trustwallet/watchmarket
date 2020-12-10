@@ -1,13 +1,13 @@
 package redis
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/alicebob/miniredis/v2"
-	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
+
+	"github.com/alicebob/miniredis/v2"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestInit(t *testing.T) {
@@ -28,10 +28,10 @@ func TestRedis_Set(t *testing.T) {
 	value, err := json.Marshal(testData)
 	assert.Nil(t, err)
 
-	err = r.Set("test", value, time.Second, context.Background())
+	err = r.Set("test", value, time.Second)
 	assert.Nil(t, err)
 
-	newValue, err := r.Get("test", context.Background())
+	newValue, err := r.Get("test")
 	assert.Nil(t, err)
 	assert.Equal(t, value, newValue)
 
@@ -52,17 +52,17 @@ func TestRedis_Get(t *testing.T) {
 	value, err := json.Marshal(testData)
 	assert.Nil(t, err)
 
-	err = r.Set("test", value, time.Second, context.Background())
+	err = r.Set("test", value, time.Second)
 	assert.Nil(t, err)
 
-	newValue, err := r.Get("test", context.Background())
+	newValue, err := r.Get("test")
 	assert.Nil(t, err)
 	assert.Equal(t, value, newValue)
 
 	ttl := r.client.TTL("test")
 	assert.Equal(t, time.Second, ttl.Val())
 
-	empty, err := r.Get("1", context.Background())
+	empty, err := r.Get("1")
 	assert.NotNil(t, err)
 	assert.Equal(t, string([]byte{}), string(empty))
 
@@ -75,13 +75,13 @@ func TestRedis_Get(t *testing.T) {
 func TestRedis_Delete(t *testing.T) {
 	r, err := redisInit(t)
 	assert.Nil(t, err)
-	err = r.Set("test", []byte{0, 1}, time.Second, context.Background())
+	err = r.Set("test", []byte{0, 1}, time.Second)
 	assert.Nil(t, err)
 
-	err = r.Delete("test", context.Background())
+	err = r.Delete("test")
 	assert.Nil(t, err)
 
-	v, err := r.Get("test", context.Background())
+	v, err := r.Get("test")
 	assert.NotNil(t, err)
 	assert.Equal(t, string([]byte{}), string(v))
 }

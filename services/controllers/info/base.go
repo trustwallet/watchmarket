@@ -1,9 +1,9 @@
 package infocontroller
 
 import (
-	"context"
 	"encoding/json"
 	"errors"
+
 	log "github.com/sirupsen/logrus"
 	"github.com/trustwallet/watchmarket/config"
 	"github.com/trustwallet/watchmarket/db"
@@ -43,7 +43,7 @@ func NewController(
 	}
 }
 
-func (c Controller) HandleInfoRequest(dr controllers.DetailsRequest, ctx context.Context) (controllers.InfoResponse, error) {
+func (c Controller) HandleInfoRequest(dr controllers.DetailsRequest) (controllers.InfoResponse, error) {
 	var cd controllers.InfoResponse
 
 	req, err := toDetailsRequestData(dr)
@@ -53,14 +53,14 @@ func (c Controller) HandleInfoRequest(dr controllers.DetailsRequest, ctx context
 
 	key := c.cache.GenerateKey(info + dr.CoinQuery + dr.Token + dr.Currency)
 
-	cachedDetails, err := c.cache.Get(key, ctx)
+	cachedDetails, err := c.cache.Get(key)
 	if err == nil && len(cachedDetails) > 0 {
 		if json.Unmarshal(cachedDetails, &cd) == nil {
 			return cd, nil
 		}
 	}
 
-	result, err := c.getDetailsByPriority(req, ctx)
+	result, err := c.getDetailsByPriority(req)
 	if err != nil {
 		return controllers.InfoResponse{}, errors.New(watchmarket.ErrInternal)
 	}
@@ -75,7 +75,7 @@ func (c Controller) HandleInfoRequest(dr controllers.DetailsRequest, ctx context
 	}
 
 	if result.Info != nil {
-		err = c.cache.Set(key, newCache, ctx)
+		err = c.cache.Set(key, newCache)
 		if err != nil {
 			log.WithFields(log.Fields{"err": err}).Error("failed to save cache")
 		}

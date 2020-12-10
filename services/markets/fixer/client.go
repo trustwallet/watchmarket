@@ -1,7 +1,6 @@
 package fixer
 
 import (
-	"context"
 	"github.com/imroc/req"
 	log "github.com/sirupsen/logrus"
 )
@@ -15,12 +14,12 @@ func NewClient(api, key, currency string) Client {
 	return Client{r: req.New(), key: key, currency: currency, api: api}
 }
 
-func (c Client) FetchRates(ctx context.Context) (Rate, error) {
+func (c Client) FetchRates() (Rate, error) {
 	var (
 		values = req.Param{"access_key": c.key, "base": c.currency} // Base USD supported only in paid api}
 		result Rate
 	)
-	resp, err := c.r.Get(c.api+"/latest", values, ctx)
+	resp, err := c.r.Get(c.api+"/latest", values)
 	if err != nil {
 		return Rate{}, err
 	}

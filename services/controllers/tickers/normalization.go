@@ -1,15 +1,15 @@
 package tickerscontroller
 
 import (
-	"context"
+	"strings"
+	"sync"
+
 	log "github.com/sirupsen/logrus"
 	"github.com/trustwallet/golibs/asset"
 	"github.com/trustwallet/watchmarket/config"
 	"github.com/trustwallet/watchmarket/db/models"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"github.com/trustwallet/watchmarket/services/controllers"
-	"strings"
-	"sync"
 )
 
 func createResponse(tr controllers.TickerRequest, tickers watchmarket.Tickers) controllers.TickerResponse {
@@ -72,10 +72,10 @@ func makeTickerQueriesV2(ids []string) []models.TickerQuery {
 	return tickerQueries
 }
 
-func (c Controller) normalizeTickers(tickers watchmarket.Tickers, rate watchmarket.Rate, ctx context.Context) watchmarket.Tickers {
+func (c Controller) normalizeTickers(tickers watchmarket.Tickers, rate watchmarket.Rate) watchmarket.Tickers {
 	result := make(watchmarket.Tickers, 0, len(tickers))
 	for _, t := range tickers {
-		r, ok := c.rateToDefaultCurrency(t, rate, ctx)
+		r, ok := c.rateToDefaultCurrency(t, rate)
 		if !ok {
 			continue
 		}

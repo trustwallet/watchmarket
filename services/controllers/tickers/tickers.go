@@ -1,14 +1,14 @@
 package tickerscontroller
 
 import (
-	"context"
 	"encoding/json"
+	"strings"
+	"sync"
+
 	log "github.com/sirupsen/logrus"
 	"github.com/trustwallet/golibs/asset"
 	"github.com/trustwallet/watchmarket/db/models"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
-	"strings"
-	"sync"
 )
 
 type (
@@ -18,12 +18,12 @@ type (
 	}
 )
 
-func (c Controller) getTickersByPriority(tickerQueries []models.TickerQuery, ctx context.Context) (watchmarket.Tickers, error) {
+func (c Controller) getTickersByPriority(tickerQueries []models.TickerQuery) (watchmarket.Tickers, error) {
 	if c.configuration.RestAPI.UseMemoryCache {
 		var results watchmarket.Tickers
 		for _, tr := range tickerQueries {
 			key := strings.ToLower(asset.BuildID(tr.Coin, tr.TokenId))
-			rawResult, err := c.cache.Get(key, ctx)
+			rawResult, err := c.cache.Get(key)
 			if err != nil {
 				continue
 			}
@@ -36,7 +36,7 @@ func (c Controller) getTickersByPriority(tickerQueries []models.TickerQuery, ctx
 		return results, nil
 	}
 
-	dbTickers, err := c.database.GetTickersByQueries(tickerQueries, ctx)
+	dbTickers, err := c.database.GetTickersByQueries(tickerQueries)
 	if err != nil {
 		log.Error(err, "getTickersByPriority")
 		return nil, err

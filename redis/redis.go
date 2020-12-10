@@ -1,11 +1,10 @@
 package redis
 
 import (
-	"context"
 	"errors"
-	"github.com/go-redis/redis"
-	"go.elastic.co/apm/module/apmgoredis"
 	"time"
+
+	"github.com/go-redis/redis"
 )
 
 type Redis struct {
@@ -25,9 +24,8 @@ func Init(host string) (Redis, error) {
 	return Redis{client: *client}, nil
 }
 
-func (db Redis) Get(key string, ctx context.Context) ([]byte, error) {
-	client := apmgoredis.Wrap(&db.client).WithContext(ctx)
-	cmd := client.Get(key)
+func (db Redis) Get(key string) ([]byte, error) {
+	cmd := db.client.Get(key)
 	if cmd.Err() == redis.Nil {
 		return nil, errors.New("not found")
 	} else if cmd.Err() != nil {
@@ -37,18 +35,16 @@ func (db Redis) Get(key string, ctx context.Context) ([]byte, error) {
 	return []byte(cmd.Val()), nil
 }
 
-func (db Redis) Set(key string, value []byte, expiration time.Duration, ctx context.Context) error {
-	client := apmgoredis.Wrap(&db.client).WithContext(ctx)
-	cmd := client.Set(key, value, expiration)
+func (db Redis) Set(key string, value []byte, expiration time.Duration) error {
+	cmd := db.client.Set(key, value, expiration)
 	if cmd.Err() != nil {
 		return cmd.Err()
 	}
 	return nil
 }
 
-func (db Redis) Delete(key string, ctx context.Context) error {
-	client := apmgoredis.Wrap(&db.client).WithContext(ctx)
-	cmd := client.Del(key)
+func (db Redis) Delete(key string) error {
+	cmd := db.client.Del(key)
 	if cmd.Err() != nil {
 		return cmd.Err()
 	}

@@ -1,15 +1,15 @@
 package coinmarketcap
 
 import (
-	"context"
 	"encoding/json"
-	"github.com/stretchr/testify/assert"
-	"github.com/trustwallet/watchmarket/pkg/watchmarket"
-	"github.com/trustwallet/watchmarket/services/assets"
 	"net/http/httptest"
 	"sort"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/trustwallet/watchmarket/pkg/watchmarket"
+	"github.com/trustwallet/watchmarket/services/assets"
 )
 
 func TestProvider_GetRates(t *testing.T) {
@@ -19,7 +19,7 @@ func TestProvider_GetRates(t *testing.T) {
 	cm, err := setupCoinMap(testMapping)
 	assert.Nil(t, err)
 	provider.Cm = cm
-	data, err := provider.GetRates(context.Background())
+	data, err := provider.GetRates()
 	assert.Nil(t, err)
 	rawData, err := json.Marshal(data)
 	assert.Nil(t, err)

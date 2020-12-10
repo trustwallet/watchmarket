@@ -1,15 +1,15 @@
 package worker
 
 import (
-	"context"
 	"encoding/json"
+	"testing"
+	"time"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/trustwallet/watchmarket/config"
 	"github.com/trustwallet/watchmarket/db/models"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"github.com/trustwallet/watchmarket/services/cache/memory"
-	"testing"
-	"time"
 )
 
 func TestWorker_SaveRatesToMemory(t *testing.T) {
@@ -53,7 +53,7 @@ func testRatesBasic(t *testing.T, c config.Configuration) {
 
 	w := Init(nil, nil, dbMock, memory.Init(), c)
 	w.SaveRatesToMemory()
-	resRaw, err := w.cache.Get("USD", context.Background())
+	resRaw, err := w.cache.Get("USD")
 	assert.Nil(t, err)
 
 	var res watchmarket.Rate
@@ -99,7 +99,7 @@ func testRatesShowOptionAlways(t *testing.T, c config.Configuration) {
 
 	w2 := Init(nil, nil, dbMock, memory.Init(), c)
 	w2.SaveRatesToMemory()
-	resRaw2, err := w2.cache.Get("USD", context.Background())
+	resRaw2, err := w2.cache.Get("USD")
 	assert.Nil(t, err)
 
 	var res2 watchmarket.Rate
@@ -145,7 +145,7 @@ func testRatesShowOptionNever(t *testing.T, c config.Configuration) {
 
 	w3 := Init(nil, nil, dbMock, memory.Init(), c)
 	w3.SaveRatesToMemory()
-	resRaw3, err := w3.cache.Get("USD", context.Background())
+	resRaw3, err := w3.cache.Get("USD")
 	assert.Nil(t, err)
 
 	var res3 watchmarket.Rate
@@ -212,7 +212,7 @@ func testTickersBasic(t *testing.T, c config.Configuration) {
 
 	w := Init(nil, nil, dbMock, memory.Init(), c)
 	w.SaveTickersToMemory()
-	resRaw, err := w.cache.Get("c1", context.Background())
+	resRaw, err := w.cache.Get("c1")
 	assert.Nil(t, err)
 
 	var res watchmarket.Ticker
@@ -272,7 +272,7 @@ func testTickersShowOptionNever(t *testing.T, c config.Configuration) {
 
 	w := Init(nil, nil, dbMock, memory.Init(), c)
 	w.SaveTickersToMemory()
-	resRaw, err := w.cache.Get("c1", context.Background())
+	resRaw, err := w.cache.Get("c1")
 	assert.Nil(t, err)
 
 	var res watchmarket.Ticker
@@ -332,7 +332,7 @@ func testTickersShowOptionAlways(t *testing.T, c config.Configuration) {
 
 	w := Init(nil, nil, dbMock, memory.Init(), c)
 	w.SaveTickersToMemory()
-	resRaw, err := w.cache.Get("c1", context.Background())
+	resRaw, err := w.cache.Get("c1")
 	assert.Nil(t, err)
 
 	var res watchmarket.Ticker
@@ -392,7 +392,7 @@ func testTickersOutdated(t *testing.T, c config.Configuration) {
 
 	w := Init(nil, nil, dbMock, memory.Init(), c)
 	w.SaveTickersToMemory()
-	resRaw, err := w.cache.Get("c1", context.Background())
+	resRaw, err := w.cache.Get("c1")
 	assert.Nil(t, err)
 
 	var res watchmarket.Ticker
@@ -454,7 +454,7 @@ func testTickersVolume(t *testing.T, c config.Configuration) {
 
 	w := Init(nil, nil, dbMock, memory.Init(), c)
 	w.SaveTickersToMemory()
-	resRaw, err := w.cache.Get("c1", context.Background())
+	resRaw, err := w.cache.Get("c1")
 	assert.Nil(t, err)
 
 	var res watchmarket.Ticker
@@ -484,7 +484,7 @@ type dbMock struct {
 	WantedRatesError   error
 }
 
-func (d dbMock) GetRates(currency string, ctx context.Context) ([]models.Rate, error) {
+func (d dbMock) GetRates(currency string) ([]models.Rate, error) {
 	res := make([]models.Rate, 0)
 	for _, r := range d.WantedRates {
 		if r.Currency == currency {
@@ -494,26 +494,26 @@ func (d dbMock) GetRates(currency string, ctx context.Context) ([]models.Rate, e
 	return res, d.WantedRatesError
 }
 
-func (d dbMock) AddRates(rates []models.Rate, batchLimit uint, ctx context.Context) error {
+func (d dbMock) AddRates(rates []models.Rate, batchLimit uint) error {
 	return nil
 }
 
-func (d dbMock) AddTickers(tickers []models.Ticker, batchLimit uint, ctx context.Context) error {
+func (d dbMock) AddTickers(tickers []models.Ticker, batchLimit uint) error {
 	return nil
 }
 
-func (d dbMock) GetAllTickers(ctx context.Context) ([]models.Ticker, error) {
+func (d dbMock) GetAllTickers() ([]models.Ticker, error) {
 	return d.WantedTickers, nil
 }
 
-func (d dbMock) GetAllRates(ctx context.Context) ([]models.Rate, error) {
+func (d dbMock) GetAllRates() ([]models.Rate, error) {
 	return d.WantedRates, nil
 }
 
-func (d dbMock) GetTickers(coin uint, tokenId string, ctx context.Context) ([]models.Ticker, error) {
+func (d dbMock) GetTickers(coin uint, tokenId string) ([]models.Ticker, error) {
 	return d.WantedTickers, d.WantedTickersError
 }
 
-func (d dbMock) GetTickersByQueries(tickerQueries []models.TickerQuery, ctx context.Context) ([]models.Ticker, error) {
+func (d dbMock) GetTickersByQueries(tickerQueries []models.TickerQuery) ([]models.Ticker, error) {
 	return d.WantedTickers, d.WantedTickersError
 }

@@ -1,7 +1,6 @@
 package binancedex
 
 import (
-	"context"
 	"github.com/imroc/req"
 	log "github.com/sirupsen/logrus"
 )
@@ -18,8 +17,8 @@ func NewClient(api string) Client {
 	}
 }
 
-func (c Client) fetchPrices(ctx context.Context) ([]CoinPrice, error) {
-	resp, err := c.r.Get(c.baseURL+"/v1/ticker/24hr", req.Param{"limit": "1000"}, ctx)
+func (c Client) fetchPrices() ([]CoinPrice, error) {
+	resp, err := c.r.Get(c.baseURL+"/v1/ticker/24hr", req.Param{"limit": "1000"})
 	if err != nil {
 		return nil, err
 	}

@@ -1,15 +1,15 @@
 package coinmarketcap
 
 import (
-	"context"
 	"errors"
+	"strings"
+
 	"github.com/trustwallet/golibs/coin"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
-	"strings"
 )
 
-func (p Provider) GetTickers(ctx context.Context) (watchmarket.Tickers, error) {
-	prices, err := p.client.fetchPrices(p.currency, ctx)
+func (p Provider) GetTickers() (watchmarket.Tickers, error) {
+	prices, err := p.client.fetchPrices(p.currency)
 	if err != nil {
 		return nil, err
 	}

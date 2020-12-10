@@ -1,11 +1,11 @@
 package rediscache
 
 import (
-	"context"
 	"encoding/json"
 	"errors"
-	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"strconv"
+
+	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 )
 
 type CachedInterval struct {
@@ -14,22 +14,22 @@ type CachedInterval struct {
 	Key       string
 }
 
-func (i Instance) GetWithTime(key string, time int64, ctx context.Context) ([]byte, error) {
+func (i Instance) GetWithTime(key string, time int64) ([]byte, error) {
 	var (
 		keyInterval string
 		data        []byte
 	)
-	keyInterval, err := i.getIntervalKey(key, time, ctx)
+	keyInterval, err := i.getIntervalKey(key, time)
 	if err != nil {
 		return data, err
 	}
 
-	cacheData, err := i.redis.Get(keyInterval, ctx)
+	cacheData, err := i.redis.Get(keyInterval)
 	if err == nil {
 		return cacheData, err
 	}
 
-	err = i.redis.Delete(keyInterval, ctx)
+	err = i.redis.Delete(keyInterval)
 	if err != nil {
 		return data, errors.New("invalid cache is not deleted")
 	}
@@ -37,7 +37,7 @@ func (i Instance) GetWithTime(key string, time int64, ctx context.Context) ([]by
 	return data, errors.New("cache is not valid")
 }
 
-func (i Instance) SetWithTime(key string, data []byte, time int64, ctx context.Context) error {
+func (i Instance) SetWithTime(key string, data []byte, time int64) error {
 	if data == nil {
 		return errors.New("data is empty")
 	}
@@ -49,22 +49,22 @@ func (i Instance) SetWithTime(key string, data []byte, time int64, ctx context.C
 		Key:       cachingKey,
 	}
 
-	err := i.updateInterval(key, interval, ctx)
+	err := i.updateInterval(key, interval)
 	if err != nil {
 		return err
 	}
 
-	err = i.redis.Set(cachingKey, data, i.cachingPeriod, ctx)
+	err = i.redis.Set(cachingKey, data, i.cachingPeriod)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (i Instance) getIntervalKey(key string, time int64, ctx context.Context) (string, error) {
+func (i Instance) getIntervalKey(key string, time int64) (string, error) {
 	var currentIntervals []CachedInterval
 
-	rawIntervals, err := i.redis.Get(key, ctx)
+	rawIntervals, err := i.redis.Get(key)
 	if err != nil {
 		return "", err
 	}
@@ -91,10 +91,10 @@ func (i Instance) getIntervalKey(key string, time int64, ctx context.Context) (s
 	return results[0], nil
 }
 
-func (i Instance) updateInterval(key string, interval CachedInterval, ctx context.Context) error {
+func (i Instance) updateInterval(key string, interval CachedInterval) error {
 	var currentIntervals []CachedInterval
 
-	rawIntervals, err := i.redis.Get(key, ctx)
+	rawIntervals, err := i.redis.Get(key)
 	if err != nil && err.Error() != "not found" {
 		return err
 	}
@@ -120,7 +120,7 @@ func (i Instance) updateInterval(key string, interval CachedInterval, ctx contex
 		return err
 	}
 
-	err = i.redis.Set(key, rawNewIntervalsRaw, i.cachingPeriod, ctx)
+	err = i.redis.Set(key, rawNewIntervalsRaw, i.cachingPeriod)
 	if err != nil {
 		return err
 	}

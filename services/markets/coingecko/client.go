@@ -1,15 +1,15 @@
 package coingecko
 
 import (
-	"context"
 	"fmt"
-	"github.com/imroc/req"
-	log "github.com/sirupsen/logrus"
 	"net/url"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/imroc/req"
+	log "github.com/sirupsen/logrus"
 )
 
 type Client struct {
@@ -25,7 +25,7 @@ func NewClient(api string, bucketSize int) Client {
 	return c
 }
 
-func (c Client) fetchCharts(id, currency string, timeStart, timeEnd int64, ctx context.Context) (Charts, error) {
+func (c Client) fetchCharts(id, currency string, timeStart, timeEnd int64) (Charts, error) {
 	var (
 		result Charts
 		values = req.Param{
@@ -34,7 +34,7 @@ func (c Client) fetchCharts(id, currency string, timeStart, timeEnd int64, ctx c
 			"to":          strconv.FormatInt(timeEnd, 10),
 		}
 	)
-	resp, err := c.r.Get(c.baseURL+fmt.Sprintf("/v3/coins/%s/market_chart/range", id), values, ctx)
+	resp, err := c.r.Get(c.baseURL+fmt.Sprintf("/v3/coins/%s/market_chart/range", id), values)
 	if err != nil {
 		return Charts{}, err
 	}
@@ -47,7 +47,7 @@ func (c Client) fetchCharts(id, currency string, timeStart, timeEnd int64, ctx c
 	return result, nil
 }
 
-func (c Client) fetchRates(coins Coins, currency string, ctx context.Context) (prices CoinPrices) {
+func (c Client) fetchRates(coins Coins, currency string) (prices CoinPrices) {
 	ci := coins.coinIds()
 
 	i := 0
@@ -64,7 +64,7 @@ func (c Client) fetchRates(coins Coins, currency string, ctx context.Context) (p
 			bucket := ci[i:end]
 			ids := strings.Join(bucket[:], ",")
 
-			cp, err := c.fetchMarkets(ids, currency, ctx)
+			cp, err := c.fetchMarkets(ids, currency)
 			if err != nil {
 				log.Error(err)
 				return
@@ -87,13 +87,13 @@ func (c Client) fetchRates(coins Coins, currency string, ctx context.Context) (p
 	return
 }
 
-func (c Client) fetchMarkets(ids, currency string, ctx context.Context) (CoinPrices, error) {
+func (c Client) fetchMarkets(ids, currency string) (CoinPrices, error) {
 	var (
 		result CoinPrices
 		values = url.Values{"vs_currency": {currency}, "sparkline": {"false"}, "ids": {ids}}
 	)
 
-	resp, err := c.r.Get(c.baseURL+"/v3/coins/markets", values, ctx)
+	resp, err := c.r.Get(c.baseURL+"/v3/coins/markets", values)
 	if err != nil {
 		return CoinPrices{}, err
 	}
@@ -106,9 +106,9 @@ func (c Client) fetchMarkets(ids, currency string, ctx context.Context) (CoinPri
 	return result, nil
 }
 
-func (c Client) fetchCoins(ctx context.Context) (Coins, error) {
+func (c Client) fetchCoins() (Coins, error) {
 	var result Coins
-	resp, err := c.r.Get(c.baseURL+"/v3/coins/list", req.Param{"include_platform": "true"}, ctx)
+	resp, err := c.r.Get(c.baseURL+"/v3/coins/list", req.Param{"include_platform": "true"})
 	if err != nil {
 		return Coins{}, err
 	}

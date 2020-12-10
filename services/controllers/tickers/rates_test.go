@@ -1,12 +1,12 @@
 package tickerscontroller
 
 import (
-	"context"
+	"testing"
+	"time"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/trustwallet/watchmarket/db/models"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
-	"testing"
-	"time"
 )
 
 func TestController_getRateByPriority(t *testing.T) {
@@ -42,7 +42,7 @@ func TestController_getRateByPriority(t *testing.T) {
 	c := setupController(t, db, false)
 	assert.NotNil(t, c)
 
-	r, err := c.getRateByPriority("USD", context.Background())
+	r, err := c.getRateByPriority("USD")
 	assert.Nil(t, err)
 
 	assert.Equal(t, watchmarket.Rate{

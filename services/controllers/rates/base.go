@@ -1,9 +1,9 @@
 package ratescontroller
 
 import (
-	"context"
 	"encoding/json"
 	"errors"
+
 	log "github.com/sirupsen/logrus"
 	"github.com/trustwallet/watchmarket/config"
 	"github.com/trustwallet/watchmarket/db"
@@ -34,12 +34,12 @@ func NewController(
 	}
 }
 
-func (c Controller) HandleRatesRequest(r controllers.RateRequest, ctx context.Context) (controllers.RateResponse, error) {
-	fromRate, err := c.getRateByCurrency(r.From, ctx)
+func (c Controller) HandleRatesRequest(r controllers.RateRequest) (controllers.RateResponse, error) {
+	fromRate, err := c.getRateByCurrency(r.From)
 	if err != nil {
 		return controllers.RateResponse{}, err
 	}
-	toRate, err := c.getRateByCurrency(r.To, ctx)
+	toRate, err := c.getRateByCurrency(r.To)
 	if err != nil {
 		return controllers.RateResponse{}, err
 	}
@@ -51,9 +51,9 @@ func (c Controller) HandleRatesRequest(r controllers.RateRequest, ctx context.Co
 	return controllers.RateResponse{Amount: result}, nil
 }
 
-func (c Controller) getRateByCurrency(currency string, ctx context.Context) (watchmarket.Rate, error) {
+func (c Controller) getRateByCurrency(currency string) (watchmarket.Rate, error) {
 	if c.configuration.RestAPI.UseMemoryCache {
-		rawResult, err := c.dataCache.Get(currency, ctx)
+		rawResult, err := c.dataCache.Get(currency)
 		if err != nil {
 			return watchmarket.Rate{}, err
 		}
@@ -64,7 +64,7 @@ func (c Controller) getRateByCurrency(currency string, ctx context.Context) (wat
 		return result, nil
 	}
 	emptyRate := watchmarket.Rate{}
-	rates, err := c.database.GetRates(currency, ctx)
+	rates, err := c.database.GetRates(currency)
 	if err != nil {
 		log.Error(err, "getRateByPriority")
 		return emptyRate, err

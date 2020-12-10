@@ -1,21 +1,21 @@
 package fixer
 
 import (
-	"context"
 	"encoding/json"
-	"github.com/stretchr/testify/assert"
-	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"net/http/httptest"
 	"sort"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 )
 
 func TestProvider_GetRates(t *testing.T) {
 	server := httptest.NewServer(createMockedAPI())
 	defer server.Close()
 	provider := InitProvider(server.URL, "", "USD")
-	data, err := provider.GetRates(context.Background())
+	data, err := provider.GetRates()
 	sort.Slice(data, func(i, j int) bool {
 		return data[i].Currency < data[j].Currency
 	})
