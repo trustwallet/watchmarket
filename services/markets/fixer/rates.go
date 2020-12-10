@@ -1,18 +1,18 @@
 package fixer
 
 import (
-	"context"
-	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"strings"
+
+	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 )
 
 const (
 	id = "fixer"
 )
 
-func (p Provider) GetRates(ctx context.Context) (watchmarket.Rates, error) {
+func (p Provider) GetRates() (watchmarket.Rates, error) {
 	var result watchmarket.Rates
-	rawRates, err := p.client.FetchRates(ctx)
+	rawRates, err := p.client.FetchRates()
 	if err != nil {
 		return result, err
 	}

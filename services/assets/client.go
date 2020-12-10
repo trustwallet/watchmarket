@@ -1,7 +1,6 @@
 package assets
 
 import (
-	"context"
 	"errors"
 	"fmt"
 
@@ -20,7 +19,7 @@ func Init(api string) Client {
 	return Client{r: req.New(), api: api}
 }
 
-func (c Client) GetCoinInfo(coinId uint, token string, ctx context.Context) (watchmarket.Info, error) {
+func (c Client) GetCoinInfo(coinId uint, token string) (watchmarket.Info, error) {
 	coinObject, ok := coin.Coins[coinId]
 	if !ok {
 		return watchmarket.Info{}, errors.New("coin not found " + "token " + token)
@@ -31,7 +30,7 @@ func (c Client) GetCoinInfo(coinId uint, token string, ctx context.Context) (wat
 		result watchmarket.Info
 	)
 
-	resp, err := c.r.Get(path, ctx)
+	resp, err := c.r.Get(path)
 	if err != nil {
 		return watchmarket.Info{}, err
 	}

@@ -1,12 +1,11 @@
 package postgres
 
 import (
-	"context"
 	"github.com/trustwallet/watchmarket/db/models"
 	"gorm.io/gorm/clause"
 )
 
-func (i *Instance) AddRates(rates []models.Rate, batchLimit uint, ctx context.Context) error {
+func (i *Instance) AddRates(rates []models.Rate, batchLimit uint) error {
 	normalizedRates := normalizeRates(rates)
 	batch := toRatesBatch(normalizedRates, batchLimit)
 	for _, b := range batch {
@@ -28,7 +27,7 @@ func (i *Instance) AddRates(rates []models.Rate, batchLimit uint, ctx context.Co
 	return nil
 }
 
-func (i *Instance) GetRates(currency string, ctx context.Context) ([]models.Rate, error) {
+func (i *Instance) GetRates(currency string) ([]models.Rate, error) {
 	var rates []models.Rate
 	if err := i.Gorm.Where("currency = ?", currency).
 		Find(&rates).Error; err != nil {
@@ -37,7 +36,7 @@ func (i *Instance) GetRates(currency string, ctx context.Context) ([]models.Rate
 	return rates, nil
 }
 
-func (i *Instance) GetAllRates(ctx context.Context) ([]models.Rate, error) {
+func (i *Instance) GetAllRates() ([]models.Rate, error) {
 	var rates []models.Rate
 	if err := i.Gorm.Find(&rates).Error; err != nil {
 		return nil, err

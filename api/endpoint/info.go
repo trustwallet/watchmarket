@@ -1,14 +1,13 @@
 package endpoint
 
 import (
-	"context"
+	"net/http"
+	"strconv"
+
 	"github.com/gin-gonic/gin"
 	"github.com/trustwallet/golibs/asset"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"github.com/trustwallet/watchmarket/services/controllers"
-	"go.elastic.co/apm"
-	"net/http"
-	"strconv"
 )
 
 // @Summary Get charts coin assets data for a specific coin
@@ -24,16 +23,12 @@ import (
 // @Router /v1/market/info [get]
 func GetCoinInfoHandler(controller controllers.InfoController) func(c *gin.Context) {
 	return func(c *gin.Context) {
-		tx := apm.DefaultTracer.StartTransaction("GET /v1/market/info", "request")
-		ctx := apm.ContextWithTransaction(context.Background(), tx)
-		defer tx.End()
-
 		request := controllers.DetailsRequest{
 			CoinQuery: c.Query("coin"),
 			Token:     c.Query("token"),
 			Currency:  c.DefaultQuery("currency", watchmarket.DefaultCurrency),
 		}
-		response, err := controller.HandleInfoRequest(request, ctx)
+		response, err := controller.HandleInfoRequest(request)
 		if err != nil {
 			code, response := createErrorResponseAndStatusCode(err)
 			c.AbortWithStatusJSON(code, response)
@@ -56,10 +51,6 @@ func GetCoinInfoHandler(controller controllers.InfoController) func(c *gin.Conte
 // @Router /v2/market/info/{id} [get]
 func GetCoinInfoHandlerV2(controller controllers.InfoController) func(c *gin.Context) {
 	return func(c *gin.Context) {
-		tx := apm.DefaultTracer.StartTransaction("GET /v2/market/info/:id", "request")
-		ctx := apm.ContextWithTransaction(context.Background(), tx)
-		defer tx.End()
-
 		coin, token, err := asset.ParseID(c.Param("id"))
 		if err != nil {
 			code, response := createErrorResponseAndStatusCode(err)
@@ -72,7 +63,7 @@ func GetCoinInfoHandlerV2(controller controllers.InfoController) func(c *gin.Con
 			Token:     token,
 			Currency:  c.DefaultQuery("currency", watchmarket.DefaultCurrency),
 		}
-		response, err := controller.HandleInfoRequest(request, ctx)
+		response, err := controller.HandleInfoRequest(request)
 		if err != nil {
 			code, response := createErrorResponseAndStatusCode(err)
 			c.AbortWithStatusJSON(code, response)

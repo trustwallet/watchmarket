@@ -1,11 +1,11 @@
 package coinmarketcap
 
 import (
-	"context"
 	"fmt"
+	"strconv"
+
 	"github.com/imroc/req"
 	log "github.com/sirupsen/logrus"
-	"strconv"
 )
 
 type Client struct {
@@ -26,14 +26,14 @@ func NewClient(proApi, webApi, widgetApi, key string) Client {
 	}
 }
 
-func (c Client) fetchPrices(currency string, ctx context.Context) (CoinPrices, error) {
+func (c Client) fetchPrices(currency string) (CoinPrices, error) {
 	var (
 		result CoinPrices
 		path   = c.proApiURL + "/v1/cryptocurrency/listings/latest"
 		header = req.Header{"X-CMC_PRO_API_KEY": c.key}
 	)
 
-	resp, err := c.r.Get(path, req.Param{"limit": "5000", "convert": currency}, header, ctx)
+	resp, err := c.r.Get(path, req.Param{"limit": "5000", "convert": currency}, header)
 	if err != nil {
 		return CoinPrices{}, err
 	}
@@ -46,7 +46,7 @@ func (c Client) fetchPrices(currency string, ctx context.Context) (CoinPrices, e
 	return result, nil
 }
 
-func (c Client) fetchChartsData(id uint, currency string, timeStart int64, timeEnd int64, interval string, ctx context.Context) (Charts, error) {
+func (c Client) fetchChartsData(id uint, currency string, timeStart int64, timeEnd int64, interval string) (Charts, error) {
 	values := req.Param{
 		"convert":    currency,
 		"format":     "chart_crypto_details",
@@ -56,7 +56,7 @@ func (c Client) fetchChartsData(id uint, currency string, timeStart int64, timeE
 		"interval":   interval,
 	}
 	var result Charts
-	resp, err := c.r.Get(c.webApiURL+"/v1/cryptocurrency/quotes/historical", values, ctx)
+	resp, err := c.r.Get(c.webApiURL+"/v1/cryptocurrency/quotes/historical", values)
 	if err != nil {
 		return Charts{}, err
 	}
@@ -69,13 +69,13 @@ func (c Client) fetchChartsData(id uint, currency string, timeStart int64, timeE
 	return result, nil
 }
 
-func (c Client) fetchCoinData(id uint, currency string, ctx context.Context) (ChartInfo, error) {
+func (c Client) fetchCoinData(id uint, currency string) (ChartInfo, error) {
 	values := req.Param{
 		"convert": currency,
 		"ref":     "widget",
 	}
 	var result ChartInfo
-	resp, err := c.r.Get(c.widgetApiURL+fmt.Sprintf("/v2/ticker/%d", id), values, ctx)
+	resp, err := c.r.Get(c.widgetApiURL+fmt.Sprintf("/v2/ticker/%d", id), values)
 	if err != nil {
 		return ChartInfo{}, err
 	}

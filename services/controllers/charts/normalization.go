@@ -1,17 +1,17 @@
 package chartscontroller
 
 import (
-	"context"
 	"encoding/json"
 	"errors"
+	"strconv"
+	"strings"
+	"time"
+
 	"github.com/trustwallet/golibs/asset"
 	"github.com/trustwallet/golibs/coin"
 	"github.com/trustwallet/watchmarket/db/models"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"github.com/trustwallet/watchmarket/services/controllers"
-	"strconv"
-	"strings"
-	"time"
 )
 
 const charts = "charts"
@@ -57,11 +57,11 @@ func toChartsRequestData(cr controllers.ChartRequest) (chartsNormalizedRequest, 
 	}, nil
 }
 
-func (c Controller) checkTickersAvailability(coin uint, token string, ctx context.Context) ([]models.Ticker, error) {
+func (c Controller) checkTickersAvailability(coin uint, token string) ([]models.Ticker, error) {
 	tr := []models.TickerQuery{{Coin: coin, TokenId: strings.ToLower(token)}}
 	if c.configuration.RestAPI.UseMemoryCache {
 		key := strings.ToLower(asset.BuildID(coin, token))
-		rawResult, err := c.memoryCache.Get(key, ctx)
+		rawResult, err := c.memoryCache.Get(key)
 		if err != nil {
 			return nil, err
 		}
@@ -82,7 +82,7 @@ func (c Controller) checkTickersAvailability(coin uint, token string, ctx contex
 		}
 		return []models.Ticker{result}, nil
 	}
-	dbTickers, err := c.database.GetTickersByQueries(tr, ctx)
+	dbTickers, err := c.database.GetTickersByQueries(tr)
 	if err != nil {
 		return nil, err
 	}
@@ -95,10 +95,10 @@ func (c Controller) checkTickersAvailability(coin uint, token string, ctx contex
 	return res, nil
 }
 
-func (c Controller) getChartsByPriority(data chartsNormalizedRequest, ctx context.Context) (watchmarket.Chart, error) {
+func (c Controller) getChartsByPriority(data chartsNormalizedRequest) (watchmarket.Chart, error) {
 	availableProviders := c.chartsPriority
 	for _, p := range availableProviders {
-		price, err := c.api[p].GetChartData(data.Coin, data.Token, data.Currency, data.TimeStart, ctx)
+		price, err := c.api[p].GetChartData(data.Coin, data.Token, data.Currency, data.TimeStart)
 		if len(price.Prices) > 0 && err == nil {
 			return price, nil
 		}

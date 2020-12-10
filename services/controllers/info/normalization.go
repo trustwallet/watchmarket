@@ -1,14 +1,14 @@
 package infocontroller
 
 import (
-	"context"
 	"errors"
+	"strconv"
+	"strings"
+
 	"github.com/trustwallet/golibs/coin"
 	"github.com/trustwallet/watchmarket/db/models"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"github.com/trustwallet/watchmarket/services/controllers"
-	"strconv"
-	"strings"
 )
 
 type (
@@ -46,7 +46,7 @@ func toDetailsRequestData(dr controllers.DetailsRequest) (detailsNormalizedReque
 	}, nil
 }
 
-func (c Controller) getDetailsByPriority(data detailsNormalizedRequest, ctx context.Context) (controllers.InfoResponse, error) {
+func (c Controller) getDetailsByPriority(data detailsNormalizedRequest) (controllers.InfoResponse, error) {
 	availableTickerProviders := c.coinInfoPriority
 	availableRateProviders := c.configuration.Markets.Priority.Rates
 
@@ -55,7 +55,7 @@ func (c Controller) getDetailsByPriority(data detailsNormalizedRequest, ctx cont
 		details watchmarket.CoinDetails
 	)
 	for _, p := range availableTickerProviders {
-		data, err := c.api[p].GetCoinData(data.Coin, data.Token, data.Currency, ctx)
+		data, err := c.api[p].GetCoinData(data.Coin, data.Token, data.Currency)
 		if err == nil {
 			details = data
 			break
@@ -65,7 +65,7 @@ func (c Controller) getDetailsByPriority(data detailsNormalizedRequest, ctx cont
 	result.Provider = details.Provider
 	result.ProviderURL = details.ProviderURL
 
-	dbTickers, err := c.database.GetTickersByQueries([]models.TickerQuery{{Coin: data.Coin, TokenId: strings.ToLower(data.Token)}}, ctx)
+	dbTickers, err := c.database.GetTickersByQueries([]models.TickerQuery{{Coin: data.Coin, TokenId: strings.ToLower(data.Token)}})
 	if err != nil {
 		return controllers.InfoResponse{}, err
 	}
@@ -82,7 +82,7 @@ func (c Controller) getDetailsByPriority(data detailsNormalizedRequest, ctx cont
 	result.TotalSupply = tickerData.TotalSupply
 
 	if data.Currency != watchmarket.DefaultCurrency {
-		rates, err := c.database.GetRates(data.Currency, ctx)
+		rates, err := c.database.GetRates(data.Currency)
 		if err != nil {
 			return controllers.InfoResponse{}, err
 		}

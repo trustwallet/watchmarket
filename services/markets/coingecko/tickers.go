@@ -1,21 +1,21 @@
 package coingecko
 
 import (
-	"context"
 	"strings"
 
 	"errors"
+
 	"github.com/trustwallet/golibs/coin"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 )
 
-func (p Provider) GetTickers(ctx context.Context) (watchmarket.Tickers, error) {
-	coins, err := p.client.fetchCoins(ctx)
+func (p Provider) GetTickers() (watchmarket.Tickers, error) {
+	coins, err := p.client.fetchCoins()
 	if err != nil {
 		return watchmarket.Tickers{}, err
 	}
 
-	rates := p.client.fetchRates(coins, p.currency, ctx)
+	rates := p.client.fetchRates(coins, p.currency)
 	tickersList := p.normalizeTickers(rates, coins, p.id, p.currency)
 	return tickersList, nil
 }

@@ -1,16 +1,16 @@
 package coinmarketcap
 
 import (
-	"context"
 	"encoding/json"
-	"github.com/stretchr/testify/assert"
-	"github.com/trustwallet/watchmarket/pkg/watchmarket"
-	"github.com/trustwallet/watchmarket/services/assets"
 	"net/http/httptest"
 	"reflect"
 	"sort"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/trustwallet/watchmarket/pkg/watchmarket"
+	"github.com/trustwallet/watchmarket/services/assets"
 )
 
 func TestProvider_GetCoinData(t *testing.T) {
@@ -20,7 +20,7 @@ func TestProvider_GetCoinData(t *testing.T) {
 	cm, err := setupCoinMap(testMapping)
 	assert.Nil(t, err)
 	provider.Cm = cm
-	data, _ := provider.GetCoinData(60, "", "USD", context.Background())
+	data, _ := provider.GetCoinData(60, "", "USD")
 	rawData, err := json.Marshal(data)
 	assert.Nil(t, err)
 	assert.Equal(t, wantedCoinInfo, string(rawData))
@@ -33,7 +33,7 @@ func TestProvider_GetChartData(t *testing.T) {
 	cm, err := setupCoinMap(testMapping)
 	assert.Nil(t, err)
 	provider.Cm = cm
-	data, _ := provider.GetChartData(60, "", "USD", 1577871126, context.Background())
+	data, _ := provider.GetChartData(60, "", "USD", 1577871126)
 	rawData, err := json.Marshal(data)
 	assert.Nil(t, err)
 	isSorted := sort.SliceIsSorted(data.Prices, func(i, j int) bool {

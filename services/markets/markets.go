@@ -1,7 +1,6 @@
 package markets
 
 import (
-	"context"
 	"github.com/trustwallet/watchmarket/config"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"github.com/trustwallet/watchmarket/services/assets"
@@ -18,18 +17,18 @@ type (
 
 	RatesAPI interface {
 		Provider
-		GetRates(ctx context.Context) (watchmarket.Rates, error)
+		GetRates() (watchmarket.Rates, error)
 	}
 
 	TickersAPI interface {
 		Provider
-		GetTickers(ctx context.Context) (watchmarket.Tickers, error)
+		GetTickers() (watchmarket.Tickers, error)
 	}
 
 	ChartsAPI interface {
 		Provider
-		GetChartData(coinID uint, token, currency string, timeStart int64, ctx context.Context) (watchmarket.Chart, error)
-		GetCoinData(coinID uint, token, currency string, ctx context.Context) (watchmarket.CoinDetails, error)
+		GetChartData(coinID uint, token, currency string, timeStart int64) (watchmarket.Chart, error)
+		GetCoinData(coinID uint, token, currency string) (watchmarket.CoinDetails, error)
 	}
 
 	Providers   map[string]Provider

@@ -1,21 +1,21 @@
 package coinmarketcap
 
 import (
-	"context"
-	"github.com/stretchr/testify/assert"
-	"github.com/trustwallet/watchmarket/pkg/watchmarket"
-	"github.com/trustwallet/watchmarket/services/assets"
 	"net/http/httptest"
 	"sort"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/trustwallet/watchmarket/pkg/watchmarket"
+	"github.com/trustwallet/watchmarket/services/assets"
 )
 
 func TestProvider_GetTickers(t *testing.T) {
 	server := httptest.NewServer(createMockedAPI())
 	defer server.Close()
 	provider := InitProvider(server.URL, server.URL, server.URL, server.URL, "USD", assets.Init("assets.api"))
-	data, err := provider.GetTickers(context.Background())
+	data, err := provider.GetTickers()
 	assert.Nil(t, err)
 	cm, err := setupCoinMap(testMapping)
 	assert.Nil(t, err)

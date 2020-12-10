@@ -1,9 +1,9 @@
 package chartscontroller
 
 import (
-	"context"
 	"encoding/json"
 	"errors"
+
 	log "github.com/sirupsen/logrus"
 	"github.com/trustwallet/watchmarket/config"
 	"github.com/trustwallet/watchmarket/db"
@@ -46,7 +46,7 @@ func NewController(
 	}
 }
 
-func (c Controller) HandleChartsRequest(cr controllers.ChartRequest, ctx context.Context) (watchmarket.Chart, error) {
+func (c Controller) HandleChartsRequest(cr controllers.ChartRequest) (watchmarket.Chart, error) {
 	var ch watchmarket.Chart
 
 	verifiedData, err := toChartsRequestData(cr)
@@ -56,7 +56,7 @@ func (c Controller) HandleChartsRequest(cr controllers.ChartRequest, ctx context
 
 	key := c.redisCache.GenerateKey(charts + cr.CoinQuery + cr.Token + cr.Currency + cr.MaxItems)
 
-	cachedChartRaw, err := c.redisCache.GetWithTime(key, verifiedData.TimeStart, ctx)
+	cachedChartRaw, err := c.redisCache.GetWithTime(key, verifiedData.TimeStart)
 	if err == nil && len(cachedChartRaw) > 0 {
 		err = json.Unmarshal(cachedChartRaw, &ch)
 		if err == nil && len(ch.Prices) > 0 {
@@ -64,12 +64,12 @@ func (c Controller) HandleChartsRequest(cr controllers.ChartRequest, ctx context
 		}
 	}
 
-	res, err := c.checkTickersAvailability(verifiedData.Coin, verifiedData.Token, ctx)
+	res, err := c.checkTickersAvailability(verifiedData.Coin, verifiedData.Token)
 	if err != nil || len(res) == 0 {
 		return ch, err
 	}
 
-	rawChart, err := c.getChartsByPriority(verifiedData, ctx)
+	rawChart, err := c.getChartsByPriority(verifiedData)
 	if err != nil {
 		return watchmarket.Chart{}, errors.New(watchmarket.ErrInternal)
 	}
@@ -86,7 +86,7 @@ func (c Controller) HandleChartsRequest(cr controllers.ChartRequest, ctx context
 	}
 
 	if err == nil && len(chart.Prices) > 0 {
-		err = c.redisCache.SetWithTime(key, chartRaw, verifiedData.TimeStart, ctx)
+		err = c.redisCache.SetWithTime(key, chartRaw, verifiedData.TimeStart)
 		if err != nil {
 			log.WithFields(log.Fields{"err": err}).Error("failed to save cache")
 		}
