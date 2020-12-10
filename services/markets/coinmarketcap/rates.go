@@ -1,13 +1,13 @@
 package coinmarketcap
 
 import (
-	"context"
-	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"strings"
+
+	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 )
 
-func (p Provider) GetRates(ctx context.Context) (rates watchmarket.Rates, err error) {
-	prices, err := p.client.fetchPrices(p.currency, ctx)
+func (p Provider) GetRates() (rates watchmarket.Rates, err error) {
+	prices, err := p.client.fetchPrices(p.currency)
 	if err != nil {
 		return
 	}

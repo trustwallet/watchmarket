@@ -1,7 +1,9 @@
 package chartscontroller
 
 import (
-	"context"
+	"testing"
+	"time"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/trustwallet/watchmarket/config"
 	"github.com/trustwallet/watchmarket/db/models"
@@ -9,8 +11,6 @@ import (
 	"github.com/trustwallet/watchmarket/services/cache"
 	"github.com/trustwallet/watchmarket/services/controllers"
 	"github.com/trustwallet/watchmarket/services/markets"
-	"testing"
-	"time"
 )
 
 func TestController_HandleChartsRequest(t *testing.T) {
@@ -96,7 +96,7 @@ func TestController_HandleChartsRequest(t *testing.T) {
 		Currency:     "USD",
 		TimeStartRaw: "1577871126",
 		MaxItems:     "64",
-	}, context.Background())
+	})
 	assert.Nil(t, err)
 
 	assert.Equal(t, wCharts, chart)
@@ -135,7 +135,7 @@ type dbMock struct {
 	WantedRatesError   error
 }
 
-func (d dbMock) GetRates(currency string, ctx context.Context) ([]models.Rate, error) {
+func (d dbMock) GetRates(currency string) ([]models.Rate, error) {
 	res := make([]models.Rate, 0)
 	for _, r := range d.WantedRates {
 		if r.Currency == currency {
@@ -145,27 +145,27 @@ func (d dbMock) GetRates(currency string, ctx context.Context) ([]models.Rate, e
 	return res, d.WantedRatesError
 }
 
-func (d dbMock) AddRates(rates []models.Rate, batchLimit uint, ctx context.Context) error {
+func (d dbMock) AddRates(rates []models.Rate, batchLimit uint) error {
 	return nil
 }
 
-func (d dbMock) AddTickers(tickers []models.Ticker, batchLimit uint, ctx context.Context) error {
+func (d dbMock) AddTickers(tickers []models.Ticker, batchLimit uint) error {
 	return nil
 }
 
-func (d dbMock) GetAllTickers(ctx context.Context) ([]models.Ticker, error) {
+func (d dbMock) GetAllTickers() ([]models.Ticker, error) {
 	return nil, nil
 }
 
-func (d dbMock) GetAllRates(ctx context.Context) ([]models.Rate, error) {
+func (d dbMock) GetAllRates() ([]models.Rate, error) {
 	return nil, nil
 }
 
-func (d dbMock) GetTickers(coin uint, tokenId string, ctx context.Context) ([]models.Ticker, error) {
+func (d dbMock) GetTickers(coin uint, tokenId string) ([]models.Ticker, error) {
 	return d.WantedTickers, d.WantedTickersError
 }
 
-func (d dbMock) GetTickersByQueries(tickerQueries []models.TickerQuery, ctx context.Context) ([]models.Ticker, error) {
+func (d dbMock) GetTickersByQueries(tickerQueries []models.TickerQuery) ([]models.Ticker, error) {
 	return d.WantedTickers, d.WantedTickersError
 }
 
@@ -185,19 +185,19 @@ func (c cacheMock) GenerateKey(data string) string {
 	return ""
 }
 
-func (c cacheMock) Get(key string, ctx context.Context) ([]byte, error) {
+func (c cacheMock) Get(key string) ([]byte, error) {
 	return nil, nil
 }
 
-func (c cacheMock) Set(key string, data []byte, ctx context.Context) error {
+func (c cacheMock) Set(key string, data []byte) error {
 	return nil
 }
 
-func (c cacheMock) GetWithTime(key string, time int64, ctx context.Context) ([]byte, error) {
+func (c cacheMock) GetWithTime(key string, time int64) ([]byte, error) {
 	return nil, nil
 }
 
-func (c cacheMock) SetWithTime(key string, data []byte, time int64, ctx context.Context) error {
+func (c cacheMock) SetWithTime(key string, data []byte, time int64) error {
 	return nil
 }
 
@@ -215,11 +215,11 @@ type chartsMock struct {
 	wantedDetails watchmarket.CoinDetails
 }
 
-func (cm chartsMock) GetChartData(coinID uint, token, currency string, timeStart int64, ctx context.Context) (watchmarket.Chart, error) {
+func (cm chartsMock) GetChartData(coinID uint, token, currency string, timeStart int64) (watchmarket.Chart, error) {
 	return cm.wantedCharts, nil
 }
 
-func (cm chartsMock) GetCoinData(coinID uint, token, currency string, ctx context.Context) (watchmarket.CoinDetails, error) {
+func (cm chartsMock) GetCoinData(coinID uint, token, currency string) (watchmarket.CoinDetails, error) {
 	return cm.wantedDetails, nil
 }
 

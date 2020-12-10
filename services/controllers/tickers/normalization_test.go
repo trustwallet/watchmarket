@@ -1,16 +1,16 @@
 package tickerscontroller
 
 import (
-	"context"
+	"sort"
+	"sync"
+	"testing"
+	"time"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/trustwallet/watchmarket/config"
 	"github.com/trustwallet/watchmarket/db/models"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"github.com/trustwallet/watchmarket/services/controllers"
-	"sort"
-	"sync"
-	"testing"
-	"time"
 )
 
 func TestController_createResponse(t *testing.T) {
@@ -186,7 +186,7 @@ func TestController_normalizeTickers(t *testing.T) {
 	c := setupController(t, db, false)
 	assert.NotNil(t, c)
 
-	result := c.normalizeTickers([]watchmarket.Ticker{gotTicker1}, rate, context.Background())
+	result := c.normalizeTickers([]watchmarket.Ticker{gotTicker1}, rate)
 	wanted := watchmarket.Ticker{
 		Coin:     0,
 		CoinName: "BTC",
@@ -252,7 +252,7 @@ func TestController_normalizeTickers_advanced(t *testing.T) {
 	c := setupController(t, db, false)
 	assert.NotNil(t, c)
 
-	result := c.normalizeTickers([]watchmarket.Ticker{gotTicker1}, rate, context.Background())
+	result := c.normalizeTickers([]watchmarket.Ticker{gotTicker1}, rate)
 	wanted := watchmarket.Ticker{
 		Coin:     0,
 		CoinName: "BNB",

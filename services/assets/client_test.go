@@ -2,13 +2,13 @@
 package assets
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestInit(t *testing.T) {
@@ -24,7 +24,7 @@ func TestClient_GetCoinInfo(t *testing.T) {
 	c := Init(server.URL)
 	assert.NotNil(t, c)
 
-	data, err := c.GetCoinInfo(60, "", context.Background())
+	data, err := c.GetCoinInfo(60, "")
 	assert.Nil(t, err)
 
 	rawData, err := json.Marshal(data)

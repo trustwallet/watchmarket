@@ -1,24 +1,19 @@
 package worker
 
 import (
-	"context"
 	"encoding/json"
+
 	log "github.com/sirupsen/logrus"
 	"github.com/trustwallet/watchmarket/config"
 	"github.com/trustwallet/watchmarket/db/models"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
-	"go.elastic.co/apm"
 )
 
 func (w Worker) SaveTickersToMemory() {
-	tx := apm.DefaultTracer.StartTransaction("SaveTickersToMemory", "app")
-	ctx := apm.ContextWithTransaction(context.Background(), tx)
-	defer tx.End()
-
 	log.Info("---------------------------------------")
 	log.Info("Memory Cache: request to DB for tickers ...")
 
-	allTickers, err := w.db.GetAllTickers(ctx)
+	allTickers, err := w.db.GetAllTickers()
 	if err != nil {
 		log.Warn("Failed to get tickers: ", err.Error())
 		return
@@ -32,7 +27,7 @@ func (w Worker) SaveTickersToMemory() {
 			log.Error(err)
 			continue
 		}
-		if err = w.cache.Set(key, rawVal, ctx); err != nil {
+		if err = w.cache.Set(key, rawVal); err != nil {
 			log.Error(err)
 			continue
 		}
@@ -43,14 +38,10 @@ func (w Worker) SaveTickersToMemory() {
 }
 
 func (w Worker) SaveRatesToMemory() {
-	tx := apm.DefaultTracer.StartTransaction("SaveRatesToMemory", "app")
-	ctx := apm.ContextWithTransaction(context.Background(), tx)
-	defer tx.End()
-
 	log.Info("---------------------------------------")
 	log.Info("Memory Cache: request to DB for rates ...")
 
-	allRates, err := w.db.GetAllRates(ctx)
+	allRates, err := w.db.GetAllRates()
 	if err != nil {
 		log.Warn("Failed to get rates: ", err.Error())
 		return
@@ -65,7 +56,7 @@ func (w Worker) SaveRatesToMemory() {
 			log.Error(err)
 			continue
 		}
-		if err = w.cache.Set(key, rawVal, ctx); err != nil {
+		if err = w.cache.Set(key, rawVal); err != nil {
 			log.Error(err)
 			continue
 		}

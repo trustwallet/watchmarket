@@ -1,15 +1,15 @@
 package rediscache
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
+	"testing"
+	"time"
+
 	"github.com/alicebob/miniredis/v2"
 	"github.com/stretchr/testify/assert"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"github.com/trustwallet/watchmarket/redis"
-	"testing"
-	"time"
 )
 
 func TestInit(t *testing.T) {
@@ -76,9 +76,9 @@ func TestInstance_Get(t *testing.T) {
 	d, err := json.Marshal(tickers)
 	assert.NotNil(t, d)
 	assert.Nil(t, err)
-	assert.Nil(t, i.redis.Set("test", d, i.cachingPeriod, context.Background()))
+	assert.Nil(t, i.redis.Set("test", d, i.cachingPeriod))
 
-	nd, err := i.Get("test", context.Background())
+	nd, err := i.Get("test")
 	assert.Nil(t, err)
 	var ta watchmarket.Tickers
 	assert.Nil(t, json.Unmarshal(nd, &ta))
@@ -108,10 +108,10 @@ func TestInstance_Set(t *testing.T) {
 
 	d, err := json.Marshal(tickers)
 	assert.Nil(t, err)
-	err = i.Set("test", d, context.Background())
+	err = i.Set("test", d)
 	assert.Nil(t, err)
 
-	nd, err := i.Get("test", context.Background())
+	nd, err := i.Get("test")
 	assert.Nil(t, err)
 	var ta watchmarket.Tickers
 	assert.Nil(t, json.Unmarshal(nd, &ta))

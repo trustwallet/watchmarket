@@ -1,44 +1,39 @@
 package worker
 
 import (
-	"context"
+	"sync"
+
 	log "github.com/sirupsen/logrus"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"github.com/trustwallet/watchmarket/services/markets"
-	"go.elastic.co/apm"
-	"sync"
 )
 
 func (w Worker) FetchAndSaveTickers() {
-	tx := apm.DefaultTracer.StartTransaction("FetchAndSaveTickers", "app")
-	ctx := apm.ContextWithTransaction(context.Background(), tx)
-	defer tx.End()
-
 	log.Info("Fetching Tickers ...")
-	fetchedTickers := fetchTickers(w.tickersApis, ctx)
+	fetchedTickers := fetchTickers(w.tickersApis)
 	normalizedTickers := toTickersModel(fetchedTickers)
 
-	if err := w.db.AddTickers(normalizedTickers, w.configuration.Worker.BatchLimit, ctx); err != nil {
+	if err := w.db.AddTickers(normalizedTickers, w.configuration.Worker.BatchLimit); err != nil {
 		log.Error(err)
 	}
 }
 
-func fetchTickers(tickersApis markets.TickersAPIs, ctx context.Context) watchmarket.Tickers {
+func fetchTickers(tickersApis markets.TickersAPIs) watchmarket.Tickers {
 	wg := new(sync.WaitGroup)
 	s := new(tickers)
 	for _, t := range tickersApis {
 		wg.Add(1)
-		go fetchTickersByProvider(t, wg, s, ctx)
+		go fetchTickersByProvider(t, wg, s)
 	}
 	wg.Wait()
 
 	return s.tickers
 }
 
-func fetchTickersByProvider(t markets.TickersAPI, wg *sync.WaitGroup, s *tickers, ctx context.Context) {
+func fetchTickersByProvider(t markets.TickersAPI, wg *sync.WaitGroup, s *tickers) {
 	defer wg.Done()
 
-	tickers, err := t.GetTickers(ctx)
+	tickers, err := t.GetTickers()
 	if err != nil {
 		log.WithFields(log.Fields{"provider": t.GetProvider(), "details": err}).Error("Failed to fetch tickers")
 		return

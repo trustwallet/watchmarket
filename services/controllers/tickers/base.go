@@ -1,14 +1,14 @@
 package tickerscontroller
 
 import (
-	"context"
 	"errors"
+	"strings"
+
 	"github.com/trustwallet/watchmarket/config"
 	"github.com/trustwallet/watchmarket/db"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"github.com/trustwallet/watchmarket/services/cache"
 	"github.com/trustwallet/watchmarket/services/controllers"
-	"strings"
 )
 
 type Controller struct {
@@ -34,42 +34,42 @@ func NewController(
 	}
 }
 
-func (c Controller) HandleTickersRequestV2(tr controllers.TickerRequestV2, ctx context.Context) (controllers.TickerResponseV2, error) {
+func (c Controller) HandleTickersRequestV2(tr controllers.TickerRequestV2) (controllers.TickerResponseV2, error) {
 	if tr.Ids == nil || len(tr.Ids) >= c.configuration.RestAPI.RequestLimit {
 		return controllers.TickerResponseV2{}, errors.New(watchmarket.ErrBadRequest)
 	}
 
-	rate, err := c.getRateByPriority(strings.ToUpper(tr.Currency), ctx)
+	rate, err := c.getRateByPriority(strings.ToUpper(tr.Currency))
 	if err != nil {
 		return controllers.TickerResponseV2{}, errors.New(watchmarket.ErrNotFound)
 	}
 
-	tickers, err := c.getTickersByPriority(makeTickerQueriesV2(tr.Ids), ctx)
+	tickers, err := c.getTickersByPriority(makeTickerQueriesV2(tr.Ids))
 	if err != nil {
 		return controllers.TickerResponseV2{}, errors.New(watchmarket.ErrInternal)
 	}
 
-	tickers = c.normalizeTickers(tickers, rate, ctx)
+	tickers = c.normalizeTickers(tickers, rate)
 
 	return createResponseV2(tr, tickers), nil
 }
 
-func (c Controller) HandleTickersRequest(tr controllers.TickerRequest, ctx context.Context) (controllers.TickerResponse, error) {
+func (c Controller) HandleTickersRequest(tr controllers.TickerRequest) (controllers.TickerResponse, error) {
 	if tr.Assets == nil || len(tr.Assets) >= c.configuration.RestAPI.RequestLimit {
 		return controllers.TickerResponse{}, errors.New(watchmarket.ErrBadRequest)
 	}
 
-	rate, err := c.getRateByPriority(strings.ToUpper(tr.Currency), ctx)
+	rate, err := c.getRateByPriority(strings.ToUpper(tr.Currency))
 	if err != nil {
 		return controllers.TickerResponse{}, errors.New(watchmarket.ErrNotFound)
 	}
 
-	tickers, err := c.getTickersByPriority(makeTickerQueries(tr.Assets), ctx)
+	tickers, err := c.getTickersByPriority(makeTickerQueries(tr.Assets))
 	if err != nil {
 		return controllers.TickerResponse{}, errors.New(watchmarket.ErrInternal)
 	}
 
-	tickers = c.normalizeTickers(tickers, rate, ctx)
+	tickers = c.normalizeTickers(tickers, rate)
 
 	return createResponse(tr, tickers), nil
 }

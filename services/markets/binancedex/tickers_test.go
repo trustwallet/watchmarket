@@ -1,13 +1,13 @@
 package binancedex
 
 import (
-	"context"
-	"github.com/stretchr/testify/assert"
-	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"net/http/httptest"
 	"sort"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 )
 
 func TestProvider_GetTickers(t *testing.T) {
@@ -15,7 +15,7 @@ func TestProvider_GetTickers(t *testing.T) {
 	defer server.Close()
 
 	provider := InitProvider(server.URL)
-	data, err := provider.GetTickers(context.Background())
+	data, err := provider.GetTickers()
 	assert.Nil(t, err)
 	assert.NotNil(t, data)
 	assert.Equal(t, "BNB", data[0].CoinName)

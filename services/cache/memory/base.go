@@ -1,13 +1,13 @@
 package memory
 
 import (
-	"context"
 	"crypto/sha1"
 	"encoding/base64"
 	"errors"
+	"time"
+
 	gocache "github.com/patrickmn/go-cache"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
-	"time"
 )
 
 type Instance struct {
@@ -30,12 +30,12 @@ func (i Instance) GenerateKey(data string) string {
 	return base64.URLEncoding.EncodeToString(hash[:])
 }
 
-func (i Instance) Set(key string, data []byte, ctx context.Context) error {
+func (i Instance) Set(key string, data []byte) error {
 	i.Cache.Set(key, data, gocache.NoExpiration)
 	return nil
 }
 
-func (i Instance) Get(key string, ctx context.Context) ([]byte, error) {
+func (i Instance) Get(key string) ([]byte, error) {
 	res, ok := i.Cache.Get(key)
 	if !ok {
 		return nil, errors.New(watchmarket.ErrNotFound)
@@ -43,11 +43,11 @@ func (i Instance) Get(key string, ctx context.Context) ([]byte, error) {
 	return res.([]byte), nil
 }
 
-func (i Instance) SetWithTime(key string, data []byte, time int64, ctx context.Context) error {
+func (i Instance) SetWithTime(key string, data []byte, time int64) error {
 	return nil
 }
 
-func (i Instance) GetWithTime(key string, time int64, ctx context.Context) ([]byte, error) {
+func (i Instance) GetWithTime(key string, time int64) ([]byte, error) {
 	return nil, nil
 }
 

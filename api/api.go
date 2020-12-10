@@ -9,7 +9,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"github.com/swaggo/gin-swagger/swaggerFiles"
-	"github.com/trustwallet/golibs-networking/middleware"
+	"github.com/trustwallet/golibs/middleware"
 	"github.com/trustwallet/watchmarket/api/endpoint"
 	_ "github.com/trustwallet/watchmarket/docs"
 	"github.com/trustwallet/watchmarket/services/controllers"

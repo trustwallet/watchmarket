@@ -1,18 +1,18 @@
 package tickerscontroller
 
 import (
-	"context"
 	"encoding/json"
 	"errors"
+	"strings"
+
 	log "github.com/sirupsen/logrus"
 	"github.com/trustwallet/watchmarket/db/models"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
-	"strings"
 )
 
-func (c Controller) getRateByPriority(currency string, ctx context.Context) (watchmarket.Rate, error) {
+func (c Controller) getRateByPriority(currency string) (watchmarket.Rate, error) {
 	if c.configuration.RestAPI.UseMemoryCache {
-		rawResult, err := c.cache.Get(currency, ctx)
+		rawResult, err := c.cache.Get(currency)
 		if err != nil {
 			return watchmarket.Rate{}, err
 		}
@@ -23,7 +23,7 @@ func (c Controller) getRateByPriority(currency string, ctx context.Context) (wat
 		return result, nil
 	}
 
-	rates, err := c.database.GetRates(currency, ctx)
+	rates, err := c.database.GetRates(currency)
 	if err != nil {
 		log.Error(err, "getRateByPriority")
 		return watchmarket.Rate{}, err
@@ -55,9 +55,9 @@ ProvidersLoop:
 	}, nil
 }
 
-func (c Controller) rateToDefaultCurrency(t watchmarket.Ticker, rate watchmarket.Rate, ctx context.Context) (watchmarket.Rate, bool) {
+func (c Controller) rateToDefaultCurrency(t watchmarket.Ticker, rate watchmarket.Rate) (watchmarket.Rate, bool) {
 	if t.Price.Currency != watchmarket.DefaultCurrency {
-		newRate, err := c.getRateByPriority(strings.ToUpper(t.Price.Currency), ctx)
+		newRate, err := c.getRateByPriority(strings.ToUpper(t.Price.Currency))
 		if err != nil {
 			return watchmarket.Rate{}, false
 		}

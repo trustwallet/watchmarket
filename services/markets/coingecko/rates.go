@@ -1,17 +1,17 @@
 package coingecko
 
 import (
-	"context"
-	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"strings"
+
+	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 )
 
-func (p Provider) GetRates(ctx context.Context) (watchmarket.Rates, error) {
-	coins, err := p.client.fetchCoins(ctx)
+func (p Provider) GetRates() (watchmarket.Rates, error) {
+	coins, err := p.client.fetchCoins()
 	if err != nil {
 		return watchmarket.Rates{}, err
 	}
-	prices := p.client.fetchRates(coins, p.currency, ctx)
+	prices := p.client.fetchRates(coins, p.currency)
 
 	return normalizeRates(prices, p.id), nil
 }

@@ -1,12 +1,12 @@
 package tickerscontroller
 
 import (
-	"context"
+	"testing"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/trustwallet/watchmarket/db/models"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"github.com/trustwallet/watchmarket/services/controllers"
-	"testing"
 )
 
 func TestController_getTickersByPriority(t *testing.T) {
@@ -59,7 +59,7 @@ func TestController_getTickersByPriority(t *testing.T) {
 
 	tickers, err := c.getTickersByPriority(makeTickerQueries(
 		[]controllers.Coin{{Coin: 60, TokenId: "A"}, {Coin: 714, TokenId: "A"}},
-	), context.Background())
+	))
 	assert.Nil(t, err)
 	assert.NotNil(t, tickers)
 	assert.Equal(t, 2, len(tickers))
@@ -98,7 +98,7 @@ func TestController_getTickersByPriority(t *testing.T) {
 	db2 := getDbMock()
 	db2.WantedTickers = []models.Ticker{ticker60ACMC, ticker60ACG}
 	c2 := setupController(t, db2, false)
-	tickers2, err := c2.getTickersByPriority(makeTickerQueries([]controllers.Coin{{Coin: 60, TokenId: "A"}}), context.Background())
+	tickers2, err := c2.getTickersByPriority(makeTickerQueries([]controllers.Coin{{Coin: 60, TokenId: "A"}}))
 	assert.Nil(t, err)
 	assert.NotNil(t, tickers2)
 	assert.Equal(t, 1, len(tickers2))

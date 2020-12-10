@@ -2,18 +2,18 @@ package api
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
-	"github.com/gin-gonic/gin"
-	log "github.com/sirupsen/logrus"
-	"github.com/stretchr/testify/assert"
-	"github.com/trustwallet/watchmarket/pkg/watchmarket"
-	"github.com/trustwallet/watchmarket/services/controllers"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 	"time"
+
+	"github.com/gin-gonic/gin"
+	log "github.com/sirupsen/logrus"
+	"github.com/stretchr/testify/assert"
+	"github.com/trustwallet/watchmarket/pkg/watchmarket"
+	"github.com/trustwallet/watchmarket/services/controllers"
 )
 
 func TestSetupBasicAPI(t *testing.T) {
@@ -301,19 +301,19 @@ func getTickersMock(wantedTickersV1 controllers.TickerResponse, wantedTickersV2 
 	}
 }
 
-func (c chartsControllerMock) HandleChartsRequest(cr controllers.ChartRequest, ctx context.Context) (watchmarket.Chart, error) {
+func (c chartsControllerMock) HandleChartsRequest(cr controllers.ChartRequest) (watchmarket.Chart, error) {
 	return c.wantedCharts, c.wantedError
 }
 
-func (c infoControllerMock) HandleInfoRequest(dr controllers.DetailsRequest, ctx context.Context) (controllers.InfoResponse, error) {
+func (c infoControllerMock) HandleInfoRequest(dr controllers.DetailsRequest) (controllers.InfoResponse, error) {
 	return c.wantedInfo, c.wantedError
 }
 
-func (c tickersControllerMock) HandleTickersRequestV2(tr controllers.TickerRequestV2, ctx context.Context) (controllers.TickerResponseV2, error) {
+func (c tickersControllerMock) HandleTickersRequestV2(tr controllers.TickerRequestV2) (controllers.TickerResponseV2, error) {
 	return c.wantedTickersV2, c.wantedError
 }
 
-func (c tickersControllerMock) HandleTickersRequest(tr controllers.TickerRequest, ctx context.Context) (controllers.TickerResponse, error) {
+func (c tickersControllerMock) HandleTickersRequest(tr controllers.TickerRequest) (controllers.TickerResponse, error) {
 	return c.wantedTickersV1, c.wantedError
 }
 
