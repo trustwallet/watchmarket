@@ -647,6 +647,12 @@ const Mapping = `[
         "id": 1321
     },
     {
+        "coin": 714,
+        "type": "token",
+        "token_id": "ETC-758",
+        "id": 1321
+    },
+    {
         "coin": 20000714,
         "type": "token",
         "token_id": "0x3d6545b08693daE087E957cb1180ee38B9e3c25E",
