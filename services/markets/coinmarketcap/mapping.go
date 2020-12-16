@@ -10304,6 +10304,12 @@ const Mapping = `[
         "id": 5208
     },
     {
+        "coin": 195,
+        "type": "token",
+        "token_id": "1003095",
+        "id": 5214
+    },
+    {
         "coin": 714,
         "type": "token",
         "token_id": "ETHBEAR-B2B",
