@@ -12651,6 +12651,12 @@ const Mapping = `[
         "id": 6184
     },
     {
+        "coin": 501,
+        "type": "token",
+        "token_id": "SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt",
+        "id": 6187
+    },
+    {
         "coin": 60,
         "type": "token",
         "token_id": "0xA9859874e1743A32409f75bB11549892138BBA1E",
@@ -13931,9 +13937,9 @@ const Mapping = `[
         "id": 7824
     },
     {
-        "coin": 501,
+        "coin": 60,
         "type": "token",
-        "token_id": "SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt",
-        "id": 6187
+        "token_id": "0xEC681F28f4561c2a9534799AA38E0d36A83Cf478",
+        "id": 8036
     }
 ]`
