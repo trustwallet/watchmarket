@@ -6,7 +6,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/trustwallet/golibs/middleware"
+	"github.com/trustwallet/golibs/network/middleware"
 
 	"github.com/robfig/cron/v3"
 	log "github.com/sirupsen/logrus"

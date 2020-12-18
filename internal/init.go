@@ -7,7 +7,7 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
-	"github.com/trustwallet/golibs/middleware"
+	"github.com/trustwallet/golibs/network/middleware"
 	"github.com/trustwallet/watchmarket/api"
 	"github.com/trustwallet/watchmarket/config"
 	"github.com/trustwallet/watchmarket/redis"
