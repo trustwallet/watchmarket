@@ -717,6 +717,12 @@ const Mapping = `[
         "id": 1437
     },
     {
+        "coin": 714,
+        "type": "token",
+        "token_id": "ZEC-93E",
+        "id": 1437
+    },
+    {
         "coin": 20000714,
         "type": "token",
         "token_id": "0x1Ba42e5193dfA8B03D15dd1B86a3113bbBEF8Eeb",
