@@ -9732,6 +9732,12 @@ const Mapping = `[
         "id": 4943
     },
     {
+        "coin": 714,
+        "type": "token",
+        "token_id": "DAI-D75",
+        "id": 4943
+    },
+    {
         "coin": 20000714,
         "type": "token",
         "token_id": "0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3",
