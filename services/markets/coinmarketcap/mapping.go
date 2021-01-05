@@ -1111,6 +1111,12 @@ const Mapping = `[
         "id": 1765
     },
     {
+        "coin": 714,
+        "type": "token",
+        "token_id": "EOS-CDD",
+        "id": 1765
+    },
+    {
         "coin": 20000714,
         "type": "token",
         "token_id": "0x56b6fB708fC5732DEC1Afc8D8556423A2EDcCbD6",
