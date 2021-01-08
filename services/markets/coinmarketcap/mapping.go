@@ -8930,7 +8930,7 @@ const Mapping = `[
     {
         "coin": 60,
         "type": "token",
-        "token_id": "0x0c963A1B52Eb97C5e457c7D76696F8b95c3087eD",
+        "token_id": "0xa0F0546Eb5E3eE7e8cfC5DA12e5949F3AE622675",
         "id": 4299
     },
     {
