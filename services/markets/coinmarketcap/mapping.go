@@ -13805,6 +13805,12 @@ const Mapping = `[
         "id": 7226
     },
     {
+        "coin": 714,
+        "type": "token",
+        "token_id": "INJ-FAE",
+        "id": 7226
+    },
+    {
         "coin": 20000714,
         "type": "token",
         "token_id": "0xa2B726B1145A4773F68593CF171187d8EBe4d495",
