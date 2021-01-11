@@ -38,16 +38,13 @@ func InitRedis(host string) *redis.Redis {
 func InitAPI(
 	engine *gin.Engine,
 	tickers controllers.TickersController,
-	rates controllers.RatesController,
 	charts controllers.ChartsController,
 	info controllers.InfoController,
-	configuration config.Configuration,
 ) {
 	api.SetupBasicAPI(engine)
-	api.SetupTickersAPI(engine, tickers, configuration.RestAPI.Tickers.CacheControl)
-	api.SetupChartsAPI(engine, charts, configuration.RestAPI.Charts.CacheControl)
-	api.SetupInfoAPI(engine, info, configuration.RestAPI.Info.CacheControl)
-	api.SetupRatesAPI(engine, rates)
+	api.SetupTickersAPI(engine, tickers)
+	api.SetupChartsAPI(engine, charts)
+	api.SetupInfoAPI(engine, info)
 	api.SetupSwaggerAPI(engine)
 }
 

@@ -36,11 +36,11 @@ storage:
 worker:
   tickers: 5m
   rates: 5m
-  batch_limit: 3000
+
+mode: release # Possible values: "debug", "release"
+port: 8421
 
 rest_api:
-  mode: release # Possible values: "debug", "release"
-  port: 8421 # Possible values: "debug", "release"
   tickers:
     cache_control: 1m
     respectable_market_cap: 0

@@ -50,30 +50,20 @@ type Configuration struct {
 	} `mapstructure:"storage"`
 
 	Worker struct {
-		Tickers    string `mapstructure:"tickers"`
-		Rates      string `mapstructure:"rates"`
-		BatchLimit uint   `mapstructure:"batch_limit"`
+		Tickers string `mapstructure:"tickers"`
+		Rates   string `mapstructure:"rates"`
 	} `mapstructure:"worker"`
-
+	Port    string `mapstructure:"port"`
+	Mode    string `mapstructure:"mode"`
 	RestAPI struct {
-		Mode    string `mapstructure:"mode"`
-		Port    string `mapstructure:"port"`
 		Tickers struct {
 			RespsectableMarketCap float64       `mapstructure:"respectable_market_cap"`
 			RespsectableVolume    float64       `mapstructure:"respectable_volume"`
 			RespectableUpdateTime time.Duration `mapstructure:"respectable_update_time"`
-			CacheControl          time.Duration `mapstructure:"cache_control"`
 		}
-		Charts struct {
-			CacheControl time.Duration `mapstructure:"cache_control"`
-		} `mapstructure:"charts"`
-		Info struct {
-			CacheControl time.Duration `mapstructure:"cache_control"`
-		} `mapstructure:"info"`
-		Cache          time.Duration `mapstructure:"cache"`
-		RequestLimit   int           `mapstructure:"request_limit"`
-		UseMemoryCache bool          `mapstructure:"use_memory_cache"`
-		UpdateTime     struct {
+		Cache        time.Duration `mapstructure:"cache"`
+		RequestLimit int           `mapstructure:"request_limit"`
+		UpdateTime   struct {
 			Tickers string `mapstructure:"memory_cache_tickers"`
 			Rates   string `mapstructure:"memory_cache_rates"`
 		} `mapstructure:"update_time"`

@@ -90,7 +90,7 @@ func TestController_HandleTickersRequest(t *testing.T) {
 	db.WantedTickers = []models.Ticker{ticker60ACMC, ticker60ACG, ticker714ACG, ticker714ABNB}
 	db.WantedRatesError = nil
 	db.WantedRates = []models.Rate{rate, rate2, rate3}
-	c := setupController(t, db, false)
+	c := setupController(t, db)
 	assert.NotNil(t, c)
 
 	response, err := c.HandleTickersRequest(controllers.TickerRequest{Currency: "USD", Assets: []controllers.Coin{{Coin: 60, TokenId: "a"}, {Coin: 714, TokenId: "a"}}})
@@ -144,7 +144,7 @@ func TestController_HandleTickersRequest(t *testing.T) {
 	_, err = c.HandleTickersRequest(oversizeRequest)
 	assert.Equal(t, errors.New(watchmarket.ErrBadRequest), err)
 
-	controllerWithCache := setupController(t, db, true)
+	controllerWithCache := setupController(t, db)
 	assert.NotNil(t, controllerWithCache)
 	wantedTicker1Raw, err := json.Marshal(&wantedTicker1)
 	assert.Nil(t, err)
@@ -183,7 +183,7 @@ func TestController_HandleTickersRequest_Negative(t *testing.T) {
 
 	db.WantedTickersError = nil
 	db.WantedRatesError = errors.New("not found")
-	c := setupController(t, db, false)
+	c := setupController(t, db)
 	assert.NotNil(t, c)
 
 	_, err := c.HandleTickersRequest(controllers.TickerRequest{})
@@ -264,7 +264,7 @@ func TestController_HandleTickersRequestV2(t *testing.T) {
 	db.WantedTickers = []models.Ticker{ticker60ACMC, ticker60ACG, ticker714ACG, ticker714ABNB}
 	db.WantedRatesError = nil
 	db.WantedRates = []models.Rate{rate, rate2, rate3}
-	c := setupController(t, db, false)
+	c := setupController(t, db)
 	assert.NotNil(t, c)
 
 	response, err := c.HandleTickersRequestV2(controllers.TickerRequestV2{Currency: "USD", Ids: []string{"c60_ta", "c714_ta"}})
@@ -304,7 +304,7 @@ func TestController_HandleTickersRequestV2(t *testing.T) {
 	_, err = c.HandleTickersRequestV2(oversizeRequest)
 	assert.Equal(t, errors.New(watchmarket.ErrBadRequest), err)
 
-	controllerWithCache := setupController(t, db, true)
+	controllerWithCache := setupController(t, db)
 	assert.NotNil(t, controllerWithCache)
 	wantedTicker1Raw, err := json.Marshal(&watchmarket.Ticker{
 		Coin:    60,
@@ -355,20 +355,17 @@ func TestController_HandleTickersRequestV2(t *testing.T) {
 }
 
 func TestNewController(t *testing.T) {
-	assert.NotNil(t, setupController(t, getDbMock(), false))
+	assert.NotNil(t, setupController(t, getDbMock()))
 }
 
-func setupController(t *testing.T, d dbMock, useMemoryCache bool) Controller {
+func setupController(t *testing.T, d dbMock) Controller {
 	c := config.Init("../../../config.yml")
 	assert.NotNil(t, c)
-	c.RestAPI.UseMemoryCache = useMemoryCache
 
 	ratesPriority := c.Markets.Priority.Rates
 	tickerPriority := c.Markets.Priority.Tickers
 	var ch cache.Provider
-	if useMemoryCache {
-		ch = memory.Init()
-	}
+	ch = memory.Init()
 	controller := NewController(d, ch, ratesPriority, tickerPriority, c)
 	assert.NotNil(t, controller)
 	return controller
@@ -395,11 +392,11 @@ func (d dbMock) GetRates(currency string) ([]models.Rate, error) {
 	return res, d.WantedRatesError
 }
 
-func (d dbMock) AddRates(rates []models.Rate, batchLimit uint) error {
+func (d dbMock) AddRates(rates []models.Rate) error {
 	return nil
 }
 
-func (d dbMock) AddTickers(tickers []models.Ticker, batchLimit uint) error {
+func (d dbMock) AddTickers(tickers []models.Ticker) error {
 	return nil
 }
 

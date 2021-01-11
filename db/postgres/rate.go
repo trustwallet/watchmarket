@@ -5,10 +5,9 @@ import (
 	"gorm.io/gorm/clause"
 )
 
-func (i *Instance) AddRates(rates []models.Rate, batchLimit uint) error {
+func (i *Instance) AddRates(rates []models.Rate) error {
 	normalizedRates := normalizeRates(rates)
-	batch := toRatesBatch(normalizedRates, batchLimit)
-	for _, b := range batch {
+	for _, b := range normalizedRates {
 		err := i.Gorm.Clauses(clause.OnConflict{
 			Columns: []clause.Column{
 				{
@@ -55,21 +54,6 @@ func normalizeRates(rates []models.Rate) []models.Rate {
 	result := make([]models.Rate, 0, len(ratesMap))
 	for _, rate := range ratesMap {
 		result = append(result, rate)
-	}
-	return result
-}
-
-func toRatesBatch(rates []models.Rate, sizeUint uint) [][]models.Rate {
-	size := int(sizeUint)
-	resultLength := (len(rates) + size - 1) / size
-	result := make([][]models.Rate, resultLength)
-	lo, hi := 0, size
-	for i := range result {
-		if hi > len(rates) {
-			hi = len(rates)
-		}
-		result[i] = rates[lo:hi:hi]
-		lo, hi = hi, hi+size
 	}
 	return result
 }

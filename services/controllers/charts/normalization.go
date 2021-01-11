@@ -58,41 +58,27 @@ func toChartsRequestData(cr controllers.ChartRequest) (chartsNormalizedRequest, 
 }
 
 func (c Controller) checkTickersAvailability(coin uint, token string) ([]models.Ticker, error) {
-	tr := []models.TickerQuery{{Coin: coin, TokenId: strings.ToLower(token)}}
-	if c.configuration.RestAPI.UseMemoryCache {
-		key := strings.ToLower(asset.BuildID(coin, token))
-		rawResult, err := c.memoryCache.Get(key)
-		if err != nil {
-			return nil, err
-		}
-		var t watchmarket.Ticker
-		if err = json.Unmarshal(rawResult, &t); err != nil {
-			return nil, err
-		}
-		result := models.Ticker{
-			Coin:        t.Coin,
-			CoinName:    t.CoinName,
-			CoinType:    string(t.CoinType),
-			TokenId:     t.TokenId,
-			Currency:    t.Price.Currency,
-			Provider:    t.Price.Provider,
-			Change24h:   t.Price.Change24h,
-			Value:       t.Price.Value,
-			LastUpdated: t.LastUpdate,
-		}
-		return []models.Ticker{result}, nil
-	}
-	dbTickers, err := c.database.GetTickersByQueries(tr)
+	key := strings.ToLower(asset.BuildID(coin, token))
+	rawResult, err := c.memoryCache.Get(key)
 	if err != nil {
 		return nil, err
 	}
-	res := make([]models.Ticker, 0, len(dbTickers))
-	for _, t := range dbTickers {
-		if t.ShowOption != 2 {
-			res = append(res, t)
-		}
+	var t watchmarket.Ticker
+	if err = json.Unmarshal(rawResult, &t); err != nil {
+		return nil, err
 	}
-	return res, nil
+	result := models.Ticker{
+		Coin:        t.Coin,
+		CoinName:    t.CoinName,
+		CoinType:    string(t.CoinType),
+		TokenId:     t.TokenId,
+		Currency:    t.Price.Currency,
+		Provider:    t.Price.Provider,
+		Change24h:   t.Price.Change24h,
+		Value:       t.Price.Value,
+		LastUpdated: t.LastUpdate,
+	}
+	return []models.Ticker{result}, nil
 }
 
 func (c Controller) getChartsByPriority(data chartsNormalizedRequest) (watchmarket.Chart, error) {

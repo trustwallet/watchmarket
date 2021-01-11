@@ -2,6 +2,9 @@
   "name": "watchmarket",
   "buildpacks":[
     {
+      "url": "https://github.com/heroku/heroku-buildpack-nginx"
+    },
+    {
       "url":"heroku/go"
     }
   ],

@@ -7,9 +7,8 @@ import (
 	"gorm.io/gorm/clause"
 )
 
-func (i *Instance) AddTickers(tickers []models.Ticker, batchLimit uint) error {
-	batch := toTickersBatch(normalizeTickers(tickers), batchLimit)
-	for _, b := range batch {
+func (i *Instance) AddTickers(tickers []models.Ticker) error {
+	for _, b := range normalizeTickers(tickers) {
 		err := i.Gorm.Clauses(clause.OnConflict{
 			Columns: []clause.Column{
 				{
@@ -38,21 +37,6 @@ func (i *Instance) AddTickers(tickers []models.Ticker, batchLimit uint) error {
 		}
 	}
 	return nil
-}
-
-func toTickersBatch(tickers []models.Ticker, sizeUint uint) [][]models.Ticker {
-	size := int(sizeUint)
-	resultLength := (len(tickers) + size - 1) / size
-	result := make([][]models.Ticker, resultLength)
-	lo, hi := 0, size
-	for i := range result {
-		if hi > len(tickers) {
-			hi = len(tickers)
-		}
-		result[i] = tickers[lo:hi:hi]
-		lo, hi = hi, hi+size
-	}
-	return result
 }
 
 func normalizeTickers(tickers []models.Ticker) []models.Ticker {

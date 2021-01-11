@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
@@ -60,7 +59,7 @@ func TestSetupTickersAPI(t *testing.T) {
 		Tickers:  []controllers.TickerPrice{{Change24h: 2, Provider: "coinmarketcap", Price: 1, ID: "c60_ta"}},
 	}
 
-	SetupTickersAPI(e, getTickersMock(wantedTickers, wantedTickersV2, nil), time.Minute)
+	SetupTickersAPI(e, getTickersMock(wantedTickers, wantedTickersV2, nil))
 
 	go func() {
 		if err := e.Run(":8083"); err != nil {
@@ -150,7 +149,7 @@ func TestSetupChartsAPI(t *testing.T) {
 		Provider: "coinmarketcap",
 		Prices:   []watchmarket.ChartPrice{{Price: 10, Date: 10}},
 	}
-	SetupChartsAPI(e, getChartsMock(wantedCharts, nil), time.Minute)
+	SetupChartsAPI(e, getChartsMock(wantedCharts, nil))
 
 	go func() {
 		if err := e.Run(":8082"); err != nil {
@@ -209,7 +208,7 @@ func TestSetupInfoAPI(t *testing.T) {
 			},
 		},
 	}
-	SetupInfoAPI(e, getInfoMock(wantedInfo, nil), time.Minute)
+	SetupInfoAPI(e, getInfoMock(wantedInfo, nil))
 
 	go func() {
 		if err := e.Run(":8081"); err != nil {

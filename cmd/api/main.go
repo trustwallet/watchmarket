@@ -1,7 +1,8 @@
 package main
 
 import (
-	"time"
+	"flag"
+	"os"
 
 	"github.com/gin-gonic/gin"
 	"github.com/robfig/cron/v3"
@@ -40,13 +41,15 @@ var (
 	w              worker.Worker
 	c              *cron.Cron
 	memoryCache    cache.Provider
+	unixFile       string
 )
 
 func init() {
 	port, confPath = internal.ParseArgs(defaultPort, defaultConfigPath)
+	flag.StringVar(&unixFile, "u", "", "unix file address for api")
 
 	configuration = internal.InitConfig(confPath)
-	port = configuration.RestAPI.Port
+	port = configuration.Port
 	chartsPriority := configuration.Markets.Priority.Charts
 	ratesPriority := configuration.Markets.Priority.Rates
 	tickerPriority := configuration.Markets.Priority.Tickers
@@ -72,13 +75,9 @@ func init() {
 		log.Fatal(err)
 	}
 
-	if configuration.RestAPI.UseMemoryCache {
-		memoryCache = memory.Init()
-		c = cron.New(cron.WithChain(cron.Recover(cron.DefaultLogger)))
-		w = worker.Init(m.RatesAPIs, m.TickersAPIs, database, memoryCache, configuration)
-	} else {
-		go postgres.FatalWorker(time.Second*10, *database)
-	}
+	memoryCache = memory.Init()
+	c = cron.New(cron.WithChain(cron.Recover(cron.DefaultLogger)))
+	w = worker.Init(m.RatesAPIs, m.TickersAPIs, database, memoryCache, configuration)
 
 	r := internal.InitRedis(configuration.Storage.Redis.Url)
 	redisCache := rediscache.Init(*r, configuration.RestAPI.Cache)
@@ -87,22 +86,31 @@ func init() {
 	info = infocontroller.NewController(database, memoryCache, chartsPriority, coinInfoPriority, ratesPriority, tickerPriority, m.ChartsAPIs, configuration)
 	tickers = tickerscontroller.NewController(database, memoryCache, ratesPriority, tickerPriority, configuration)
 	rates = ratescontroller.NewController(database, memoryCache, ratesPriority, configuration)
-	engine = internal.InitEngine(configuration.RestAPI.Mode)
+	engine = internal.InitEngine(configuration.Mode)
 }
 
 func main() {
-	if configuration.RestAPI.UseMemoryCache {
-		w.SaveRatesToMemory()
-		w.SaveTickersToMemory()
+	w.SaveRatesToMemory()
+	w.SaveTickersToMemory()
 
-		w.AddOperation(c, configuration.RestAPI.UpdateTime.Rates, w.SaveRatesToMemory)
-		w.AddOperation(c, configuration.RestAPI.UpdateTime.Tickers, w.SaveTickersToMemory)
+	w.AddOperation(c, configuration.RestAPI.UpdateTime.Rates, w.SaveRatesToMemory)
+	w.AddOperation(c, configuration.RestAPI.UpdateTime.Tickers, w.SaveTickersToMemory)
 
-		c.Start()
+	c.Start()
 
-		log.Info("No items in memory cache")
+	internal.InitAPI(engine, tickers, charts, info)
+
+	if len(unixFile) > 0 {
+		// heroku specific to start nginx
+		os.Create("/tmp/app-initialized")
+		if err := engine.RunUnix(unixFile); err != nil {
+			log.Fatal(err, "Application failed")
+		}
+		log.WithFields(log.Fields{"unixFile": ":" + unixFile}).Info("Running application")
+	} else {
+		if err := engine.Run(":" + port); err != nil {
+			log.Fatal(err, "Application failed")
+		}
+		log.WithFields(log.Fields{"port": ":" + port}).Info("Running application")
 	}
-
-	internal.InitAPI(engine, tickers, rates, charts, info, configuration)
-	internal.SetupGracefulShutdown(port, engine)
 }
