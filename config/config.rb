@@ -44,16 +44,20 @@ http {
 
         # v2
 		location /v2/market/info {
-		    expires 1h;
+		    expires 30m;
 		    proxy_cache cache;
             proxy_cache_valid 15m;
+            proxy_cache_background_update on;
+            proxy_cache_use_stale updating;
           	proxy_pass http://app_server;
         }
 
         location /v2/market/charts {
-            expires 1m;
+            expires 5m;
             proxy_cache cache;
-            proxy_cache_valid 1m;
+            proxy_cache_valid 5m;
+            proxy_cache_background_update on;
+            proxy_cache_use_stale updating;
             proxy_pass http://app_server;
         }
 
@@ -61,6 +65,8 @@ http {
             expires 1m;
             proxy_cache cache;
             proxy_cache_valid 1m;
+            proxy_cache_background_update on;
+            proxy_cache_use_stale updating;
             proxy_pass http://app_server;
         }
 
@@ -68,6 +74,8 @@ http {
             expires 1m;
             proxy_cache cache;
             proxy_cache_valid 1m;
+            proxy_cache_background_update on;
+            proxy_cache_use_stale updating;
             proxy_pass http://app_server;
         }
 	}
