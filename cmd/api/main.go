@@ -45,8 +45,8 @@ var (
 )
 
 func init() {
-	port, confPath = internal.ParseArgs(defaultPort, defaultConfigPath)
 	flag.StringVar(&unixFile, "u", "", "unix file address for api")
+	port, confPath = internal.ParseArgs(defaultPort, defaultConfigPath)
 
 	configuration = internal.InitConfig(confPath)
 	port = configuration.Port
