@@ -22,7 +22,7 @@ markets:
   fixer:
     currency: USD
     api: https://data.fixer.io/api
-    key: #key
+    key: 6dfca9d6a597b243420bc17ef559b820
 
   assets: https://raw.githubusercontent.com/trustwallet/assets/master/blockchains # Assets url - details about TW tokens
 

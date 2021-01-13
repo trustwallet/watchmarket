@@ -28,10 +28,13 @@ var (
 )
 
 func init() {
-	_, confPath := internal.ParseArgs("", defaultConfigPath)
-	configuration = internal.InitConfig(confPath)
+	confPath := internal.GetConfigPath(defaultConfigPath)
+	configuration, err := config.Init(confPath)
+	if err != nil {
+		log.Panic("Config read error: ", err)
+	}
 
-	err := middleware.SetupSentry(configuration.Sentry.DSN)
+	err = middleware.SetupSentry(configuration.Sentry.DSN)
 	if err != nil {
 		log.Error(err)
 	}

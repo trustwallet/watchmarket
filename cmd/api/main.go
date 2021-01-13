@@ -30,29 +30,32 @@ const (
 )
 
 var (
-	port, confPath string
-	engine         *gin.Engine
-	configuration  config.Configuration
-	tickers        controllers.TickersController
-	rates          controllers.RatesController
-	charts         controllers.ChartsController
-	info           controllers.InfoController
-	w              worker.Worker
-	c              *cron.Cron
-	memoryCache    cache.Provider
+	port          string
+	engine        *gin.Engine
+	configuration config.Configuration
+	tickers       controllers.TickersController
+	rates         controllers.RatesController
+	charts        controllers.ChartsController
+	info          controllers.InfoController
+	w             worker.Worker
+	c             *cron.Cron
+	memoryCache   cache.Provider
 )
 
 func init() {
-	port, confPath = internal.ParseArgs(defaultPort, defaultConfigPath)
+	confPath := internal.GetConfigPath(defaultConfigPath)
 
-	configuration = internal.InitConfig(confPath)
+	configuration, err := config.Init(confPath)
+	if err != nil {
+		log.Panic("Config read error: ", err)
+	}
 	port = configuration.RestAPI.Port
 	chartsPriority := configuration.Markets.Priority.Charts
 	ratesPriority := configuration.Markets.Priority.Rates
 	tickerPriority := configuration.Markets.Priority.Tickers
 	coinInfoPriority := configuration.Markets.Priority.CoinInfo
 
-	err := middleware.SetupSentry(configuration.Sentry.DSN)
+	err = middleware.SetupSentry(configuration.Sentry.DSN)
 	if err != nil {
 		log.Error(err)
 	}

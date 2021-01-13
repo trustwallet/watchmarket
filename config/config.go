@@ -1,6 +1,8 @@
 package config
 
 import (
+	"github.com/pkg/errors"
+	"path/filepath"
 	"reflect"
 	"strings"
 	"time"
@@ -84,7 +86,7 @@ type Configuration struct {
 	} `mapstructure:"sentry"`
 }
 
-func Init(confPath string) Configuration {
+func Init(confPath string) (Configuration, error) {
 	c := Configuration{}
 
 	viper.AutomaticEnv()
@@ -94,28 +96,23 @@ func Init(confPath string) Configuration {
 	viper.SetConfigName("config")
 	viper.SetConfigType("yml")
 
-	if confPath == "" {
-		err := viper.ReadInConfig()
+	if confPath != "" {
+		confPath, err := filepath.Abs(confPath)
 		if err != nil {
-			log.Panic(err, "Fatal error reading default config")
-		} else {
-			log.WithFields(log.Fields{"config": viper.ConfigFileUsed()}).Info("Viper using default config")
+			return c, err
 		}
-	} else {
 		viper.SetConfigFile(confPath)
-		err := viper.ReadInConfig()
-		if err != nil {
-			log.Panic(err, "Fatal error reading supplied config")
-		} else {
-			log.WithFields(log.Fields{"config": viper.ConfigFileUsed()}).Info("Viper using supplied config")
-		}
 	}
+	if err := viper.ReadInConfig(); err != nil {
+		return c, errors.Wrapf(err, "Fatal error reading config")
+	}
+	log.Info("Viper using config")
 
 	bindEnvs(c)
 	if err := viper.Unmarshal(&c); err != nil {
-		log.Panic(err, "Error Unmarshal Viper Config File")
+		return c, errors.Wrap(err, "Error Unmarshal Viper Config File")
 	}
-	return c
+	return c, nil
 }
 
 func bindEnvs(iface interface{}, parts ...string) {
