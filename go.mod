@@ -18,6 +18,7 @@ require (
 	github.com/onsi/gomega v1.7.0 // indirect
 	github.com/ory/dockertest v3.3.5+incompatible
 	github.com/patrickmn/go-cache v2.1.0+incompatible
+	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.9.0
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/sirupsen/logrus v1.7.0
@@ -25,8 +26,8 @@ require (
 	github.com/stretchr/testify v1.6.1
 	github.com/swaggo/gin-swagger v1.2.0
 	github.com/swaggo/swag v1.6.7
-	github.com/trustwallet/golibs v0.0.26
-	github.com/trustwallet/golibs/network v0.0.0-20201217160111-1a8423bbcaa1
+	github.com/trustwallet/golibs v0.0.30
+	github.com/trustwallet/golibs/network v0.0.0-20210105080443-03598d944b08
 	golang.org/x/tools v0.0.0-20200513175351-0951661448da // indirect
 	gorm.io/driver/postgres v1.0.5
 	gorm.io/gorm v1.20.5

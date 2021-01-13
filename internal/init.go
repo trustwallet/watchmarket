@@ -2,8 +2,6 @@ package internal
 
 import (
 	"flag"
-	"path/filepath"
-
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
@@ -15,16 +13,11 @@ import (
 	"github.com/trustwallet/watchmarket/services/controllers"
 )
 
-func ParseArgs(defaultPort, defaultConfigPath string) (string, string) {
-	var (
-		port, confPath string
-	)
-
-	flag.StringVar(&port, "p", defaultPort, "port for api")
+func GetConfigPath(defaultConfigPath string) string {
+	var confPath string
 	flag.StringVar(&confPath, "c", defaultConfigPath, "config file for api")
 	flag.Parse()
-
-	return port, confPath
+	return confPath
 }
 
 func InitRedis(host string) *redis.Redis {
@@ -53,15 +46,6 @@ func InitAPI(
 
 func InitAssets(assetsHost string) assets.Client {
 	return assets.Init(assetsHost)
-}
-
-func InitConfig(confPath string) config.Configuration {
-	confPath, err := filepath.Abs(confPath)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	return config.Init(confPath)
 }
 
 func InitEngine(ginMode string) *gin.Engine {
