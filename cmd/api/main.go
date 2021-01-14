@@ -88,15 +88,10 @@ func init() {
 		log.Fatal(err)
 	}
 
-	charts = chartscontroller.NewController(redisCache, memoryCache, database, chartsPriority, coinInfoPriority, ratesPriority, tickerPriority, m.ChartsAPIs, configuration)
+	charts = chartscontroller.NewController(redisCache, memoryCache, database, chartsPriority, m.ChartsAPIs, configuration)
 	info = infocontroller.NewController(database, memoryCache, chartsPriority, coinInfoPriority, ratesPriority, tickerPriority, m.ChartsAPIs, configuration)
 	tickers = tickerscontroller.NewController(database, memoryCache, ratesPriority, tickerPriority, configuration)
 	rates = ratescontroller.NewController(database, memoryCache, ratesPriority, configuration)
-
-	gin.SetMode(configuration.RestAPI.Mode)
-	engine = gin.New()
-	engine.Use(cors.Default())
-	engine.Use(middleware.Logger())
 }
 
 func main() {
@@ -111,6 +106,11 @@ func main() {
 
 		log.Info("No items in memory cache")
 	}
+
+	gin.SetMode(configuration.RestAPI.Mode)
+	engine = gin.New()
+	engine.Use(cors.Default())
+	engine.Use(middleware.Logger())
 
 	api.SetupBasicAPI(engine)
 	api.SetupTickersAPI(engine, tickers, configuration.RestAPI.Tickers.CacheControl)
