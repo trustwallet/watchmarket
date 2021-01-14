@@ -1,12 +1,14 @@
 package main
 
 import (
+	"github.com/gin-contrib/cors"
+	"github.com/trustwallet/golibs/network/middleware"
+	"github.com/trustwallet/watchmarket/api"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/robfig/cron/v3"
 	log "github.com/sirupsen/logrus"
-	"github.com/trustwallet/golibs/network/middleware"
 	"github.com/trustwallet/watchmarket/config"
 	"github.com/trustwallet/watchmarket/db/postgres"
 	_ "github.com/trustwallet/watchmarket/docs"
@@ -25,7 +27,6 @@ import (
 )
 
 const (
-	defaultPort       = "8420"
 	defaultConfigPath = "../../config.yml"
 )
 
@@ -55,8 +56,7 @@ func init() {
 	tickerPriority := configuration.Markets.Priority.Tickers
 	coinInfoPriority := configuration.Markets.Priority.CoinInfo
 
-	err = middleware.SetupSentry(configuration.Sentry.DSN)
-	if err != nil {
+	if err = middleware.SetupSentry(configuration.Sentry.DSN); err != nil {
 		log.Error(err)
 	}
 
@@ -83,14 +83,20 @@ func init() {
 		go postgres.FatalWorker(time.Second*10, *database)
 	}
 
-	r := internal.InitRedis(configuration.Storage.Redis.Url)
-	redisCache := rediscache.Init(*r, configuration.RestAPI.Cache)
+	redisCache, err := rediscache.Init(configuration.Storage.Redis.Url, configuration.RestAPI.Cache)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	charts = chartscontroller.NewController(redisCache, memoryCache, database, chartsPriority, coinInfoPriority, ratesPriority, tickerPriority, m.ChartsAPIs, configuration)
 	info = infocontroller.NewController(database, memoryCache, chartsPriority, coinInfoPriority, ratesPriority, tickerPriority, m.ChartsAPIs, configuration)
 	tickers = tickerscontroller.NewController(database, memoryCache, ratesPriority, tickerPriority, configuration)
 	rates = ratescontroller.NewController(database, memoryCache, ratesPriority, configuration)
-	engine = internal.InitEngine(configuration.RestAPI.Mode)
+
+	gin.SetMode(configuration.RestAPI.Mode)
+	engine = gin.New()
+	engine.Use(cors.Default())
+	engine.Use(middleware.Logger())
 }
 
 func main() {
@@ -106,6 +112,11 @@ func main() {
 		log.Info("No items in memory cache")
 	}
 
-	internal.InitAPI(engine, tickers, rates, charts, info, configuration)
+	api.SetupBasicAPI(engine)
+	api.SetupTickersAPI(engine, tickers, configuration.RestAPI.Tickers.CacheControl)
+	api.SetupChartsAPI(engine, charts, configuration.RestAPI.Charts.CacheControl)
+	api.SetupInfoAPI(engine, info, configuration.RestAPI.Info.CacheControl)
+	api.SetupRatesAPI(engine, rates)
+	api.SetupSwaggerAPI(engine)
 	internal.SetupGracefulShutdown(port, engine)
 }

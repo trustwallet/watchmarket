@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/trustwallet/watchmarket/services/assets"
 	"os"
 	"os/signal"
 	"syscall"
@@ -39,7 +40,7 @@ func init() {
 		log.Error(err)
 	}
 
-	assets := internal.InitAssets(configuration.Markets.Assets)
+	assets := assets.Init(configuration.Markets.Assets)
 
 	m, err := markets.Init(configuration, assets)
 	if err != nil {
