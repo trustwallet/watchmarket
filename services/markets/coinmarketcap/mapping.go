@@ -7940,7 +7940,7 @@ const Mapping = `[
     {
         "coin": 60,
         "type": "token",
-        "token_id": "0x915044526758533dfB918ecEb6e44bc21632060D",
+        "token_id": "0x8A2279d4A90B6fe1C4B30fa660cC9f926797bAA2",
         "id": 3978
     },
     {
@@ -8511,6 +8511,12 @@ const Mapping = `[
         "coin": 714,
         "type": "token",
         "token_id": "RUNE-B1A",
+        "id": 4157
+    },
+    {
+        "coin": 60,
+        "type": "token",
+        "token_id": "0x3155BA85D5F96b2d030a4966AF206230e46849cb",
         "id": 4157
     },
     {
@@ -11999,6 +12005,18 @@ const Mapping = `[
     {
         "coin": 60,
         "type": "token",
+        "token_id": "0xf8C3527CC04340b208C854E985240c02F7B7793f",
+        "id": 5893
+    },
+    {
+        "coin": 20000714,
+        "type": "token",
+        "token_id": "0x928e55daB735aa8260AF3cEDadA18B5f70C72f1b",
+        "id": 5893
+    },
+    {
+        "coin": 60,
+        "type": "token",
         "token_id": "0x740623d2c797b7D8D1EcB98e9b4Afcf99Ec31E14",
         "id": 5894
     },
@@ -13626,6 +13644,12 @@ const Mapping = `[
         "id": 6650
     },
     {
+        "coin": 459,
+        "type": "token",
+        "token_id": "usdx",
+        "id": 6651
+    },
+    {
         "coin": 20000714,
         "type": "token",
         "token_id": "0x1203355742e76875154C0D13eB81DCD7711dC7d9",
@@ -13931,6 +13955,12 @@ const Mapping = `[
         "id": 7553
     },
     {
+        "coin": 459,
+        "type": "token",
+        "token_id": "hard",
+        "id": 7576
+    },
+    {
         "coin": 20000714,
         "type": "token",
         "token_id": "0xf79037F6f6bE66832DE4E7516be52826BC3cBcc4",
@@ -13991,9 +14021,27 @@ const Mapping = `[
         "id": 8036
     },
     {
+        "coin": 60,
+        "type": "token",
+        "token_id": "0x77777FeDdddFfC19Ff86DB637967013e6C6A116C",
+        "id": 8049
+    },
+    {
+        "coin": 60,
+        "type": "token",
+        "token_id": "0x06A01a4d579479Dd5D884EBf61A31727A3d8D442",
+        "id": 8133
+    },
+    {
         "coin": 20000714,
         "type": "token",
         "token_id": "0x5A41F637C3f7553dBa6dDC2D3cA92641096577ea",
         "id": 8164
+    },
+    {
+        "coin": 20000714,
+        "type": "token",
+        "token_id": "0x78650B139471520656b9E7aA7A5e9276814a38e9",
+        "id": 8210
     }
 ]`
