@@ -52,7 +52,7 @@ func TestInstance_GetCharts_CachingDataWasEmpty(t *testing.T) {
 func TestInstance_GetCharts_notExistingKey(t *testing.T) {
 	s := setupRedis(t)
 	defer s.Close()
-	i, err := Init(fmt.Sprintf("redis://%s", s.Addr()), time.Second*1000)
+	i, _ := Init(fmt.Sprintf("redis://%s", s.Addr()), time.Second*1000)
 	assert.NotNil(t, i)
 
 	seedDbCharts(t, i)
@@ -65,7 +65,7 @@ func TestInstance_GetCharts_notExistingKey(t *testing.T) {
 func TestInstance_GetCharts_Outdated(t *testing.T) {
 	s := setupRedis(t)
 	defer s.Close()
-	i, err := Init(fmt.Sprintf("redis://%s", s.Addr()), time.Second*1000)
+	i, _ := Init(fmt.Sprintf("redis://%s", s.Addr()), time.Second*1000)
 	assert.NotNil(t, i)
 
 	d, err := i.GetWithTime("testKEY", 100000)
@@ -80,7 +80,7 @@ func TestInstance_GetCharts_OutdatedCacheIsNotReturned(t *testing.T) {
 	s := setupRedis(t)
 	defer s.Close()
 
-	i, err := Init(fmt.Sprintf("redis://%s", s.Addr()), time.Second*1000)
+	i, _ := Init(fmt.Sprintf("redis://%s", s.Addr()), time.Second*1000)
 	assert.NotNil(t, i)
 
 	d, err := i.GetWithTime("testKEY", 100000)
@@ -99,7 +99,7 @@ func TestInstance_GetCharts_ValidCacheIsReturned(t *testing.T) {
 	s := setupRedis(t)
 	defer s.Close()
 
-	i, err := Init(fmt.Sprintf("redis://%s", s.Addr()), time.Second*1000)
+	i, _ := Init(fmt.Sprintf("redis://%s", s.Addr()), time.Second*1000)
 	assert.NotNil(t, i)
 
 	seedDbCharts(t, i)
@@ -182,7 +182,7 @@ func TestInstance_SaveCharts(t *testing.T) {
 	s := setupRedis(t)
 	defer s.Close()
 
-	i, err := Init(fmt.Sprintf("redis://%s", s.Addr()), time.Second*1000)
+	i, _ := Init(fmt.Sprintf("redis://%s", s.Addr()), time.Second*1000)
 	assert.NotNil(t, i)
 	res, err := json.Marshal(makeChartDataMock())
 	assert.Nil(t, err)
@@ -201,7 +201,7 @@ func TestProvider_Mixed(t *testing.T) {
 	s := setupRedis(t)
 	defer s.Close()
 
-	i, err := Init(fmt.Sprintf("redis://%s", s.Addr()), time.Second*1000)
+	i, _ := Init(fmt.Sprintf("redis://%s", s.Addr()), time.Second*1000)
 	assert.NotNil(t, i)
 	res, err := json.Marshal(makeChartDataMock())
 	assert.Nil(t, err)
@@ -223,10 +223,10 @@ func TestInstance_SaveCharts_DataIsEmpty(t *testing.T) {
 	s := setupRedis(t)
 	defer s.Close()
 
-	i, err := Init(fmt.Sprintf("redis://%s", s.Addr()), time.Second*1000)
+	i, _ := Init(fmt.Sprintf("redis://%s", s.Addr()), time.Second*1000)
 	assert.NotNil(t, i)
 
-	err = i.SetWithTime("testKEY", nil, 0)
+	err := i.SetWithTime("testKEY", nil, 0)
 	assert.Equal(t, "data is empty", err.Error())
 	d, err := i.GetWithTime("testKEY", 0)
 	assert.NotNil(t, err)
