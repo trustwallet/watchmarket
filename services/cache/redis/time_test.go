@@ -120,7 +120,7 @@ func TestInstance_GetCharts_StartTimeIsEarlierThatWasCached(t *testing.T) {
 	s := setupRedis(t)
 	defer s.Close()
 
-	i, err := Init(fmt.Sprintf("redis://%s", s.Addr()), time.Second*1000)
+	i, _ := Init(fmt.Sprintf("redis://%s", s.Addr()), time.Second*1000)
 	assert.NotNil(t, i)
 
 	d, err := i.GetWithTime("testKEY", -1)
@@ -153,10 +153,10 @@ func TestInstance_GetCharts(t *testing.T) {
 	s := setupRedis(t)
 	defer s.Close()
 
-	i, err := Init(fmt.Sprintf("redis://%s", s.Addr()), time.Second*1000)
+	i, _ := Init(fmt.Sprintf("redis://%s", s.Addr()), time.Second*1000)
 	assert.NotNil(t, i)
 
-	err = i.Set("data_key", []byte{0, 1, 2})
+	err := i.Set("data_key", []byte{0, 1, 2})
 	assert.Nil(t, err)
 
 	err = i.updateInterval("testKEY", CachedInterval{
