@@ -6,7 +6,10 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"reflect"
 	"testing"
+
+	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -49,3 +52,31 @@ var (
 	wantedInfo         = `{"name":"Ethereum","website":"https://ethereum.org/","source_code":"https://github.com/ethereum","white_paper":"https://github.com/ethereum/wiki/wiki/White-Paper","description":"Open source platform to write and distribute decentralized applications.","short_description":"Open source platform to write and distribute decentralized applications.","explorer":"https://etherscan.io/","socials":[{"name":"Twitter","url":"https://twitter.com/ethereum","handle":"ethereum"},{"name":"Reddit","url":"https://www.reddit.com/r/ethereum","handle":"ethereum"}]}`
 	mockedInfoResponse = `{ "name": "Ethereum", "website": "https://ethereum.org/", "source_code": "https://github.com/ethereum", "white_paper": "https://github.com/ethereum/wiki/wiki/White-Paper", "short_description": "Open source platform to write and distribute decentralized applications.", "description": "Open source platform to write and distribute decentralized applications.", "socials": [ { "name": "Twitter", "url": "https://twitter.com/ethereum", "handle": "ethereum" }, { "name": "Reddit", "url": "https://www.reddit.com/r/ethereum", "handle": "ethereum" } ], "explorer": "https://etherscan.io/" }`
 )
+
+func Test_normalize(t *testing.T) {
+	type args struct {
+		info watchmarket.Info
+	}
+	tests := []struct {
+		name string
+		args args
+		want watchmarket.Info
+	}{
+		{
+			"Url properly formatted",
+			args{info: watchmarket.Info{
+				Website: "https://www.google.com",
+			}},
+			watchmarket.Info{
+				Website: "https://google.com",
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := normalize(tt.args.info); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("normalize() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

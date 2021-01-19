@@ -3,6 +3,7 @@ package assets
 import (
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/imroc/req"
 	log "github.com/sirupsen/logrus"
@@ -44,6 +45,8 @@ func (c Client) GetCoinInfo(coinId uint, token string) (watchmarket.Info, error)
 
 		return watchmarket.Info{}, err
 	}
+	result = normalize(result)
+
 	return result, nil
 }
 
@@ -52,4 +55,16 @@ func getPathForCoin(c coin.Coin, token string) string {
 		return c.Handle + "/info"
 	}
 	return c.Handle + "/assets/" + token
+}
+
+func normalize(info watchmarket.Info) watchmarket.Info {
+	info.Website = normalizeUrl(info.Website)
+	info.Research = normalizeUrl(info.Research)
+	info.WhitePaper = normalizeUrl(info.WhitePaper)
+	info.Explorer = normalizeUrl(info.Explorer)
+	return info
+}
+
+func normalizeUrl(url string) string {
+	return strings.Replace(url, "www.", "", -1)
 }
