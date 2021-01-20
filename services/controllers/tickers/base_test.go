@@ -395,11 +395,11 @@ func (d dbMock) GetRates(currency string) ([]models.Rate, error) {
 	return res, d.WantedRatesError
 }
 
-func (d dbMock) AddRates(rates []models.Rate, batchLimit uint) error {
+func (d dbMock) AddRates(rates []models.Rate) error {
 	return nil
 }
 
-func (d dbMock) AddTickers(tickers []models.Ticker, batchLimit uint) error {
+func (d dbMock) AddTickers(tickers []models.Ticker) error {
 	return nil
 }
 
