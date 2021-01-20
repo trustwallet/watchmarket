@@ -34,7 +34,7 @@ func TestAddTickers(t *testing.T) {
 	}}
 
 	d := db.Instance(databaseInstance)
-	err := d.AddTickers(tickers, 3000)
+	err := d.AddTickers(tickers)
 	assert.Nil(t, err)
 
 	result1, err := d.GetTickers(60, "60")
@@ -58,7 +58,7 @@ func TestAddTickers(t *testing.T) {
 		Value:     60,
 	})
 
-	err = d.AddTickers(tickers, 3000)
+	err = d.AddTickers(tickers)
 	assert.Nil(t, err)
 
 	result1, err = d.GetTickers(60, "60")
@@ -68,7 +68,7 @@ func TestAddTickers(t *testing.T) {
 	tickers[1].Value = 100500
 	tickers[1].Change24h = 666
 
-	err = d.AddTickers(tickers, 3000)
+	err = d.AddTickers(tickers)
 	assert.Nil(t, err)
 	result2, err = d.GetTickers(70, "70")
 	assert.Nil(t, err)
@@ -110,10 +110,10 @@ func TestAddTickersMult(t *testing.T) {
 	}}
 
 	d := db.Instance(databaseInstance)
-	err := d.AddTickers(tickers, 3000)
+	err := d.AddTickers(tickers)
 	assert.Nil(t, err)
 
-	err = d.AddTickers(tickers, 3000)
+	err = d.AddTickers(tickers)
 	assert.Nil(t, err)
 
 	result1, err := d.GetTickers(60, "60")
@@ -132,7 +132,7 @@ func TestAddTickersMult(t *testing.T) {
 		Value:     60,
 	})
 
-	err = d.AddTickers(tickers, 3000)
+	err = d.AddTickers(tickers)
 	assert.Nil(t, err)
 
 	result1, err = d.GetTickers(60, "60")
