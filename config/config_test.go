@@ -1,9 +1,10 @@
 package config
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestInit(t *testing.T) {
@@ -37,7 +38,6 @@ func TestInit(t *testing.T) {
 
 	assert.Equal(t, "5m", c.Worker.Tickers)
 	assert.Equal(t, "5m", c.Worker.Rates)
-	assert.Equal(t, uint(3000), c.Worker.BatchLimit)
 	assert.Equal(t, time.Hour*72, c.RestAPI.Tickers.RespectableUpdateTime)
 
 	assert.Equal(t, time.Minute, c.RestAPI.Tickers.CacheControl)

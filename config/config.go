@@ -50,9 +50,8 @@ type Configuration struct {
 	} `mapstructure:"storage"`
 
 	Worker struct {
-		Tickers    string `mapstructure:"tickers"`
-		Rates      string `mapstructure:"rates"`
-		BatchLimit uint   `mapstructure:"batch_limit"`
+		Tickers string `mapstructure:"tickers"`
+		Rates   string `mapstructure:"rates"`
 	} `mapstructure:"worker"`
 
 	RestAPI struct {
