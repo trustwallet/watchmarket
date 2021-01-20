@@ -39,21 +39,6 @@ func (i *Instance) AddTickers(tickers []models.Ticker) error {
 	return nil
 }
 
-func toTickersBatch(tickers []models.Ticker, sizeUint uint) [][]models.Ticker {
-	size := int(sizeUint)
-	resultLength := (len(tickers) + size - 1) / size
-	result := make([][]models.Ticker, resultLength)
-	lo, hi := 0, size
-	for i := range result {
-		if hi > len(tickers) {
-			hi = len(tickers)
-		}
-		result[i] = tickers[lo:hi:hi]
-		lo, hi = hi, hi+size
-	}
-	return result
-}
-
 func normalizeTickers(tickers []models.Ticker) []models.Ticker {
 	tickersMap := make(map[string]models.Ticker)
 	for _, ticker := range tickers {
