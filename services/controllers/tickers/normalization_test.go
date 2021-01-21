@@ -304,7 +304,7 @@ func Test_findBestProviderForQuery(t *testing.T) {
 		dbTickers = append(dbTickers, t)
 	}
 
-	c, _ := config.Init("../../../config.yml")
+	c := config.Init("../../../config.yml")
 	assert.NotNil(t, c)
 
 	res := new(sortedTickersResponse)
@@ -352,7 +352,7 @@ func Test_findBestProviderForQuery_advanced(t *testing.T) {
 		dbTickers = append(dbTickers, t)
 	}
 
-	c, _ := config.Init("../../../config.yml")
+	c := config.Init("../../../config.yml")
 	assert.NotNil(t, c)
 
 	res := new(sortedTickersResponse)
@@ -400,7 +400,7 @@ func Test_findBestProviderForQuery_showOption(t *testing.T) {
 		dbTickers = append(dbTickers, t)
 	}
 
-	c, _ := config.Init("../../../config.yml")
+	c := config.Init("../../../config.yml")
 	assert.NotNil(t, c)
 
 	res := new(sortedTickersResponse)

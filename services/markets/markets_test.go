@@ -8,7 +8,7 @@ import (
 )
 
 func TestInit(t *testing.T) {
-	c, _ := config.Init("../../config.yml")
+	c := config.Init("../../config.yml")
 	assert.NotNil(t, c)
 
 	a := assets.Init(c.Markets.Assets)

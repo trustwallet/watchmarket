@@ -17,12 +17,8 @@ type Instance struct {
 
 const id = "redis"
 
-func Init(host string, cachingPeriod time.Duration) (Instance, error) {
-	c, err := redis.Init(host)
-	if err != nil {
-		return Instance{}, err
-	}
-	return Instance{id, c, cachingPeriod}, nil
+func Init(redis redis.Redis, cachingPeriod time.Duration) Instance {
+	return Instance{id, redis, cachingPeriod}
 }
 
 func (i Instance) GetID() string {

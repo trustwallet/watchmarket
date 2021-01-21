@@ -8,7 +8,7 @@ import (
 )
 
 func TestInit(t *testing.T) {
-	c, _ := Init("../config.yml")
+	c := Init("../config.yml")
 
 	assert.Equal(t, []string{"coinmarketcap", "coingecko"}, c.Markets.Priority.Charts)
 	assert.Equal(t, []string{"coinmarketcap", "coingecko", "binancedex"}, c.Markets.Priority.Tickers)

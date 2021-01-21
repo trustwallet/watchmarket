@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/trustwallet/watchmarket/services/assets"
 	"os"
 	"os/signal"
 	"syscall"
@@ -29,18 +28,15 @@ var (
 )
 
 func init() {
-	confPath := internal.GetConfigPath(defaultConfigPath)
-	configuration, err := config.Init(confPath)
-	if err != nil {
-		log.Panic("Config read error: ", err)
-	}
+	_, confPath := internal.ParseArgs("", defaultConfigPath)
+	configuration = internal.InitConfig(confPath)
 
-	err = middleware.SetupSentry(configuration.Sentry.DSN)
+	err := middleware.SetupSentry(configuration.Sentry.DSN)
 	if err != nil {
 		log.Error(err)
 	}
 
-	assets := assets.Init(configuration.Markets.Assets)
+	assets := internal.InitAssets(configuration.Markets.Assets)
 
 	m, err := markets.Init(configuration, assets)
 	if err != nil {
