@@ -76,10 +76,6 @@ func (c Client) fetchChartsData(id uint, currency string, timeStart int64, timeE
 }
 
 func (c Client) fetchCoinData(id uint, currency string) (ChartInfo, error) {
-	//values := req.Param{
-	//	"convert": currency,
-	//	"ref":     "widget",
-	//}
 	var result ChartInfo
 	resp, err := c.r.Get(c.widgetApiURL + fmt.Sprintf("/v1/cryptocurrency/widget?id=%d&convert=%s", id, currency))
 	if err != nil {
