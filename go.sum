@@ -562,6 +562,8 @@ github.com/trustwallet/golibs v0.0.35 h1:VqWInO5s4Zg6XyCmqro8/xrEViOedZ3oYtBq/kn
 github.com/trustwallet/golibs v0.0.35/go.mod h1:VI0APImKAYxvJ8MnMD6aHSKvnArXUd3NgNEghX5P+K8=
 github.com/trustwallet/golibs/network v0.0.0-20201217160111-1a8423bbcaa1 h1:x2vE676o4hhpq0eq6UF1P3PGFFF1nwfuARKHHd8nLvQ=
 github.com/trustwallet/golibs/network v0.0.0-20201217160111-1a8423bbcaa1/go.mod h1:RMMyjp4qUcVhWidjE+XYzQgOtSXuhIKSB5pnLCA3WqY=
+github.com/trustwallet/golibs/network v0.0.0-20210105080443-03598d944b08 h1:6MVjdC1zYVwiytclgHLxS6ojdYiM7gfVqMSDkjuulS4=
+github.com/trustwallet/golibs/network v0.0.0-20210105080443-03598d944b08/go.mod h1:RMMyjp4qUcVhWidjE+XYzQgOtSXuhIKSB5pnLCA3WqY=
 github.com/ugorji/go v1.1.4/go.mod h1:uQMGLiO92mf5W77hV/PUCpI3pbzQx3CRekS0kk+RGrc=
 github.com/ugorji/go v1.1.5-pre/go.mod h1:FwP/aQVg39TXzItUBMwnWp9T9gPQnXw4Poh4/oBQZ/0=
 github.com/ugorji/go v1.1.7 h1:/68gy2h+1mWMrwZFeD1kQialdSzAb432dtpeJ42ovdo=
