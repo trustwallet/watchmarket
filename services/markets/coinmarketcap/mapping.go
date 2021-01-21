@@ -9240,6 +9240,12 @@ const Mapping = `[
         "id": 4679
     },
     {
+        "coin": 714,
+        "type": "token",
+        "token_id": "BAND-34B",
+        "id": 4679
+    },
+    {
         "coin": 20000714,
         "type": "token",
         "token_id": "0xAD6cAEb32CD2c308980a548bD0Bc5AA4306c6c18",
