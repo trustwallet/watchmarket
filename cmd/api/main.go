@@ -44,9 +44,10 @@ var (
 )
 
 func init() {
+	var err error
 	confPath := internal.GetConfigPath(defaultConfigPath)
 
-	configuration, err := config.Init(confPath)
+	configuration, err = config.Init(confPath)
 	if err != nil {
 		log.Panic("Config read error: ", err)
 	}
