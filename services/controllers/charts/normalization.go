@@ -1,22 +1,18 @@
 package chartscontroller
 
 import (
-	"encoding/json"
 	"errors"
 	"strconv"
-	"strings"
 	"time"
 
-	"github.com/trustwallet/golibs/asset"
 	"github.com/trustwallet/golibs/coin"
-	"github.com/trustwallet/watchmarket/db/models"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"github.com/trustwallet/watchmarket/services/controllers"
 )
 
 const charts = "charts"
 
-func toChartsRequestData(cr controllers.ChartRequest) (chartsNormalizedRequest, error) {
+func normalizeRequest(cr controllers.ChartRequest) (chartsNormalizedRequest, error) {
 	if len(cr.CoinQuery) == 0 {
 		return chartsNormalizedRequest{}, errors.New("invalid arguments length")
 	}
@@ -55,55 +51,6 @@ func toChartsRequestData(cr controllers.ChartRequest) (chartsNormalizedRequest, 
 		TimeStart: timeStart,
 		MaxItems:  maxItems,
 	}, nil
-}
-
-func (c Controller) checkTickersAvailability(coin uint, token string) ([]models.Ticker, error) {
-	tr := []models.TickerQuery{{Coin: coin, TokenId: strings.ToLower(token)}}
-	if c.configuration.RestAPI.UseMemoryCache {
-		key := strings.ToLower(asset.BuildID(coin, token))
-		rawResult, err := c.memoryCache.Get(key)
-		if err != nil {
-			return nil, err
-		}
-		var t watchmarket.Ticker
-		if err = json.Unmarshal(rawResult, &t); err != nil {
-			return nil, err
-		}
-		result := models.Ticker{
-			Coin:        t.Coin,
-			CoinName:    t.CoinName,
-			CoinType:    string(t.CoinType),
-			TokenId:     t.TokenId,
-			Currency:    t.Price.Currency,
-			Provider:    t.Price.Provider,
-			Change24h:   t.Price.Change24h,
-			Value:       t.Price.Value,
-			LastUpdated: t.LastUpdate,
-		}
-		return []models.Ticker{result}, nil
-	}
-	dbTickers, err := c.database.GetTickersByQueries(tr)
-	if err != nil {
-		return nil, err
-	}
-	res := make([]models.Ticker, 0, len(dbTickers))
-	for _, t := range dbTickers {
-		if t.ShowOption != 2 {
-			res = append(res, t)
-		}
-	}
-	return res, nil
-}
-
-func (c Controller) getChartsByPriority(data chartsNormalizedRequest) (watchmarket.Chart, error) {
-	availableProviders := c.chartsPriority
-	for _, p := range availableProviders {
-		price, err := c.api[p].GetChartData(data.Coin, data.Token, data.Currency, data.TimeStart)
-		if len(price.Prices) > 0 && err == nil {
-			return price, nil
-		}
-	}
-	return watchmarket.Chart{}, nil
 }
 
 func normalizeChart(chart watchmarket.Chart, maxItems int) watchmarket.Chart {

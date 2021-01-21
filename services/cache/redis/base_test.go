@@ -9,16 +9,13 @@ import (
 	"github.com/alicebob/miniredis/v2"
 	"github.com/stretchr/testify/assert"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
-	"github.com/trustwallet/watchmarket/redis"
 )
 
 func TestInit(t *testing.T) {
 	s := setupRedis(t)
 	defer s.Close()
 
-	r, err := redis.Init(fmt.Sprintf("redis://%s", s.Addr()))
-	assert.Nil(t, err)
-	i := Init(r, time.Minute)
+	i, _ := Init(fmt.Sprintf("redis://%s", s.Addr()), time.Minute)
 
 	assert.NotNil(t, i)
 	assert.True(t, i.redis.IsAvailable())
@@ -29,9 +26,7 @@ func TestInstance_GenerateKey(t *testing.T) {
 	s := setupRedis(t)
 	defer s.Close()
 
-	r, err := redis.Init(fmt.Sprintf("redis://%s", s.Addr()))
-	assert.Nil(t, err)
-	i := Init(r, time.Minute)
+	i, _ := Init(fmt.Sprintf("redis://%s", s.Addr()), time.Minute)
 
 	expected := "bc1M4j2I4u6VaLpUbAB8Y9kTHBs="
 
@@ -43,9 +38,8 @@ func TestInstance_GetID(t *testing.T) {
 	s := setupRedis(t)
 	defer s.Close()
 
-	r, err := redis.Init(fmt.Sprintf("redis://%s", s.Addr()))
+	i, err := Init(fmt.Sprintf("redis://%s", s.Addr()), time.Minute)
 	assert.Nil(t, err)
-	i := Init(r, time.Minute)
 
 	assert.NotNil(t, i)
 
@@ -56,10 +50,8 @@ func TestInstance_Get(t *testing.T) {
 	s := setupRedis(t)
 	defer s.Close()
 
-	r, err := redis.Init(fmt.Sprintf("redis://%s", s.Addr()))
+	i, err := Init(fmt.Sprintf("redis://%s", s.Addr()), time.Second*1000)
 	assert.Nil(t, err)
-
-	i := Init(r, time.Second*1000)
 	assert.NotNil(t, i)
 
 	ticker := watchmarket.Ticker{
@@ -89,10 +81,7 @@ func TestInstance_Set(t *testing.T) {
 	s := setupRedis(t)
 	defer s.Close()
 
-	r, err := redis.Init(fmt.Sprintf("redis://%s", s.Addr()))
-	assert.Nil(t, err)
-
-	i := Init(r, time.Second*1000)
+	i, _ := Init(fmt.Sprintf("redis://%s", s.Addr()), time.Second*1000)
 	assert.NotNil(t, i)
 
 	ticker := watchmarket.Ticker{
