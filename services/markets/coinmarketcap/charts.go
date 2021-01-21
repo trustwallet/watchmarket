@@ -83,9 +83,13 @@ func normalizeCharts(currency string, c Charts) watchmarket.Chart {
 }
 
 func normalizeInfo(priceData ChartInfo, assetsData *watchmarket.Info) (watchmarket.CoinDetails, error) {
+	var chartInfoData ChartInfoData
+	for _, chartInfoData = range priceData.Data {
+		break
+	}
 	return watchmarket.CoinDetails{
 		Provider:    id,
-		ProviderURL: getUrl(priceData.Data[0].Slug),
+		ProviderURL: getUrl(chartInfoData.Slug),
 		Info:        assetsData,
 	}, nil
 }

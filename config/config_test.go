@@ -18,7 +18,7 @@ func TestInit(t *testing.T) {
 	assert.Equal(t, "USD", c.Markets.Coinmarketcap.Currency)
 	assert.Equal(t, "https://pro-api.coinmarketcap.com", c.Markets.Coinmarketcap.API)
 	assert.Equal(t, "", c.Markets.Coinmarketcap.Key)
-	assert.Equal(t, "https://widgets.coinmarketcap.com", c.Markets.Coinmarketcap.WidgetAPI)
+	assert.Equal(t, "https://3rdparty-apis.coinmarketcap.com", c.Markets.Coinmarketcap.WidgetAPI)
 	assert.Equal(t, "https://web-api.coinmarketcap.com", c.Markets.Coinmarketcap.WebAPI)
 
 	assert.Equal(t, "https://api.coingecko.com/api", c.Markets.Coingecko.API)

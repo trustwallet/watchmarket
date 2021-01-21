@@ -60,13 +60,15 @@ func Test_normalizeInfo(t *testing.T) {
 				currency: "USD",
 				cmcCoin:  1,
 				data: ChartInfo{
-					Data: ChartInfoData{
-						Rank:              1,
-						Slug:              "test",
-						CirculatingSupply: 111,
-						TotalSupply:       222,
-						Quotes: map[string]ChartInfoQuote{
-							"USD": {Price: 333, Volume24: 444, MarketCap: 555},
+					Data: map[int]ChartInfoData{
+						1: {
+							Rank:              1,
+							Slug:              "test",
+							CirculatingSupply: 111,
+							TotalSupply:       222,
+							Quotes: map[string]ChartInfoQuote{
+								"USD": {Price: 333, Volume24: 444, MarketCap: 555},
+							},
 						},
 					},
 				},
@@ -82,13 +84,15 @@ func Test_normalizeInfo(t *testing.T) {
 				currency: "EUR",
 				cmcCoin:  2,
 				data: ChartInfo{
-					Data: ChartInfoData{
-						Rank:              2,
-						Slug:              "test",
-						CirculatingSupply: 111,
-						TotalSupply:       222,
-						Quotes: map[string]ChartInfoQuote{
-							"EUR": {Price: 333, Volume24: 444, MarketCap: 555},
+					Data: map[int]ChartInfoData{
+						2: {
+							Rank:              2,
+							Slug:              "test",
+							CirculatingSupply: 111,
+							TotalSupply:       222,
+							Quotes: map[string]ChartInfoQuote{
+								"EUR": {Price: 333, Volume24: 444, MarketCap: 555},
+							},
 						},
 					},
 				},
