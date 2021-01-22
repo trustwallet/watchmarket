@@ -32,8 +32,5 @@ jobs:
       - name: Lint
         run: make lint
 
-      - name: Swagger
-        run: make swag
-
       - name: Integration Test
         run: make integration
