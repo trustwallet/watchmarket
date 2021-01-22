@@ -1,0 +1,25 @@
+{
+  "data": {
+    "id": 1027,
+    "name": "Ethereum",
+    "symbol": "ETH",
+    "website_slug": "ethereum",
+    "rank": 2,
+    "circulating_supply": 110857463.0,
+    "total_supply": 110857463.0,
+    "max_supply": null,
+    "quotes": {
+      "USD": {
+        "price": 213.294627568,
+        "volume_24h": 19440418795.5922,
+        "market_cap": 23645301377.0,
+        "percent_change_1h": 0.41,
+        "percent_change_24h": -0.2,
+        "percent_change_7d": -0.51
+      },
+      "BTC": { "price": 0.0220049025 }
+    },
+    "last_updated": 1589041462
+  },
+  "metadata": { "timestamp": 1589041498, "error": null }
+}

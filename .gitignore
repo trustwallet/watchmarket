@@ -20,7 +20,6 @@ config_*.yml
 *.orig
 *~
 coverage.txt
-mocks
 tilt_modules/*
 
 ### macOS ###
