@@ -60,7 +60,7 @@ func createMockedAPI() http.Handler {
 		}
 	})
 
-	r.HandleFunc("/v2/ticker/1027", func(w http.ResponseWriter, r *http.Request) {
+	r.HandleFunc("/v1/cryptocurrency/widget", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		if _, err := fmt.Fprint(w, mockedCmcResponse); err != nil {
 			panic(err)

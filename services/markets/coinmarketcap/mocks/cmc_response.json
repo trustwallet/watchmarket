@@ -1,25 +1,44 @@
 {
-  "data": {
-    "id": 1027,
-    "name": "Ethereum",
-    "symbol": "ETH",
-    "website_slug": "ethereum",
-    "rank": 2,
-    "circulating_supply": 110857463.0,
-    "total_supply": 110857463.0,
-    "max_supply": null,
-    "quotes": {
-      "USD": {
-        "price": 213.294627568,
-        "volume_24h": 19440418795.5922,
-        "market_cap": 23645301377.0,
-        "percent_change_1h": 0.41,
-        "percent_change_24h": -0.2,
-        "percent_change_7d": -0.51
-      },
-      "BTC": { "price": 0.0220049025 }
-    },
-    "last_updated": 1589041462
+  "status":{
+    "timestamp":"2021-01-21T13:52:05.719Z",
+    "error_code":0,
+    "error_message":null,
+    "elapsed":3
   },
-  "metadata": { "timestamp": 1589041498, "error": null }
+  "data":{
+    "1027":{
+      "id":1027,
+      "name":"Ethereum",
+      "symbol":"ETH",
+      "slug":"ethereum",
+      "num_market_pairs":5698,
+      "date_added":"2015-08-07T00:00:00.000Z",
+      "tags":[
+        "mineable",
+        "pow",
+        "smart-contracts",
+        "coinbase-ventures-portfolio",
+        "three-arrows-capital-portfolio",
+        "polychain-capital-portfolio"
+      ],
+      "max_supply":null,
+      "circulating_supply":114342538.999,
+      "total_supply":114342538.999,
+      "is_active":1,
+      "cmc_rank":2,
+      "is_fiat":0,
+      "last_updated":"2021-01-21T13:50:03.000Z",
+      "quote":{
+        "USD":{
+          "price":1247.1519070053505,
+          "volume_24h":46021809429.12695,
+          "percent_change_1h":-0.394083,
+          "percent_change_24h":-3.13555433,
+          "percent_change_7d":6.92506042,
+          "market_cap":142602515564.4365,
+          "last_updated":"2021-01-21T13:51:04.000Z"
+        }
+      }
+    }
+  }
 }

@@ -13,7 +13,7 @@ markets:
     key: #key
     currency: USD
     web_api: https://web-api.coinmarketcap.com
-    widget_api: https://widgets.coinmarketcap.com
+    widget_api: https://3rdparty-apis.coinmarketcap.com
 
   coingecko:
     currency: USD
