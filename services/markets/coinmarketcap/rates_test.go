@@ -23,7 +23,7 @@ func TestProvider_GetRates(t *testing.T) {
 	assert.Nil(t, err)
 	rawData, err := json.Marshal(data)
 	assert.Nil(t, err)
-	assert.Equal(t, wantedRates, string(rawData))
+	assert.JSONEq(t, wantedRates, string(rawData))
 }
 
 func Test_normalizeRates(t *testing.T) {

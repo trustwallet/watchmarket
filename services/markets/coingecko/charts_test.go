@@ -17,7 +17,7 @@ func TestProvider_GetCoinData(t *testing.T) {
 	data, _ := provider.GetCoinData(60, "", "USD")
 	rawData, err := json.Marshal(data)
 	assert.Nil(t, err)
-	assert.Equal(t, wantedInfo, string(rawData))
+	assert.JSONEq(t, wantedInfo, string(rawData))
 }
 
 func TestProvider_GetChartData(t *testing.T) {
@@ -31,5 +31,5 @@ func TestProvider_GetChartData(t *testing.T) {
 		return data.Prices[i].Date < data.Prices[j].Date
 	})
 	assert.True(t, isSorted)
-	assert.Equal(t, wantedCharts, string(rawData))
+	assert.JSONEq(t, wantedCharts, string(rawData))
 }

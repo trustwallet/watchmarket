@@ -9,6 +9,12 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/trustwallet/golibs/mock"
+)
+
+var (
+	wantedInfo, _         = mock.JsonStringFromFilePath("mocks/info.json")
+	mockedInfoResponse, _ = mock.JsonStringFromFilePath("mocks/info_response.json")
 )
 
 func TestInit(t *testing.T) {
@@ -29,7 +35,7 @@ func TestClient_GetCoinInfo(t *testing.T) {
 
 	rawData, err := json.Marshal(data)
 	assert.Nil(t, err)
-	assert.Equal(t, wantedInfo, string(rawData))
+	assert.JSONEq(t, wantedInfo, string(rawData))
 }
 
 func createMockedAPI() http.Handler {
@@ -44,8 +50,3 @@ func createMockedAPI() http.Handler {
 
 	return r
 }
-
-var (
-	wantedInfo         = `{"name":"Ethereum","website":"https://ethereum.org/","source_code":"https://github.com/ethereum","white_paper":"https://github.com/ethereum/wiki/wiki/White-Paper","description":"Open source platform to write and distribute decentralized applications.","short_description":"Open source platform to write and distribute decentralized applications.","explorer":"https://etherscan.io/","socials":[{"name":"Twitter","url":"https://twitter.com/ethereum","handle":"ethereum"},{"name":"Reddit","url":"https://www.reddit.com/r/ethereum","handle":"ethereum"}]}`
-	mockedInfoResponse = `{ "name": "Ethereum", "website": "https://ethereum.org/", "source_code": "https://github.com/ethereum", "white_paper": "https://github.com/ethereum/wiki/wiki/White-Paper", "short_description": "Open source platform to write and distribute decentralized applications.", "description": "Open source platform to write and distribute decentralized applications.", "socials": [ { "name": "Twitter", "url": "https://twitter.com/ethereum", "handle": "ethereum" }, { "name": "Reddit", "url": "https://www.reddit.com/r/ethereum", "handle": "ethereum" } ], "explorer": "https://etherscan.io/" }`
-)

@@ -1,0 +1,103 @@
+[
+  {
+    "coin": 0,
+    "coin_name": "BTC",
+    "type": "coin",
+    "price": {
+      "change_24h": 4.97984,
+      "currency": "USD",
+      "provider": "coingecko",
+      "value": 9696.96
+    },
+    "last_update": "2020-05-07T17:12:34.22Z",
+    "volume": 51778003346,
+    "market_cap": 177446468003
+  },
+  {
+    "coin": 60,
+    "coin_name": "ETH",
+    "type": "coin",
+    "price": {
+      "change_24h": -0.63646,
+      "currency": "USD",
+      "provider": "coingecko",
+      "value": 206.55
+    },
+    "last_update": "2020-05-07T17:12:38.629Z",
+    "volume": 17356592769,
+    "market_cap": 22851909019
+  },
+  {
+    "coin": 10000714,
+    "coin_name": "BNB",
+    "type": "coin",
+    "price": {
+      "change_24h": -0.9431,
+      "currency": "USD",
+      "provider": "coingecko",
+      "value": 16.76
+    },
+    "last_update": "2020-05-07T17:10:27.413Z",
+    "volume": 386293713,
+    "market_cap": 2474368090
+  },
+  {
+    "coin": 195,
+    "coin_name": "TRX",
+    "type": "coin",
+    "price": {
+      "change_24h": -0.51593,
+      "currency": "USD",
+      "provider": "coingecko",
+      "value": 0.01594768
+    },
+    "last_update": "2020-05-07T17:10:27.759Z",
+    "volume": 1697721558,
+    "market_cap": 1057389936
+  },
+  {
+    "coin": 60,
+    "coin_name": "ETH",
+    "token_id": "0xb1bafca3737268a96673a250173b6ed8f1b5b65f",
+    "type": "token",
+    "price": {
+      "change_24h": 0,
+      "currency": "USD",
+      "provider": "coingecko",
+      "value": 0.00083971
+    },
+    "last_update": "2019-12-26T04:00:21.046Z",
+    "volume": 69.52,
+    "market_cap": 0
+  },
+  {
+    "coin": 714,
+    "coin_name": "BNB",
+    "token_id": "xrp-bf2",
+    "type": "token",
+    "price": {
+      "change_24h": -0.92136,
+      "currency": "USD",
+      "provider": "coingecko",
+      "value": 0.21726
+    },
+    "last_update": "2020-05-07T17:14:13.364Z",
+    "volume": 301.34,
+    "market_cap": 0
+  },
+  {
+    "coin": 195,
+    "coin_name": "TRX",
+    "token_id": "1000451",
+    "type": "token",
+    "price": {
+      "change_24h": 2.39645,
+      "currency": "USD",
+      "provider": "coingecko",
+      "value": 0.00000808
+    },
+    "last_update": "2020-05-07T17:10:13.895Z",
+    "volume": 7.87,
+    "market_cap": 0
+  }
+]
