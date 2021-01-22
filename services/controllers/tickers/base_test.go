@@ -72,22 +72,10 @@ func TestController_HandleTickersRequest(t *testing.T) {
 		Value:       100,
 		LastUpdated: timeUPD,
 	}
-
-	ticker714ABNB := models.Ticker{
-		Coin:        714,
-		CoinName:    "BNB",
-		TokenId:     "a",
-		Change24h:   10,
-		Currency:    "USD",
-		Provider:    "binancedex",
-		Value:       100,
-		LastUpdated: timeUPD,
-	}
-
 	db := getDbMock()
 
 	db.WantedTickersError = nil
-	db.WantedTickers = []models.Ticker{ticker60ACMC, ticker60ACG, ticker714ACG, ticker714ABNB}
+	db.WantedTickers = []models.Ticker{ticker60ACMC, ticker60ACG, ticker714ACG}
 	db.WantedRatesError = nil
 	db.WantedRates = []models.Rate{rate, rate2, rate3}
 	c := setupController(t, db, false)
@@ -247,21 +235,10 @@ func TestController_HandleTickersRequestV2(t *testing.T) {
 		LastUpdated: timeUPD,
 	}
 
-	ticker714ABNB := models.Ticker{
-		Coin:        714,
-		CoinName:    "BNB",
-		TokenId:     "a",
-		Change24h:   10,
-		Currency:    "USD",
-		Provider:    "binancedex",
-		Value:       100,
-		LastUpdated: timeUPD,
-	}
-
 	db := getDbMock()
 
 	db.WantedTickersError = nil
-	db.WantedTickers = []models.Ticker{ticker60ACMC, ticker60ACG, ticker714ACG, ticker714ABNB}
+	db.WantedTickers = []models.Ticker{ticker60ACMC, ticker60ACG, ticker714ACG}
 	db.WantedRatesError = nil
 	db.WantedRates = []models.Rate{rate, rate2, rate3}
 	c := setupController(t, db, false)

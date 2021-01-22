@@ -4,7 +4,6 @@ import (
 	"github.com/trustwallet/watchmarket/config"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"github.com/trustwallet/watchmarket/services/assets"
-	"github.com/trustwallet/watchmarket/services/markets/binancedex"
 	"github.com/trustwallet/watchmarket/services/markets/coingecko"
 	"github.com/trustwallet/watchmarket/services/markets/coinmarketcap"
 	"github.com/trustwallet/watchmarket/services/markets/fixer"
@@ -67,7 +66,7 @@ func Init(config config.Configuration, assets assets.Client) (APIs, error) {
 }
 
 func setupProviders(config config.Configuration, assets assets.Client) Providers {
-	b := binancedex.InitProvider(config.Markets.BinanceDex.API)
+	//b := binancedex.InitProvider(config.Markets.BinanceDex.API)
 	cmc := coinmarketcap.InitProvider(
 		config.Markets.Coinmarketcap.API,
 		config.Markets.Coinmarketcap.WebAPI,
@@ -80,7 +79,7 @@ func setupProviders(config config.Configuration, assets assets.Client) Providers
 
 	ps := make(Providers, 4)
 
-	ps[b.GetProvider()] = b
+	//ps[b.GetProvider()] = b
 	ps[cmc.GetProvider()] = cmc
 	ps[cg.GetProvider()] = cg
 	ps[f.GetProvider()] = f

@@ -2,11 +2,8 @@ markets:
   priority: # for each data type: [first in queue, next, ...]
     charts: [coinmarketcap, coingecko]
     coin_info: [coinmarketcap, coingecko]
-    tickers: [coinmarketcap, coingecko, binancedex]
+    tickers: [coinmarketcap, coingecko]
     rates: [fixer, coinmarketcap, coingecko]
-
-  binancedex:
-    api: https://dex.binance.org/api
 
   coinmarketcap:
     api: https://pro-api.coinmarketcap.com

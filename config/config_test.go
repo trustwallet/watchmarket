@@ -11,7 +11,7 @@ func TestInit(t *testing.T) {
 	c, _ := Init("../config.yml")
 
 	assert.Equal(t, []string{"coinmarketcap", "coingecko"}, c.Markets.Priority.Charts)
-	assert.Equal(t, []string{"coinmarketcap", "coingecko", "binancedex"}, c.Markets.Priority.Tickers)
+	assert.Equal(t, []string{"coinmarketcap", "coingecko"}, c.Markets.Priority.Tickers)
 	assert.Equal(t, []string{"fixer", "coinmarketcap", "coingecko"}, c.Markets.Priority.Rates)
 	assert.Equal(t, []string{"coinmarketcap", "coingecko"}, c.Markets.Priority.CoinInfo)
 
@@ -23,8 +23,6 @@ func TestInit(t *testing.T) {
 
 	assert.Equal(t, "https://api.coingecko.com/api", c.Markets.Coingecko.API)
 	assert.Equal(t, "USD", c.Markets.Coingecko.Currency)
-
-	assert.Equal(t, "https://dex.binance.org/api", c.Markets.BinanceDex.API)
 
 	assert.Equal(t, "https://data.fixer.io/api", c.Markets.Fixer.API)
 	assert.Equal(t, "", c.Markets.Fixer.Key)
