@@ -359,7 +359,7 @@ func TestNewController(t *testing.T) {
 }
 
 func setupController(t *testing.T, d dbMock, useMemoryCache bool) Controller {
-	c := config.Init("../../../config.yml")
+	c, _ := config.Init("../../../config.yml")
 	assert.NotNil(t, c)
 	c.RestAPI.UseMemoryCache = useMemoryCache
 

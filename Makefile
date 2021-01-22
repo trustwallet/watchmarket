@@ -200,8 +200,10 @@ go-vet:
 	GOBIN=$(GOBIN) go vet ./...
 
 go-lint-install:
+ifeq (,$(wildcard test -f bin/golangci-lint))
 	@echo "  >  Installing golint"
 	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s
+endif
 
 go-lint:
 	@echo "  >  Running golint"

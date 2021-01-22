@@ -1,12 +1,14 @@
 package main
 
 import (
+	"github.com/gin-contrib/cors"
+	"github.com/trustwallet/golibs/network/middleware"
+	"github.com/trustwallet/watchmarket/api"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/robfig/cron/v3"
 	log "github.com/sirupsen/logrus"
-	"github.com/trustwallet/golibs/network/middleware"
 	"github.com/trustwallet/watchmarket/config"
 	"github.com/trustwallet/watchmarket/db/postgres"
 	_ "github.com/trustwallet/watchmarket/docs"
@@ -25,35 +27,37 @@ import (
 )
 
 const (
-	defaultPort       = "8420"
 	defaultConfigPath = "../../config.yml"
 )
 
 var (
-	port, confPath string
-	engine         *gin.Engine
-	configuration  config.Configuration
-	tickers        controllers.TickersController
-	rates          controllers.RatesController
-	charts         controllers.ChartsController
-	info           controllers.InfoController
-	w              worker.Worker
-	c              *cron.Cron
-	memoryCache    cache.Provider
+	port          string
+	engine        *gin.Engine
+	configuration config.Configuration
+	tickers       controllers.TickersController
+	rates         controllers.RatesController
+	charts        controllers.ChartsController
+	info          controllers.InfoController
+	w             worker.Worker
+	c             *cron.Cron
+	memoryCache   cache.Provider
 )
 
 func init() {
-	port, confPath = internal.ParseArgs(defaultPort, defaultConfigPath)
+	var err error
+	confPath := internal.GetConfigPath(defaultConfigPath)
 
-	configuration = internal.InitConfig(confPath)
+	configuration, err = config.Init(confPath)
+	if err != nil {
+		log.Panic("Config read error: ", err)
+	}
 	port = configuration.RestAPI.Port
 	chartsPriority := configuration.Markets.Priority.Charts
 	ratesPriority := configuration.Markets.Priority.Rates
 	tickerPriority := configuration.Markets.Priority.Tickers
 	coinInfoPriority := configuration.Markets.Priority.CoinInfo
 
-	err := middleware.SetupSentry(configuration.Sentry.DSN)
-	if err != nil {
+	if err = middleware.SetupSentry(configuration.Sentry.DSN); err != nil {
 		log.Error(err)
 	}
 
@@ -80,14 +84,15 @@ func init() {
 		go postgres.FatalWorker(time.Second*10, *database)
 	}
 
-	r := internal.InitRedis(configuration.Storage.Redis.Url)
-	redisCache := rediscache.Init(*r, configuration.RestAPI.Cache)
+	redisCache, err := rediscache.Init(configuration.Storage.Redis.Url, configuration.RestAPI.Cache)
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	charts = chartscontroller.NewController(redisCache, memoryCache, database, chartsPriority, coinInfoPriority, ratesPriority, tickerPriority, m.ChartsAPIs, configuration)
+	charts = chartscontroller.NewController(redisCache, memoryCache, database, chartsPriority, m.ChartsAPIs, configuration)
 	info = infocontroller.NewController(database, memoryCache, chartsPriority, coinInfoPriority, ratesPriority, tickerPriority, m.ChartsAPIs, configuration)
 	tickers = tickerscontroller.NewController(database, memoryCache, ratesPriority, tickerPriority, configuration)
 	rates = ratescontroller.NewController(database, memoryCache, ratesPriority, configuration)
-	engine = internal.InitEngine(configuration.RestAPI.Mode)
 }
 
 func main() {
@@ -103,6 +108,16 @@ func main() {
 		log.Info("No items in memory cache")
 	}
 
-	internal.InitAPI(engine, tickers, rates, charts, info, configuration)
+	gin.SetMode(configuration.RestAPI.Mode)
+	engine = gin.New()
+	engine.Use(cors.Default())
+	engine.Use(middleware.Logger())
+
+	api.SetupBasicAPI(engine)
+	api.SetupTickersAPI(engine, tickers, configuration.RestAPI.Tickers.CacheControl)
+	api.SetupChartsAPI(engine, charts, configuration.RestAPI.Charts.CacheControl)
+	api.SetupInfoAPI(engine, info, configuration.RestAPI.Info.CacheControl)
+	api.SetupRatesAPI(engine, rates)
+	api.SetupSwaggerAPI(engine)
 	internal.SetupGracefulShutdown(port, engine)
 }

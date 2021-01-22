@@ -2,6 +2,7 @@ package internal
 
 import (
 	"context"
+	"flag"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 	"net/http"
@@ -10,6 +11,13 @@ import (
 	"syscall"
 	"time"
 )
+
+func GetConfigPath(defaultConfigPath string) string {
+	var confPath string
+	flag.StringVar(&confPath, "c", defaultConfigPath, "config file for api")
+	flag.Parse()
+	return confPath
+}
 
 func SetupGracefulShutdown(port string, engine *gin.Engine) {
 	server := &http.Server{
@@ -32,11 +40,11 @@ func SetupGracefulShutdown(port string, engine *gin.Engine) {
 	}()
 	log.WithFields(log.Fields{"bind": port}).Info("Running application")
 
-	WaitingForExitSignal()
+	waitingForExitSignal()
 	log.Info("Waiting for all jobs to stop")
 }
 
-func WaitingForExitSignal() {
+func waitingForExitSignal() {
 	signalForExit := make(chan os.Signal, 1)
 	signal.Notify(signalForExit,
 		syscall.SIGHUP,

@@ -107,19 +107,16 @@ func TestNewController(t *testing.T) {
 }
 
 func setupController(t *testing.T, d dbMock, ch cache.Provider, cm chartsMock) Controller {
-	c := config.Init("../../../config.yml")
+	c, _ := config.Init("../../../config.yml")
 	assert.NotNil(t, c)
 	c.RestAPI.UseMemoryCache = false
 
 	chartsPriority := []string{"coinmarketcap"}
-	ratesPriority := c.Markets.Priority.Rates
-	tickerPriority := c.Markets.Priority.Tickers
-	coinInfoPriority := c.Markets.Priority.CoinInfo
 
 	chartsAPIs := make(markets.ChartsAPIs, 1)
 	chartsAPIs[cm.GetProvider()] = cm
 
-	controller := NewController(ch, ch, d, chartsPriority, coinInfoPriority, ratesPriority, tickerPriority, chartsAPIs, c)
+	controller := NewController(ch, ch, d, chartsPriority, chartsAPIs, c)
 	assert.NotNil(t, controller)
 	return controller
 

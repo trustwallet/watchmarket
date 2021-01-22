@@ -2,8 +2,9 @@ package coingecko
 
 import (
 	"fmt"
-	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"time"
+
+	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 )
 
 type (
