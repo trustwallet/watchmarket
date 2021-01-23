@@ -180,7 +180,7 @@ func TestController_HandleTickersRequest_Negative(t *testing.T) {
 	assert.NotNil(t, c)
 
 	_, err := c.HandleTickersRequest(controllers.TickerRequest{})
-	assert.Equal(t, err, errors.New(watchmarket.ErrBadRequest))
+	assert.Equal(t, err, errors.New(watchmarket.ErrNotFound))
 }
 
 func TestController_HandleTickersRequestV2(t *testing.T) {
