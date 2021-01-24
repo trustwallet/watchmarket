@@ -50,7 +50,6 @@ rest_api:
   info:
     cache_control: 10m
   cache:  15m
-  request_limit: 500
   use_memory_cache: true
   update_time:
     memory_cache_tickers: 5m

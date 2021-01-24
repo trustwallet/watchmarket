@@ -1,11 +1,12 @@
 package config
 
 import (
-	"github.com/pkg/errors"
 	"path/filepath"
 	"reflect"
 	"strings"
 	"time"
+
+	"github.com/pkg/errors"
 
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
@@ -72,7 +73,6 @@ type Configuration struct {
 			CacheControl time.Duration `mapstructure:"cache_control"`
 		} `mapstructure:"info"`
 		Cache          time.Duration `mapstructure:"cache"`
-		RequestLimit   int           `mapstructure:"request_limit"`
 		UseMemoryCache bool          `mapstructure:"use_memory_cache"`
 		UpdateTime     struct {
 			Tickers string `mapstructure:"memory_cache_tickers"`
