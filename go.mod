@@ -26,8 +26,8 @@ require (
 	github.com/stretchr/testify v1.7.0
 	github.com/swaggo/gin-swagger v1.2.0
 	github.com/swaggo/swag v1.6.7
-	github.com/trustwallet/golibs v0.0.35
-	github.com/trustwallet/golibs/network v0.0.0-20201217160111-1a8423bbcaa1
+	github.com/trustwallet/golibs v0.1.0
+	github.com/trustwallet/golibs/network v0.0.0-20210124080535-8638b407c4ab
 	golang.org/x/tools v0.0.0-20200513175351-0951661448da // indirect
 	gorm.io/driver/postgres v1.0.6
 	gorm.io/gorm v1.20.11
