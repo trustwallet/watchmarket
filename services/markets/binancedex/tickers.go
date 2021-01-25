@@ -65,7 +65,7 @@ func normalizeTicker(price CoinPrice, provider string) (watchmarket.Ticker, erro
 	}
 
 	t = watchmarket.Ticker{
-		Coin:     coin.BNB,
+		Coin:     coin.BINANCE,
 		CoinName: BNBAsset,
 		CoinType: watchmarket.Token,
 		TokenId:  strings.ToLower(tokenId),

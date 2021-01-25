@@ -1,9 +1,9 @@
 package coingecko
 
 import (
-	"strings"
-
 	"errors"
+	"sort"
+	"strings"
 
 	"github.com/trustwallet/golibs/coin"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
@@ -202,7 +202,15 @@ func isBasicCoin(symbol string) bool {
 }
 
 func getCoinBySymbol(symbol string) coin.Coin {
+	ids := []int{}
 	for _, c := range coin.Coins {
+		ids = append(ids, int(c.ID))
+	}
+	sort.Slice(ids, func(i, j int) bool {
+		return ids[i] > ids[j]
+	})
+	for _, id := range ids {
+		c := coin.Coins[uint(id)]
 		if strings.EqualFold(c.Symbol, symbol) {
 			return c
 		}
