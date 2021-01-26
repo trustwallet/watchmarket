@@ -14039,6 +14039,36 @@ const Mapping = `[
         "id": 7824
     },
     {
+        "coin": 20000714,
+        "type": "token",
+        "token_id": "0x23396cF899Ca06c4472205fC903bDB4de249D6fC",
+        "id": 7858
+    },
+    {
+        "coin": 20000714,
+        "type": "token",
+        "token_id": "0x62D71B23bF15218C7d2D7E48DBbD9e9c650B173f",
+        "id": 8003
+    },
+    {
+        "coin": 20000714,
+        "type": "token",
+        "token_id": "0xF215A127A196e3988C09d052e16BcFD365Cd7AA3",
+        "id": 8004
+    },
+    {
+        "coin": 20000714,
+        "type": "token",
+        "token_id": "0xa04F060077D90Fe2647B61e4dA4aD1F97d6649dc",
+        "id": 8005
+    },
+    {
+        "coin": 20000714,
+        "type": "token",
+        "token_id": "0x3947B992DC0147D2D89dF0392213781b04B25075",
+        "id": 8016
+    },
+    {
         "coin": 60,
         "type": "token",
         "token_id": "0xEC681F28f4561c2a9534799AA38E0d36A83Cf478",
