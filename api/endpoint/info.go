@@ -1,13 +1,12 @@
 package endpoint
 
 import (
-	"net/http"
-	"strconv"
-
 	"github.com/gin-gonic/gin"
 	"github.com/trustwallet/golibs/asset"
+	"github.com/trustwallet/golibs/coin"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"github.com/trustwallet/watchmarket/services/controllers"
+	"net/http"
 )
 
 // @Summary Get charts coin assets data for a specific coin
@@ -23,10 +22,16 @@ import (
 // @Router /v1/market/info [get]
 func GetCoinInfoHandler(controller controllers.InfoController) func(c *gin.Context) {
 	return func(c *gin.Context) {
+		coinId, err := controllers.GetCoinId(c.Query("coin"))
+		if err != nil {
+			code, response := createErrorResponseAndStatusCode(err)
+			c.AbortWithStatusJSON(code, response)
+			return
+		}
 		request := controllers.DetailsRequest{
-			CoinQuery: c.Query("coin"),
-			Token:     c.Query("token"),
-			Currency:  c.DefaultQuery("currency", watchmarket.DefaultCurrency),
+			CoinId:   coinId,
+			TokenId:  c.Query("token"),
+			Currency: controllers.GetCurrency(c.Query("currency")),
 		}
 		response, err := controller.HandleInfoRequest(request)
 		if err != nil {
@@ -51,17 +56,21 @@ func GetCoinInfoHandler(controller controllers.InfoController) func(c *gin.Conte
 // @Router /v2/market/info/{id} [get]
 func GetCoinInfoHandlerV2(controller controllers.InfoController) func(c *gin.Context) {
 	return func(c *gin.Context) {
-		coin, token, err := asset.ParseID(c.Param("id"))
+		coinId, token, err := asset.ParseID(c.Param("id"))
 		if err != nil {
 			code, response := createErrorResponseAndStatusCode(err)
 			c.AbortWithStatusJSON(code, response)
 			return
 		}
-
+		if _, ok := coin.Coins[coinId]; !ok {
+			code, response := createErrorResponseAndStatusCode(err)
+			c.AbortWithStatusJSON(code, response)
+			return
+		}
 		request := controllers.DetailsRequest{
-			CoinQuery: strconv.Itoa(int(coin)),
-			Token:     token,
-			Currency:  c.DefaultQuery("currency", watchmarket.DefaultCurrency),
+			CoinId:   coinId,
+			TokenId:  token,
+			Currency: c.DefaultQuery("currency", watchmarket.DefaultCurrency),
 		}
 		response, err := controller.HandleInfoRequest(request)
 		if err != nil {
