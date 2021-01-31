@@ -42,7 +42,7 @@ func NewController(
 
 func (c Controller) HandleInfoRequest(request controllers.DetailsRequest) (controllers.InfoResponse, error) {
 	result, err := c.getFromCache(request)
-	if err != nil {
+	if err == nil {
 		return result, nil
 	}
 
@@ -84,7 +84,7 @@ func (c Controller) getFromCache(request controllers.DetailsRequest) (controller
 	key := c.getCacheKey(request)
 
 	cachedDetails, err := c.cache.Get(key)
-	if err != nil || len(cachedDetails) > 0 {
+	if err != nil || len(cachedDetails) <= 0 {
 		return controllers.InfoResponse{}, errors.New("cache is empty")
 	}
 	var infoResponse controllers.InfoResponse
@@ -125,7 +125,7 @@ func (c Controller) getDetailsByPriority(request controllers.DetailsRequest) (co
 }
 
 func (c Controller) getCoinDataFromApi(coinId uint, tokenId string, currency string) controllers.InfoResponse {
-	var result  controllers.InfoResponse
+	var result controllers.InfoResponse
 
 	for _, p := range c.coinInfoPriority {
 		if data, err := c.api[p].GetCoinData(coinId, tokenId, currency); err == nil {

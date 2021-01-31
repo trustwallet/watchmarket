@@ -32,13 +32,13 @@ func TestController_HandleDetailsRequest(t *testing.T) {
 
 	db := getDbMock()
 	db.WantedTickers = []models.Ticker{{CirculatingSupply: 1, TotalSupply: 1, MarketCap: 1, Volume: 1, Provider: "coinmarketcap"}}
-	db.WantedRates = []models.Rate{{Currency: "RUB", Rate: 10, Provider: "fixer"}}
+	db.WantedRates = []models.Rate{{Currency: "RUB", Rate: 10, Provider: "coinmarketcap"}}
 	c := setupController(t, db, getCacheMock(), cm)
 	assert.NotNil(t, c)
 	details, err := c.HandleInfoRequest(controllers.DetailsRequest{
-		CoinQuery: "0",
-		Token:     "2",
-		Currency:  "RUB",
+		CoinId:   0,
+		TokenId:  "2",
+		Currency: "RUB",
 	})
 	assert.Nil(t, err)
 	assert.Equal(t, controllers.InfoResponse{
@@ -60,15 +60,13 @@ func setupController(t *testing.T, db dbMock, ch cache.Provider, cm chartsMock) 
 	c, _ := config.Init("../../../config.yml")
 	assert.NotNil(t, c)
 
-	chartsPriority := []string{"coinmarketcap"}
 	ratesPriority := []string{"coinmarketcap"}
-	tickerPriority := []string{"coinmarketcap"}
 	coinInfoPriority := []string{"coinmarketcap"}
 
 	chartsAPIs := make(markets.ChartsAPIs, 1)
 	chartsAPIs[cm.GetProvider()] = cm
 
-	controller := NewController(db, ch, chartsPriority, coinInfoPriority, ratesPriority, tickerPriority, chartsAPIs, c)
+	controller := NewController(db, ch, coinInfoPriority, ratesPriority, chartsAPIs)
 	assert.NotNil(t, controller)
 	return controller
 

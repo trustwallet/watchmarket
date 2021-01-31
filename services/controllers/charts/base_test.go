@@ -91,11 +91,11 @@ func TestController_HandleChartsRequest(t *testing.T) {
 	assert.NotNil(t, c)
 
 	chart, err := c.HandleChartsRequest(controllers.ChartRequest{
-		CoinQuery:    "60",
-		Token:        "a",
-		Currency:     "USD",
-		TimeStartRaw: "1577871126",
-		MaxItems:     "64",
+		CoinId:    60,
+		TokenId:   "a",
+		Currency:  "USD",
+		TimeStart: 1577871126,
+		MaxItems:  64,
 	})
 	assert.Nil(t, err)
 
