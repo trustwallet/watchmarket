@@ -77,7 +77,7 @@ func (c Controller) putToCache(request controllers.DetailsRequest, result contro
 }
 
 func (c Controller) getCacheKey(request controllers.DetailsRequest) string {
-	return c.cache.GenerateKey(fmt.Sprintf("%s%d%s%s", info, request.CoinId, request.TokenId, request.Currency))
+	return c.cache.GenerateKey(fmt.Sprintf("%s%d%s%s", info, request.Asset.CoinId, request.Asset.TokenId, request.Currency))
 }
 
 func (c Controller) getFromCache(request controllers.DetailsRequest) (controllers.InfoResponse, error) {
@@ -93,7 +93,7 @@ func (c Controller) getFromCache(request controllers.DetailsRequest) (controller
 }
 
 func (c Controller) getDetailsByPriority(request controllers.DetailsRequest) (controllers.InfoResponse, error) {
-	dbTickers, err := c.database.GetTickersByQueries([]models.TickerQuery{{Coin: request.CoinId, TokenId: request.TokenId}})
+	dbTickers, err := c.database.GetTickersByQueries([]models.TickerQuery{{Coin: request.Asset.CoinId, TokenId: request.Asset.TokenId}})
 
 	if err != nil || len(dbTickers) == 0 {
 		return controllers.InfoResponse{}, fmt.Errorf("no tickers in db or db error: %w", err)
@@ -103,7 +103,7 @@ func (c Controller) getDetailsByPriority(request controllers.DetailsRequest) (co
 	if err != nil {
 		return controllers.InfoResponse{}, err
 	}
-	result := c.getCoinDataFromApi(request.CoinId, request.TokenId, request.Currency)
+	result := c.getCoinDataFromApi(request.Asset, request.Currency)
 	result.CirculatingSupply = ticker.CirculatingSupply
 	result.MarketCap = ticker.MarketCap
 	result.Vol24 = ticker.Volume
@@ -124,11 +124,11 @@ func (c Controller) getDetailsByPriority(request controllers.DetailsRequest) (co
 	return result, nil
 }
 
-func (c Controller) getCoinDataFromApi(coinId uint, tokenId string, currency string) controllers.InfoResponse {
+func (c Controller) getCoinDataFromApi(assetData controllers.Asset, currency string) controllers.InfoResponse {
 	var result controllers.InfoResponse
 
 	for _, p := range c.coinInfoPriority {
-		if data, err := c.api[p].GetCoinData(coinId, tokenId, currency); err == nil {
+		if data, err := c.api[p].GetCoinData(assetData, currency); err == nil {
 			result.Info = data.Info
 			result.Provider = data.Provider
 			result.ProviderURL = data.ProviderURL

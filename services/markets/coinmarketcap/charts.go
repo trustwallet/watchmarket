@@ -3,6 +3,7 @@ package coinmarketcap
 import (
 	"errors"
 	"fmt"
+	"github.com/trustwallet/watchmarket/services/controllers"
 	"sort"
 	"strings"
 	"time"
@@ -15,10 +16,10 @@ const (
 	chartDataSize = 3
 )
 
-func (p Provider) GetChartData(coinID uint, token, currency string, timeStart int64) (watchmarket.Chart, error) {
+func (p Provider) GetChartData(asset controllers.Asset, currency string, timeStart int64) (watchmarket.Chart, error) {
 	chartsData := watchmarket.Chart{}
 	coinsFromCmcMap := CmcSlice(p.Cm).coinToCmcMap()
-	coinObj, err := coinsFromCmcMap.getCoinByContract(coinID, token)
+	coinObj, err := coinsFromCmcMap.getCoinByContract(asset)
 	if err != nil {
 		return chartsData, err
 	}
@@ -35,10 +36,10 @@ func (p Provider) GetChartData(coinID uint, token, currency string, timeStart in
 	return normalizeCharts(currency, c), nil
 }
 
-func (p Provider) GetCoinData(coinID uint, token, currency string) (watchmarket.CoinDetails, error) {
+func (p Provider) GetCoinData(asset controllers.Asset, currency string) (watchmarket.CoinDetails, error) {
 	details := watchmarket.CoinDetails{}
 	coinsFromCmcMap := CmcSlice(p.Cm).coinToCmcMap()
-	coinObj, err := coinsFromCmcMap.getCoinByContract(coinID, token)
+	coinObj, err := coinsFromCmcMap.getCoinByContract(asset)
 	if err != nil {
 		return details, err
 	}
@@ -46,9 +47,9 @@ func (p Provider) GetCoinData(coinID uint, token, currency string) (watchmarket.
 	if err != nil {
 		return details, err
 	}
-	assetsData, err := p.info.GetCoinInfo(coinID, token)
+	assetsData, err := p.info.GetCoinInfo(asset)
 	if err != nil {
-		log.WithFields(log.Fields{"coinID": coinID, "token": token}).Warn("No assets assets about that coinID")
+		log.WithFields(log.Fields{"coinID": asset.CoinId, "token": asset.TokenId}).Warn("No assets assets about that coinID")
 	}
 
 	return normalizeInfo(priceData, &assetsData)
@@ -102,8 +103,8 @@ func (c CmcSlice) coinToCmcMap() (m CoinMapping) {
 	return
 }
 
-func (cm CoinMapping) getCoinByContract(coinId uint, contract string) (c CoinMap, err error) {
-	c, ok := cm[createID(coinId, contract)]
+func (cm CoinMapping) getCoinByContract(asset controllers.Asset) (c CoinMap, err error) {
+	c, ok := cm[createID(asset.CoinId, asset.TokenId)]
 	if !ok {
 		err = errors.New("No coin found")
 	}

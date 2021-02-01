@@ -30,8 +30,10 @@ func GetChartsHandler(controller controllers.ChartsController) func(c *gin.Conte
 			return
 		}
 		request := controllers.ChartRequest{
-			CoinId:    coinId,
-			TokenId:   c.Query("token"),
+			Asset: controllers.Asset{
+				CoinId:  coinId,
+				TokenId: c.Query("token"),
+			},
 			Currency:  controllers.GetCurrency(c.Query("currency")),
 			TimeStart: controllers.GetTimeStart(c.Query("time_start")),
 			MaxItems:  controllers.GetMaxItems(c.Query("max_items")),
@@ -62,7 +64,7 @@ func GetChartsHandler(controller controllers.ChartsController) func(c *gin.Conte
 // @Router /v2/market/charts/{id} [get]
 func GetChartsHandlerV2(controller controllers.ChartsController) func(c *gin.Context) {
 	return func(c *gin.Context) {
-		coinId, token, err := asset.ParseID(c.Param("id"))
+		coinId, tokenId, err := asset.ParseID(c.Param("id"))
 		if err != nil {
 			code, response := createErrorResponseAndStatusCode(err)
 			c.AbortWithStatusJSON(code, response)
@@ -74,8 +76,10 @@ func GetChartsHandlerV2(controller controllers.ChartsController) func(c *gin.Con
 			return
 		}
 		request := controllers.ChartRequest{
-			CoinId:    coinId,
-			TokenId:   token,
+			Asset: controllers.Asset{
+				CoinId:  coinId,
+				TokenId: tokenId,
+			},
 			Currency:  controllers.GetCurrency(c.Query("currency")),
 			TimeStart: controllers.GetTimeStart(c.Query("time_start")),
 			MaxItems:  controllers.GetMaxItems(c.Query("max_items")),

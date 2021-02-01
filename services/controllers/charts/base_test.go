@@ -91,8 +91,10 @@ func TestController_HandleChartsRequest(t *testing.T) {
 	assert.NotNil(t, c)
 
 	chart, err := c.HandleChartsRequest(controllers.ChartRequest{
-		CoinId:    60,
-		TokenId:   "a",
+		Asset: controllers.Asset{
+			CoinId:  60,
+			TokenId: "a",
+		},
 		Currency:  "USD",
 		TimeStart: 1577871126,
 		MaxItems:  64,
@@ -212,11 +214,11 @@ type chartsMock struct {
 	wantedDetails watchmarket.CoinDetails
 }
 
-func (cm chartsMock) GetChartData(coinID uint, token, currency string, timeStart int64) (watchmarket.Chart, error) {
+func (cm chartsMock) GetChartData(asset controllers.Asset, currency string, timeStart int64) (watchmarket.Chart, error) {
 	return cm.wantedCharts, nil
 }
 
-func (cm chartsMock) GetCoinData(coinID uint, token, currency string) (watchmarket.CoinDetails, error) {
+func (cm chartsMock) GetCoinData(asset controllers.Asset, currency string) (watchmarket.CoinDetails, error) {
 	return cm.wantedDetails, nil
 }
 

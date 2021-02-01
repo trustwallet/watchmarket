@@ -36,8 +36,10 @@ func TestController_HandleDetailsRequest(t *testing.T) {
 	c := setupController(t, db, getCacheMock(), cm)
 	assert.NotNil(t, c)
 	details, err := c.HandleInfoRequest(controllers.DetailsRequest{
-		CoinId:   0,
-		TokenId:  "2",
+		Asset: controllers.Asset{
+			CoinId:  0,
+			TokenId: "2",
+		},
 		Currency: "RUB",
 	})
 	assert.Nil(t, err)
@@ -118,11 +120,11 @@ type chartsMock struct {
 	wantedDetails watchmarket.CoinDetails
 }
 
-func (cm chartsMock) GetChartData(coinID uint, token, currency string, timeStart int64) (watchmarket.Chart, error) {
+func (cm chartsMock) GetChartData(asset controllers.Asset, currency string, timeStart int64) (watchmarket.Chart, error) {
 	return cm.wantedCharts, nil
 }
 
-func (cm chartsMock) GetCoinData(coinID uint, token, currency string) (watchmarket.CoinDetails, error) {
+func (cm chartsMock) GetCoinData(asset controllers.Asset, currency string) (watchmarket.CoinDetails, error) {
 	return cm.wantedDetails, nil
 }
 

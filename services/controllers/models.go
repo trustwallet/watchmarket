@@ -10,8 +10,8 @@ import (
 
 type (
 	TickerRequest struct {
-		Currency string `json:"Currency"`
-		Assets   []Coin `json:"assets"`
+		Currency string  `json:"Currency"`
+		Assets   []Asset `json:"assets"`
 	}
 
 	TickerRequestV2 struct {
@@ -19,8 +19,8 @@ type (
 		Ids      []string `json:"assets"`
 	}
 
-	Coin struct {
-		Coin     uint                 `json:"Coin"`
+	Asset struct {
+		CoinId   uint                 `json:"Coin"`
 		CoinType watchmarket.CoinType `json:"type"`
 		TokenId  string               `json:"token_id,omitempty"`
 	}
@@ -53,16 +53,14 @@ type (
 	}
 
 	ChartRequest struct {
-		CoinId uint
-		TokenId string
-		Currency string
+		Asset     Asset
+		Currency  string
 		TimeStart int64
-		MaxItems int
+		MaxItems  int
 	}
 
 	DetailsRequest struct {
-		CoinId uint
-		TokenId string
+		Asset    Asset
 		Currency string
 	}
 

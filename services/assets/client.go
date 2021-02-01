@@ -3,6 +3,7 @@ package assets
 import (
 	"errors"
 	"fmt"
+	"github.com/trustwallet/watchmarket/services/controllers"
 
 	"github.com/imroc/req"
 	log "github.com/sirupsen/logrus"
@@ -19,14 +20,14 @@ func Init(api string) Client {
 	return Client{r: req.New(), api: api}
 }
 
-func (c Client) GetCoinInfo(coinId uint, token string) (watchmarket.Info, error) {
-	coinObject, ok := coin.Coins[coinId]
+func (c Client) GetCoinInfo(asset controllers.Asset) (watchmarket.Info, error) {
+	coinObject, ok := coin.Coins[asset.CoinId]
 	if !ok {
-		return watchmarket.Info{}, errors.New("coin not found " + "token " + token)
+		return watchmarket.Info{}, errors.New("coin not found " + "token " + asset.TokenId)
 	}
 
 	var (
-		path   = c.api + fmt.Sprintf("/%s/info.json", getPathForCoin(coinObject, token))
+		path   = c.api + fmt.Sprintf("/%s/info.json", getPathForCoin(coinObject, asset.TokenId))
 		result watchmarket.Info
 	)
 

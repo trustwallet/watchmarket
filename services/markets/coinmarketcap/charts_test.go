@@ -2,6 +2,7 @@ package coinmarketcap
 
 import (
 	"encoding/json"
+	"github.com/trustwallet/watchmarket/services/controllers"
 	"net/http/httptest"
 	"reflect"
 	"sort"
@@ -20,7 +21,7 @@ func TestProvider_GetCoinData(t *testing.T) {
 	cm, err := setupCoinMap(testMapping)
 	assert.Nil(t, err)
 	provider.Cm = cm
-	data, _ := provider.GetCoinData(60, "", "USD")
+	data, _ := provider.GetCoinData(controllers.Asset{CoinId: 60}, "USD")
 	rawData, err := json.Marshal(data)
 	assert.Nil(t, err)
 	assert.JSONEq(t, wantedCoinInfo, string(rawData))
@@ -33,7 +34,7 @@ func TestProvider_GetChartData(t *testing.T) {
 	cm, err := setupCoinMap(testMapping)
 	assert.Nil(t, err)
 	provider.Cm = cm
-	data, _ := provider.GetChartData(60, "", "USD", 1577871126)
+	data, _ := provider.GetChartData(controllers.Asset{CoinId: 60}, "USD", 1577871126)
 	rawData, err := json.Marshal(data)
 	assert.Nil(t, err)
 	isSorted := sort.SliceIsSorted(data.Prices, func(i, j int) bool {

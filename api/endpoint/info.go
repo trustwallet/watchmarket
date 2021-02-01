@@ -29,8 +29,10 @@ func GetCoinInfoHandler(controller controllers.InfoController) func(c *gin.Conte
 			return
 		}
 		request := controllers.DetailsRequest{
-			CoinId:   coinId,
-			TokenId:  c.Query("token"),
+			Asset: controllers.Asset{
+				CoinId:  coinId,
+				TokenId: c.Query("token"),
+			},
 			Currency: controllers.GetCurrency(c.Query("currency")),
 		}
 		response, err := controller.HandleInfoRequest(request)
@@ -68,8 +70,10 @@ func GetCoinInfoHandlerV2(controller controllers.InfoController) func(c *gin.Con
 			return
 		}
 		request := controllers.DetailsRequest{
-			CoinId:   coinId,
-			TokenId:  token,
+			Asset: controllers.Asset{
+				CoinId:  coinId,
+				TokenId: token,
+			},
 			Currency: c.DefaultQuery("currency", watchmarket.DefaultCurrency),
 		}
 		response, err := controller.HandleInfoRequest(request)

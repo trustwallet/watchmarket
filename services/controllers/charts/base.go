@@ -17,7 +17,6 @@ import (
 	"github.com/trustwallet/watchmarket/services/markets"
 )
 
-
 const charts = "charts"
 
 type Controller struct {
@@ -50,7 +49,7 @@ func NewController(
 // ChartsController interface implementation
 func (c Controller) HandleChartsRequest(request controllers.ChartRequest) (chart watchmarket.Chart, err error) {
 
-	if !c.hasTickers(request.CoinId, request.TokenId) {
+	if !c.hasTickers(request.Asset) {
 		return chart, nil
 	}
 
@@ -73,16 +72,16 @@ func (c Controller) HandleChartsRequest(request controllers.ChartRequest) (chart
 	return chart, nil
 }
 
-func (c Controller) hasTickers(coinId uint, tokenId string) bool {
+func (c Controller) hasTickers(assetData controllers.Asset) bool {
 	var tickers []models.Ticker
 	var err error
 
 	if c.useMemoryCache {
-		if tickers, err = c.getChartsFromMemory(coinId, tokenId); err != nil {
+		if tickers, err = c.getChartsFromMemory(assetData); err != nil {
 			return false
 		}
 	} else {
-		dbTickers, err := c.database.GetTickersByQueries([]models.TickerQuery{{Coin: coinId, TokenId: strings.ToLower(tokenId)}})
+		dbTickers, err := c.database.GetTickersByQueries([]models.TickerQuery{{Coin: assetData.CoinId, TokenId: strings.ToLower(assetData.TokenId)}})
 		if err != nil {
 			return false
 		}
@@ -97,8 +96,8 @@ func (c Controller) hasTickers(coinId uint, tokenId string) bool {
 
 func (c Controller) getChartsFromApi(data controllers.ChartRequest) (ch watchmarket.Chart, err error) {
 	for _, p := range c.availableProviders {
-		price, err := c.api[p].GetChartData(data.CoinId, data.TokenId, data.Currency, data.TimeStart)
-		if len(price.Prices) > 0 && err == nil {
+		price, err := c.api[p].GetChartData(data.Asset, data.Currency, data.TimeStart)
+		if err == nil && len(price.Prices) > 0 {
 			return price, nil
 		}
 	}
@@ -106,7 +105,7 @@ func (c Controller) getChartsFromApi(data controllers.ChartRequest) (ch watchmar
 }
 
 func (c Controller) getRedisKey(request controllers.ChartRequest) string {
-	return c.redisCache.GenerateKey(fmt.Sprintf("%s%d%s%s%d", charts, request.CoinId, request.TokenId, request.Currency, request.MaxItems))
+	return c.redisCache.GenerateKey(fmt.Sprintf("%s%d%s%s%d", charts, request.Asset.CoinId, request.Asset.TokenId, request.Currency, request.MaxItems))
 }
 
 func (c Controller) getChartFromRedis(request controllers.ChartRequest) (ch watchmarket.Chart, err error) {
@@ -134,8 +133,8 @@ func (c Controller) putChartsToRedis(chart watchmarket.Chart, request controller
 	}
 }
 
-func (c Controller) getChartsFromMemory(coin uint, token string) ([]models.Ticker, error) {
-	key := strings.ToLower(asset.BuildID(coin, token))
+func (c Controller) getChartsFromMemory(assetData controllers.Asset) ([]models.Ticker, error) {
+	key := strings.ToLower(asset.BuildID(assetData.CoinId, assetData.TokenId))
 	rawResult, err := c.memoryCache.Get(key)
 	if err != nil {
 		return nil, err

@@ -135,7 +135,7 @@ func handleTickersError(c *gin.Context, req controllers.TickerRequest) {
 	tickers := make(watchmarket.Tickers, 0, len(req.Assets))
 	for _, t := range req.Assets {
 		tickers = append(tickers, watchmarket.Ticker{
-			Coin:     t.Coin,
+			Coin:     t.CoinId,
 			TokenId:  t.TokenId,
 			CoinType: t.CoinType,
 		})
