@@ -99,7 +99,7 @@ func GetCurrency(rawCurrency string) string {
 func GetTimeStart(rawTime string) int64 {
 	timeStart, err := strconv.ParseInt(rawTime, 10, 64)
 	if err != nil {
-		timeStart = time.Now().Unix() - 60*60*24
+		timeStart = time.Now().Unix() - time.Hour * 24
 	}
 	return timeStart
 }
