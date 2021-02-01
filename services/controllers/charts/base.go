@@ -157,7 +157,7 @@ func (c Controller) getChartsFromMemory(assetData controllers.Asset) ([]models.T
 	return []models.Ticker{result}, nil
 }
 
-func cutChartByMaxItems(chart watchmarket.Chart, maxItems int) watchmarket.Chart {
+func calculateChartByMaxItems(chart watchmarket.Chart, maxItems int) watchmarket.Chart {
 	var newPrices []watchmarket.ChartPrice
 	if len(chart.Prices) > maxItems && maxItems > 0 {
 		skip := int(float64(len(chart.Prices) / maxItems))
