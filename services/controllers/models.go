@@ -83,7 +83,7 @@ func GetCoinId(rawCoinId string) (uint, error) {
 		return 0, err
 	}
 	if _, ok := coin.Coins[uint(coinId)]; !ok {
-		return 0, errors.New(watchmarket.ErrBadRequest)
+		return 0, errors.New("invalid coin Id: " + coinId)
 	}
 	return uint(coinId), nil
 }
