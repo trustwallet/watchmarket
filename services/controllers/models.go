@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"github.com/pkg/errors"
 	"github.com/trustwallet/golibs/coin"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
@@ -81,7 +82,7 @@ func GetCoinId(rawCoinId string) (uint, error) {
 		return 0, err
 	}
 	if _, ok := coin.Coins[uint(coinId)]; !ok {
-		return 0, errors.New("invalid coin Id: " + coinId)
+		return 0, errors.New(fmt.Sprintf("invalid coin Id: %d", coinId))
 	}
 	return uint(coinId), nil
 }
@@ -97,7 +98,7 @@ func GetCurrency(rawCurrency string) string {
 func GetTimeStart(rawTime string) int64 {
 	timeStart, err := strconv.ParseInt(rawTime, 10, 64)
 	if err != nil {
-		timeStart = time.Now().Unix() - time.Hour * 24
+		timeStart = time.Now().Unix() - int64(time.Hour)*24
 	}
 	return timeStart
 }

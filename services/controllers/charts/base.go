@@ -67,7 +67,7 @@ func (c Controller) HandleChartsRequest(request controllers.ChartRequest) (chart
 		return watchmarket.Chart{}, errors.New(watchmarket.ErrNotFound)
 	}
 
-	chart = cutChartByMaxItems(rawChart, request.MaxItems)
+	chart = calculateChartByMaxItems(rawChart, request.MaxItems)
 	c.putChartsToRedis(chart, request)
 	return chart, nil
 }
