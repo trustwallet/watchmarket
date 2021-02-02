@@ -29,6 +29,6 @@ require (
 	github.com/trustwallet/golibs v0.1.0
 	github.com/trustwallet/golibs/network v0.0.0-20210124080535-8638b407c4ab
 	golang.org/x/tools v0.0.0-20200513175351-0951661448da // indirect
-	gorm.io/driver/postgres v1.0.7
+	gorm.io/driver/postgres v1.0.8
 	gorm.io/gorm v1.20.12
 )
