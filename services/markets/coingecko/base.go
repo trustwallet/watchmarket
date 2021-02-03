@@ -9,9 +9,10 @@ const (
 )
 
 type Provider struct {
-	id, currency string
-	client       Client
-	info         assets.Client
+	id       string
+	currency string
+	client   Client
+	info     assets.Client
 }
 
 func InitProvider(api, currency string, info assets.Client) Provider {

@@ -3,6 +3,7 @@
 /watchmarket.exe
 /bin/*
 *-bin
+__debug_bin
 
 ### APP ###
 *.csv
