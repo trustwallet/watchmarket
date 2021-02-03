@@ -3,6 +3,7 @@ package assets
 import (
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/trustwallet/golibs/client"
 	"github.com/trustwallet/golibs/coin"
@@ -26,7 +27,9 @@ func (c Client) GetCoinInfo(coinId uint, token string) (info watchmarket.Info, e
 	}
 
 	path := fmt.Sprintf("/%s/info.json", getPathForCoin(coinObject, token))
-	err = c.Get(&info, path, nil)
+	err = c.GetWithCache(&info, path, nil, time.Hour*12)
+	//asset info file now only contains description field.
+	info.ShortDescription = info.Description
 	return
 }
 
