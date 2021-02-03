@@ -1,7 +1,6 @@
 package coinmarketcap
 
 import (
-	"fmt"
 	"net/url"
 	"strconv"
 
@@ -45,6 +44,10 @@ func (c Client) fetchChartsData(id uint, currency string, timeStart int64, timeE
 }
 
 func (c Client) fetchCoinData(id uint, currency string) (result ChartInfo, err error) {
-	err = c.widgetApi.Get(&result, fmt.Sprintf("/v1/cryptocurrency/widget?id=%d&convert=%s", id, currency), nil)
+	values := url.Values{
+		"id":      {strconv.FormatInt(int64(id), 10)},
+		"convert": {currency},
+	}
+	err = c.widgetApi.Get(&result, "/v1/cryptocurrency/widget", values)
 	return
 }
