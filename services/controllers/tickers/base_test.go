@@ -93,7 +93,7 @@ func TestController_HandleTickersRequest(t *testing.T) {
 	c := setupController(t, db, false)
 	assert.NotNil(t, c)
 
-	response, err := c.HandleTickersRequest(controllers.TickerRequest{Currency: "USD", Assets: []controllers.Asset{{CoinId: 60, TokenId: "a"}, {CoinId: 714, TokenId: "a"}}})
+	response, err := c.HandleTickersRequest(controllers.TickerRequest{Currency: "USD", Assets: []controllers.Coin{{Coin: 60, TokenId: "a"}, {Coin: 714, TokenId: "a"}}})
 	assert.Nil(t, err)
 
 	wantedTicker1 := watchmarket.Ticker{
@@ -158,7 +158,7 @@ func TestController_HandleTickersRequest(t *testing.T) {
 	err = controllerWithCache.cache.Set("USD", rateRaw)
 	assert.Nil(t, err)
 
-	response2, err := controllerWithCache.HandleTickersRequest(controllers.TickerRequest{Currency: "USD", Assets: []controllers.Asset{{CoinId: 60, TokenId: "a"}, {CoinId: 714, TokenId: "a"}}})
+	response2, err := controllerWithCache.HandleTickersRequest(controllers.TickerRequest{Currency: "USD", Assets: []controllers.Coin{{Coin: 60, TokenId: "a"}, {Coin: 714, TokenId: "a"}}})
 	assert.Nil(t, err)
 
 	sort.Slice(response2.Tickers, func(i, j int) bool {
