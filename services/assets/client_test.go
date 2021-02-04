@@ -18,12 +18,6 @@ var (
 	mockedInfoResponse, _ = mock.JsonStringFromFilePath("mocks/info_response.json")
 )
 
-func TestInit(t *testing.T) {
-	c := Init("url")
-	assert.NotNil(t, c)
-	assert.Equal(t, c.api, "url")
-}
-
 func TestClient_GetCoinInfo(t *testing.T) {
 	server := httptest.NewServer(createMockedAPI())
 	defer server.Close()

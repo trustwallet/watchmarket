@@ -2,15 +2,16 @@ package binancedex
 
 import (
 	"encoding/json"
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestInitProvider(t *testing.T) {
 	provider := InitProvider("demo.api")
 	assert.NotNil(t, provider)
-	assert.Equal(t, "demo.api", provider.client.baseURL)
+	assert.Equal(t, "demo.api", provider.client.BaseUrl)
 	assert.Equal(t, "binancedex", provider.id)
 }
 

@@ -17,7 +17,7 @@ var (
 func TestInitProvider(t *testing.T) {
 	provider := InitProvider("demo.api", "key", "USD")
 	assert.NotNil(t, provider)
-	assert.Equal(t, "demo.api", provider.client.api)
+	assert.Equal(t, "demo.api", provider.client.client.BaseUrl)
 	assert.Equal(t, "key", provider.client.key)
 	assert.Equal(t, "fixer", provider.id)
 	assert.Equal(t, "USD", provider.currency)

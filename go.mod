@@ -12,7 +12,6 @@ require (
 	github.com/gin-contrib/cors v1.3.1
 	github.com/gin-gonic/gin v1.6.3
 	github.com/go-redis/redis v6.15.9+incompatible
-	github.com/imroc/req v0.3.0
 	github.com/mitchellh/mapstructure v1.3.3 // indirect
 	github.com/onsi/ginkgo v1.10.1 // indirect
 	github.com/onsi/gomega v1.7.0 // indirect
@@ -26,9 +25,9 @@ require (
 	github.com/stretchr/testify v1.7.0
 	github.com/swaggo/gin-swagger v1.2.0
 	github.com/swaggo/swag v1.6.7
-	github.com/trustwallet/golibs v0.1.0
+	github.com/trustwallet/golibs v0.1.1
 	github.com/trustwallet/golibs/network v0.0.0-20210124080535-8638b407c4ab
 	golang.org/x/tools v0.0.0-20200513175351-0951661448da // indirect
-	gorm.io/driver/postgres v1.0.6
+	gorm.io/driver/postgres v1.0.8
 	gorm.io/gorm v1.20.12
 )

@@ -1,36 +1,28 @@
 package fixer
 
 import (
-	"github.com/imroc/req"
-	log "github.com/sirupsen/logrus"
+	"net/url"
+
+	"github.com/trustwallet/golibs/client"
+	"github.com/trustwallet/golibs/network/middleware"
 )
 
 type Client struct {
-	key, currency, api string
-	r                  *req.Req
+	client   client.Request
+	key      string
+	currency string
 }
 
 func NewClient(api, key, currency string) Client {
-	return Client{r: req.New(), key: key, currency: currency, api: api}
+	return Client{
+		client:   client.InitClient(api, middleware.SentryErrorHandler),
+		key:      key,
+		currency: currency,
+	}
 }
 
-func (c Client) FetchRates() (Rate, error) {
-	var (
-		values = req.Param{"access_key": c.key, "base": c.currency} // Base USD supported only in paid api}
-		result Rate
-	)
-	resp, err := c.r.Get(c.api+"/latest", values)
-	if err != nil {
-		return Rate{}, err
-	}
-	err = resp.ToJSON(&result)
-	if err != nil {
-		log.WithFields(log.Fields{
-			"url":      resp.Request().URL.String(),
-			"status":   resp.Response().Status,
-			"response": resp,
-		}).Error("Fixer Fetch Rates: ", resp.Response().Status)
-		return Rate{}, err
-	}
-	return result, nil
+func (c Client) FetchRates() (rate Rate, err error) {
+	values := url.Values{"access_key": {c.key}, "base": {c.currency}} // Base USD supported only in paid api}
+	err = c.client.Get(&rate, "/latest", values)
+	return
 }
