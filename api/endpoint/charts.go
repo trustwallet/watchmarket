@@ -1,11 +1,13 @@
 package endpoint
 
 import (
+	"net/http"
+	"strconv"
+
 	"github.com/gin-gonic/gin"
 	"github.com/trustwallet/golibs/asset"
-	"github.com/trustwallet/golibs/coin"
+	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"github.com/trustwallet/watchmarket/services/controllers"
-	"net/http"
 )
 
 // @Summary Get charts data for a specific coin
@@ -23,20 +25,12 @@ import (
 // @Router /v1/market/charts [get]
 func GetChartsHandler(controller controllers.ChartsController) func(c *gin.Context) {
 	return func(c *gin.Context) {
-		coinId, err := controllers.GetCoinId(c.Query("coin"))
-		if err != nil {
-			code, response := createErrorResponseAndStatusCode(err)
-			c.AbortWithStatusJSON(code, response)
-			return
-		}
 		request := controllers.ChartRequest{
-			Asset: controllers.Asset{
-				CoinId:  coinId,
-				TokenId: c.Query("token"),
-			},
-			Currency:  controllers.GetCurrency(c.Query("currency")),
-			TimeStart: controllers.GetTimeStart(c.Query("time_start")),
-			MaxItems:  controllers.GetMaxItems(c.Query("max_items")),
+			CoinQuery:    c.Query("coin"),
+			Token:        c.Query("token"),
+			Currency:     c.DefaultQuery("currency", watchmarket.DefaultCurrency),
+			TimeStartRaw: c.Query("time_start"),
+			MaxItems:     c.Query("max_items"),
 		}
 
 		response, err := controller.HandleChartsRequest(request)
@@ -64,25 +58,19 @@ func GetChartsHandler(controller controllers.ChartsController) func(c *gin.Conte
 // @Router /v2/market/charts/{id} [get]
 func GetChartsHandlerV2(controller controllers.ChartsController) func(c *gin.Context) {
 	return func(c *gin.Context) {
-		coinId, tokenId, err := asset.ParseID(c.Param("id"))
+		coin, token, err := asset.ParseID(c.Param("id"))
 		if err != nil {
 			code, response := createErrorResponseAndStatusCode(err)
 			c.AbortWithStatusJSON(code, response)
 			return
 		}
-		if _, ok := coin.Coins[coinId]; !ok {
-			code, response := createErrorResponseAndStatusCode(err)
-			c.AbortWithStatusJSON(code, response)
-			return
-		}
+
 		request := controllers.ChartRequest{
-			Asset: controllers.Asset{
-				CoinId:  coinId,
-				TokenId: tokenId,
-			},
-			Currency:  controllers.GetCurrency(c.Query("currency")),
-			TimeStart: controllers.GetTimeStart(c.Query("time_start")),
-			MaxItems:  controllers.GetMaxItems(c.Query("max_items")),
+			CoinQuery:    strconv.Itoa(int(coin)),
+			Token:        token,
+			Currency:     c.DefaultQuery("currency", watchmarket.DefaultCurrency),
+			TimeStartRaw: c.Query("time_start"),
+			MaxItems:     c.Query("max_items"),
 		}
 
 		response, err := controller.HandleChartsRequest(request)

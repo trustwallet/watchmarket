@@ -3,7 +3,6 @@ package assets
 import (
 	"errors"
 	"fmt"
-	"github.com/trustwallet/watchmarket/services/controllers"
 	"time"
 
 	"github.com/trustwallet/golibs/client"
@@ -20,14 +19,14 @@ func Init(api string) Client {
 	return Client{client.InitClient(api, middleware.SentryErrorHandler)}
 }
 
-func (c Client) GetCoinInfo(asset controllers.Asset) (info watchmarket.Info, err error) {
-	coinObject, ok := coin.Coins[asset.CoinId]
+func (c Client) GetCoinInfo(coinId uint, token string) (info watchmarket.Info, err error) {
+	coinObject, ok := coin.Coins[coinId]
 	if !ok {
-		err = errors.New(fmt.Sprint("coin not found ", asset.CoinId, "; token ", asset.TokenId))
+		err = errors.New("coin not found " + "token " + token)
 		return
 	}
 
-	path := fmt.Sprintf("/%s/info.json", getPathForCoin(coinObject, asset.TokenId))
+	path := fmt.Sprintf("/%s/info.json", getPathForCoin(coinObject, token))
 	err = c.GetWithCache(&info, path, nil, time.Hour*12)
 	//asset info file now only contains description field.
 	info.ShortDescription = info.Description
