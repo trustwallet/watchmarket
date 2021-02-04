@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/trustwallet/watchmarket/db/models"
+	"strings"
 
 	log "github.com/sirupsen/logrus"
 	"github.com/trustwallet/watchmarket/db"
@@ -93,7 +94,7 @@ func (c Controller) getFromCache(request controllers.DetailsRequest) (controller
 }
 
 func (c Controller) getDetailsByPriority(request controllers.DetailsRequest) (controllers.InfoResponse, error) {
-	dbTickers, err := c.database.GetTickersByQueries([]models.TickerQuery{{Coin: request.Asset.CoinId, TokenId: request.Asset.TokenId}})
+	dbTickers, err := c.database.GetTickersByQueries([]models.TickerQuery{{Coin: request.Asset.CoinId, TokenId: strings.ToLower(request.Asset.TokenId)}})
 
 	if err != nil || len(dbTickers) == 0 {
 		return controllers.InfoResponse{}, fmt.Errorf("no tickers in db or db error: %w", err)
