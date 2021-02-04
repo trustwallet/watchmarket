@@ -4,6 +4,7 @@ import (
 	"github.com/trustwallet/watchmarket/config"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"github.com/trustwallet/watchmarket/services/assets"
+	"github.com/trustwallet/watchmarket/services/controllers"
 	"github.com/trustwallet/watchmarket/services/markets/binancedex"
 	"github.com/trustwallet/watchmarket/services/markets/coingecko"
 	"github.com/trustwallet/watchmarket/services/markets/coinmarketcap"
@@ -27,8 +28,8 @@ type (
 
 	ChartsAPI interface {
 		Provider
-		GetChartData(coinID uint, token, currency string, timeStart int64) (watchmarket.Chart, error)
-		GetCoinData(coinID uint, token, currency string) (watchmarket.CoinDetails, error)
+		GetChartData(asset controllers.Asset, currency string, timeStart int64) (watchmarket.Chart, error)
+		GetCoinData(asset controllers.Asset, currency string) (watchmarket.CoinDetails, error)
 	}
 
 	Providers   map[string]Provider

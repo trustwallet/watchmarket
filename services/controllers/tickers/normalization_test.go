@@ -32,7 +32,7 @@ func TestController_createResponse(t *testing.T) {
 
 	tr := controllers.TickerRequest{
 		Currency: "EUR",
-		Assets:   []controllers.Coin{{Coin: 0, CoinType: "Token", TokenId: "RAVEN-F66"}},
+		Assets:   []controllers.Asset{{CoinId: 0, CoinType: "Token", TokenId: "RAVEN-F66"}},
 	}
 
 	response := createResponse(tr, watchmarket.Tickers{ticker})
@@ -273,7 +273,7 @@ func TestController_normalizeTickers_advanced(t *testing.T) {
 }
 
 func Test_findBestProviderForQuery(t *testing.T) {
-	tickerQueries := []controllers.Coin{{Coin: 60, TokenId: "A"}}
+	tickerQueries := []controllers.Asset{{CoinId: 60, TokenId: "A"}}
 
 	ticker60ACMC := models.Ticker{
 		Coin:      60,
@@ -311,7 +311,7 @@ func Test_findBestProviderForQuery(t *testing.T) {
 	wg := new(sync.WaitGroup)
 	for _, q := range tickerQueries {
 		wg.Add(1)
-		go findBestProviderForQuery(q.Coin, q.TokenId, dbTickers, providers, wg, res, c)
+		go findBestProviderForQuery(q.CoinId, q.TokenId, dbTickers, providers, wg, res, c)
 	}
 
 	wg.Wait()
@@ -320,7 +320,7 @@ func Test_findBestProviderForQuery(t *testing.T) {
 }
 
 func Test_findBestProviderForQuery_advanced(t *testing.T) {
-	tickerQueries := []controllers.Coin{{Coin: 60, TokenId: "A"}}
+	tickerQueries := []controllers.Asset{{CoinId: 60, TokenId: "A"}}
 
 	ticker60ACMC := models.Ticker{
 		Coin:      60,
@@ -359,7 +359,7 @@ func Test_findBestProviderForQuery_advanced(t *testing.T) {
 	wg := new(sync.WaitGroup)
 	for _, q := range tickerQueries {
 		wg.Add(1)
-		go findBestProviderForQuery(q.Coin, q.TokenId, dbTickers, providers, wg, res, c)
+		go findBestProviderForQuery(q.CoinId, q.TokenId, dbTickers, providers, wg, res, c)
 	}
 
 	wg.Wait()
@@ -368,7 +368,7 @@ func Test_findBestProviderForQuery_advanced(t *testing.T) {
 }
 
 func Test_findBestProviderForQuery_showOption(t *testing.T) {
-	tickerQueries := []controllers.Coin{{Coin: 60, TokenId: "A"}}
+	tickerQueries := []controllers.Asset{{CoinId: 60, TokenId: "A"}}
 
 	ticker60ACMC := models.Ticker{
 		Coin:       60,
@@ -407,7 +407,7 @@ func Test_findBestProviderForQuery_showOption(t *testing.T) {
 	wg := new(sync.WaitGroup)
 	for _, q := range tickerQueries {
 		wg.Add(1)
-		go findBestProviderForQuery(q.Coin, q.TokenId, dbTickers, providers, wg, res, c)
+		go findBestProviderForQuery(q.CoinId, q.TokenId, dbTickers, providers, wg, res, c)
 	}
 
 	wg.Wait()

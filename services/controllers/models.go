@@ -1,11 +1,18 @@
 package controllers
 
-import "github.com/trustwallet/watchmarket/pkg/watchmarket"
+import (
+	"fmt"
+	"github.com/pkg/errors"
+	"github.com/trustwallet/golibs/coin"
+	"github.com/trustwallet/watchmarket/pkg/watchmarket"
+	"strconv"
+	"time"
+)
 
 type (
 	TickerRequest struct {
-		Currency string `json:"Currency"`
-		Assets   []Coin `json:"assets"`
+		Currency string  `json:"Currency"`
+		Assets   []Asset `json:"assets"`
 	}
 
 	TickerRequestV2 struct {
@@ -13,8 +20,8 @@ type (
 		Ids      []string `json:"assets"`
 	}
 
-	Coin struct {
-		Coin     uint                 `json:"Coin"`
+	Asset struct {
+		CoinId   uint                 `json:"Coin"`
 		CoinType watchmarket.CoinType `json:"type"`
 		TokenId  string               `json:"token_id,omitempty"`
 	}
@@ -47,11 +54,15 @@ type (
 	}
 
 	ChartRequest struct {
-		CoinQuery, Token, Currency, TimeStartRaw, MaxItems string
+		Asset     Asset
+		Currency  string
+		TimeStart int64
+		MaxItems  int
 	}
 
 	DetailsRequest struct {
-		CoinQuery, Token, Currency string
+		Asset    Asset
+		Currency string
 	}
 
 	InfoResponse struct {
@@ -64,3 +75,38 @@ type (
 		Info              *watchmarket.Info `json:"info,omitempty"`
 	}
 )
+
+func GetCoinId(rawCoinId string) (uint, error) {
+	coinId, err := strconv.Atoi(rawCoinId)
+	if err != nil {
+		return 0, err
+	}
+	if _, ok := coin.Coins[uint(coinId)]; !ok {
+		return 0, errors.New(fmt.Sprintf("invalid coin Id: %d", coinId))
+	}
+	return uint(coinId), nil
+}
+
+func GetCurrency(rawCurrency string) string {
+	currency := rawCurrency
+	if currency == "" {
+		currency = watchmarket.DefaultCurrency
+	}
+	return currency
+}
+
+func GetTimeStart(rawTime string) int64 {
+	timeStart, err := strconv.ParseInt(rawTime, 10, 64)
+	if err != nil {
+		timeStart = time.Now().Unix() - int64(time.Hour)*24
+	}
+	return timeStart
+}
+
+func GetMaxItems(rawMax string) int {
+	maxItems, err := strconv.Atoi(rawMax)
+	if err != nil || maxItems <= 0 {
+		maxItems = watchmarket.DefaultMaxChartItems
+	}
+	return maxItems
+}

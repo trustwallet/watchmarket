@@ -72,7 +72,7 @@ func TestSetupTickersAPI(t *testing.T) {
 
 	cr1 := controllers.TickerRequest{
 		Currency: "USD",
-		Assets:   []controllers.Coin{{Coin: 60, TokenId: "a"}},
+		Assets:   []controllers.Asset{{CoinId: 60, TokenId: "a"}},
 	}
 
 	rawcr1, err := json.Marshal(&cr1)
