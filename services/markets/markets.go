@@ -5,7 +5,6 @@ import (
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"github.com/trustwallet/watchmarket/services/assets"
 	"github.com/trustwallet/watchmarket/services/controllers"
-	"github.com/trustwallet/watchmarket/services/markets/binancedex"
 	"github.com/trustwallet/watchmarket/services/markets/coingecko"
 	"github.com/trustwallet/watchmarket/services/markets/coinmarketcap"
 	"github.com/trustwallet/watchmarket/services/markets/fixer"
@@ -68,23 +67,21 @@ func Init(config config.Configuration, assets assets.Client) (APIs, error) {
 }
 
 func setupProviders(config config.Configuration, assets assets.Client) Providers {
-	b := binancedex.InitProvider(config.Markets.BinanceDex.API)
-	cmc := coinmarketcap.InitProvider(
+	coinmarketcapPriveder := coinmarketcap.InitProvider(
 		config.Markets.Coinmarketcap.API,
 		config.Markets.Coinmarketcap.WebAPI,
 		config.Markets.Coinmarketcap.WidgetAPI,
 		config.Markets.Coinmarketcap.Key,
 		config.Markets.Coinmarketcap.Currency,
 		assets)
-	cg := coingecko.InitProvider(config.Markets.Coingecko.API, config.Markets.Coingecko.Currency, assets)
-	f := fixer.InitProvider(config.Markets.Fixer.API, config.Markets.Fixer.Key, config.Markets.Fixer.Currency)
+	coingeckoProvider := coingecko.InitProvider(config.Markets.Coingecko.API, config.Markets.Coingecko.Currency, assets)
+	fixerProvider := fixer.InitProvider(config.Markets.Fixer.API, config.Markets.Fixer.Key, config.Markets.Fixer.Currency)
 
-	ps := make(Providers, 4)
+	providers := make(Providers, 4)
 
-	ps[b.GetProvider()] = b
-	ps[cmc.GetProvider()] = cmc
-	ps[cg.GetProvider()] = cg
-	ps[f.GetProvider()] = f
+	providers[coinmarketcapPriveder.GetProvider()] = coinmarketcapPriveder
+	providers[coingeckoProvider.GetProvider()] = coingeckoProvider
+	providers[fixerProvider.GetProvider()] = fixerProvider
 
-	return ps
+	return providers
 }
