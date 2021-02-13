@@ -46,11 +46,11 @@ func createResponseV2(tr controllers.TickerRequestV2, tickers watchmarket.Ticker
 	return result
 }
 
-func makeTickerQueries(coins []controllers.Coin) []models.TickerQuery {
+func makeTickerQueries(coins []controllers.Asset) []models.TickerQuery {
 	tickerQueries := make([]models.TickerQuery, 0, len(coins))
 	for _, c := range coins {
 		tickerQueries = append(tickerQueries, models.TickerQuery{
-			Coin:    c.Coin,
+			Coin:    c.CoinId,
 			TokenId: strings.ToLower(c.TokenId),
 		})
 	}
@@ -105,9 +105,9 @@ func findIDInRequest(request controllers.TickerRequestV2, id string) (string, bo
 	return id, false
 }
 
-func findTickerInAssets(assets []controllers.Coin, t watchmarket.Ticker) (watchmarket.Ticker, bool) {
+func findTickerInAssets(assets []controllers.Asset, t watchmarket.Ticker) (watchmarket.Ticker, bool) {
 	for _, c := range assets {
-		if c.Coin == t.Coin && strings.ToLower(c.TokenId) == t.TokenId {
+		if c.CoinId == t.Coin && strings.ToLower(c.TokenId) == t.TokenId {
 			t.TokenId = c.TokenId
 			return t, true
 		}

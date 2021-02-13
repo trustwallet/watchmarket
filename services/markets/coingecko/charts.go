@@ -2,6 +2,7 @@ package coingecko
 
 import (
 	"errors"
+	"github.com/trustwallet/watchmarket/services/controllers"
 	"sort"
 	"strings"
 	"time"
@@ -13,7 +14,7 @@ import (
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 )
 
-func (p Provider) GetChartData(coinID uint, token, currency string, timeStart int64) (watchmarket.Chart, error) {
+func (p Provider) GetChartData(asset controllers.Asset, currency string, timeStart int64) (watchmarket.Chart, error) {
 	chartsData := watchmarket.Chart{}
 
 	coins, err := p.client.fetchCoins()
@@ -23,7 +24,7 @@ func (p Provider) GetChartData(coinID uint, token, currency string, timeStart in
 
 	symbolsMap := createSymbolsMap(coins)
 
-	coinResult, err := getCoinByID(symbolsMap, coinID, token)
+	coinResult, err := getCoinByID(symbolsMap, asset)
 	if err != nil {
 		return chartsData, err
 	}
@@ -38,7 +39,7 @@ func (p Provider) GetChartData(coinID uint, token, currency string, timeStart in
 	return normalizeCharts(c), nil
 }
 
-func (p Provider) GetCoinData(coinID uint, token, currency string) (watchmarket.CoinDetails, error) {
+func (p Provider) GetCoinData(asset controllers.Asset, currency string) (watchmarket.CoinDetails, error) {
 	coins, err := p.client.fetchCoins()
 	if err != nil {
 		return watchmarket.CoinDetails{}, err
@@ -46,7 +47,7 @@ func (p Provider) GetCoinData(coinID uint, token, currency string) (watchmarket.
 
 	symbolsMap := createSymbolsMap(coins)
 
-	coinResult, err := getCoinByID(symbolsMap, coinID, token)
+	coinResult, err := getCoinByID(symbolsMap, asset)
 	if err != nil {
 		return watchmarket.CoinDetails{}, err
 	}
@@ -56,9 +57,9 @@ func (p Provider) GetCoinData(coinID uint, token, currency string) (watchmarket.
 		return watchmarket.CoinDetails{}, errors.New("no rates found")
 	}
 
-	infoData, err := p.info.GetCoinInfo(coinID, token)
+	infoData, err := p.info.GetCoinInfo(asset)
 	if err != nil {
-		log.WithFields(log.Fields{"coin": coinID, "token": token}).Warn("No assets assets about that coin")
+		log.WithFields(log.Fields{"coin": asset.CoinId, "token": asset.TokenId}).Warn("No assets assets about that coin")
 	}
 	return watchmarket.CoinDetails{
 		Info:        &infoData,
@@ -107,14 +108,14 @@ func createID(symbol, token string) string {
 	return strings.ToLower(symbol)
 }
 
-func getCoinByID(coinMap map[string]Coin, coinId uint, token string) (Coin, error) {
+func getCoinByID(coinMap map[string]Coin, asset controllers.Asset) (Coin, error) {
 	c := Coin{}
-	coinObj, ok := coin.Coins[coinId]
+	coinObj, ok := coin.Coins[asset.CoinId]
 	if !ok {
 		return c, errors.New("coin not found")
 	}
 
-	c, ok = coinMap[createID(coinObj.Symbol, token)]
+	c, ok = coinMap[createID(coinObj.Symbol, asset.TokenId)]
 	if !ok {
 		return c, errors.New("no coin found by symbol")
 	}
