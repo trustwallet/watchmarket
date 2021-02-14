@@ -48,7 +48,7 @@ func SetupTickersAPI(engine *gin.Engine, tickers controllers.TickersController, 
 		middleware.CacheControl(d, endpoint.GetTickerHandlerV2(tickers)))
 
 	engine.GET("v2/market/tickers/",
-		middleware.CacheControl(d, endpoint.GetTickersHandlerV2(tickers)))
+		middleware.CacheControl(d, endpoint.GetAllTickersHandlerV2(tickers)))
 
 	engine.GET("v2/market/tickers/:assets",
 		middleware.CacheControl(d, endpoint.GetTickersHandlerV2(tickers)))
