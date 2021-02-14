@@ -14,5 +14,6 @@ type (
 		GetTickers(coin uint, tokenId string) ([]models.Ticker, error)
 		GetAllTickers() ([]models.Ticker, error)
 		GetTickersByQueries(tickerQueries []models.TickerQuery) ([]models.Ticker, error)
+		GetBaseTickers() ([]models.Ticker, error)
 	}
 )

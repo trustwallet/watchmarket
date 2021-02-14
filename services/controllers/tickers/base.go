@@ -40,7 +40,7 @@ func (c Controller) HandleTickersRequestV2(tr controllers.TickerRequestV2) (cont
 		return controllers.TickerResponseV2{}, errors.New(watchmarket.ErrNotFound)
 	}
 
-	tickers, err := c.getTickersByPriority(makeTickerQueriesV2(tr.Ids))
+	tickers, err := c.getTickers(tr)
 	if err != nil {
 		return controllers.TickerResponseV2{}, errors.New(watchmarket.ErrInternal)
 	}
@@ -48,6 +48,14 @@ func (c Controller) HandleTickersRequestV2(tr controllers.TickerRequestV2) (cont
 	tickers = c.normalizeTickers(tickers, rate)
 
 	return createResponseV2(tr, tickers), nil
+}
+
+func (c Controller) getTickers(tr controllers.TickerRequestV2) (watchmarket.Tickers, error) {
+	if len(tr.Ids) != 0 {
+		return c.getTickersByPriority(makeTickerQueriesV2(tr.Ids))
+	}
+
+	return c.getBaseTickers()
 }
 
 func (c Controller) HandleTickersRequest(tr controllers.TickerRequest) (controllers.TickerResponse, error) {

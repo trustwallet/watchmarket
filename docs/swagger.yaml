@@ -1,5 +1,5 @@
 definitions:
-  controllers.Coin:
+  controllers.Asset:
     properties:
       Coin:
         type: integer
@@ -30,7 +30,7 @@ definitions:
         type: string
       assets:
         items:
-          $ref: '#/definitions/controllers.Coin'
+          $ref: '#/definitions/controllers.Asset'
         type: array
     type: object
   controllers.TickerRequestV2:
@@ -47,8 +47,9 @@ definitions:
       currency:
         type: string
       docs:
-        $ref: '#/definitions/watchmarket.Tickers'
-        type: object
+        items:
+          $ref: '#/definitions/watchmarket.Ticker'
+        type: array
     type: object
   controllers.TickerResponseV2:
     properties:
@@ -79,21 +80,12 @@ definitions:
     type: object
   watchmarket.CoinDetails:
     properties:
-      circulating_supply:
-        type: number
       info:
         $ref: '#/definitions/watchmarket.Info'
-        type: object
-      market_cap:
-        type: number
       provider:
         type: string
       provider_url:
         type: string
-      total_supply:
-        type: number
-      volume_24:
-        type: number
     type: object
   watchmarket.Info:
     properties:
@@ -152,7 +144,6 @@ definitions:
         type: number
       price:
         $ref: '#/definitions/watchmarket.Price'
-        type: object
       token_id:
         type: string
       type:
@@ -160,13 +151,8 @@ definitions:
       volume:
         type: number
     type: object
-  watchmarket.Tickers:
-    items:
-      $ref: '#/definitions/watchmarket.Ticker'
-    type: array
 info:
   contact: {}
-  license: {}
 paths:
   /v1/market/charts:
     get:
@@ -414,11 +400,31 @@ paths:
       summary: Get tickers for list of ids
       tags:
       - Tickers
+  /v2/market/tickers/:
+    get:
+      consumes:
+      - application/json
+      description: Get all base tickers
+      parameters:
+      - description: Currency symbol
+        in: query
+        name: currency
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controllers.TickerResponseV2'
+      summary: Get all base tickers
+      tags:
+      - Tickers
   /v2/market/tickers/{assets}:
     get:
       consumes:
       - application/json
-      description: Get the tickers for list of ids
+      description: Get all tickers or for list of ids
       operationId: get_tickers_v2
       parameters:
       - description: List of asset ids
@@ -437,7 +443,7 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/controllers.TickerResponseV2'
-      summary: Get tickers for list of ids
+      summary: Get all tickers or for list of ids
       tags:
       - Tickers
 swagger: "2.0"

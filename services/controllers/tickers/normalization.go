@@ -31,7 +31,7 @@ func createResponseV2(tr controllers.TickerRequestV2, tickers watchmarket.Ticker
 	tickersPrices := make([]controllers.TickerPrice, 0, len(tickers))
 	for _, ticker := range tickers {
 		id, ok := findIDInRequest(tr, asset.BuildID(ticker.Coin, ticker.TokenId))
-		if !ok {
+		if !ok && len(tr.Ids) != 0 {
 			log.Error("Cannot find ID in request")
 		}
 		tp := controllers.TickerPrice{
