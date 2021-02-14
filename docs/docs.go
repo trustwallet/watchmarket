@@ -419,7 +419,7 @@ var doc = `{
         },
         "/v2/market/tickers/{assets}": {
             "get": {
-                "description": "Get all tickers or for list of ids",
+                "description": "Get tickers for list of ids",
                 "consumes": [
                     "application/json"
                 ],
@@ -429,7 +429,7 @@ var doc = `{
                 "tags": [
                     "Tickers"
                 ],
-                "summary": "Get all tickers or for list of ids",
+                "summary": "Get tickers for list of ids",
                 "operationId": "get_tickers_v2",
                 "parameters": [
                     {

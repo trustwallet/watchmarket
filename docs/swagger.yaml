@@ -424,7 +424,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: Get all tickers or for list of ids
+      description: Get tickers for list of ids
       operationId: get_tickers_v2
       parameters:
       - description: List of asset ids
@@ -443,7 +443,7 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/controllers.TickerResponseV2'
-      summary: Get all tickers or for list of ids
+      summary: Get tickers for list of ids
       tags:
       - Tickers
 swagger: "2.0"
