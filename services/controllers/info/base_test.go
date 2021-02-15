@@ -169,7 +169,7 @@ func (d dbMock) GetAllRates() ([]models.Rate, error) {
 	return nil, nil
 }
 
-func (d dbMock) GetTickers(coin uint, tokenId string) ([]models.Ticker, error) {
+func (d dbMock) GetTickers(asset []controllers.Asset) ([]models.Ticker, error) {
 	return d.WantedTickers, d.WantedTickersError
 }
 
