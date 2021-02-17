@@ -66,23 +66,9 @@ func (c Controller) filterTickers(tickers watchmarket.Tickers, rate watchmarket.
 }
 
 func (c Controller) getTickersByPriority(assets []controllers.Asset) (watchmarket.Tickers, error) {
-	if c.configuration.RestAPI.UseMemoryCache {
-		var results watchmarket.Tickers
-		for _, assetData := range assets {
-			key := strings.ToLower(asset.BuildID(assetData.CoinId, assetData.TokenId))
-			rawResult, err := c.cache.Get(key)
-			if err != nil {
-				continue
-			}
-			var result watchmarket.Ticker
-			if err = json.Unmarshal(rawResult, &result); err != nil {
-				continue
-			}
-			results = append(results, result)
-		}
-		return results, nil
+	if result, err := c.getCachedTickers(assets); err == nil {
+		return result, nil
 	}
-
 	tickers, err := c.database.GetTickers(assets)
 	if err != nil {
 		return nil, err
@@ -131,14 +117,7 @@ func findBestTicker(assetData controllers.Asset, tickers []models.Ticker, provid
 }
 
 func (c Controller) getRateByPriority(currency string) (result watchmarket.Rate, err error) {
-	if c.configuration.RestAPI.UseMemoryCache {
-		rawResult, err := c.cache.Get(currency)
-		if err != nil {
-			return result, err
-		}
-		if err = json.Unmarshal(rawResult, &result); err != nil {
-			return watchmarket.Rate{}, err
-		}
+	if result, err := c.getCachedRate(currency); err == nil {
 		return result, nil
 	}
 
@@ -191,4 +170,37 @@ func (c Controller) applyRateToTicker(ticker *watchmarket.Ticker, rate watchmark
 	if rate.PercentChange24h != 0 {
 		ticker.Price.Change24h -= rate.PercentChange24h // Look at it more detailed
 	}
+}
+
+func (c Controller) getCachedTickers(assets []controllers.Asset) (watchmarket.Tickers, error) {
+	var results watchmarket.Tickers
+	for _, assetData := range assets {
+		key := strings.ToLower(asset.BuildID(assetData.CoinId, assetData.TokenId))
+		rawResult, err := c.cache.Get(key)
+		if err != nil {
+			continue
+		}
+		var result watchmarket.Ticker
+		if err = json.Unmarshal(rawResult, &result); err != nil {
+			continue
+		}
+		results = append(results, result)
+	}
+	if len(results) == len(assets) {
+		return results, nil
+	} else {
+		return results, errors.New("not found")
+	}
+}
+
+// TODO: Remove duplicates or make method
+func (c Controller) getCachedRate(currency string) (result watchmarket.Rate, err error) {
+	rawResult, err := c.cache.Get(currency)
+	if err != nil {
+		return result, err
+	}
+	if err = json.Unmarshal(rawResult, &result); err != nil {
+		return result, err
+	}
+	return result, nil
 }

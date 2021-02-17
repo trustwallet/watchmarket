@@ -82,10 +82,7 @@ func GetTickerHandlerV2(controller controllers.TickersController) func(c *gin.Co
 // @Router /v2/market/tickers [post]
 func PostTickersHandlerV2(controller controllers.TickersController) func(c *gin.Context) {
 	return func(c *gin.Context) {
-		var request struct {
-			Currency string   `json:"currency"`
-			Ids      []string `json:"assets"`
-		}
+		var request controllers.TickerRequestV2
 		if err := c.BindJSON(&request); err != nil {
 			c.JSON(http.StatusBadRequest, errorResponse(errors.New("Invalid request payload")))
 			return
