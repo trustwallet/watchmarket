@@ -20,9 +20,6 @@ type Configuration struct {
 			Tickers  []string `mapstructure:"tickers"`
 			Rates    []string `mapstructure:"rates"`
 		} `mapstructure:"priority"`
-		BinanceDex struct {
-			API string `mapstructure:"api"`
-		} `mapstructure:"binancedex"`
 		Coinmarketcap struct {
 			API       string `mapstructure:"api"`
 			Key       string `mapstructure:"key"`

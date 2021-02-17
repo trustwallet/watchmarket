@@ -198,17 +198,6 @@ func testTickersBasic(t *testing.T, c config.Configuration) {
 			Value:       12,
 			LastUpdated: now,
 		},
-		{
-			ID:          "c1",
-			Currency:    "USD",
-			Provider:    "binancedex",
-			Coin:        1,
-			TokenId:     "",
-			Change24h:   1,
-			Value:       14,
-			ShowOption:  0,
-			LastUpdated: now,
-		},
 	}
 
 	w := Init(nil, nil, dbMock, memory.Init(), c)
@@ -261,7 +250,7 @@ func testTickersShowOptionNever(t *testing.T, c config.Configuration) {
 		{
 			ID:          "c1",
 			Currency:    "USD",
-			Provider:    "binancedex",
+			Provider:    "coinmarketcap",
 			Coin:        1,
 			TokenId:     "",
 			Change24h:   1,
@@ -282,10 +271,10 @@ func testTickersShowOptionNever(t *testing.T, c config.Configuration) {
 		Coin:    1,
 		TokenId: "",
 		Price: watchmarket.Price{
-			Change24h: 2,
+			Change24h: 1,
 			Currency:  "USD",
-			Provider:  "coingecko",
-			Value:     12,
+			Provider:  "coinmarketcap",
+			Value:     14,
 		},
 		LastUpdate: res.LastUpdate,
 	}, res)
@@ -321,7 +310,7 @@ func testTickersShowOptionAlways(t *testing.T, c config.Configuration) {
 		{
 			ID:          "c1",
 			Currency:    "USD",
-			Provider:    "binancedex",
+			Provider:    "coinmarketcap",
 			Coin:        1,
 			TokenId:     "",
 			Change24h:   1,
@@ -344,7 +333,7 @@ func testTickersShowOptionAlways(t *testing.T, c config.Configuration) {
 		Price: watchmarket.Price{
 			Change24h: 1,
 			Currency:  "USD",
-			Provider:  "binancedex",
+			Provider:  "coinmarketcap",
 			Value:     14,
 		},
 		LastUpdate: res.LastUpdate,
@@ -381,7 +370,7 @@ func testTickersOutdated(t *testing.T, c config.Configuration) {
 		{
 			ID:          "c1",
 			Currency:    "USD",
-			Provider:    "binancedex",
+			Provider:    "coinmarketcap",
 			Coin:        1,
 			TokenId:     "",
 			Change24h:   1,
@@ -402,10 +391,10 @@ func testTickersOutdated(t *testing.T, c config.Configuration) {
 		Coin:    1,
 		TokenId: "",
 		Price: watchmarket.Price{
-			Change24h: 2,
+			Change24h: 1,
 			Currency:  "USD",
-			Provider:  "coingecko",
-			Value:     12,
+			Provider:  "coinmarketcap",
+			Value:     14,
 		},
 		LastUpdate: res.LastUpdate,
 	}, res)
@@ -442,7 +431,7 @@ func testTickersVolume(t *testing.T, c config.Configuration) {
 		{
 			ID:          "c1",
 			Currency:    "USD",
-			Provider:    "binancedex",
+			Provider:    "coinmarketcap",
 			Coin:        1,
 			TokenId:     "",
 			Change24h:   1,
@@ -466,7 +455,7 @@ func testTickersVolume(t *testing.T, c config.Configuration) {
 		Price: watchmarket.Price{
 			Change24h: 1,
 			Currency:  "USD",
-			Provider:  "binancedex",
+			Provider:  "coinmarketcap",
 			Value:     14,
 		},
 		LastUpdate: res.LastUpdate,

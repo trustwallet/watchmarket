@@ -72,7 +72,7 @@ func TestController_HandleChartsRequest(t *testing.T) {
 		TokenId:   "a",
 		Change24h: 10,
 		Currency:  "USD",
-		Provider:  "binancedex",
+		Provider:  "coinmarketcap",
 		Value:     100,
 	}
 
