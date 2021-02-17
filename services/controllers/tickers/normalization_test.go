@@ -22,7 +22,7 @@ func TestController_createResponse(t *testing.T) {
 		Price: watchmarket.Price{
 			Change24h: -10.24,
 			Currency:  "EUR",
-			Provider:  "binancedex",
+			Provider:  "coinmarketcap",
 			Value:     14.700428799936965,
 		},
 		TokenId:   "raven-f66",
@@ -47,7 +47,7 @@ func TestController_createResponse(t *testing.T) {
 				Price: watchmarket.Price{
 					Change24h: -10.24,
 					Currency:  "EUR",
-					Provider:  "binancedex",
+					Provider:  "coinmarketcap",
 					Value:     14.700428799936965,
 				},
 				TokenId:   "RAVEN-F66",
@@ -237,7 +237,7 @@ func TestController_normalizeTickers_advanced(t *testing.T) {
 		Price: watchmarket.Price{
 			Change24h: -10.24,
 			Currency:  "BNB",
-			Provider:  "binancedex",
+			Provider:  "coinmarketcap",
 			Value:     1,
 		},
 		TokenId:    "raven-f66",
@@ -261,7 +261,7 @@ func TestController_normalizeTickers_advanced(t *testing.T) {
 		Price: watchmarket.Price{
 			Change24h: -10.24,
 			Currency:  "EUR",
-			Provider:  "binancedex",
+			Provider:  "coinmarketcap",
 			Value:     14.700428799936965,
 		},
 		TokenId:    "raven-f66",
