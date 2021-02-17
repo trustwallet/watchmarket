@@ -173,6 +173,9 @@ func (c Controller) applyRateToTicker(ticker *watchmarket.Ticker, rate watchmark
 }
 
 func (c Controller) getCachedTickers(assets []controllers.Asset) (watchmarket.Tickers, error) {
+	if c.cache == nil {
+		return watchmarket.Tickers{}, errors.New("cache isn't available")
+	}
 	var results watchmarket.Tickers
 	for _, assetData := range assets {
 		key := strings.ToLower(asset.BuildID(assetData.CoinId, assetData.TokenId))
@@ -195,6 +198,9 @@ func (c Controller) getCachedTickers(assets []controllers.Asset) (watchmarket.Ti
 
 // TODO: Remove duplicates or make method
 func (c Controller) getCachedRate(currency string) (result watchmarket.Rate, err error) {
+	if c.cache == nil {
+		return watchmarket.Rate{}, errors.New("cache isn't available")
+	}
 	rawResult, err := c.cache.Get(currency)
 	if err != nil {
 		return result, err
