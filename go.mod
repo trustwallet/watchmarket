@@ -7,7 +7,7 @@ go 1.15
 
 require (
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
-	github.com/alicebob/miniredis/v2 v2.14.2
+	github.com/alicebob/miniredis/v2 v2.14.3
 	github.com/chenjiandongx/ginprom v0.0.0-20200410120253-7cfb22707fa6
 	github.com/gin-contrib/cors v1.3.1
 	github.com/gin-gonic/gin v1.6.3
