@@ -1,9 +1,7 @@
 package postgres
 
 import (
-	"github.com/trustwallet/watchmarket/services/controllers"
 	"strconv"
-	"strings"
 
 	"github.com/trustwallet/watchmarket/db/models"
 	"gorm.io/gorm/clause"
@@ -59,13 +57,22 @@ func normalizeTickers(tickers []models.Ticker) []models.Ticker {
 	return result
 }
 
-func (i *Instance) GetTickers(assets []controllers.Asset) ([]models.Ticker, error) {
+func (i *Instance) GetTickersByQueries(tickerQueries []models.TickerQuery) ([]models.Ticker, error) {
 	var ticker []models.Ticker
 	db := i.Gorm
-	for _, asset := range assets {
-		db = db.Or("coin = ? AND token_id = ?", asset.CoinId, strings.ToLower(asset.TokenId))
+	for _, tq := range tickerQueries {
+		db = db.Or("coin = ? AND token_id = ?", tq.Coin, tq.TokenId)
 	}
 	if err := db.Find(&ticker).Error; err != nil {
+		return nil, err
+	}
+	return ticker, nil
+}
+
+func (i *Instance) GetTickers(coin uint, tokenId string) ([]models.Ticker, error) {
+	var ticker []models.Ticker
+	if err := i.Gorm.Where("coin = ? AND token_id = ?", coin, tokenId).
+		Find(&ticker).Error; err != nil {
 		return nil, err
 	}
 	return ticker, nil

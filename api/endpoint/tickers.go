@@ -2,7 +2,6 @@ package endpoint
 
 import (
 	"errors"
-	"github.com/trustwallet/golibs/asset"
 	"net/http"
 	"strings"
 
@@ -27,21 +26,18 @@ func GetTickersHandler(controller controllers.TickersController) func(c *gin.Con
 			c.JSON(http.StatusBadRequest, errorResponse(errors.New("Invalid request payload")))
 			return
 		}
-		tickers, err := controller.HandleTickersRequest(request)
+		response, err := controller.HandleTickersRequest(request)
 		if err != nil {
 			code, response := createErrorResponseAndStatusCode(err)
 			c.AbortWithStatusJSON(code, response)
 			return
 		}
-		if len(tickers) == 0 {
+		if len(response.Tickers) == 0 {
 			handleTickersError(c, request)
 			return
 		}
 
-		c.JSON(http.StatusOK, controllers.TickerResponse{
-			Currency: request.Currency,
-			Tickers:  tickers,
-		})
+		c.JSON(http.StatusOK, response)
 	}
 }
 
@@ -57,17 +53,15 @@ func GetTickersHandler(controller controllers.TickersController) func(c *gin.Con
 // @Router /v2/market/ticker/{id} [get]
 func GetTickerHandlerV2(controller controllers.TickersController) func(c *gin.Context) {
 	return func(c *gin.Context) {
-		request := controllers.TickerRequest{
-			Currency: c.DefaultQuery("currency", watchmarket.DefaultCurrency),
-			Assets:   parseAssetIds([]string{c.Param("id")}),
-		}
-		tickers, err := controller.HandleTickersRequest(request)
+		currency := c.DefaultQuery("currency", watchmarket.DefaultCurrency)
+		request := controllers.TickerRequestV2{Currency: currency, Ids: []string{c.Param("id")}}
+		response, err := controller.HandleTickersRequestV2(request)
 		if err != nil {
 			code, response := createErrorResponseAndStatusCode(err)
 			c.AbortWithStatusJSON(code, response)
 			return
 		}
-		c.JSON(http.StatusOK, mapToResponse(request.Currency, tickers))
+		c.JSON(http.StatusOK, response)
 	}
 }
 
@@ -82,23 +76,20 @@ func GetTickerHandlerV2(controller controllers.TickersController) func(c *gin.Co
 // @Router /v2/market/tickers [post]
 func PostTickersHandlerV2(controller controllers.TickersController) func(c *gin.Context) {
 	return func(c *gin.Context) {
-		var request controllers.TickerRequestV2
+		request := controllers.TickerRequestV2{Currency: watchmarket.DefaultCurrency}
 		if err := c.BindJSON(&request); err != nil {
 			c.JSON(http.StatusBadRequest, errorResponse(errors.New("Invalid request payload")))
 			return
 		}
 		request.Ids = removeDuplicates(request.Ids)
-		tickers, err := controller.HandleTickersRequest(controllers.TickerRequest{
-			Currency: request.Currency,
-			Assets:   parseAssetIds(request.Ids),
-		})
+		response, err := controller.HandleTickersRequestV2(request)
 		if err != nil {
 			code, response := createErrorResponseAndStatusCode(err)
 			c.AbortWithStatusJSON(code, response)
 			return
 		}
 
-		c.JSON(http.StatusOK, mapToResponse(request.Currency, tickers))
+		c.JSON(http.StatusOK, response)
 	}
 }
 
@@ -114,41 +105,23 @@ func PostTickersHandlerV2(controller controllers.TickersController) func(c *gin.
 // @Router /v2/market/tickers/{assets} [get]
 func GetTickersHandlerV2(controller controllers.TickersController) func(c *gin.Context) {
 	return func(c *gin.Context) {
+		currency := c.DefaultQuery("currency", watchmarket.DefaultCurrency)
 		assets := c.Param("assets")
 		if len(assets) == 0 {
 			c.JSON(http.StatusBadRequest, errorResponse(errors.New("Invalid request payload")))
 			return
 		}
 		assetsIds := removeDuplicates(strings.Split(assets, ","))
-		request := controllers.TickerRequest{
-			Currency: c.DefaultQuery("currency", watchmarket.DefaultCurrency),
-			Assets:   parseAssetIds(assetsIds),
-		}
-		tickers, err := controller.HandleTickersRequest(request)
+		request := controllers.TickerRequestV2{Currency: currency, Ids: assetsIds}
+		response, err := controller.HandleTickersRequestV2(request)
 		if err != nil {
 			code, response := createErrorResponseAndStatusCode(err)
 			c.AbortWithStatusJSON(code, response)
 			return
 		}
 
-		c.JSON(http.StatusOK, mapToResponse(request.Currency, tickers))
+		c.JSON(http.StatusOK, response)
 	}
-}
-
-func mapToResponse(currency string, tickers watchmarket.Tickers) controllers.TickerResponseV2 {
-	response := controllers.TickerResponseV2{
-		Currency: currency,
-	}
-	response.Tickers = make([]controllers.TickerPrice, 0, len(tickers))
-	for _, ticker := range tickers {
-		response.Tickers = append(response.Tickers, controllers.TickerPrice{
-			Change24h: ticker.Price.Change24h,
-			Provider:  ticker.Price.Provider,
-			Price:     ticker.Price.Value,
-			ID:        asset.BuildID(ticker.Coin, ticker.TokenId),
-		})
-	}
-	return response
 }
 
 func handleTickersError(c *gin.Context, req controllers.TickerRequest) {
@@ -171,25 +144,14 @@ func handleTickersError(c *gin.Context, req controllers.TickerRequest) {
 	c.JSON(http.StatusOK, emptyResponse)
 }
 
-func removeDuplicates(values []string) (result []string) {
+func removeDuplicates(values []string) []string {
 	keys := make(map[string]bool)
+	var list []string
 	for _, entry := range values {
 		if _, value := keys[entry]; !value {
 			keys[entry] = true
-			result = append(result, entry)
+			list = append(list, entry)
 		}
 	}
-	return result
-}
-
-func parseAssetIds(ids []string) (assets []controllers.Asset) {
-	for _, id := range ids {
-		if coinId, tokenId, err := asset.ParseID(id); err == nil {
-			assets = append(assets, controllers.Asset{
-				CoinId:  coinId,
-				TokenId: tokenId,
-			})
-		}
-	}
-	return assets
+	return list
 }
