@@ -81,7 +81,7 @@ func (c Controller) hasTickers(assetData controllers.Asset) bool {
 			return false
 		}
 	} else {
-		dbTickers, err := c.database.GetTickers([]controllers.Asset{assetData})
+		dbTickers, err := c.database.GetTickersByQueries([]models.TickerQuery{{Coin: assetData.CoinId, TokenId: strings.ToLower(assetData.TokenId)}})
 		if err != nil {
 			return false
 		}

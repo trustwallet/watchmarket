@@ -6,7 +6,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/trustwallet/watchmarket/db"
 	"github.com/trustwallet/watchmarket/db/models"
-	"github.com/trustwallet/watchmarket/services/controllers"
 	"github.com/trustwallet/watchmarket/tests/integration/setup"
 
 	"testing"
@@ -38,12 +37,12 @@ func TestAddTickers(t *testing.T) {
 	err := d.AddTickers(tickers)
 	assert.Nil(t, err)
 
-	result1, err := d.GetTickers([]controllers.Asset{controllers.Asset{CoinId: 60, TokenId: "60"}})
+	result1, err := d.GetTickers(60, "60")
 	assert.Nil(t, err)
 	assert.Len(t, result1, 1)
 	assert.Equal(t, uint(60), result1[0].Coin)
 
-	result2, err := d.GetTickers([]controllers.Asset{controllers.Asset{CoinId: 70, TokenId: "70"}})
+	result2, err := d.GetTickers(70, "70")
 	assert.Nil(t, err)
 	assert.Len(t, result2, 1)
 	assert.Equal(t, uint(70), result2[0].Coin)
@@ -62,7 +61,7 @@ func TestAddTickers(t *testing.T) {
 	err = d.AddTickers(tickers)
 	assert.Nil(t, err)
 
-	result1, err = d.GetTickers([]controllers.Asset{controllers.Asset{CoinId: 60, TokenId: "60"}})
+	result1, err = d.GetTickers(60, "60")
 	assert.Nil(t, err)
 	assert.Len(t, result1, 2)
 
@@ -71,7 +70,7 @@ func TestAddTickers(t *testing.T) {
 
 	err = d.AddTickers(tickers)
 	assert.Nil(t, err)
-	result2, err = d.GetTickers([]controllers.Asset{controllers.Asset{CoinId: 70, TokenId: "70"}})
+	result2, err = d.GetTickers(70, "70")
 	assert.Nil(t, err)
 	assert.Len(t, result2, 1)
 	assert.Equal(t, float64(100500), result2[0].Value)
@@ -117,7 +116,7 @@ func TestAddTickersMult(t *testing.T) {
 	err = d.AddTickers(tickers)
 	assert.Nil(t, err)
 
-	result1, err := d.GetTickers([]controllers.Asset{controllers.Asset{CoinId: 60, TokenId: "60"}})
+	result1, err := d.GetTickers(60, "60")
 	assert.Nil(t, err)
 	assert.Len(t, result1, 1)
 	assert.Equal(t, uint(60), result1[0].Coin)
@@ -136,7 +135,7 @@ func TestAddTickersMult(t *testing.T) {
 	err = d.AddTickers(tickers)
 	assert.Nil(t, err)
 
-	result1, err = d.GetTickers([]controllers.Asset{controllers.Asset{CoinId: 60, TokenId: "60"}})
+	result1, err = d.GetTickers(60, "60")
 	assert.Nil(t, err)
 	assert.Len(t, result1, 1)
 }

@@ -6,7 +6,8 @@ import (
 
 type (
 	TickersController interface {
-		HandleTickersRequest(tr TickerRequest) (watchmarket.Tickers, error)
+		HandleTickersRequest(tr TickerRequest) (TickerResponse, error)
+		HandleTickersRequestV2(tr TickerRequestV2) (TickerResponseV2, error)
 	}
 
 	RatesController interface {
