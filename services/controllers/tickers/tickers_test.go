@@ -62,7 +62,7 @@ func TestController_getTickersByPriority(t *testing.T) {
 			Provider:  "coinmarketcap",
 			Value:     100,
 		},
-		TokenId: "a",
+		TokenId: "A",
 	}
 	wantedTicker2 := watchmarket.Ticker{
 		Coin:     714,
@@ -82,7 +82,7 @@ func TestController_getTickersByPriority(t *testing.T) {
 			counter++
 		}
 	}
-	assert.Equal(t, 2, counter)
+	assert.Equal(t, 1, counter)
 	db2 := getDbMock()
 	db2.WantedTickers = []models.Ticker{ticker60ACMC, ticker60ACG}
 	c2 := setupController(t, db2, false)
