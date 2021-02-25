@@ -187,6 +187,7 @@ func (c Controller) getCachedTickers(assets []controllers.Asset) (watchmarket.Ti
 		if err = json.Unmarshal(rawResult, &result); err != nil {
 			continue
 		}
+		result.TokenId = assetData.TokenId
 		results = append(results, result)
 	}
 	if len(results) == len(assets) {
