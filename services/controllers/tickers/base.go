@@ -90,7 +90,7 @@ func (c Controller) getTickersByPriority(assets []controllers.Asset) (watchmarke
 				Provider:  ticker.Provider,
 				Value:     ticker.Value,
 			},
-			TokenId: ticker.TokenId,
+			TokenId: assetData.TokenId,
 		})
 	}
 
