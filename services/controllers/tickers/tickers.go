@@ -2,11 +2,11 @@ package tickerscontroller
 
 import (
 	"encoding/json"
+	"github.com/trustwallet/golibs/asset"
 	"strings"
 	"sync"
 
 	log "github.com/sirupsen/logrus"
-	"github.com/trustwallet/golibs/asset"
 	"github.com/trustwallet/watchmarket/db/models"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 )
@@ -17,6 +17,15 @@ type (
 		tickers []models.Ticker
 	}
 )
+
+func (c Controller) getBaseTickers() (watchmarket.Tickers, error) {
+	dbTickers, err := c.database.GetBaseTickers()
+	if err != nil {
+		log.Error(err, "getBaseTickers")
+		return nil, err
+	}
+	return c.mapTickers(dbTickers)
+}
 
 func (c Controller) getTickersByPriority(tickerQueries []models.TickerQuery) (watchmarket.Tickers, error) {
 	if c.configuration.RestAPI.UseMemoryCache {
@@ -53,10 +62,13 @@ func (c Controller) getTickersByPriority(tickerQueries []models.TickerQuery) (wa
 	wg.Wait()
 
 	sortedTickers := res.tickers
+	return c.mapTickers(sortedTickers)
+}
 
-	result := make(watchmarket.Tickers, len(sortedTickers))
+func (c Controller) mapTickers(tickers []models.Ticker) (watchmarket.Tickers, error) {
+	result := make(watchmarket.Tickers, len(tickers))
 
-	for i, sr := range sortedTickers {
+	for i, sr := range tickers {
 		result[i] = watchmarket.Ticker{
 			Coin:       sr.Coin,
 			CoinName:   sr.CoinName,
@@ -71,6 +83,5 @@ func (c Controller) getTickersByPriority(tickerQueries []models.TickerQuery) (wa
 			TokenId: sr.TokenId,
 		}
 	}
-
 	return result, nil
 }

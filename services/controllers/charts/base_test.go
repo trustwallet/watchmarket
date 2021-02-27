@@ -164,6 +164,10 @@ func (d dbMock) GetTickers(coin uint, tokenId string) ([]models.Ticker, error) {
 	return d.WantedTickers, d.WantedTickersError
 }
 
+func (d dbMock) GetBaseTickers() ([]models.Ticker, error) {
+	return d.WantedTickers, d.WantedTickersError
+}
+
 func (d dbMock) GetTickersByQueries(tickerQueries []models.TickerQuery) ([]models.Ticker, error) {
 	return d.WantedTickers, d.WantedTickersError
 }

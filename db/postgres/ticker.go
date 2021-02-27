@@ -69,6 +69,16 @@ func (i *Instance) GetTickersByQueries(tickerQueries []models.TickerQuery) ([]mo
 	return ticker, nil
 }
 
+func (i *Instance) GetBaseTickers() ([]models.Ticker, error) {
+	var ticker []models.Ticker
+	db := i.Gorm.Where("token_id = ''")
+
+	if err := db.Find(&ticker).Error; err != nil {
+		return nil, err
+	}
+	return ticker, nil
+}
+
 func (i *Instance) GetTickers(coin uint, tokenId string) ([]models.Ticker, error) {
 	var ticker []models.Ticker
 	if err := i.Gorm.Where("coin = ? AND token_id = ?", coin, tokenId).

@@ -19,7 +19,6 @@ var doc = `{
         "description": "{{.Description}}",
         "title": "{{.Title}}",
         "contact": {},
-        "license": {},
         "version": "{{.Version}}"
     },
     "host": "{{.Host}}",
@@ -387,9 +386,40 @@ var doc = `{
                 }
             }
         },
+        "/v2/market/tickers/": {
+            "get": {
+                "description": "Get all base tickers",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Tickers"
+                ],
+                "summary": "Get all base tickers",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Currency symbol",
+                        "name": "currency",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.TickerResponseV2"
+                        }
+                    }
+                }
+            }
+        },
         "/v2/market/tickers/{assets}": {
             "get": {
-                "description": "Get the tickers for list of ids",
+                "description": "Get tickers for list of ids",
                 "consumes": [
                     "application/json"
                 ],
@@ -428,7 +458,7 @@ var doc = `{
         }
     },
     "definitions": {
-        "controllers.Coin": {
+        "controllers.Asset": {
             "type": "object",
             "properties": {
                 "Coin": {
@@ -476,7 +506,7 @@ var doc = `{
                 "assets": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/controllers.Coin"
+                        "$ref": "#/definitions/controllers.Asset"
                     }
                 }
             }
@@ -502,8 +532,10 @@ var doc = `{
                     "type": "string"
                 },
                 "docs": {
-                    "type": "object",
-                    "$ref": "#/definitions/watchmarket.Tickers"
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/watchmarket.Ticker"
+                    }
                 }
             }
         },
@@ -552,27 +584,14 @@ var doc = `{
         "watchmarket.CoinDetails": {
             "type": "object",
             "properties": {
-                "circulating_supply": {
-                    "type": "number"
-                },
                 "info": {
-                    "type": "object",
                     "$ref": "#/definitions/watchmarket.Info"
-                },
-                "market_cap": {
-                    "type": "number"
                 },
                 "provider": {
                     "type": "string"
                 },
                 "provider_url": {
                     "type": "string"
-                },
-                "total_supply": {
-                    "type": "number"
-                },
-                "volume_24": {
-                    "type": "number"
                 }
             }
         },
@@ -661,7 +680,6 @@ var doc = `{
                     "type": "number"
                 },
                 "price": {
-                    "type": "object",
                     "$ref": "#/definitions/watchmarket.Price"
                 },
                 "token_id": {
@@ -673,12 +691,6 @@ var doc = `{
                 "volume": {
                     "type": "number"
                 }
-            }
-        },
-        "watchmarket.Tickers": {
-            "type": "array",
-            "items": {
-                "$ref": "#/definitions/watchmarket.Ticker"
             }
         }
     }
