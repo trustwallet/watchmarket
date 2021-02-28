@@ -538,6 +538,12 @@ const Mapping = `[
         "id": 1027
     },
     {
+        "coin": 714,
+        "type": "token",
+        "token_id": "ETH-1C9",
+        "id": 1027
+    },
+    {
         "coin": 524,
         "type": "coin",
         "id": 1035
