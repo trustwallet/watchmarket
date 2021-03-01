@@ -88,8 +88,12 @@ func PostTickersHandlerV2(controller controllers.TickersController) func(c *gin.
 			return
 		}
 		request.Ids = removeDuplicates(request.Ids)
+		currency := request.Currency
+		if len(currency) == 0 {
+			currency = watchmarket.DefaultCurrency
+		}
 		tickers, err := controller.HandleTickersRequest(controllers.TickerRequest{
-			Currency: request.Currency,
+			Currency: currency,
 			Assets:   parseAssetIds(request.Ids),
 		})
 		if err != nil {
@@ -98,7 +102,7 @@ func PostTickersHandlerV2(controller controllers.TickersController) func(c *gin.
 			return
 		}
 
-		c.JSON(http.StatusOK, mapToResponse(request.Currency, tickers))
+		c.JSON(http.StatusOK, mapToResponse(currency, tickers))
 	}
 }
 
