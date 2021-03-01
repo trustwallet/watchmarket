@@ -85,6 +85,12 @@ const Mapping = `[
         "id": 52
     },
     {
+        "coin": 714,
+        "type": "token",
+        "token_id": "XRP-BF2",
+        "id": 52
+    },
+    {
         "coin": 20000714,
         "type": "token",
         "token_id": "0x1D2F0da169ceB9fC7B3144628dB156f3F6c60dBE",
@@ -4672,6 +4678,12 @@ const Mapping = `[
         "coin": 60,
         "type": "token",
         "token_id": "0x6A27348483D59150aE76eF4C0f3622A78B0cA698",
+        "id": 2914
+    },
+    {
+        "coin": 714,
+        "type": "token",
+        "token_id": "BKBT-3A6",
         "id": 2914
     },
     {
