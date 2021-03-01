@@ -309,12 +309,8 @@ func (c infoControllerMock) HandleInfoRequest(dr controllers.DetailsRequest) (co
 	return c.wantedInfo, c.wantedError
 }
 
-func (c tickersControllerMock) HandleTickersRequestV2(tr controllers.TickerRequestV2) (controllers.TickerResponseV2, error) {
-	return c.wantedTickersV2, c.wantedError
-}
-
-func (c tickersControllerMock) HandleTickersRequest(tr controllers.TickerRequest) (controllers.TickerResponse, error) {
-	return c.wantedTickersV1, c.wantedError
+func (c tickersControllerMock) HandleTickersRequest(tr controllers.TickerRequest) (watchmarket.Tickers, error) {
+	return c.wantedTickersV1.Tickers, c.wantedError
 }
 
 func setupEngine() *gin.Engine {
