@@ -2169,7 +2169,7 @@ const Mapping = `[
     {
         "coin": 60,
         "type": "token",
-        "token_id": "0x82b0E50478eeaFde392D45D1259Ed1071B6fDa81",
+        "token_id": "0xef6344de1fcfC5F48c30234C16c1389e8CdC572C",
         "id": 2208
     },
     {
