@@ -14027,6 +14027,12 @@ const Mapping = `[
         "id": 7409
     },
     {
+        "coin": 20000714,
+        "type": "token",
+        "token_id": "0x8519EA49c997f50cefFa444d240fB655e89248Aa",
+        "id": 7463
+    },
+    {
         "coin": 60,
         "type": "token",
         "token_id": "0x12D102F06da35cC0111EB58017fd2Cd28537d0e1",
