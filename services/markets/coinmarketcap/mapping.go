@@ -13913,6 +13913,12 @@ const Mapping = `[
         "id": 7083
     },
     {
+        "coin": 714,
+        "type": "token",
+        "token_id": "UNI-DD8",
+        "id": 7083
+    },
+    {
         "coin": 195,
         "type": "token",
         "token_id": "TJvqNiWUN2v2NBG12UhfV7WSvReJkRP3VC",
