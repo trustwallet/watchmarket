@@ -6821,6 +6821,12 @@ const Mapping = `[
         "id": 3667
     },
     {
+        "coin": 714,
+        "type": "token",
+        "token_id": "AWC-986",
+        "id": 3667
+    },
+    {
         "coin": 60,
         "type": "token",
         "token_id": "0xd44bb6663936CAb1310584A277f7DAa6943d4904",
