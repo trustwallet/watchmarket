@@ -8919,7 +8919,19 @@ const Mapping = `[
     {
         "coin": 60,
         "type": "token",
-        "token_id": "0x0C6f5F7D555E7518f6841a79436BD2b1Eef03381",
+        "token_id": "0xc4c7Ea4FAB34BD9fb9a5e1B1a98Df76E26E6407c",
+        "id": 4275
+    },
+    {
+        "coin": 714,
+        "type": "token",
+        "token_id": "COCOS-CED",
+        "id": 4275
+    },
+    {
+        "coin": 20000714,
+        "type": "token",
+        "token_id": "0xAb301DaE71f5B386C566f484e636Aee60318F12F",
         "id": 4275
     },
     {
