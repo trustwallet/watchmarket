@@ -8947,6 +8947,12 @@ const Mapping = `[
         "id": 4279
     },
     {
+        "coin": 714,
+        "type": "token",
+        "token_id": "SXP-CCC",
+        "id": 4279
+    },
+    {
         "coin": 20000714,
         "type": "token",
         "token_id": "0x47BEAd2563dCBf3bF2c9407fEa4dC236fAbA485A",
