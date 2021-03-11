@@ -11,6 +11,7 @@ type (
 
 	RatesController interface {
 		HandleRatesRequest(r RateRequest) (RateResponse, error)
+		GetFiatRates() (FiatRates, error)
 	}
 
 	ChartsController interface {

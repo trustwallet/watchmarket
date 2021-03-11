@@ -51,6 +51,21 @@ func (c Controller) HandleRatesRequest(r controllers.RateRequest) (controllers.R
 	return controllers.RateResponse{Amount: result}, nil
 }
 
+func (c Controller) GetFiatRates() (controllers.FiatRates, error) {
+	rates, err := c.database.GetRatesByProvider("fixer")
+	if err != nil {
+		return nil, err
+	}
+	var response controllers.FiatRates
+	for _, rate := range rates {
+		response = append(response, controllers.FiatRate{
+			Currency: rate.Currency,
+			Rate:     rate.Rate,
+		})
+	}
+	return response, nil
+}
+
 func (c Controller) getRateByCurrency(currency string) (watchmarket.Rate, error) {
 	if c.configuration.RestAPI.UseMemoryCache {
 		rawResult, err := c.dataCache.Get(currency)
