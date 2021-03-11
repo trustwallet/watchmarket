@@ -161,6 +161,10 @@ func (d dbMock) AddTickers(tickers []models.Ticker) error {
 	return nil
 }
 
+func (d dbMock) GetRatesByProvider(provider string) ([]models.Rate, error) {
+	return nil, nil
+}
+
 func (d dbMock) GetAllTickers() ([]models.Ticker, error) {
 	return nil, nil
 }
