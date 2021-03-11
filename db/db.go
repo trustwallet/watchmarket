@@ -9,6 +9,7 @@ type (
 	Instance interface {
 		GetRates(currency string) ([]models.Rate, error)
 		GetAllRates() ([]models.Rate, error)
+		GetRatesByProvider(provider string) ([]models.Rate, error)
 		AddRates(rates []models.Rate) error
 
 		AddTickers(tickers []models.Ticker) error

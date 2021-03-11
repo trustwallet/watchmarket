@@ -46,6 +46,13 @@ type (
 		Amount float64 `json:"amount"`
 	}
 
+	FiatRate struct {
+		Currency string  `json:"currency"`
+		Rate     float64 `json:"rate"`
+	}
+
+	FiatRates []FiatRate
+
 	TickerPrice struct {
 		Change24h float64 `json:"change_24h"`
 		Provider  string  `json:"provider"`
