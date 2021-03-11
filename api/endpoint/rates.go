@@ -49,7 +49,7 @@ func GetRate(controller controllers.RatesController) func(context *gin.Context) 
 // @Produce json
 // @Tags Rates
 // @Success 200 {object} controllers.FiatRates
-// @Router /fiat_rates [get]
+// @Router /v1/fiat_rates [get]
 func GetFiatRates(controller controllers.RatesController) func(context *gin.Context) {
 	return func(context *gin.Context) {
 		rates, err := controller.GetFiatRates()
