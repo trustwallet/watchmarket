@@ -7356,9 +7356,21 @@ const Mapping = `[
         "id": 3808
     },
     {
+        "coin": 714,
+        "type": "token",
+        "token_id": "DOS-120",
+        "id": 3809
+    },
+    {
         "coin": 60,
         "type": "token",
         "token_id": "0x0A913beaD80F321E7Ac35285Ee10d9d922659cB7",
+        "id": 3809
+    },
+    {
+        "coin": 20000714,
+        "type": "token",
+        "token_id": "0xDc0f0a5719c39764b011eDd02811BD228296887C",
         "id": 3809
     },
     {
