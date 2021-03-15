@@ -7642,6 +7642,12 @@ const Mapping = `[
         "id": 3873
     },
     {
+        "coin": 714,
+        "type": "token",
+        "token_id": "IRIS-D88",
+        "id": 3874
+    },
+    {
         "coin": 60,
         "type": "token",
         "token_id": "0x297E4e5e59Ad72B1B0A2fd446929e76117be0E0a",
