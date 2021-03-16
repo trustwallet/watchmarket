@@ -190,11 +190,7 @@ func (c Controller) getCachedTickers(assets []controllers.Asset) (watchmarket.Ti
 		result.TokenId = assetData.TokenId
 		results = append(results, result)
 	}
-	if len(results) == len(assets) {
-		return results, nil
-	} else {
-		return results, errors.New("not found")
-	}
+	return results, nil
 }
 
 // TODO: Remove duplicates or make method
