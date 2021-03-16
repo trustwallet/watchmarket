@@ -24,6 +24,12 @@ const Mapping = `[
         "id": 2
     },
     {
+        "coin": 714,
+        "type": "token",
+        "token_id": "LTC-F07",
+        "id": 2
+    },
+    {
         "coin": 20000714,
         "type": "token",
         "token_id": "0x4338665CBB7B2485A8855A139b75D5e34AB0DB94",
@@ -119,6 +125,12 @@ const Mapping = `[
     {
         "coin": 3,
         "type": "coin",
+        "id": 74
+    },
+    {
+        "coin": 714,
+        "type": "token",
+        "token_id": "DOGE-B67",
         "id": 74
     },
     {
@@ -556,6 +568,12 @@ const Mapping = `[
         "id": 1027
     },
     {
+        "coin": 714,
+        "type": "token",
+        "token_id": "BETH-654",
+        "id": 1027
+    },
+    {
         "coin": 524,
         "type": "coin",
         "id": 1035
@@ -825,6 +843,12 @@ const Mapping = `[
         "id": 1518
     },
     {
+        "coin": 714,
+        "type": "token",
+        "token_id": "MKR-F04",
+        "id": 1518
+    },
+    {
         "coin": 20000714,
         "type": "token",
         "token_id": "0x5f0Da599BB2ccCfcf6Fdfd7D81743B6020864350",
@@ -994,6 +1018,12 @@ const Mapping = `[
         "coin": 60,
         "type": "token",
         "token_id": "0x0D8775F648430679A709E98d2b0Cb6250d2887EF",
+        "id": 1697
+    },
+    {
+        "coin": 714,
+        "type": "token",
+        "token_id": "BAT-07A",
         "id": 1697
     },
     {
@@ -1266,6 +1296,12 @@ const Mapping = `[
     {
         "coin": 145,
         "type": "coin",
+        "id": 1831
+    },
+    {
+        "coin": 714,
+        "type": "token",
+        "token_id": "BCH-1FD",
         "id": 1831
     },
     {
@@ -1580,6 +1616,12 @@ const Mapping = `[
         "id": 1975
     },
     {
+        "coin": 714,
+        "type": "token",
+        "token_id": "LINK-AAD",
+        "id": 1975
+    },
+    {
         "coin": 20000714,
         "type": "token",
         "token_id": "0xF8A0BF9cF54Bb92F17374d9e9A321E6a111a51bD",
@@ -1685,6 +1727,12 @@ const Mapping = `[
     {
         "coin": 1729,
         "type": "coin",
+        "id": 2011
+    },
+    {
+        "coin": 714,
+        "type": "token",
+        "token_id": "XTZ-F7A",
         "id": 2011
     },
     {
@@ -2466,6 +2514,12 @@ const Mapping = `[
         "id": 2299
     },
     {
+        "coin": 714,
+        "type": "token",
+        "token_id": "ELF-D72",
+        "id": 2299
+    },
+    {
         "coin": 20000714,
         "type": "token",
         "token_id": "0xa3f020a5C92e15be13CAF0Ee5C95cF79585EeCC9",
@@ -2634,6 +2688,12 @@ const Mapping = `[
         "id": 2348
     },
     {
+        "coin": 714,
+        "type": "token",
+        "token_id": "MDT-14A",
+        "id": 2348
+    },
+    {
         "coin": 60,
         "type": "token",
         "token_id": "0xA974c709cFb4566686553a20790685A47acEAA33",
@@ -2678,6 +2738,12 @@ const Mapping = `[
         "coin": 60,
         "type": "token",
         "token_id": "0x4824A7b64E3966B0133f4f4FFB1b9D6bEb75FFF7",
+        "id": 2364
+    },
+    {
+        "coin": 714,
+        "type": "token",
+        "token_id": "TCT-826",
         "id": 2364
     },
     {
@@ -3462,6 +3528,12 @@ const Mapping = `[
         "id": 2566
     },
     {
+        "coin": 714,
+        "type": "token",
+        "token_id": "ONT-33D",
+        "id": 2566
+    },
+    {
         "coin": 20000714,
         "type": "token",
         "token_id": "0xFd7B3A77848f1C2D67E05E54d78d174a0C850335",
@@ -3559,6 +3631,12 @@ const Mapping = `[
         "coin": 60,
         "type": "token",
         "token_id": "0xC011a73ee8576Fb46F5E1c5751cA3B9Fe0af2a6F",
+        "id": 2586
+    },
+    {
+        "coin": 714,
+        "type": "token",
+        "token_id": "SNX-C26",
         "id": 2586
     },
     {
@@ -4308,6 +4386,12 @@ const Mapping = `[
     {
         "coin": 304,
         "type": "coin",
+        "id": 2777
+    },
+    {
+        "coin": 714,
+        "type": "token",
+        "token_id": "IOTX-0ED",
         "id": 2777
     },
     {
@@ -5928,6 +6012,12 @@ const Mapping = `[
         "id": 3330
     },
     {
+        "coin": 714,
+        "type": "token",
+        "token_id": "PAX-F25",
+        "id": 3330
+    },
+    {
         "coin": 20000714,
         "type": "token",
         "token_id": "0xb7F8Cd00C5A06c0537E2aBfF0b58033d02e5E094",
@@ -6165,6 +6255,12 @@ const Mapping = `[
         "coin": 501,
         "type": "token",
         "token_id": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+        "id": 3408
+    },
+    {
+        "coin": 714,
+        "type": "token",
+        "token_id": "USDC-CD2",
         "id": 3408
     },
     {
@@ -7291,6 +7387,12 @@ const Mapping = `[
         "id": 3794
     },
     {
+        "coin": 714,
+        "type": "token",
+        "token_id": "ATOM-596",
+        "id": 3794
+    },
+    {
         "coin": 20000714,
         "type": "token",
         "token_id": "0x0Eb3a705fc54725037CC9e008bDede697f62F335",
@@ -7898,6 +8000,12 @@ const Mapping = `[
         "coin": 60,
         "type": "token",
         "token_id": "0x799a4202c12ca952cB311598a024C80eD371a41e",
+        "id": 3945
+    },
+    {
+        "coin": 714,
+        "type": "token",
+        "token_id": "ONE-5F9",
         "id": 3945
     },
     {
@@ -11549,6 +11657,12 @@ const Mapping = `[
         "id": 5692
     },
     {
+        "coin": 714,
+        "type": "token",
+        "token_id": "COMP-DEE",
+        "id": 5692
+    },
+    {
         "coin": 20000714,
         "type": "token",
         "token_id": "0x52CE071Bd9b1C4B00A0b92D298c512478CaD67e8",
@@ -12040,6 +12154,12 @@ const Mapping = `[
         "id": 5864
     },
     {
+        "coin": 714,
+        "type": "token",
+        "token_id": "YFI-1A4",
+        "id": 5864
+    },
+    {
         "coin": 20000714,
         "type": "token",
         "token_id": "0x88f1A5ae2A3BF98AEAF342D26B30a79438c9142e",
@@ -12330,6 +12450,12 @@ const Mapping = `[
         "coin": 60,
         "type": "token",
         "token_id": "0xa1d0E215a23d7030842FC67cE582a6aFa3CCaB83",
+        "id": 5957
+    },
+    {
+        "coin": 714,
+        "type": "token",
+        "token_id": "YFII-061",
         "id": 5957
     },
     {
@@ -13472,6 +13598,12 @@ const Mapping = `[
         "id": 6535
     },
     {
+        "coin": 714,
+        "type": "token",
+        "token_id": "NEAR-4FD",
+        "id": 6535
+    },
+    {
         "coin": 20000714,
         "type": "token",
         "token_id": "0x1Fa4a73a3F0133f0025378af00236f3aBDEE5D63",
@@ -13877,6 +14009,12 @@ const Mapping = `[
         "id": 6892
     },
     {
+        "coin": 714,
+        "type": "token",
+        "token_id": "EGLD-745",
+        "id": 6892
+    },
+    {
         "coin": 20000714,
         "type": "token",
         "token_id": "0xbF7c81FFF98BbE61B40Ed186e4AfD6DDd01337fe",
@@ -13886,6 +14024,12 @@ const Mapping = `[
         "coin": 60,
         "type": "token",
         "token_id": "0xA91ac63D040dEB1b7A5E4d4134aD23eb0ba07e14",
+        "id": 6928
+    },
+    {
+        "coin": 714,
+        "type": "token",
+        "token_id": "BEL-D85",
         "id": 6928
     },
     {
