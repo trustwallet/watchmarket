@@ -6,7 +6,6 @@ import (
 	"github.com/trustwallet/golibs/asset"
 	"github.com/trustwallet/watchmarket/config"
 	"github.com/trustwallet/watchmarket/db"
-	//"github.com/trustwallet/watchmarket/db/models"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"github.com/trustwallet/watchmarket/services/cache"
 	"github.com/trustwallet/watchmarket/services/controllers"
@@ -14,7 +13,6 @@ import (
 )
 
 type Controller struct {
-	//database        db.Instance
 	cache           cache.Provider
 	ratesPriority   []string
 	tickersPriority []string
@@ -28,7 +26,6 @@ func NewController(
 	configuration config.Configuration,
 ) Controller {
 	return Controller{
-		//database,
 		cache,
 		ratesPriority,
 		tickersPriority,
@@ -37,12 +34,12 @@ func NewController(
 }
 
 func (c Controller) HandleTickersRequest(request controllers.TickerRequest) (watchmarket.Tickers, error) {
-	rate, err := c.getRateByPriority(strings.ToUpper(request.Currency))
+	rate, err := c.getCachedRate(strings.ToUpper(request.Currency))
 	if err != nil {
 		return watchmarket.Tickers{}, errors.New(watchmarket.ErrNotFound)
 	}
 
-	tickers, err := c.getTickersByPriority(request.Assets)
+	tickers, err := c.getCachedTickers(request.Assets)
 	if err != nil {
 		return watchmarket.Tickers{}, errors.New(watchmarket.ErrInternal)
 	}
@@ -65,24 +62,9 @@ func (c Controller) filterTickers(tickers watchmarket.Tickers, rate watchmarket.
 	return result
 }
 
-func (c Controller) getTickersByPriority(assets []controllers.Asset) (watchmarket.Tickers, error) {
-	if result, err := c.getCachedTickers(assets); err == nil {
-		return result, nil
-	} else {
-		return nil, err
-	}
-}
-
-func (c Controller) getRateByPriority(currency string) (result watchmarket.Rate, err error) {
-	if result, err := c.getCachedRate(currency); err == nil {
-		return result, nil
-	}
-	return result, errors.New(watchmarket.ErrNotFound)
-}
-
 func (c Controller) rateToDefaultCurrency(t watchmarket.Ticker, rate watchmarket.Rate) (watchmarket.Rate, bool) {
 	if t.Price.Currency != watchmarket.DefaultCurrency {
-		newRate, err := c.getRateByPriority(strings.ToUpper(t.Price.Currency))
+		newRate, err := c.getCachedRate(strings.ToUpper(t.Price.Currency))
 		if err != nil {
 			return watchmarket.Rate{}, false
 		}
