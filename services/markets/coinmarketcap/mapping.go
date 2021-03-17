@@ -9079,6 +9079,12 @@ const Mapping = `[
         "id": 4276
     },
     {
+        "coin": 714,
+        "type": "token",
+        "token_id": "DEFI-FA5",
+        "id": 4276
+    },
+    {
         "coin": 60,
         "type": "token",
         "token_id": "0x8CE9137d39326AD0cD6491fb5CC0CbA0e089b6A9",
