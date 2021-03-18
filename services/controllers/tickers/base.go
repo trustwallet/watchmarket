@@ -34,12 +34,12 @@ func NewController(
 }
 
 func (c Controller) HandleTickersRequest(request controllers.TickerRequest) (watchmarket.Tickers, error) {
-	rate, err := c.getCachedRate(strings.ToUpper(request.Currency))
+	rate, err := c.getCacheRate(strings.ToUpper(request.Currency))
 	if err != nil {
 		return watchmarket.Tickers{}, errors.New(watchmarket.ErrNotFound)
 	}
 
-	tickers, err := c.getCachedTickers(request.Assets)
+	tickers, err := c.getCacheTickers(request.Assets)
 	if err != nil {
 		return watchmarket.Tickers{}, errors.New(watchmarket.ErrInternal)
 	}
@@ -64,7 +64,7 @@ func (c Controller) filterTickers(tickers watchmarket.Tickers, rate watchmarket.
 
 func (c Controller) rateToDefaultCurrency(t watchmarket.Ticker, rate watchmarket.Rate) (watchmarket.Rate, bool) {
 	if t.Price.Currency != watchmarket.DefaultCurrency {
-		newRate, err := c.getCachedRate(strings.ToUpper(t.Price.Currency))
+		newRate, err := c.getCacheRate(strings.ToUpper(t.Price.Currency))
 		if err != nil {
 			return watchmarket.Rate{}, false
 		}
@@ -88,9 +88,9 @@ func (c Controller) applyRateToTicker(ticker *watchmarket.Ticker, rate watchmark
 	}
 }
 
-func (c Controller) getCachedTickers(assets []controllers.Asset) (watchmarket.Tickers, error) {
+func (c Controller) getCacheTickers(assets []controllers.Asset) (watchmarket.Tickers, error) {
 	if c.cache == nil {
-		return watchmarket.Tickers{}, errors.New("cache isn't available")
+		return watchmarket.Tickers{}, errors.New(watchmarket.ErrInternal)
 	}
 	var results watchmarket.Tickers
 	for _, assetData := range assets {
@@ -109,10 +109,9 @@ func (c Controller) getCachedTickers(assets []controllers.Asset) (watchmarket.Ti
 	return results, nil
 }
 
-// TODO: Remove duplicates or make method
-func (c Controller) getCachedRate(currency string) (result watchmarket.Rate, err error) {
+func (c Controller) getCacheRate(currency string) (result watchmarket.Rate, err error) {
 	if c.cache == nil {
-		return watchmarket.Rate{}, errors.New("cache isn't available")
+		return watchmarket.Rate{}, errors.New(watchmarket.ErrInternal)
 	}
 	rawResult, err := c.cache.Get(currency)
 	if err != nil {

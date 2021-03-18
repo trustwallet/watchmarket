@@ -40,7 +40,6 @@ func NewController(
 
 // ChartsController interface implementation
 func (c Controller) HandleChartsRequest(request controllers.ChartRequest) (chart watchmarket.Chart, err error) {
-
 	if !c.hasTickers(request.Asset) {
 		return chart, nil
 	}
