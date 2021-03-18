@@ -14171,6 +14171,12 @@ const Mapping = `[
         "id": 7182
     },
     {
+        "coin": 714,
+        "type": "token",
+        "token_id": "CAKE-435",
+        "id": 7186
+    },
+    {
         "coin": 20000714,
         "type": "token",
         "token_id": "0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82",
