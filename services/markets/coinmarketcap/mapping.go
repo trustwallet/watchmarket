@@ -7074,6 +7074,12 @@ const Mapping = `[
         "id": 3718
     },
     {
+        "coin": 714,
+        "type": "token",
+        "token_id": "BTTB-D31",
+        "id": 3718
+    },
+    {
         "coin": 60,
         "type": "token",
         "token_id": "0xA4Bdb11dc0a2bEC88d24A3aa1E6Bb17201112eBe",
