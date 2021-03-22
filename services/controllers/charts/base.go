@@ -64,12 +64,11 @@ func (c Controller) HandleChartsRequest(request controllers.ChartRequest) (chart
 }
 
 func (c Controller) hasTickers(assetData controllers.Asset) bool {
-	var tickers []models.Ticker
-	var err error
-	if tickers, err = c.getChartsFromMemory(assetData); err != nil {
+	if tickers, err := c.getChartsFromMemory(assetData); err != nil {
 		return false
+	} else {
+		return len(tickers) > 0
 	}
-	return len(tickers) > 0
 }
 
 func (c Controller) getChartsFromApi(data controllers.ChartRequest) (ch watchmarket.Chart, err error) {
