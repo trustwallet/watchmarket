@@ -2,12 +2,14 @@ package coinmarketcap
 
 import (
 	"encoding/json"
+
 	log "github.com/sirupsen/logrus"
+	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"github.com/trustwallet/watchmarket/services/assets"
 )
 
 const (
-	id = "coinmarketcap"
+	id = watchmarket.CoinMarketCap
 )
 
 type Provider struct {

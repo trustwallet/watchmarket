@@ -90,6 +90,10 @@ const (
 	ErrNotFound   = "not found"
 	ErrBadRequest = "bad request"
 	ErrInternal   = "internal"
+
+	CoinMarketCap = "coinmarketcap"
+	CoinGecko     = "coingecko"
+	Fixer         = "fixer"
 )
 
 func (d Chart) IsEmpty() bool {

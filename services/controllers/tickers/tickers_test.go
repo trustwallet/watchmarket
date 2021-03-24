@@ -16,7 +16,7 @@ func TestController_getTickersByPriority(t *testing.T) {
 		TokenId:   "a",
 		Change24h: 10,
 		Currency:  "USD",
-		Provider:  "coinmarketcap",
+		Provider:  watchmarket.CoinMarketCap,
 		Value:     100,
 	}
 
@@ -26,7 +26,7 @@ func TestController_getTickersByPriority(t *testing.T) {
 		TokenId:   "a",
 		Change24h: 10,
 		Currency:  "USD",
-		Provider:  "coingecko",
+		Provider:  watchmarket.CoinGecko,
 		Value:     100,
 	}
 
@@ -36,7 +36,7 @@ func TestController_getTickersByPriority(t *testing.T) {
 		TokenId:   "a",
 		Change24h: 10,
 		Currency:  "USD",
-		Provider:  "coingecko",
+		Provider:  watchmarket.CoinGecko,
 		Value:     100,
 	}
 
@@ -59,7 +59,7 @@ func TestController_getTickersByPriority(t *testing.T) {
 		Price: watchmarket.Price{
 			Change24h: 10,
 			Currency:  "USD",
-			Provider:  "coinmarketcap",
+			Provider:  watchmarket.CoinMarketCap,
 			Value:     100,
 		},
 		TokenId: "A",
@@ -71,7 +71,7 @@ func TestController_getTickersByPriority(t *testing.T) {
 		Price: watchmarket.Price{
 			Change24h: 10,
 			Currency:  "USD",
-			Provider:  "coingecko",
+			Provider:  watchmarket.CoinGecko,
 			Value:     100,
 		},
 		TokenId: "a",

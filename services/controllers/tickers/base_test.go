@@ -21,21 +21,21 @@ func TestController_HandleTickersRequest(t *testing.T) {
 	rate := models.Rate{
 		Currency:         "USD",
 		PercentChange24h: 1,
-		Provider:         "coinmarketcap",
+		Provider:         watchmarket.CoinMarketCap,
 		Rate:             1,
 		LastUpdated:      timeUPD,
 	}
 	rate2 := models.Rate{
 		Currency:         "USD",
 		PercentChange24h: 2,
-		Provider:         "coingecko",
+		Provider:         watchmarket.CoinGecko,
 		Rate:             2,
 		LastUpdated:      timeUPD,
 	}
 	rate3 := models.Rate{
 		Currency:         "USD",
 		PercentChange24h: 4,
-		Provider:         "fixer",
+		Provider:         watchmarket.Fixer,
 		Rate:             6,
 		LastUpdated:      timeUPD,
 	}
@@ -46,7 +46,7 @@ func TestController_HandleTickersRequest(t *testing.T) {
 		TokenId:     "a",
 		Change24h:   10,
 		Currency:    "USD",
-		Provider:    "coinmarketcap",
+		Provider:    watchmarket.CoinMarketCap,
 		Value:       100,
 		LastUpdated: timeUPD,
 	}
@@ -57,7 +57,7 @@ func TestController_HandleTickersRequest(t *testing.T) {
 		TokenId:     "a",
 		Change24h:   10,
 		Currency:    "USD",
-		Provider:    "coingecko",
+		Provider:    watchmarket.CoinGecko,
 		Value:       100,
 		LastUpdated: timeUPD,
 	}
@@ -68,7 +68,7 @@ func TestController_HandleTickersRequest(t *testing.T) {
 		TokenId:     "a",
 		Change24h:   10,
 		Currency:    "USD",
-		Provider:    "coingecko",
+		Provider:    watchmarket.CoinGecko,
 		Value:       100,
 		LastUpdated: timeUPD,
 	}
@@ -103,7 +103,7 @@ func TestController_HandleTickersRequest(t *testing.T) {
 		Price: watchmarket.Price{
 			Change24h: 10,
 			Currency:  "USD",
-			Provider:  "coinmarketcap",
+			Provider:  watchmarket.CoinMarketCap,
 			Value:     100,
 		},
 		TokenId:    "a",
@@ -116,7 +116,7 @@ func TestController_HandleTickersRequest(t *testing.T) {
 		Price: watchmarket.Price{
 			Change24h: 10,
 			Currency:  "USD",
-			Provider:  "coingecko",
+			Provider:  watchmarket.CoinGecko,
 			Value:     100,
 		},
 		TokenId:    "a",
@@ -146,7 +146,7 @@ func TestController_HandleTickersRequest(t *testing.T) {
 	rateRaw, err := json.Marshal(&watchmarket.Rate{
 		Currency:         "USD",
 		PercentChange24h: 4,
-		Provider:         "fixer",
+		Provider:         watchmarket.Fixer,
 		Rate:             6,
 		Timestamp:        timeUPD.Unix(),
 	})

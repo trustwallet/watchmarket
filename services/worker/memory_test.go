@@ -2,9 +2,10 @@ package worker
 
 import (
 	"encoding/json"
-	"github.com/trustwallet/watchmarket/services/controllers"
 	"testing"
 	"time"
+
+	"github.com/trustwallet/watchmarket/services/controllers"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/trustwallet/watchmarket/config"
@@ -28,7 +29,7 @@ func testRatesBasic(t *testing.T, c config.Configuration) {
 	dbMock.WantedRates = []models.Rate{
 		{
 			Currency:         "USD",
-			Provider:         "coinmarketcap",
+			Provider:         watchmarket.CoinMarketCap,
 			PercentChange24h: 1,
 			Rate:             1,
 			ShowOption:       0,
@@ -36,7 +37,7 @@ func testRatesBasic(t *testing.T, c config.Configuration) {
 		},
 		{
 			Currency:         "USD",
-			Provider:         "coingecko",
+			Provider:         watchmarket.CoinGecko,
 			PercentChange24h: 2,
 			Rate:             2,
 			ShowOption:       0,
@@ -44,7 +45,7 @@ func testRatesBasic(t *testing.T, c config.Configuration) {
 		},
 		{
 			Currency:         "USD",
-			Provider:         "fixer",
+			Provider:         watchmarket.Fixer,
 			PercentChange24h: 11,
 			Rate:             1.5,
 			ShowOption:       0,
@@ -62,7 +63,7 @@ func testRatesBasic(t *testing.T, c config.Configuration) {
 	assert.Equal(t, watchmarket.Rate{
 		Currency:         "USD",
 		PercentChange24h: 11,
-		Provider:         "fixer",
+		Provider:         watchmarket.Fixer,
 		Rate:             1.5,
 		Timestamp:        now.Unix(),
 	}, res)
@@ -74,7 +75,7 @@ func testRatesShowOptionAlways(t *testing.T, c config.Configuration) {
 	dbMock.WantedRates = []models.Rate{
 		{
 			Currency:         "USD",
-			Provider:         "coinmarketcap",
+			Provider:         watchmarket.CoinMarketCap,
 			PercentChange24h: 1,
 			Rate:             1,
 			ShowOption:       0,
@@ -82,7 +83,7 @@ func testRatesShowOptionAlways(t *testing.T, c config.Configuration) {
 		},
 		{
 			Currency:         "USD",
-			Provider:         "coingecko",
+			Provider:         watchmarket.CoinGecko,
 			PercentChange24h: 2,
 			Rate:             2,
 			ShowOption:       0,
@@ -90,7 +91,7 @@ func testRatesShowOptionAlways(t *testing.T, c config.Configuration) {
 		},
 		{
 			Currency:         "USD",
-			Provider:         "fixer",
+			Provider:         watchmarket.Fixer,
 			PercentChange24h: 11,
 			Rate:             1.5,
 			ShowOption:       models.NeverShow,
@@ -108,7 +109,7 @@ func testRatesShowOptionAlways(t *testing.T, c config.Configuration) {
 	assert.Equal(t, watchmarket.Rate{
 		Currency:         "USD",
 		PercentChange24h: 1,
-		Provider:         "coinmarketcap",
+		Provider:         watchmarket.CoinMarketCap,
 		Rate:             1,
 		Timestamp:        now.Unix(),
 	}, res2)
@@ -120,7 +121,7 @@ func testRatesShowOptionNever(t *testing.T, c config.Configuration) {
 	dbMock.WantedRates = []models.Rate{
 		{
 			Currency:         "USD",
-			Provider:         "coinmarketcap",
+			Provider:         watchmarket.CoinMarketCap,
 			PercentChange24h: 1,
 			Rate:             1,
 			ShowOption:       0,
@@ -128,7 +129,7 @@ func testRatesShowOptionNever(t *testing.T, c config.Configuration) {
 		},
 		{
 			Currency:         "USD",
-			Provider:         "coingecko",
+			Provider:         watchmarket.CoinGecko,
 			PercentChange24h: 2,
 			Rate:             2,
 			ShowOption:       models.AlwaysShow,
@@ -136,7 +137,7 @@ func testRatesShowOptionNever(t *testing.T, c config.Configuration) {
 		},
 		{
 			Currency:         "USD",
-			Provider:         "fixer",
+			Provider:         watchmarket.Fixer,
 			PercentChange24h: 11,
 			Rate:             1.5,
 			ShowOption:       0,
@@ -154,7 +155,7 @@ func testRatesShowOptionNever(t *testing.T, c config.Configuration) {
 	assert.Equal(t, watchmarket.Rate{
 		Currency:         "USD",
 		PercentChange24h: 2,
-		Provider:         "coingecko",
+		Provider:         watchmarket.CoinGecko,
 		Rate:             2,
 		Timestamp:        now.Unix(),
 	}, res3)
@@ -179,7 +180,7 @@ func testTickersBasic(t *testing.T, c config.Configuration) {
 		{
 			ID:          "c1",
 			Currency:    "USD",
-			Provider:    "coinmarketcap",
+			Provider:    watchmarket.CoinMarketCap,
 			ShowOption:  0,
 			Coin:        1,
 			TokenId:     "",
@@ -190,7 +191,7 @@ func testTickersBasic(t *testing.T, c config.Configuration) {
 		{
 			ID:          "c1",
 			Currency:    "USD",
-			Provider:    "coingecko",
+			Provider:    watchmarket.CoinGecko,
 			ShowOption:  0,
 			Coin:        1,
 			TokenId:     "",
@@ -213,7 +214,7 @@ func testTickersBasic(t *testing.T, c config.Configuration) {
 		Price: watchmarket.Price{
 			Change24h: 1,
 			Currency:  "USD",
-			Provider:  "coinmarketcap",
+			Provider:  watchmarket.CoinMarketCap,
 			Value:     11,
 		},
 		LastUpdate: res.LastUpdate,
@@ -228,7 +229,7 @@ func testTickersShowOptionNever(t *testing.T, c config.Configuration) {
 		{
 			ID:          "c1",
 			Currency:    "USD",
-			Provider:    "coinmarketcap",
+			Provider:    watchmarket.CoinMarketCap,
 			ShowOption:  2,
 			Coin:        1,
 			TokenId:     "",
@@ -239,7 +240,7 @@ func testTickersShowOptionNever(t *testing.T, c config.Configuration) {
 		{
 			ID:          "c1",
 			Currency:    "USD",
-			Provider:    "coingecko",
+			Provider:    watchmarket.CoinGecko,
 			ShowOption:  0,
 			Coin:        1,
 			TokenId:     "",
@@ -250,7 +251,7 @@ func testTickersShowOptionNever(t *testing.T, c config.Configuration) {
 		{
 			ID:          "c1",
 			Currency:    "USD",
-			Provider:    "coinmarketcap",
+			Provider:    watchmarket.CoinMarketCap,
 			Coin:        1,
 			TokenId:     "",
 			Change24h:   1,
@@ -273,7 +274,7 @@ func testTickersShowOptionNever(t *testing.T, c config.Configuration) {
 		Price: watchmarket.Price{
 			Change24h: 1,
 			Currency:  "USD",
-			Provider:  "coinmarketcap",
+			Provider:  watchmarket.CoinMarketCap,
 			Value:     14,
 		},
 		LastUpdate: res.LastUpdate,
@@ -288,7 +289,7 @@ func testTickersShowOptionAlways(t *testing.T, c config.Configuration) {
 		{
 			ID:          "c1",
 			Currency:    "USD",
-			Provider:    "coinmarketcap",
+			Provider:    watchmarket.CoinMarketCap,
 			ShowOption:  2,
 			Coin:        1,
 			TokenId:     "",
@@ -299,7 +300,7 @@ func testTickersShowOptionAlways(t *testing.T, c config.Configuration) {
 		{
 			ID:          "c1",
 			Currency:    "USD",
-			Provider:    "coingecko",
+			Provider:    watchmarket.CoinGecko,
 			ShowOption:  0,
 			Coin:        1,
 			TokenId:     "",
@@ -310,7 +311,7 @@ func testTickersShowOptionAlways(t *testing.T, c config.Configuration) {
 		{
 			ID:          "c1",
 			Currency:    "USD",
-			Provider:    "coinmarketcap",
+			Provider:    watchmarket.CoinMarketCap,
 			Coin:        1,
 			TokenId:     "",
 			Change24h:   1,
@@ -333,7 +334,7 @@ func testTickersShowOptionAlways(t *testing.T, c config.Configuration) {
 		Price: watchmarket.Price{
 			Change24h: 1,
 			Currency:  "USD",
-			Provider:  "coinmarketcap",
+			Provider:  watchmarket.CoinMarketCap,
 			Value:     14,
 		},
 		LastUpdate: res.LastUpdate,
@@ -348,7 +349,7 @@ func testTickersOutdated(t *testing.T, c config.Configuration) {
 		{
 			ID:          "c1",
 			Currency:    "USD",
-			Provider:    "coinmarketcap",
+			Provider:    watchmarket.CoinMarketCap,
 			ShowOption:  2,
 			Coin:        1,
 			TokenId:     "",
@@ -359,7 +360,7 @@ func testTickersOutdated(t *testing.T, c config.Configuration) {
 		{
 			ID:          "c1",
 			Currency:    "USD",
-			Provider:    "coingecko",
+			Provider:    watchmarket.CoinGecko,
 			ShowOption:  0,
 			Coin:        1,
 			TokenId:     "",
@@ -370,7 +371,7 @@ func testTickersOutdated(t *testing.T, c config.Configuration) {
 		{
 			ID:          "c1",
 			Currency:    "USD",
-			Provider:    "coinmarketcap",
+			Provider:    watchmarket.CoinMarketCap,
 			Coin:        1,
 			TokenId:     "",
 			Change24h:   1,
@@ -393,7 +394,7 @@ func testTickersOutdated(t *testing.T, c config.Configuration) {
 		Price: watchmarket.Price{
 			Change24h: 1,
 			Currency:  "USD",
-			Provider:  "coinmarketcap",
+			Provider:  watchmarket.CoinMarketCap,
 			Value:     14,
 		},
 		LastUpdate: res.LastUpdate,
@@ -409,7 +410,7 @@ func testTickersVolume(t *testing.T, c config.Configuration) {
 		{
 			ID:          "c1",
 			Currency:    "USD",
-			Provider:    "coinmarketcap",
+			Provider:    watchmarket.CoinMarketCap,
 			ShowOption:  2,
 			Coin:        1,
 			TokenId:     "",
@@ -420,7 +421,7 @@ func testTickersVolume(t *testing.T, c config.Configuration) {
 		{
 			ID:          "c1",
 			Currency:    "USD",
-			Provider:    "coingecko",
+			Provider:    watchmarket.CoinGecko,
 			ShowOption:  0,
 			Coin:        1,
 			TokenId:     "",
@@ -431,7 +432,7 @@ func testTickersVolume(t *testing.T, c config.Configuration) {
 		{
 			ID:          "c1",
 			Currency:    "USD",
-			Provider:    "coinmarketcap",
+			Provider:    watchmarket.CoinMarketCap,
 			Coin:        1,
 			TokenId:     "",
 			Change24h:   1,
@@ -455,7 +456,7 @@ func testTickersVolume(t *testing.T, c config.Configuration) {
 		Price: watchmarket.Price{
 			Change24h: 1,
 			Currency:  "USD",
-			Provider:  "coinmarketcap",
+			Provider:  watchmarket.CoinMarketCap,
 			Value:     14,
 		},
 		LastUpdate: res.LastUpdate,

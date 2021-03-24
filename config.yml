@@ -4,6 +4,7 @@ markets:
     coin_info: [coinmarketcap, coingecko]
     tickers: [coinmarketcap, coingecko]
     rates: [fixer, coinmarketcap, coingecko]
+    rates_allow: [BTC, ETH, BNB] # include additional crypto currency to fiat rates
 
   coinmarketcap:
     api: https://pro-api.coinmarketcap.com
@@ -33,6 +34,7 @@ storage:
 worker:
   tickers: 5m
   rates: 5m
+  allowCryptoCurrency: []
 
 rest_api:
   mode: release # Possible values: "debug", "release"

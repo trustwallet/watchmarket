@@ -14,21 +14,21 @@ func TestController_getRateByPriority(t *testing.T) {
 	rate := models.Rate{
 		Currency:         "USD",
 		PercentChange24h: 1,
-		Provider:         "coinmarketcap",
+		Provider:         watchmarket.CoinMarketCap,
 		Rate:             1,
 		LastUpdated:      now,
 	}
 	rate2 := models.Rate{
 		Currency:         "USD",
 		PercentChange24h: 2,
-		Provider:         "coingecko",
+		Provider:         watchmarket.CoinGecko,
 		Rate:             2,
 		LastUpdated:      now,
 	}
 	rate3 := models.Rate{
 		Currency:         "USD",
 		PercentChange24h: 4,
-		Provider:         "fixer",
+		Provider:         watchmarket.Fixer,
 		Rate:             6,
 		LastUpdated:      now,
 	}
@@ -48,7 +48,7 @@ func TestController_getRateByPriority(t *testing.T) {
 	assert.Equal(t, watchmarket.Rate{
 		Currency:         "USD",
 		PercentChange24h: 4,
-		Provider:         "fixer",
+		Provider:         watchmarket.Fixer,
 		Rate:             6,
 		Timestamp:        now.Unix(),
 	}, r)
