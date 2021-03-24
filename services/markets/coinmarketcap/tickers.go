@@ -9,7 +9,7 @@ import (
 )
 
 func (p Provider) GetTickers() (watchmarket.Tickers, error) {
-	prices, err := p.client.fetchPrices(p.currency)
+	prices, err := p.client.fetchPrices(p.currency, "all")
 	if err != nil {
 		return nil, err
 	}
