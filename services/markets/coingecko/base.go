@@ -1,9 +1,12 @@
 package coingecko
 
-import "github.com/trustwallet/watchmarket/services/assets"
+import (
+	"github.com/trustwallet/watchmarket/pkg/watchmarket"
+	"github.com/trustwallet/watchmarket/services/assets"
+)
 
 const (
-	id            = "coingecko"
+	id            = watchmarket.CoinGecko
 	bucketSize    = 200
 	chartDataSize = 2
 )

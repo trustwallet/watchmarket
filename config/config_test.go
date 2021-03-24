@@ -4,15 +4,17 @@ import (
 	"testing"
 	"time"
 
+	"github.com/trustwallet/watchmarket/pkg/watchmarket"
+
 	"github.com/stretchr/testify/assert"
 )
 
 func TestInit(t *testing.T) {
 	c, _ := Init("../config.yml")
 
-	assert.Equal(t, []string{"coinmarketcap", "coingecko"}, c.Markets.Priority.Charts)
-	assert.Equal(t, []string{"fixer", "coinmarketcap", "coingecko"}, c.Markets.Priority.Rates)
-	assert.Equal(t, []string{"coinmarketcap", "coingecko"}, c.Markets.Priority.CoinInfo)
+	assert.Equal(t, []string{watchmarket.CoinMarketCap, watchmarket.CoinGecko}, c.Markets.Priority.Charts)
+	assert.Equal(t, []string{watchmarket.Fixer, watchmarket.CoinMarketCap, watchmarket.CoinGecko}, c.Markets.Priority.Rates)
+	assert.Equal(t, []string{watchmarket.CoinMarketCap, watchmarket.CoinGecko}, c.Markets.Priority.CoinInfo)
 
 	assert.Equal(t, "USD", c.Markets.Coinmarketcap.Currency)
 	assert.Equal(t, "https://pro-api.coinmarketcap.com", c.Markets.Coinmarketcap.API)

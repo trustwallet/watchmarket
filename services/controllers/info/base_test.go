@@ -15,7 +15,7 @@ import (
 func TestController_HandleDetailsRequest(t *testing.T) {
 	cm := getChartsMock()
 	wantedD := watchmarket.CoinDetails{
-		Provider: "coinmarketcap",
+		Provider: watchmarket.CoinMarketCap,
 		Info: &watchmarket.Info{
 			Name:             "2",
 			Website:          "2",

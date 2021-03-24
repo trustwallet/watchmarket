@@ -26,7 +26,7 @@ func TestProvider_GetRates(t *testing.T) {
 }
 
 func Test_normalizeRates(t *testing.T) {
-	provider := "fixer"
+	provider := watchmarket.Fixer
 	tests := []struct {
 		name      string
 		latest    Rate

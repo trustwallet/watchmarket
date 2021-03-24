@@ -24,8 +24,8 @@ func NewClient(proApi, webApi, widgetApi, key string) Client {
 	return c
 }
 
-func (c Client) fetchPrices(currency string) (result CoinPrices, err error) {
-	params := url.Values{"limit": {"5000"}, "convert": {currency}}
+func (c Client) fetchPrices(currency, cryptocurrencyType string) (result CoinPrices, err error) {
+	params := url.Values{"limit": {"5000"}, "convert": {currency}, "cryptocurrency_type": {cryptocurrencyType}}
 	err = c.proApi.Get(&result, "/v1/cryptocurrency/listings/latest", params)
 	return
 }
