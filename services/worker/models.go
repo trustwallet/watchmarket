@@ -1,11 +1,12 @@
 package worker
 
 import (
+	"sync"
+	"time"
+
 	"github.com/trustwallet/golibs/asset"
 	"github.com/trustwallet/watchmarket/db/models"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
-	"sync"
-	"time"
 )
 
 type (
@@ -68,7 +69,7 @@ func toTickersModel(tickers watchmarket.Tickers) []models.Ticker {
 }
 
 func toRatesModel(rates watchmarket.Rates) []models.Rate {
-	result := make([]models.Rate, 0, len(rates))
+	result := make([]models.Rate, 0)
 	for _, r := range rates {
 		result = append(result, models.Rate{
 			Currency:         r.Currency,

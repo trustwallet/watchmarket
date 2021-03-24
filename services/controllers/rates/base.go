@@ -50,7 +50,7 @@ func (c Controller) HandleRatesRequest(r controllers.RateRequest) (controllers.R
 }
 
 func (c Controller) GetFiatRates() (controllers.FiatRates, error) {
-	rates, err := c.database.GetRatesByProvider("fixer")
+	rates, err := c.database.GetRatesByProvider(watchmarket.Fixer)
 	if err != nil {
 		return nil, err
 	}

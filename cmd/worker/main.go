@@ -1,11 +1,12 @@
 package main
 
 import (
-	"github.com/trustwallet/watchmarket/services/assets"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/trustwallet/watchmarket/services/assets"
 
 	"github.com/trustwallet/golibs/network/middleware"
 

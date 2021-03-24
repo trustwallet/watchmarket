@@ -11,11 +11,29 @@ import (
 func (w Worker) FetchAndSaveRates() {
 	log.Info("Fetching Rates ...")
 	fetchedRates := fetchRates(w.ratesApis)
-	normalizedRates := toRatesModel(fetchedRates)
+
+	allowCryptoCurrency := make(map[string]bool)
+	for _, r := range w.configuration.Markets.Priority.RatesAllow {
+		allowCryptoCurrency[r] = true
+	}
+
+	rates := FilterRates(fetchedRates, allowCryptoCurrency)
+
+	normalizedRates := toRatesModel(rates)
 
 	if err := w.db.AddRates(normalizedRates); err != nil {
 		log.Error(err)
 	}
+}
+
+func FilterRates(rates []watchmarket.Rate, cryptoCurrency map[string]bool) []watchmarket.Rate {
+	result := make([]watchmarket.Rate, 0)
+	for _, rate := range rates {
+		if rate.Provider == watchmarket.Fixer || cryptoCurrency[rate.Currency] {
+			result = append(result, rate)
+		}
+	}
+	return result
 }
 
 func fetchRates(ratesApis markets.RatesAPIs) watchmarket.Rates {

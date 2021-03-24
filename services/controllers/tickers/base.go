@@ -3,13 +3,14 @@ package tickerscontroller
 import (
 	"encoding/json"
 	"errors"
+	"strings"
+
 	"github.com/trustwallet/golibs/asset"
 	"github.com/trustwallet/watchmarket/config"
 	"github.com/trustwallet/watchmarket/db"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"github.com/trustwallet/watchmarket/services/cache"
 	"github.com/trustwallet/watchmarket/services/controllers"
-	"strings"
 )
 
 type Controller struct {

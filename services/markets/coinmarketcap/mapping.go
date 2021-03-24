@@ -7074,6 +7074,12 @@ const Mapping = `[
         "id": 3718
     },
     {
+        "coin": 714,
+        "type": "token",
+        "token_id": "BTTB-D31",
+        "id": 3718
+    },
+    {
         "coin": 60,
         "type": "token",
         "token_id": "0xA4Bdb11dc0a2bEC88d24A3aa1E6Bb17201112eBe",
@@ -7617,6 +7623,12 @@ const Mapping = `[
         "type": "token",
         "token_id": "0xA6446D655a0c34bC4F05042EE88170D056CBAf45",
         "id": 3842
+    },
+    {
+        "coin": 714,
+        "type": "token",
+        "token_id": "BOLT-4C6",
+        "id": 3843
     },
     {
         "coin": 60,
@@ -10022,7 +10034,7 @@ const Mapping = `[
     {
         "coin": 60,
         "type": "token",
-        "token_id": "0x0Ba45A8b5d5575935B8158a88C631E9F9C95a2e5",
+        "token_id": "0x88dF592F8eb5D7Bd38bFeF7dEb0fBc02cf3778a0",
         "id": 4944
     },
     {
@@ -13394,6 +13406,12 @@ const Mapping = `[
         "id": 6430
     },
     {
+        "coin": 6060,
+        "type": "token",
+        "token_id": "0x5347FDeA6AA4d7770B31734408Da6d34a8a07BdF",
+        "id": 6432
+    },
+    {
         "coin": 454,
         "type": "coin",
         "id": 6436
@@ -14171,6 +14189,12 @@ const Mapping = `[
         "id": 7182
     },
     {
+        "coin": 714,
+        "type": "token",
+        "token_id": "CAKE-435",
+        "id": 7186
+    },
+    {
         "coin": 20000714,
         "type": "token",
         "token_id": "0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82",
@@ -14485,12 +14509,6 @@ const Mapping = `[
     {
         "coin": 20000714,
         "type": "token",
-        "token_id": "0x78650B139471520656b9E7aA7A5e9276814a38e9",
-        "id": 8210
-    },
-    {
-        "coin": 20000714,
-        "type": "token",
         "token_id": "0x190b589cf9Fb8DDEabBFeae36a813FFb2A702454",
         "id": 8219
     },
@@ -14551,6 +14569,18 @@ const Mapping = `[
     {
         "coin": 60,
         "type": "token",
+        "token_id": "0x8B39B70E39Aa811b69365398e0aACe9bee238AEb",
+        "id": 8617
+    },
+    {
+        "coin": 20000714,
+        "type": "token",
+        "token_id": "0x7A9f28EB62C791422Aa23CeAE1dA9C847cBeC9b0",
+        "id": 8621
+    },
+    {
+        "coin": 60,
+        "type": "token",
         "token_id": "0x661Ab0Ed68000491d98C796146bcF28c20d7c559",
         "id": 8643
     },
@@ -14563,7 +14593,31 @@ const Mapping = `[
     {
         "coin": 20000714,
         "type": "token",
+        "token_id": "0x8076C74C5e3F5852037F31Ff0093Eeb8c8ADd8D3",
+        "id": 8757
+    },
+    {
+        "coin": 20000714,
+        "type": "token",
         "token_id": "0x81859801b01764D4f0Fa5E64729f5a6C3b91435b",
         "id": 8796
+    },
+    {
+        "coin": 20000714,
+        "type": "token",
+        "token_id": "0x2d69c55baEcefC6ec815239DA0a985747B50Db6E",
+        "id": 8870
+    },
+    {
+        "coin": 20000714,
+        "type": "token",
+        "token_id": "0x5d3AfBA1924aD748776E4Ca62213BF7acf39d773",
+        "id": 8877
+    },
+    {
+        "coin": 20000714,
+        "type": "token",
+        "token_id": "0x78650B139471520656b9E7aA7A5e9276814a38e9",
+        "id": 8891
     }
 ]`

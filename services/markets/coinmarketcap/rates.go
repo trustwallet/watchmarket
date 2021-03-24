@@ -7,7 +7,7 @@ import (
 )
 
 func (p Provider) GetRates() (rates watchmarket.Rates, err error) {
-	prices, err := p.client.fetchPrices(p.currency)
+	prices, err := p.client.fetchPrices(p.currency, "coins")
 	if err != nil {
 		return
 	}
@@ -17,14 +17,10 @@ func (p Provider) GetRates() (rates watchmarket.Rates, err error) {
 
 func normalizeRates(prices CoinPrices, provider string) watchmarket.Rates {
 	var (
-		result        watchmarket.Rates
-		emptyPlatform Platform
+		result watchmarket.Rates
 	)
 
 	for _, price := range prices.Data {
-		if price.Platform != emptyPlatform {
-			continue
-		}
 		result = append(result, watchmarket.Rate{
 			Currency:         strings.ToUpper(price.Symbol),
 			Rate:             watchmarket.TruncateWithPrecision(price.Quote.USD.Price, watchmarket.DefaultPrecision),

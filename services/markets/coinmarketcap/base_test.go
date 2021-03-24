@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/trustwallet/watchmarket/pkg/watchmarket"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/trustwallet/golibs/mock"
 	"github.com/trustwallet/watchmarket/services/assets"
@@ -33,14 +35,14 @@ func TestInitProvider(t *testing.T) {
 	assert.Equal(t, "web.api", provider.client.webApi.BaseUrl)
 	assert.Equal(t, "widget.api", provider.client.widgetApi.BaseUrl)
 	assert.Equal(t, "USD", provider.currency)
-	assert.Equal(t, "coinmarketcap", provider.id)
+	assert.Equal(t, watchmarket.CoinMarketCap, provider.id)
 	assert.Less(t, 1, len(provider.Cm))
 }
 
 func TestProvider_GetProvider(t *testing.T) {
 	provider := InitProvider("pro.api", "web.api", "widget.api", "key", "USD",
 		assets.Init("assets.api"))
-	assert.Equal(t, "coinmarketcap", provider.GetProvider())
+	assert.Equal(t, watchmarket.CoinMarketCap, provider.GetProvider())
 }
 
 func createMockedAPI() http.Handler {

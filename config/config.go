@@ -15,10 +15,11 @@ import (
 type Configuration struct {
 	Markets struct {
 		Priority struct {
-			Charts   []string `mapstructure:"charts"`
-			CoinInfo []string `mapstructure:"coin_info"`
-			Tickers  []string `mapstructure:"tickers"`
-			Rates    []string `mapstructure:"rates"`
+			Charts     []string `mapstructure:"charts"`
+			CoinInfo   []string `mapstructure:"coin_info"`
+			Tickers    []string `mapstructure:"tickers"`
+			Rates      []string `mapstructure:"rates"`
+			RatesAllow []string `mapstructure:"rates_allow"`
 		} `mapstructure:"priority"`
 		Coinmarketcap struct {
 			API       string `mapstructure:"api"`
