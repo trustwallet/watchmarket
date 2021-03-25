@@ -5,10 +5,12 @@ import (
 	"errors"
 	"fmt"
 	"github.com/trustwallet/golibs/asset"
+	"github.com/trustwallet/watchmarket/config"
 	"github.com/trustwallet/watchmarket/db/models"
 	"strings"
 
 	log "github.com/sirupsen/logrus"
+	"github.com/trustwallet/watchmarket/db"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"github.com/trustwallet/watchmarket/services/cache"
 	"github.com/trustwallet/watchmarket/services/controllers"
@@ -20,26 +22,33 @@ const charts = "charts"
 type Controller struct {
 	redisCache         cache.Provider
 	memoryCache        cache.Provider
+	database           db.Instance
 	availableProviders []string
 	api                markets.ChartsAPIs
+	useMemoryCache     bool
 }
 
 func NewController(
 	redisCache cache.Provider,
 	memoryCache cache.Provider,
+	database db.Instance,
 	chartsPriority []string,
 	api markets.ChartsAPIs,
+	configuration config.Configuration,
 ) Controller {
 	return Controller{
 		redisCache,
 		memoryCache,
+		database,
 		chartsPriority,
 		api,
+		configuration.RestAPI.UseMemoryCache,
 	}
 }
 
 // ChartsController interface implementation
 func (c Controller) HandleChartsRequest(request controllers.ChartRequest) (chart watchmarket.Chart, err error) {
+
 	if !c.hasTickers(request.Asset) {
 		return chart, nil
 	}
@@ -64,11 +73,25 @@ func (c Controller) HandleChartsRequest(request controllers.ChartRequest) (chart
 }
 
 func (c Controller) hasTickers(assetData controllers.Asset) bool {
-	if tickers, err := c.getChartsFromMemory(assetData); err != nil {
-		return false
+	var tickers []models.Ticker
+	var err error
+
+	if c.useMemoryCache {
+		if tickers, err = c.getChartsFromMemory(assetData); err != nil {
+			return false
+		}
 	} else {
-		return len(tickers) > 0
+		dbTickers, err := c.database.GetTickers([]controllers.Asset{assetData})
+		if err != nil {
+			return false
+		}
+		for _, t := range dbTickers {
+			if t.ShowOption != 2 { // TODO: 2 to constants
+				tickers = append(tickers, t)
+			}
+		}
 	}
+	return len(tickers) > 0
 }
 
 func (c Controller) getChartsFromApi(data controllers.ChartRequest) (ch watchmarket.Chart, err error) {
