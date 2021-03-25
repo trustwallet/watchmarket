@@ -5,18 +5,17 @@ import (
 	"errors"
 	"fmt"
 	log "github.com/sirupsen/logrus"
-	"github.com/trustwallet/watchmarket/db"
-	"github.com/trustwallet/watchmarket/db/models"
+	"github.com/trustwallet/golibs/asset"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"github.com/trustwallet/watchmarket/services/cache"
 	"github.com/trustwallet/watchmarket/services/controllers"
 	"github.com/trustwallet/watchmarket/services/markets"
+	"strings"
 )
 
 const info = "info"
 
 type Controller struct {
-	database         db.Instance
 	cache            cache.Provider
 	coinInfoPriority []string
 	ratesPriority    []string
@@ -24,14 +23,12 @@ type Controller struct {
 }
 
 func NewController(
-	database db.Instance,
 	cache cache.Provider,
 	coinInfoPriority []string,
 	ratesPriority []string,
 	api markets.ChartsAPIs,
 ) Controller {
 	return Controller{
-		database,
 		cache,
 		coinInfoPriority,
 		ratesPriority,
@@ -84,7 +81,7 @@ func (c Controller) getFromCache(request controllers.DetailsRequest) (controller
 
 	cachedDetails, err := c.cache.Get(key)
 	if err != nil || len(cachedDetails) <= 0 {
-		return controllers.InfoResponse{}, errors.New("cache is empty")
+		return controllers.InfoResponse{}, errors.New(watchmarket.ErrNotFound)
 	}
 	var infoResponse controllers.InfoResponse
 	err = json.Unmarshal(cachedDetails, &infoResponse)
@@ -92,15 +89,14 @@ func (c Controller) getFromCache(request controllers.DetailsRequest) (controller
 }
 
 func (c Controller) getDetailsByPriority(request controllers.DetailsRequest) (controllers.InfoResponse, error) {
-	dbTickers, err := c.database.GetTickers([]controllers.Asset{request.Asset})
-
-	if err != nil || len(dbTickers) == 0 {
-		return controllers.InfoResponse{}, fmt.Errorf("no tickers in db or db error: %w", err)
-	}
-
-	ticker, err := c.getTickerDataAccordingToPriority(dbTickers)
+	key := strings.ToLower(asset.BuildID(request.Asset.CoinId, request.Asset.TokenId))
+	rawResult, err := c.cache.Get(key)
 	if err != nil {
-		return controllers.InfoResponse{}, err
+		return controllers.InfoResponse{}, errors.New(watchmarket.ErrNotFound)
+	}
+	var ticker watchmarket.Ticker
+	if err = json.Unmarshal(rawResult, &ticker); err != nil {
+		return controllers.InfoResponse{}, errors.New(watchmarket.ErrNotFound)
 	}
 	result := c.getCoinDataFromApi(request.Asset, request.Currency)
 	result.CirculatingSupply = ticker.CirculatingSupply
@@ -109,16 +105,16 @@ func (c Controller) getDetailsByPriority(request controllers.DetailsRequest) (co
 	result.TotalSupply = ticker.TotalSupply
 
 	if request.Currency != watchmarket.DefaultCurrency {
-		rates, err := c.database.GetRates(request.Currency)
-		if err != nil || len(rates) == 0 {
-			return controllers.InfoResponse{}, fmt.Errorf("empty db rate or db error: %w", err)
-		}
-		rate, err := c.getRateDataAccordingToPriority(rates)
+		rateRaw, err := c.cache.Get(request.Currency)
+		var rate watchmarket.Rate
 		if err != nil {
-			return controllers.InfoResponse{}, err
+			return controllers.InfoResponse{}, errors.New(watchmarket.ErrNotFound)
 		}
-		result.MarketCap *= 1 / rate
-		result.Vol24 *= 1 / rate
+		if err = json.Unmarshal(rateRaw, &rate); err != nil {
+			return result, err
+		}
+		result.MarketCap *= 1 / rate.Rate
+		result.Vol24 *= 1 / rate.Rate
 	}
 	return result, nil
 }
@@ -135,26 +131,4 @@ func (c Controller) getCoinDataFromApi(assetData controllers.Asset, currency str
 		}
 	}
 	return result
-}
-
-func (c Controller) getTickerDataAccordingToPriority(tickers []models.Ticker) (models.Ticker, error) {
-	for _, p := range c.coinInfoPriority {
-		for _, t := range tickers {
-			if t.Provider == p && t.ShowOption != models.NeverShow {
-				return t, nil
-			}
-		}
-	}
-	return models.Ticker{}, errors.New("bad ticker or providers")
-}
-
-func (c Controller) getRateDataAccordingToPriority(rates []models.Rate) (float64, error) {
-	for _, p := range c.ratesPriority {
-		for _, r := range rates {
-			if r.Provider == p && r.ShowOption != models.NeverShow {
-				return r.Rate, nil
-			}
-		}
-	}
-	return 0, errors.New("bad ticker or providers")
 }
