@@ -74,7 +74,11 @@ func setupProviders(config config.Configuration, assets assets.Client) Providers
 		config.Markets.Coinmarketcap.Key,
 		config.Markets.Coinmarketcap.Currency,
 		assets)
-	coingeckoProvider := coingecko.InitProvider(config.Markets.Coingecko.API, config.Markets.Coingecko.Currency, assets)
+	coingeckoProvider := coingecko.InitProvider(
+		config.Markets.Coingecko.API,
+		config.Markets.Coingecko.Key,
+		config.Markets.Coingecko.Currency,
+		assets)
 	fixerProvider := fixer.InitProvider(config.Markets.Fixer.API, config.Markets.Fixer.Key, config.Markets.Fixer.Currency)
 
 	providers := make(Providers, 4)

@@ -2,10 +2,11 @@ package coingecko
 
 import (
 	"encoding/json"
-	"github.com/trustwallet/watchmarket/services/controllers"
 	"net/http/httptest"
 	"sort"
 	"testing"
+
+	"github.com/trustwallet/watchmarket/services/controllers"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/trustwallet/watchmarket/services/assets"
@@ -14,7 +15,7 @@ import (
 func TestProvider_GetCoinData(t *testing.T) {
 	server := httptest.NewServer(createMockedAPI())
 	defer server.Close()
-	provider := InitProvider(server.URL, "USD", assets.Init(server.URL))
+	provider := InitProvider(server.URL, "", "USD", assets.Init(server.URL))
 	data, _ := provider.GetCoinData(controllers.Asset{CoinId: 60}, "USD")
 	rawData, err := json.Marshal(data)
 	assert.Nil(t, err)
@@ -24,7 +25,7 @@ func TestProvider_GetCoinData(t *testing.T) {
 func TestProvider_GetChartData(t *testing.T) {
 	server := httptest.NewServer(createMockedAPI())
 	defer server.Close()
-	provider := InitProvider(server.URL, "USD", assets.Init("assets.api"))
+	provider := InitProvider(server.URL, "", "USD", assets.Init("assets.api"))
 	data, _ := provider.GetChartData(controllers.Asset{CoinId: 60}, "USD", 1577871126)
 	rawData, err := json.Marshal(data)
 	assert.Nil(t, err)

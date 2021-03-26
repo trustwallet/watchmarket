@@ -13,13 +13,14 @@ const (
 
 type Provider struct {
 	id       string
+	key      string
 	currency string
 	client   Client
 	info     assets.Client
 }
 
-func InitProvider(api, currency string, info assets.Client) Provider {
-	return Provider{id: id, currency: currency, client: NewClient(api, bucketSize), info: info}
+func InitProvider(api, key, currency string, info assets.Client) Provider {
+	return Provider{id: id, key: key, currency: currency, client: NewClient(api, key, bucketSize), info: info}
 }
 
 func (p Provider) GetProvider() string {
