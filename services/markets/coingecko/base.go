@@ -7,7 +7,7 @@ import (
 
 const (
 	id            = watchmarket.CoinGecko
-	bucketSize    = 200
+	bucketSize    = 250
 	chartDataSize = 2
 )
 
