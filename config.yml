@@ -14,8 +14,9 @@ markets:
     widget_api: https://3rdparty-apis.coinmarketcap.com
 
   coingecko:
-    currency: USD
     api: https://api.coingecko.com/api
+    currency: USD
+    key: #key
 
   fixer:
     currency: USD

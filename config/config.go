@@ -30,6 +30,7 @@ type Configuration struct {
 		} `mapstructure:"coinmarketcap"`
 		Coingecko struct {
 			API      string `mapstructure:"api"`
+			Key      string `mapstructure:"key"`
 			Currency string `mapstructure:"currency"`
 		} `mapstructure:"coingecko"`
 		Fixer struct {
