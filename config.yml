@@ -15,13 +15,13 @@ markets:
 
   coingecko:
     api: https://api.coingecko.com/api
-    currency: USD
     key: #key
+    currency: USD
 
   fixer:
-    currency: USD
     api: https://data.fixer.io/api
     key: #key
+    currency: USD
 
   assets: https://raw.githubusercontent.com/trustwallet/assets/master/blockchains # Assets url - details about TW tokens
 
