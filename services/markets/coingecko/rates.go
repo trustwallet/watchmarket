@@ -7,6 +7,9 @@ import (
 )
 
 func (p Provider) GetRates() (watchmarket.Rates, error) {
+
+	return watchmarket.Rates{}, nil
+
 	coins, err := p.client.fetchCoins()
 	if err != nil {
 		return watchmarket.Rates{}, err
