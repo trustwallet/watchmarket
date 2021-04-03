@@ -4101,6 +4101,12 @@ const Mapping = `[
         "id": 2709
     },
     {
+        "coin": 714,
+        "type": "token",
+        "token_id": "MITX-CAA",
+        "id": 2709
+    },
+    {
         "coin": 60,
         "type": "token",
         "token_id": "0x905E337c6c8645263D3521205Aa37bf4d034e745",
