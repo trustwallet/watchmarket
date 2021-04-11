@@ -2035,6 +2035,12 @@ const Mapping = `[
         "id": 2110
     },
     {
+        "coin": 714,
+        "type": "token",
+        "token_id": "PHB-2DF",
+        "id": 2112
+    },
+    {
         "coin": 60,
         "type": "token",
         "token_id": "0xA9Aad2dC3a8315caeee5F458B1d8EDc31D8467BD",
