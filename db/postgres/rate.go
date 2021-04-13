@@ -43,6 +43,14 @@ func (i *Instance) GetAllRates() ([]models.Rate, error) {
 	return rates, nil
 }
 
+func (i *Instance) GetRatesByProvider(provider string) ([]models.Rate, error) {
+	var rates []models.Rate
+	if err := i.Gorm.Where("provider = ?", provider).Find(&rates).Error; err != nil {
+		return nil, err
+	}
+	return rates, nil
+}
+
 func normalizeRates(rates []models.Rate) []models.Rate {
 	ratesMap := make(map[string]models.Rate)
 	for _, rate := range rates {

@@ -1,107 +1,142 @@
 [
   {
-    "currency": "BTC",
-    "percent_change_24h": 5.47477,
-    "provider": "coinmarketcap",
-    "rate": 9862.53985763,
-    "timestamp": 1588890514
+    "currency":"BTC",
+    "percent_change_24h":5.47477,
+    "provider":"coinmarketcap",
+    "rate":9862.53985763,
+    "timestamp":1588890514
   },
   {
-    "currency": "ETH",
-    "percent_change_24h": 2.48595,
-    "provider": "coinmarketcap",
-    "rate": 213.544073721,
-    "timestamp": 1588890505
+    "currency":"ETH",
+    "percent_change_24h":2.48595,
+    "provider":"coinmarketcap",
+    "rate":213.544073721,
+    "timestamp":1588890505
   },
   {
-    "currency": "XRP",
-    "percent_change_24h": 0.191592,
-    "provider": "coinmarketcap",
-    "rate": 0.2190265248,
-    "timestamp": 1588890545
+    "currency":"XRP",
+    "percent_change_24h":0.191592,
+    "provider":"coinmarketcap",
+    "rate":0.2190265248,
+    "timestamp":1588890545
   },
   {
-    "currency": "BCH",
-    "percent_change_24h": 1.42361,
-    "provider": "coinmarketcap",
-    "rate": 253.196839314,
-    "timestamp": 1588890547
+    "currency":"USDT",
+    "percent_change_24h":-0.498649,
+    "provider":"coinmarketcap",
+    "rate":1.005833132,
+    "timestamp":1588890502
   },
   {
-    "currency": "BSV",
-    "percent_change_24h": 0.471004,
-    "provider": "coinmarketcap",
-    "rate": 210.045381795,
-    "timestamp": 1588890553
+    "currency":"BCH",
+    "percent_change_24h":1.42361,
+    "provider":"coinmarketcap",
+    "rate":253.196839314,
+    "timestamp":1588890547
   },
   {
-    "currency": "LTC",
-    "percent_change_24h": 1.09024,
-    "provider": "coinmarketcap",
-    "rate": 47.5118592612,
-    "timestamp": 1588890544
+    "currency":"BSV",
+    "percent_change_24h":0.471004,
+    "provider":"coinmarketcap",
+    "rate":210.045381795,
+    "timestamp":1588890553
   },
   {
-    "currency": "BNB",
-    "percent_change_24h": 0.906496,
-    "provider": "coinmarketcap",
-    "rate": 17.1140649277,
-    "timestamp": 1588890547
+    "currency":"LTC",
+    "percent_change_24h":1.09024,
+    "provider":"coinmarketcap",
+    "rate":47.5118592612,
+    "timestamp":1588890544
   },
   {
-    "currency": "EOS",
-    "percent_change_24h": -0.562061,
-    "provider": "coinmarketcap",
-    "rate": 2.7625045765,
-    "timestamp": 1588890546
+    "currency":"BNB",
+    "percent_change_24h":0.906496,
+    "provider":"coinmarketcap",
+    "rate":17.1140649277,
+    "timestamp":1588890547
   },
   {
-    "currency": "XTZ",
-    "percent_change_24h": 1.86731,
-    "provider": "coinmarketcap",
-    "rate": 2.7897718177,
-    "timestamp": 1588890547
+    "currency":"EOS",
+    "percent_change_24h":-0.562061,
+    "provider":"coinmarketcap",
+    "rate":2.7625045765,
+    "timestamp":1588890546
   },
   {
-    "currency": "XLM",
-    "percent_change_24h": 0.655066,
-    "provider": "coinmarketcap",
-    "rate": 0.0728177647,
-    "timestamp": 1588890545
+    "currency":"XTZ",
+    "percent_change_24h":1.86731,
+    "provider":"coinmarketcap",
+    "rate":2.7897718177,
+    "timestamp":1588890547
   },
   {
-    "currency": "ADA",
-    "percent_change_24h": 0.826166,
-    "provider": "coinmarketcap",
-    "rate": 0.0510633352,
-    "timestamp": 1588890547
+    "currency":"XLM",
+    "percent_change_24h":0.655066,
+    "provider":"coinmarketcap",
+    "rate":0.0728177647,
+    "timestamp":1588890545
   },
   {
-    "currency": "XMR",
-    "percent_change_24h": 6.70904,
-    "provider": "coinmarketcap",
-    "rate": 63.6958970684,
-    "timestamp": 1588890543
+    "currency":"ADA",
+    "percent_change_24h":0.826166,
+    "provider":"coinmarketcap",
+    "rate":0.0510633352,
+    "timestamp":1588890547
   },
   {
-    "currency": "TRX",
-    "percent_change_24h": 0.328149,
-    "provider": "coinmarketcap",
-    "rate": 0.0161019012,
-    "timestamp": 1588890547
+    "currency":"LINK",
+    "percent_change_24h":2.4664,
+    "provider":"coinmarketcap",
+    "rate":3.7792003438,
+    "timestamp":1588890547
   },
   {
-    "currency": "ETC",
-    "percent_change_24h": -0.447855,
-    "provider": "coinmarketcap",
-    "rate": 7.1517170166,
-    "timestamp": 1588890544
+    "currency":"XMR",
+    "percent_change_24h":6.70904,
+    "provider":"coinmarketcap",
+    "rate":63.6958970684,
+    "timestamp":1588890543
   },
   {
-    "currency": "DASH",
-    "percent_change_24h": -0.531529,
-    "provider": "coinmarketcap",
-    "rate": 79.2516409705,
-    "timestamp": 1588890544
+    "currency":"CRO",
+    "percent_change_24h":1.58403,
+    "provider":"coinmarketcap",
+    "rate":0.066128997,
+    "timestamp":1588890552
+  },
+  {
+    "currency":"TRX",
+    "percent_change_24h":0.328149,
+    "provider":"coinmarketcap",
+    "rate":0.0161019012,
+    "timestamp":1588890547
+  },
+  {
+    "currency":"LEO",
+    "percent_change_24h":-0.475802,
+    "provider":"coinmarketcap",
+    "rate":1.0642871664,
+    "timestamp":1588890553
+  },
+  {
+    "currency":"HT",
+    "percent_change_24h":-0.303191,
+    "provider":"coinmarketcap",
+    "rate":4.2165442726,
+    "timestamp":1588890550
+  },
+  {
+    "currency":"ETC",
+    "percent_change_24h":-0.447855,
+    "provider":"coinmarketcap",
+    "rate":7.1517170166,
+    "timestamp":1588890544
+  },
+  {
+    "currency":"DASH",
+    "percent_change_24h":-0.531529,
+    "provider":"coinmarketcap",
+    "rate":79.2516409705,
+    "timestamp":1588890544
   }
 ]

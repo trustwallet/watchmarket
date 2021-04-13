@@ -4,6 +4,7 @@ package assets
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/trustwallet/watchmarket/services/controllers"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -17,12 +18,6 @@ var (
 	mockedInfoResponse, _ = mock.JsonStringFromFilePath("mocks/info_response.json")
 )
 
-func TestInit(t *testing.T) {
-	c := Init("url")
-	assert.NotNil(t, c)
-	assert.Equal(t, c.api, "url")
-}
-
 func TestClient_GetCoinInfo(t *testing.T) {
 	server := httptest.NewServer(createMockedAPI())
 	defer server.Close()
@@ -30,7 +25,7 @@ func TestClient_GetCoinInfo(t *testing.T) {
 	c := Init(server.URL)
 	assert.NotNil(t, c)
 
-	data, err := c.GetCoinInfo(60, "")
+	data, err := c.GetCoinInfo(controllers.Asset{CoinId: 60})
 	assert.Nil(t, err)
 
 	rawData, err := json.Marshal(data)

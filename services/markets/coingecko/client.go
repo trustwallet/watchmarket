@@ -2,52 +2,47 @@ package coingecko
 
 import (
 	"fmt"
+	"net/http"
 	"net/url"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
 
-	"github.com/imroc/req"
 	log "github.com/sirupsen/logrus"
+	"github.com/trustwallet/golibs/client"
+	"github.com/trustwallet/golibs/network/middleware"
 )
 
 type Client struct {
-	baseURL    string
+	client     client.Request
+	key        string
 	bucketSize int
-	r          *req.Req
 }
 
-func NewClient(api string, bucketSize int) Client {
-	r := req.New()
-	c := Client{r: r, bucketSize: bucketSize, baseURL: api}
-	c.r.SetTimeout(time.Minute)
+func NewClient(api string, key string, bucketSize int) Client {
+	c := Client{client: client.InitClient(api, middleware.SentryErrorHandler), key: key, bucketSize: bucketSize}
+	c.client.HttpClient = &http.Client{
+		Timeout: time.Minute,
+	}
 	return c
 }
 
-func (c Client) fetchCharts(id, currency string, timeStart, timeEnd int64) (Charts, error) {
-	var (
-		result Charts
-		values = req.Param{
-			"vs_currency": currency,
-			"from":        strconv.FormatInt(timeStart, 10),
-			"to":          strconv.FormatInt(timeEnd, 10),
-		}
-	)
-	resp, err := c.r.Get(c.baseURL+fmt.Sprintf("/v3/coins/%s/market_chart/range", id), values)
-	if err != nil {
-		return Charts{}, err
+func (c Client) Get(result interface{}, path string, values url.Values) error {
+	values.Add("x_cg_pro_api_key", c.key)
+	return c.client.Get(&result, path, values)
+}
+
+func (c Client) fetchCharts(id, currency string, timeStart, timeEnd int64) (charts Charts, err error) {
+
+	values := url.Values{
+		"vs_currency": {currency},
+		"from":        {strconv.FormatInt(timeStart, 10)},
+		"to":          {strconv.FormatInt(timeEnd, 10)},
 	}
-	err = resp.ToJSON(&result)
-	if err != nil {
-		log.WithFields(log.Fields{
-			"url":      resp.Request().URL.String(),
-			"status":   resp.Response().Status,
-			"response": resp,
-		}).Error("CoinGecko Fetch Charts: ", resp.Response().Status)
-		return Charts{}, err
-	}
-	return result, nil
+
+	err = c.Get(&charts, fmt.Sprintf("/v3/coins/%s/market_chart/range", id), values)
+	return
 }
 
 func (c Client) fetchRates(coins Coins, currency string) (prices CoinPrices) {
@@ -93,42 +88,13 @@ func (c Client) fetchRates(coins Coins, currency string) (prices CoinPrices) {
 	return
 }
 
-func (c Client) fetchMarkets(ids, currency string) (CoinPrices, error) {
-	var (
-		result CoinPrices
-		values = url.Values{"vs_currency": {currency}, "sparkline": {"false"}, "ids": {ids}}
-	)
-
-	resp, err := c.r.Get(c.baseURL+"/v3/coins/markets", values)
-	if err != nil {
-		return CoinPrices{}, err
-	}
-	err = resp.ToJSON(&result)
-	if err != nil {
-		log.WithFields(log.Fields{
-			"url":      resp.Request().URL.String(),
-			"status":   resp.Response().Status,
-			"response": resp,
-		}).Error("CoinGecko Markets: ", resp.Response().Status)
-		return CoinPrices{}, err
-	}
-	return result, nil
+func (c Client) fetchMarkets(ids, currency string) (result CoinPrices, err error) {
+	values := url.Values{"vs_currency": {currency}, "sparkline": {"false"}, "ids": {ids}}
+	err = c.Get(&result, "/v3/coins/markets", values)
+	return
 }
 
-func (c Client) fetchCoins() (Coins, error) {
-	var result Coins
-	resp, err := c.r.Get(c.baseURL+"/v3/coins/list", req.Param{"include_platform": "true"})
-	if err != nil {
-		return Coins{}, err
-	}
-	err = resp.ToJSON(&result)
-	if err != nil {
-		log.WithFields(log.Fields{
-			"url":      resp.Request().URL.String(),
-			"status":   resp.Response().Status,
-			"response": resp,
-		}).Error("CoinGecko Fetch Coins: ", resp.Response().Status)
-		return Coins{}, err
-	}
-	return result, nil
+func (c Client) fetchCoins() (result Coins, err error) {
+	err = c.Get(&result, "/v3/coins/list", url.Values{"include_platform": {"true"}})
+	return
 }

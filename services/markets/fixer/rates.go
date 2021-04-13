@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	id = "fixer"
+	id = watchmarket.Fixer
 )
 
 func (p Provider) GetRates() (watchmarket.Rates, error) {

@@ -1,94 +1,53 @@
 package coinmarketcap
 
 import (
-	"fmt"
+	"net/url"
 	"strconv"
 
-	"github.com/imroc/req"
-	log "github.com/sirupsen/logrus"
+	"github.com/trustwallet/golibs/client"
+	"github.com/trustwallet/golibs/network/middleware"
 )
 
 type Client struct {
-	proApiURL    string
-	webApiURL    string
-	widgetApiURL string
-	key          string
-	r            *req.Req
+	proApi    client.Request
+	webApi    client.Request
+	widgetApi client.Request
 }
 
 func NewClient(proApi, webApi, widgetApi, key string) Client {
-	return Client{
-		r:            req.New(),
-		proApiURL:    proApi,
-		webApiURL:    webApi,
-		widgetApiURL: widgetApi,
-		key:          key,
+	c := Client{
+		proApi:    client.InitClient(proApi, middleware.SentryErrorHandler),
+		webApi:    client.InitClient(webApi, middleware.SentryErrorHandler),
+		widgetApi: client.InitClient(widgetApi, middleware.SentryErrorHandler),
 	}
+	c.proApi.AddHeader("X-CMC_PRO_API_KEY", key)
+	return c
 }
 
-func (c Client) fetchPrices(currency string) (CoinPrices, error) {
-	var (
-		result CoinPrices
-		path   = c.proApiURL + "/v1/cryptocurrency/listings/latest"
-		header = req.Header{"X-CMC_PRO_API_KEY": c.key}
-	)
-
-	resp, err := c.r.Get(path, req.Param{"limit": "5000", "convert": currency}, header)
-	if err != nil {
-		return CoinPrices{}, err
-	}
-	err = resp.ToJSON(&result)
-	if err != nil {
-		log.WithFields(log.Fields{
-			"url":      resp.Request().URL.String(),
-			"status":   resp.Response().Status,
-			"response": resp,
-		}).Error("CoinMarketCap Fetch Prices: ", err)
-		return CoinPrices{}, err
-	}
-	return result, nil
+func (c Client) fetchPrices(currency, cryptocurrencyType string) (result CoinPrices, err error) {
+	params := url.Values{"limit": {"5000"}, "convert": {currency}, "cryptocurrency_type": {cryptocurrencyType}}
+	err = c.proApi.Get(&result, "/v1/cryptocurrency/listings/latest", params)
+	return
 }
 
-func (c Client) fetchChartsData(id uint, currency string, timeStart int64, timeEnd int64, interval string) (Charts, error) {
-	values := req.Param{
-		"convert":    currency,
-		"format":     "chart_crypto_details",
-		"id":         strconv.FormatInt(int64(id), 10),
-		"time_start": strconv.FormatInt(timeStart, 10),
-		"time_end":   strconv.FormatInt(timeEnd, 10),
-		"interval":   interval,
+func (c Client) fetchChartsData(id uint, currency string, timeStart int64, timeEnd int64, interval string) (result Charts, err error) {
+	values := url.Values{
+		"convert":    {currency},
+		"format":     {"chart_crypto_details"},
+		"id":         {strconv.FormatInt(int64(id), 10)},
+		"time_start": {strconv.FormatInt(timeStart, 10)},
+		"time_end":   {strconv.FormatInt(timeEnd, 10)},
+		"interval":   {interval},
 	}
-	var result Charts
-	resp, err := c.r.Get(c.webApiURL+"/v1/cryptocurrency/quotes/historical", values)
-	if err != nil {
-		return Charts{}, err
-	}
-	err = resp.ToJSON(&result)
-	if err != nil {
-		log.WithFields(log.Fields{
-			"url":      resp.Request().URL.String(),
-			"status":   resp.Response().Status,
-			"response": resp,
-		}).Error("CoinMarketCap Fetch Charts Data: ", err)
-		return Charts{}, err
-	}
-	return result, nil
+	err = c.webApi.Get(&result, "/v1/cryptocurrency/quotes/historical", values)
+	return
 }
 
-func (c Client) fetchCoinData(id uint, currency string) (ChartInfo, error) {
-	var result ChartInfo
-	resp, err := c.r.Get(c.widgetApiURL + fmt.Sprintf("/v1/cryptocurrency/widget?id=%d&convert=%s", id, currency))
-	if err != nil {
-		return ChartInfo{}, err
+func (c Client) fetchCoinData(id uint, currency string) (result ChartInfo, err error) {
+	values := url.Values{
+		"id":      {strconv.FormatInt(int64(id), 10)},
+		"convert": {currency},
 	}
-	err = resp.ToJSON(&result)
-	if err != nil {
-		log.WithFields(log.Fields{
-			"url":      resp.Request().URL.String(),
-			"status":   resp.Response().Status,
-			"response": resp,
-		}).Error("CoinMarketCap Fetch Coin Data: ", err)
-		return ChartInfo{}, err
-	}
-	return result, nil
+	err = c.widgetApi.Get(&result, "/v1/cryptocurrency/widget", values)
+	return
 }

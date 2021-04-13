@@ -4,16 +4,17 @@ import (
 	"testing"
 	"time"
 
+	"github.com/trustwallet/watchmarket/pkg/watchmarket"
+
 	"github.com/stretchr/testify/assert"
 )
 
 func TestInit(t *testing.T) {
 	c, _ := Init("../config.yml")
 
-	assert.Equal(t, []string{"coinmarketcap", "coingecko"}, c.Markets.Priority.Charts)
-	assert.Equal(t, []string{"coinmarketcap", "coingecko", "binancedex"}, c.Markets.Priority.Tickers)
-	assert.Equal(t, []string{"fixer", "coinmarketcap", "coingecko"}, c.Markets.Priority.Rates)
-	assert.Equal(t, []string{"coinmarketcap", "coingecko"}, c.Markets.Priority.CoinInfo)
+	assert.Equal(t, []string{watchmarket.CoinMarketCap, watchmarket.CoinGecko}, c.Markets.Priority.Charts)
+	assert.Equal(t, []string{watchmarket.Fixer, watchmarket.CoinMarketCap, watchmarket.CoinGecko}, c.Markets.Priority.Rates)
+	assert.Equal(t, []string{watchmarket.CoinMarketCap, watchmarket.CoinGecko}, c.Markets.Priority.CoinInfo)
 
 	assert.Equal(t, "USD", c.Markets.Coinmarketcap.Currency)
 	assert.Equal(t, "https://pro-api.coinmarketcap.com", c.Markets.Coinmarketcap.API)
@@ -23,8 +24,6 @@ func TestInit(t *testing.T) {
 
 	assert.Equal(t, "https://api.coingecko.com/api", c.Markets.Coingecko.API)
 	assert.Equal(t, "USD", c.Markets.Coingecko.Currency)
-
-	assert.Equal(t, "https://dex.binance.org/api", c.Markets.BinanceDex.API)
 
 	assert.Equal(t, "https://data.fixer.io/api", c.Markets.Fixer.API)
 	assert.Equal(t, "", c.Markets.Fixer.Key)
@@ -48,7 +47,6 @@ func TestInit(t *testing.T) {
 	assert.Equal(t, "8421", c.RestAPI.Port)
 
 	assert.Equal(t, time.Minute*15, c.RestAPI.Cache)
-	assert.Equal(t, 500, c.RestAPI.RequestLimit)
 	assert.Equal(t, true, c.RestAPI.UseMemoryCache)
 	assert.Equal(t, "5m", c.RestAPI.UpdateTime.Tickers)
 	assert.Equal(t, "5m", c.RestAPI.UpdateTime.Rates)

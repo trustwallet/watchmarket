@@ -20,7 +20,7 @@ import (
 // @Param amount query string false "Amount" default(100)
 // @Success 200 {object} controllers.RateResponse
 // @Router /v1/market/rate [get]
-func GetRate(controller controllers.RatesController) func(c *gin.Context) {
+func GetRate(controller controllers.RatesController) func(context *gin.Context) {
 	return func(c *gin.Context) {
 		from := c.DefaultQuery("from", watchmarket.DefaultCurrency)
 		to := c.Query("to")
@@ -40,5 +40,24 @@ func GetRate(controller controllers.RatesController) func(c *gin.Context) {
 			return
 		}
 		c.JSON(http.StatusOK, response)
+	}
+}
+
+// @Summary Get Fiat Rates
+// @Description Get Fiat Rates
+// @Accept json
+// @Produce json
+// @Tags Rates
+// @Success 200 {object} controllers.FiatRates
+// @Router /v1/fiat_rates [get]
+func GetFiatRates(controller controllers.RatesController) func(context *gin.Context) {
+	return func(context *gin.Context) {
+		rates, err := controller.GetFiatRates()
+		if err != nil {
+			code, response := createErrorResponseAndStatusCode(err)
+			context.AbortWithStatusJSON(code, response)
+			return
+		}
+		context.JSON(http.StatusOK, rates)
 	}
 }

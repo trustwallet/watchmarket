@@ -16,7 +16,7 @@ func TestController_getTickersByPriority(t *testing.T) {
 		TokenId:   "a",
 		Change24h: 10,
 		Currency:  "USD",
-		Provider:  "coinmarketcap",
+		Provider:  watchmarket.CoinMarketCap,
 		Value:     100,
 	}
 
@@ -26,7 +26,7 @@ func TestController_getTickersByPriority(t *testing.T) {
 		TokenId:   "a",
 		Change24h: 10,
 		Currency:  "USD",
-		Provider:  "coingecko",
+		Provider:  watchmarket.CoinGecko,
 		Value:     100,
 	}
 
@@ -36,30 +36,18 @@ func TestController_getTickersByPriority(t *testing.T) {
 		TokenId:   "a",
 		Change24h: 10,
 		Currency:  "USD",
-		Provider:  "coingecko",
-		Value:     100,
-	}
-
-	ticker714ABNB := models.Ticker{
-		Coin:      714,
-		CoinName:  "BNB",
-		TokenId:   "a",
-		Change24h: 10,
-		Currency:  "USD",
-		Provider:  "binancedex",
+		Provider:  watchmarket.CoinGecko,
 		Value:     100,
 	}
 
 	db := getDbMock()
 
 	db.WantedTickersError = nil
-	db.WantedTickers = []models.Ticker{ticker60ACMC, ticker60ACG, ticker714ACG, ticker714ABNB}
+	db.WantedTickers = []models.Ticker{ticker60ACMC, ticker60ACG, ticker714ACG}
 	c := setupController(t, db, false)
 	assert.NotNil(t, c)
 
-	tickers, err := c.getTickersByPriority(makeTickerQueries(
-		[]controllers.Coin{{Coin: 60, TokenId: "A"}, {Coin: 714, TokenId: "A"}},
-	))
+	tickers, err := c.getTickersByPriority([]controllers.Asset{{CoinId: 60, TokenId: "A"}, {CoinId: 714, TokenId: "A"}})
 	assert.Nil(t, err)
 	assert.NotNil(t, tickers)
 	assert.Equal(t, 2, len(tickers))
@@ -71,10 +59,10 @@ func TestController_getTickersByPriority(t *testing.T) {
 		Price: watchmarket.Price{
 			Change24h: 10,
 			Currency:  "USD",
-			Provider:  "coinmarketcap",
+			Provider:  watchmarket.CoinMarketCap,
 			Value:     100,
 		},
-		TokenId: "a",
+		TokenId: "A",
 	}
 	wantedTicker2 := watchmarket.Ticker{
 		Coin:     714,
@@ -83,7 +71,7 @@ func TestController_getTickersByPriority(t *testing.T) {
 		Price: watchmarket.Price{
 			Change24h: 10,
 			Currency:  "USD",
-			Provider:  "coingecko",
+			Provider:  watchmarket.CoinGecko,
 			Value:     100,
 		},
 		TokenId: "a",
@@ -94,11 +82,11 @@ func TestController_getTickersByPriority(t *testing.T) {
 			counter++
 		}
 	}
-	assert.Equal(t, 2, counter)
+	assert.Equal(t, 1, counter)
 	db2 := getDbMock()
 	db2.WantedTickers = []models.Ticker{ticker60ACMC, ticker60ACG}
 	c2 := setupController(t, db2, false)
-	tickers2, err := c2.getTickersByPriority(makeTickerQueries([]controllers.Coin{{Coin: 60, TokenId: "A"}}))
+	tickers2, err := c2.getTickersByPriority([]controllers.Asset{{CoinId: 60, TokenId: "A"}})
 	assert.Nil(t, err)
 	assert.NotNil(t, tickers2)
 	assert.Equal(t, 1, len(tickers2))

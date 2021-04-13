@@ -17,21 +17,21 @@ func TestController_HandleChartsRequest(t *testing.T) {
 	rate := models.Rate{
 		Currency:         "USD",
 		PercentChange24h: 1,
-		Provider:         "coinmarketcap",
+		Provider:         watchmarket.CoinMarketCap,
 		Rate:             1,
 		LastUpdated:      time.Now(),
 	}
 	rate2 := models.Rate{
 		Currency:         "USD",
 		PercentChange24h: 2,
-		Provider:         "coingecko",
+		Provider:         watchmarket.CoinGecko,
 		Rate:             2,
 		LastUpdated:      time.Now(),
 	}
 	rate3 := models.Rate{
 		Currency:         "USD",
 		PercentChange24h: 4,
-		Provider:         "fixer",
+		Provider:         watchmarket.Fixer,
 		Rate:             6,
 		LastUpdated:      time.Now(),
 	}
@@ -42,7 +42,7 @@ func TestController_HandleChartsRequest(t *testing.T) {
 		TokenId:   "a",
 		Change24h: 10,
 		Currency:  "USD",
-		Provider:  "coinmarketcap",
+		Provider:  watchmarket.CoinMarketCap,
 		Value:     100,
 	}
 
@@ -52,7 +52,7 @@ func TestController_HandleChartsRequest(t *testing.T) {
 		TokenId:   "a",
 		Change24h: 10,
 		Currency:  "USD",
-		Provider:  "coingecko",
+		Provider:  watchmarket.CoinGecko,
 		Value:     100,
 	}
 
@@ -62,7 +62,7 @@ func TestController_HandleChartsRequest(t *testing.T) {
 		TokenId:   "a",
 		Change24h: 10,
 		Currency:  "USD",
-		Provider:  "coingecko",
+		Provider:  watchmarket.CoinGecko,
 		Value:     100,
 	}
 
@@ -72,7 +72,7 @@ func TestController_HandleChartsRequest(t *testing.T) {
 		TokenId:   "a",
 		Change24h: 10,
 		Currency:  "USD",
-		Provider:  "binancedex",
+		Provider:  watchmarket.CoinMarketCap,
 		Value:     100,
 	}
 
@@ -83,7 +83,7 @@ func TestController_HandleChartsRequest(t *testing.T) {
 	db.WantedRatesError = nil
 	db.WantedRates = []models.Rate{rate, rate2, rate3}
 
-	wCharts := watchmarket.Chart{Provider: "coinmarketcap", Error: "", Prices: []watchmarket.ChartPrice{{Price: 1, Date: 1}, {Price: 3, Date: 3}}}
+	wCharts := watchmarket.Chart{Provider: watchmarket.CoinMarketCap, Error: "", Prices: []watchmarket.ChartPrice{{Price: 1, Date: 1}, {Price: 3, Date: 3}}}
 	cm := getChartsMock()
 	cm.wantedCharts = wCharts
 
@@ -91,11 +91,13 @@ func TestController_HandleChartsRequest(t *testing.T) {
 	assert.NotNil(t, c)
 
 	chart, err := c.HandleChartsRequest(controllers.ChartRequest{
-		CoinQuery:    "60",
-		Token:        "a",
-		Currency:     "USD",
-		TimeStartRaw: "1577871126",
-		MaxItems:     "64",
+		Asset: controllers.Asset{
+			CoinId:  60,
+			TokenId: "a",
+		},
+		Currency:  "USD",
+		TimeStart: 1577871126,
+		MaxItems:  64,
 	})
 	assert.Nil(t, err)
 
@@ -111,7 +113,7 @@ func setupController(t *testing.T, d dbMock, ch cache.Provider, cm chartsMock) C
 	assert.NotNil(t, c)
 	c.RestAPI.UseMemoryCache = false
 
-	chartsPriority := []string{"coinmarketcap"}
+	chartsPriority := []string{watchmarket.CoinMarketCap}
 
 	chartsAPIs := make(markets.ChartsAPIs, 1)
 	chartsAPIs[cm.GetProvider()] = cm
@@ -154,15 +156,15 @@ func (d dbMock) GetAllTickers() ([]models.Ticker, error) {
 	return nil, nil
 }
 
+func (d dbMock) GetRatesByProvider(provider string) ([]models.Rate, error) {
+	return nil, nil
+}
+
 func (d dbMock) GetAllRates() ([]models.Rate, error) {
 	return nil, nil
 }
 
-func (d dbMock) GetTickers(coin uint, tokenId string) ([]models.Ticker, error) {
-	return d.WantedTickers, d.WantedTickersError
-}
-
-func (d dbMock) GetTickersByQueries(tickerQueries []models.TickerQuery) ([]models.Ticker, error) {
+func (d dbMock) GetTickers(asset []controllers.Asset) ([]models.Ticker, error) {
 	return d.WantedTickers, d.WantedTickersError
 }
 
@@ -212,14 +214,14 @@ type chartsMock struct {
 	wantedDetails watchmarket.CoinDetails
 }
 
-func (cm chartsMock) GetChartData(coinID uint, token, currency string, timeStart int64) (watchmarket.Chart, error) {
+func (cm chartsMock) GetChartData(asset controllers.Asset, currency string, timeStart int64) (watchmarket.Chart, error) {
 	return cm.wantedCharts, nil
 }
 
-func (cm chartsMock) GetCoinData(coinID uint, token, currency string) (watchmarket.CoinDetails, error) {
+func (cm chartsMock) GetCoinData(asset controllers.Asset, currency string) (watchmarket.CoinDetails, error) {
 	return cm.wantedDetails, nil
 }
 
 func (cm chartsMock) GetProvider() string {
-	return "coinmarketcap"
+	return watchmarket.CoinMarketCap
 }

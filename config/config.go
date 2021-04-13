@@ -1,11 +1,12 @@
 package config
 
 import (
-	"github.com/pkg/errors"
 	"path/filepath"
 	"reflect"
 	"strings"
 	"time"
+
+	"github.com/pkg/errors"
 
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
@@ -14,14 +15,12 @@ import (
 type Configuration struct {
 	Markets struct {
 		Priority struct {
-			Charts   []string `mapstructure:"charts"`
-			CoinInfo []string `mapstructure:"coin_info"`
-			Tickers  []string `mapstructure:"tickers"`
-			Rates    []string `mapstructure:"rates"`
+			Charts     []string `mapstructure:"charts"`
+			CoinInfo   []string `mapstructure:"coin_info"`
+			Tickers    []string `mapstructure:"tickers"`
+			Rates      []string `mapstructure:"rates"`
+			RatesAllow []string `mapstructure:"rates_allow"`
 		} `mapstructure:"priority"`
-		BinanceDex struct {
-			API string `mapstructure:"api"`
-		} `mapstructure:"binancedex"`
 		Coinmarketcap struct {
 			API       string `mapstructure:"api"`
 			Key       string `mapstructure:"key"`
@@ -31,6 +30,7 @@ type Configuration struct {
 		} `mapstructure:"coinmarketcap"`
 		Coingecko struct {
 			API      string `mapstructure:"api"`
+			Key      string `mapstructure:"key"`
 			Currency string `mapstructure:"currency"`
 		} `mapstructure:"coingecko"`
 		Fixer struct {
@@ -72,7 +72,6 @@ type Configuration struct {
 			CacheControl time.Duration `mapstructure:"cache_control"`
 		} `mapstructure:"info"`
 		Cache          time.Duration `mapstructure:"cache"`
-		RequestLimit   int           `mapstructure:"request_limit"`
 		UseMemoryCache bool          `mapstructure:"use_memory_cache"`
 		UpdateTime     struct {
 			Tickers string `mapstructure:"memory_cache_tickers"`

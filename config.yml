@@ -2,11 +2,9 @@ markets:
   priority: # for each data type: [first in queue, next, ...]
     charts: [coinmarketcap, coingecko]
     coin_info: [coinmarketcap, coingecko]
-    tickers: [coinmarketcap, coingecko, binancedex]
+    tickers: [coinmarketcap, coingecko]
     rates: [fixer, coinmarketcap, coingecko]
-
-  binancedex:
-    api: https://dex.binance.org/api
+    rates_allow: [BTC, ETH, BNB] # include additional crypto currency to fiat rates
 
   coinmarketcap:
     api: https://pro-api.coinmarketcap.com
@@ -16,13 +14,14 @@ markets:
     widget_api: https://3rdparty-apis.coinmarketcap.com
 
   coingecko:
-    currency: USD
     api: https://api.coingecko.com/api
+    key: #key
+    currency: USD
 
   fixer:
-    currency: USD
     api: https://data.fixer.io/api
     key: #key
+    currency: USD
 
   assets: https://raw.githubusercontent.com/trustwallet/assets/master/blockchains # Assets url - details about TW tokens
 
@@ -36,6 +35,7 @@ storage:
 worker:
   tickers: 5m
   rates: 5m
+  allowCryptoCurrency: []
 
 rest_api:
   mode: release # Possible values: "debug", "release"
@@ -50,7 +50,6 @@ rest_api:
   info:
     cache_control: 10m
   cache:  15m
-  request_limit: 500
   use_memory_cache: true
   update_time:
     memory_cache_tickers: 5m

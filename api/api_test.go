@@ -49,7 +49,7 @@ func TestSetupTickersAPI(t *testing.T) {
 				Price: watchmarket.Price{
 					Change24h: 2,
 					Currency:  "",
-					Provider:  "coinmarketcap",
+					Provider:  watchmarket.CoinMarketCap,
 					Value:     1,
 				},
 			},
@@ -57,7 +57,7 @@ func TestSetupTickersAPI(t *testing.T) {
 	}
 	wantedTickersV2 := controllers.TickerResponseV2{
 		Currency: "USD",
-		Tickers:  []controllers.TickerPrice{{Change24h: 2, Provider: "coinmarketcap", Price: 1, ID: "c60_ta"}},
+		Tickers:  []controllers.TickerPrice{{Change24h: 2, Provider: watchmarket.CoinMarketCap, Price: 1, ID: "c60_ta"}},
 	}
 
 	SetupTickersAPI(e, getTickersMock(wantedTickers, wantedTickersV2, nil), time.Minute)
@@ -72,7 +72,7 @@ func TestSetupTickersAPI(t *testing.T) {
 
 	cr1 := controllers.TickerRequest{
 		Currency: "USD",
-		Assets:   []controllers.Coin{{Coin: 60, TokenId: "a"}},
+		Assets:   []controllers.Asset{{CoinId: 60, TokenId: "a"}},
 	}
 
 	rawcr1, err := json.Marshal(&cr1)
@@ -87,7 +87,7 @@ func TestSetupTickersAPI(t *testing.T) {
 	assert.Equal(t, "a", givenV1Resp.Tickers[0].TokenId)
 	assert.Equal(t, float64(1), givenV1Resp.Tickers[0].Price.Value)
 	assert.Equal(t, float64(2), givenV1Resp.Tickers[0].Price.Change24h)
-	assert.Equal(t, "coinmarketcap", givenV1Resp.Tickers[0].Price.Provider)
+	assert.Equal(t, watchmarket.CoinMarketCap, givenV1Resp.Tickers[0].Price.Provider)
 
 	givenV2Resp := controllers.TickerResponseV2{}
 
@@ -107,7 +107,7 @@ func TestSetupTickersAPI(t *testing.T) {
 	assert.Equal(t, "c60_ta", givenV2Resp.Tickers[0].ID)
 	assert.Equal(t, float64(1), givenV2Resp.Tickers[0].Price)
 	assert.Equal(t, float64(2), givenV2Resp.Tickers[0].Change24h)
-	assert.Equal(t, "coinmarketcap", givenV2Resp.Tickers[0].Provider)
+	assert.Equal(t, watchmarket.CoinMarketCap, givenV2Resp.Tickers[0].Provider)
 
 	resp3, err := http.Get(server.URL + "/v2/market/ticker/c60_ta")
 	assert.Nil(t, err)
@@ -123,7 +123,7 @@ func TestSetupTickersAPI(t *testing.T) {
 	assert.Equal(t, "c60_ta", givenV2Resp2.Tickers[0].ID)
 	assert.Equal(t, float64(1), givenV2Resp2.Tickers[0].Price)
 	assert.Equal(t, float64(2), givenV2Resp2.Tickers[0].Change24h)
-	assert.Equal(t, "coinmarketcap", givenV2Resp2.Tickers[0].Provider)
+	assert.Equal(t, watchmarket.CoinMarketCap, givenV2Resp2.Tickers[0].Provider)
 
 	resp4, err := http.Get(server.URL + "/v2/market/tickers/c60_ta")
 	assert.Nil(t, err)
@@ -139,7 +139,7 @@ func TestSetupTickersAPI(t *testing.T) {
 	assert.Equal(t, "c60_ta", givenV2Resp3.Tickers[0].ID)
 	assert.Equal(t, float64(1), givenV2Resp3.Tickers[0].Price)
 	assert.Equal(t, float64(2), givenV2Resp3.Tickers[0].Change24h)
-	assert.Equal(t, "coinmarketcap", givenV2Resp3.Tickers[0].Provider)
+	assert.Equal(t, watchmarket.CoinMarketCap, givenV2Resp3.Tickers[0].Provider)
 }
 
 func TestSetupChartsAPI(t *testing.T) {
@@ -147,7 +147,7 @@ func TestSetupChartsAPI(t *testing.T) {
 	server := httptest.NewServer(e)
 	defer server.Close()
 	wantedCharts := watchmarket.Chart{
-		Provider: "coinmarketcap",
+		Provider: watchmarket.CoinMarketCap,
 		Prices:   []watchmarket.ChartPrice{{Price: 10, Date: 10}},
 	}
 	SetupChartsAPI(e, getChartsMock(wantedCharts, nil), time.Minute)
@@ -191,7 +191,7 @@ func TestSetupInfoAPI(t *testing.T) {
 	server := httptest.NewServer(e)
 	defer server.Close()
 	wantedInfo := controllers.InfoResponse{
-		Provider: "coinmarketcap",
+		Provider: watchmarket.CoinMarketCap,
 		Info: &watchmarket.Info{
 			Name:             "a",
 			Website:          "b",
@@ -309,12 +309,8 @@ func (c infoControllerMock) HandleInfoRequest(dr controllers.DetailsRequest) (co
 	return c.wantedInfo, c.wantedError
 }
 
-func (c tickersControllerMock) HandleTickersRequestV2(tr controllers.TickerRequestV2) (controllers.TickerResponseV2, error) {
-	return c.wantedTickersV2, c.wantedError
-}
-
-func (c tickersControllerMock) HandleTickersRequest(tr controllers.TickerRequest) (controllers.TickerResponse, error) {
-	return c.wantedTickersV1, c.wantedError
+func (c tickersControllerMock) HandleTickersRequest(tr controllers.TickerRequest) (watchmarket.Tickers, error) {
+	return c.wantedTickersV1.Tickers, c.wantedError
 }
 
 func setupEngine() *gin.Engine {

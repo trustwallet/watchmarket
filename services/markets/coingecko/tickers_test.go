@@ -16,7 +16,7 @@ func TestProvider_GetTickers(t *testing.T) {
 	server := httptest.NewServer(createMockedAPI())
 	defer server.Close()
 
-	provider := InitProvider(server.URL, "USD", assets.Init("assets.api"))
+	provider := InitProvider(server.URL, "", "USD", assets.Init("assets.api"))
 	data, err := provider.GetTickers()
 	assert.Nil(t, err)
 	res, err := json.Marshal(data)
@@ -160,7 +160,7 @@ func Test_createTicker(t *testing.T) {
 	wantedTickers = append(wantedTickers, normalTicker)
 
 	for i, price := range prices {
-		ticker := createTicker(price, watchmarket.Token, watchmarket.UnknownCoinID, "shitcoin", "shitcoinID", "coingecko", "USD")
+		ticker := createTicker(price, watchmarket.Token, watchmarket.UnknownCoinID, "shitcoin", "shitcoinID", watchmarket.CoinGecko, "USD")
 
 		assert.Equal(t, ticker.Price.Value, wantedTickers[i].Price.Value)
 		assert.Equal(t, ticker.Price.Change24h, wantedTickers[i].Price.Change24h)
