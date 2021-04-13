@@ -90,6 +90,7 @@ const Mapping = `[
         "type": "coin",
         "id": 52
     },
+
     {
         "coin": 714,
         "type": "token",
