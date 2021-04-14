@@ -114,7 +114,8 @@ func createCgCoinsMap(coins Coins) map[string][]CoinResult {
 				PotentialCoinID: getCoinId(platform),
 			}
 
-			cgCoinsMap[c.Id] = []CoinResult{cr}
+			// need append but not recover
+			cgCoinsMap[c.Id] = append(cgCoinsMap[c.Id], cr)
 		}
 	}
 
