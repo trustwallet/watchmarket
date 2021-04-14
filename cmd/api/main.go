@@ -89,7 +89,7 @@ func init() {
 		log.Fatal(err)
 	}
 
-	charts = chartscontroller.NewController(redisCache, memoryCache, database, chartsPriority, m.ChartsAPIs, configuration)
+	charts = chartscontroller.NewController(redisCache, memoryCache, chartsPriority, m.ChartsAPIs)
 	info = infocontroller.NewController(database, memoryCache, coinInfoPriority, ratesPriority, m.ChartsAPIs)
 	tickers = tickerscontroller.NewController(database, memoryCache, ratesPriority, tickerPriority, configuration)
 	rates = ratescontroller.NewController(database, memoryCache, ratesPriority, configuration)

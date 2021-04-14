@@ -84,7 +84,7 @@ func (c Controller) getFromCache(request controllers.DetailsRequest) (controller
 
 	cachedDetails, err := c.cache.Get(key)
 	if err != nil || len(cachedDetails) <= 0 {
-		return controllers.InfoResponse{}, errors.New("cache is empty")
+		return controllers.InfoResponse{}, errors.New(watchmarket.ErrNotFound)
 	}
 	var infoResponse controllers.InfoResponse
 	err = json.Unmarshal(cachedDetails, &infoResponse)

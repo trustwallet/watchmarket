@@ -8,14 +8,12 @@ import (
 	"github.com/trustwallet/golibs/asset"
 	"github.com/trustwallet/watchmarket/config"
 	"github.com/trustwallet/watchmarket/db"
-	"github.com/trustwallet/watchmarket/db/models"
 	"github.com/trustwallet/watchmarket/pkg/watchmarket"
 	"github.com/trustwallet/watchmarket/services/cache"
 	"github.com/trustwallet/watchmarket/services/controllers"
 )
 
 type Controller struct {
-	database        db.Instance
 	cache           cache.Provider
 	ratesPriority   []string
 	tickersPriority []string
@@ -29,7 +27,6 @@ func NewController(
 	configuration config.Configuration,
 ) Controller {
 	return Controller{
-		database,
 		cache,
 		ratesPriority,
 		tickersPriority,
@@ -38,12 +35,12 @@ func NewController(
 }
 
 func (c Controller) HandleTickersRequest(request controllers.TickerRequest) (watchmarket.Tickers, error) {
-	rate, err := c.getRateByPriority(strings.ToUpper(request.Currency))
+	rate, err := c.getCacheRate(strings.ToUpper(request.Currency))
 	if err != nil {
 		return watchmarket.Tickers{}, errors.New(watchmarket.ErrNotFound)
 	}
 
-	tickers, err := c.getTickersByPriority(request.Assets)
+	tickers, err := c.getCacheTickers(request.Assets)
 	if err != nil {
 		return watchmarket.Tickers{}, errors.New(watchmarket.ErrInternal)
 	}
@@ -66,90 +63,9 @@ func (c Controller) filterTickers(tickers watchmarket.Tickers, rate watchmarket.
 	return result
 }
 
-func (c Controller) getTickersByPriority(assets []controllers.Asset) (watchmarket.Tickers, error) {
-	if result, err := c.getCachedTickers(assets); err == nil {
-		return result, nil
-	}
-	tickers, err := c.database.GetTickers(assets)
-	if err != nil {
-		return nil, err
-	}
-	result := make(watchmarket.Tickers, 0)
-	for _, assetData := range assets {
-		ticker := findBestTicker(assetData, tickers, c.tickersPriority, c.configuration)
-		if ticker == nil {
-			continue
-		}
-		result = append(result, watchmarket.Ticker{
-			Coin:       ticker.Coin,
-			CoinName:   ticker.CoinName,
-			CoinType:   watchmarket.CoinType(ticker.CoinType),
-			LastUpdate: ticker.LastUpdated,
-			Price: watchmarket.Price{
-				Change24h: ticker.Change24h,
-				Currency:  ticker.Currency,
-				Provider:  ticker.Provider,
-				Value:     ticker.Value,
-			},
-			TokenId: assetData.TokenId,
-		})
-	}
-
-	return result, nil
-}
-
-func findBestTicker(assetData controllers.Asset, tickers []models.Ticker, providers []string, configuration config.Configuration) *models.Ticker {
-	for _, p := range providers {
-		for _, ticker := range tickers {
-			baseCheck := assetData.CoinId == ticker.Coin && strings.ToLower(assetData.TokenId) == ticker.TokenId
-
-			if baseCheck && ticker.ShowOption == models.AlwaysShow {
-				return &ticker
-			}
-
-			if baseCheck && p == ticker.Provider && ticker.ShowOption != models.NeverShow &&
-				(watchmarket.IsRespectableValue(ticker.MarketCap, configuration.RestAPI.Tickers.RespsectableMarketCap) || ticker.Provider != "coingecko") &&
-				(watchmarket.IsRespectableValue(ticker.Volume, configuration.RestAPI.Tickers.RespsectableVolume) || ticker.Provider != "coingecko") {
-				return &ticker
-			}
-		}
-	}
-	return nil
-}
-
-func (c Controller) getRateByPriority(currency string) (result watchmarket.Rate, err error) {
-	if result, err := c.getCachedRate(currency); err == nil {
-		return result, nil
-	}
-
-	rates, err := c.database.GetRates(currency)
-	if err != nil {
-		return result, err
-	}
-	isFiat := !watchmarket.IsFiatRate(currency)
-
-	for _, p := range c.ratesPriority {
-		if isFiat && p != watchmarket.Fixer {
-			continue
-		}
-		for _, r := range rates {
-			if p == r.Provider {
-				return watchmarket.Rate{
-					Currency:         r.Currency,
-					PercentChange24h: r.PercentChange24h,
-					Provider:         r.Provider,
-					Rate:             r.Rate,
-					Timestamp:        r.LastUpdated.Unix(),
-				}, nil
-			}
-		}
-	}
-	return result, errors.New(watchmarket.ErrNotFound)
-}
-
 func (c Controller) rateToDefaultCurrency(t watchmarket.Ticker, rate watchmarket.Rate) (watchmarket.Rate, bool) {
 	if t.Price.Currency != watchmarket.DefaultCurrency {
-		newRate, err := c.getRateByPriority(strings.ToUpper(t.Price.Currency))
+		newRate, err := c.getCacheRate(strings.ToUpper(t.Price.Currency))
 		if err != nil {
 			return watchmarket.Rate{}, false
 		}
@@ -173,9 +89,9 @@ func (c Controller) applyRateToTicker(ticker *watchmarket.Ticker, rate watchmark
 	}
 }
 
-func (c Controller) getCachedTickers(assets []controllers.Asset) (watchmarket.Tickers, error) {
+func (c Controller) getCacheTickers(assets []controllers.Asset) (watchmarket.Tickers, error) {
 	if c.cache == nil {
-		return watchmarket.Tickers{}, errors.New("cache isn't available")
+		return watchmarket.Tickers{}, errors.New(watchmarket.ErrInternal)
 	}
 	var results watchmarket.Tickers
 	for _, assetData := range assets {
@@ -194,10 +110,9 @@ func (c Controller) getCachedTickers(assets []controllers.Asset) (watchmarket.Ti
 	return results, nil
 }
 
-// TODO: Remove duplicates or make method
-func (c Controller) getCachedRate(currency string) (result watchmarket.Rate, err error) {
+func (c Controller) getCacheRate(currency string) (result watchmarket.Rate, err error) {
 	if c.cache == nil {
-		return watchmarket.Rate{}, errors.New("cache isn't available")
+		return watchmarket.Rate{}, errors.New(watchmarket.ErrInternal)
 	}
 	rawResult, err := c.cache.Get(currency)
 	if err != nil {
